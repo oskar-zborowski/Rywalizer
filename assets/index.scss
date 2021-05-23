@@ -1,0 +1,36 @@
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    overflow-x: hidden;
+    margin: 0;
+    background-color: #141417;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button {
+    font-family: inherit;
+}
+
+button,
+button:active,
+button:focus {
+    outline: none;
+}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Rywalizer © 2021 | Krystian Borowicz, Oskar Zborowski -->
+        <title>{% block title %}Rywalizer{% endblock %}</title>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="author" content="Krystian Borowicz, Oskar Zborowski">
+        {# <meta name="theme-color" content="#343a40">
+        <meta name="msapplication-navbutton-color" content="#343a40">
+        <meta name="apple-mobile-web-app-status-bar-style" content="#343a40"> #}
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" crossorigin=""
+            integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        />
+        {% block stylesheets %}{{ encore_entry_link_tags('app') }}{% endblock %}
+    </head>
+    <body>
+        <div id="app">{% block body %}{% endblock %}</div>
+        {% block javascripts %}{{ encore_entry_script_tags('app') }}{% endblock %}
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" crossorigin=""
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        ></script>
+    </body>
+</html>

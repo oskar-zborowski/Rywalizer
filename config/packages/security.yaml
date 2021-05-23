@@ -1,12 +1,6 @@
 security:
-    encoders:
-        App\Entity\User:
-            algorithm: auto
-
-    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
-        # used to reload user from session & other features (e.g. switch_user)
-        app_user_provider:
+        users:
             entity:
                 class: App\Entity\User
                 property: email
@@ -14,18 +8,20 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
-            anonymous: lazy
-            provider: app_user_provider
-
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#firewalls-authentication
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
-
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
+        api-doc:
+            pattern: ^/api/doc(.json)?$
+            security: false
+        auth: 
+            pattern: ^/api/(login|refresh|register)$
+            security: false
+        api:
+            anonymous: true
+            stateless: true
+            pattern: ^/api
+            guard:
+                authenticators:
+                    - App\Security\JWTAuthenticator
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
+
+#TODO: ROLE UŻYTKOWNIKÓW
