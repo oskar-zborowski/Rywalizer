@@ -1,23 +1,32 @@
 import React from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import styles from './Map.scss?module';
+import darkTheme from './themes/dark-theme';
+import {
+    withScriptjs,
+    withGoogleMap,
+    GoogleMap,
+    Marker
+} from 'react-google-maps';
 
-const Map = () => {
+const MapContainer = withScriptjs(withGoogleMap(props => (
+    <GoogleMap
+        defaultZoom={8}
+        defaultCenter={{ lat: 52.4006553, lng: 16.7615844 }}
+        defaultOptions={{ styles: darkTheme }}
+    >
+        {props.isMarkerShown && <Marker position={{ lat: -34.397, lng: 150.644 }} />}
+    </GoogleMap>
+)));
 
+const Map = props => {
     return (
-        <div className={styles.container}>
-            <MapContainer center={[51.505, -0.09]} zoom={13}>
-                <TileLayer
-                    attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <Marker position={[51.505, -0.09]}>
-                    <Popup>
-                        A pretty CSS3 popup. <br /> Easily customizable.
-                    </Popup>
-                </Marker>
-            </MapContainer>
-        </div>
+        <MapContainer
+            isMarkerShown
+            googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyCi0sAXQWFeT4T5E6jOLlD-V35S6nyrx5Y&sensor=false&libraries=visualization"
+            loadingElement={<div style={{ height: '100%' }} />}
+            containerElement={<div className={styles.container} />}
+            mapElement={<div style={{ height: '100%' }} />}
+        />
     );
 };
 
