@@ -23,8 +23,8 @@ const Map = props => {
         <MapContainer
             isMarkerShown
             googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyCi0sAXQWFeT4T5E6jOLlD-V35S6nyrx5Y&sensor=false&libraries=visualization"
-            loadingElement={<div style={{ height: '100%' }} />}
             containerElement={<div className={styles.container} />}
+            loadingElement={<div style={{ height: '100%' }} />}
             mapElement={<div style={{ height: '100%' }} />}
         />
     );
