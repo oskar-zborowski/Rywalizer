@@ -29,7 +29,8 @@ services:
             context: .
             dockerfile: docker/web/Dockerfile
         ports:
-            - 8080:80
+            - 80:80
+            - 443:443
         volumes:
             - ./public:/var/www/public
             - ./src:/var/www/src
