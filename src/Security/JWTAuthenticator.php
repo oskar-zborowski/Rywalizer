@@ -4,7 +4,7 @@ namespace App\Security;
 
 use Exception;
 use Firebase\JWT\JWT;
-use App\Service\CakeEncoder;
+use App\Service\EncodeService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -13,18 +13,20 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+
 /**
  * @see https://symfony.com/doc/current/security/guard_authentication.html
  */
 class JWTAuthenticator extends AbstractGuardAuthenticator {
 
     private $jwtSecret;
-
     private $tokenExtractor;
+    private $encodeService;
 
     public function __construct(string $jwtSecret) {
         $this->jwtSecret = $jwtSecret;
         $this->tokenExtractor = new JWTExtractor('Authorization', 'Bearer');
+        $this->cakeEncoder = new EncodeService();
     }
 
     public function supports(Request $request) {
@@ -50,8 +52,8 @@ class JWTAuthenticator extends AbstractGuardAuthenticator {
                 throw new AuthenticationException('Invalid payload');
             }
 
-            $encodedUsername = null; //TODO: ENKODOWANIE USERNAME'A
-            $user = $userProvider->loadUserByUsername($encodedUsername);
+            $encoderUsername = $this->encodeService->encode($decodedJwt['sub']);
+            $user = $userProvider->loadUserByUsername($encoderUsername);
         } catch (Exception $e) {
             //TODO: catcha mozna rozbic na rozne wyrzucane wyjątki (JWT::decode())
             throw new AuthenticationException($e->getMessage());
