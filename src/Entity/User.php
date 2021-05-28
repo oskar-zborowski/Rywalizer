@@ -19,7 +19,7 @@ class User implements UserInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255, unique=true, nullable=true)
+     * @ORM\Column(type="string", length=340, unique=true, nullable=true)
      */
     private $email;
 
@@ -30,27 +30,27 @@ class User implements UserInterface
 
     /**
      * @var string The hashed password
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $password;
 
     /**
-     * @ORM\Column(type="string", length=30)
+     * @ORM\Column(type="string", length=40)
      */
     private $first_name;
 
     /**
-     * @ORM\Column(type="string", length=30)
+     * @ORM\Column(type="string", length=40)
      */
     private $last_name;
 
     /**
-     * @ORM\Column(type="string", length=10, unique=true, nullable=true)
+     * @ORM\Column(type="string", length=16, unique=true, nullable=true)
      */
     private $profile_picture;
 
     /**
-     * @ORM\Column(type="string", length=255, unique=true, nullable=true)
+     * @ORM\Column(type="string", length=340, unique=true, nullable=true)
      */
     private $external_authentication;
 
@@ -68,6 +68,22 @@ class User implements UserInterface
      * @ORM\Column(type="boolean")
      */
     private $is_blocked;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=LoginForm::class, inversedBy="users_external_login_form")
+     */
+    private $external_login_form;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=LoginForm::class, inversedBy="users_active_login_form")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $active_login_form;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $is_verified;
 
     public function getId(): ?int
     {
@@ -230,6 +246,42 @@ class User implements UserInterface
     public function setIsBlocked(bool $is_blocked): self
     {
         $this->is_blocked = $is_blocked;
+
+        return $this;
+    }
+
+    public function getExternalLoginForm(): ?LoginForm
+    {
+        return $this->external_login_form;
+    }
+
+    public function setExternalLoginForm(?LoginForm $external_login_form): self
+    {
+        $this->external_login_form = $external_login_form;
+
+        return $this;
+    }
+
+    public function getActiveLoginForm(): ?LoginForm
+    {
+        return $this->active_login_form;
+    }
+
+    public function setActiveLoginForm(?LoginForm $active_login_form): self
+    {
+        $this->active_login_form = $active_login_form;
+
+        return $this;
+    }
+
+    public function getIsVerified(): ?bool
+    {
+        return $this->is_verified;
+    }
+
+    public function setIsVerified(bool $is_verified): self
+    {
+        $this->is_verified = $is_verified;
 
         return $this;
     }
