@@ -15,5 +15,4 @@ class RefreshTokenRepository extends ServiceEntityRepository {
     public function findByToken(string $refreshToken): ?RefreshToken {
         return $this->findOneBy(['token' => $refreshToken]);
     }
-    
 }

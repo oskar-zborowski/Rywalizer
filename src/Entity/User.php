@@ -70,12 +70,12 @@ class User implements UserInterface
     private $is_blocked;
 
     /**
-     * @ORM\ManyToOne(targetEntity=LoginForm::class, inversedBy="users_external_login_form")
+     * @ORM\ManyToOne(targetEntity=LoginForm::class)
      */
     private $external_login_form;
 
     /**
-     * @ORM\ManyToOne(targetEntity=LoginForm::class, inversedBy="users_active_login_form")
+     * @ORM\ManyToOne(targetEntity=LoginForm::class)
      * @ORM\JoinColumn(nullable=false)
      */
     private $active_login_form;
