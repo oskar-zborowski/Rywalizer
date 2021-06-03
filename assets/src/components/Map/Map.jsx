@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './Map.scss?module';
-import darkTheme from './themes/dark-theme';
+import darkTheme from './theme';
 import {
     withScriptjs,
     withGoogleMap,
@@ -12,7 +12,10 @@ const MapContainer = withScriptjs(withGoogleMap(props => (
     <GoogleMap
         defaultZoom={8}
         defaultCenter={{ lat: 52.4006553, lng: 16.7615844 }}
-        defaultOptions={{ styles: darkTheme }}
+        defaultOptions={{ 
+            styles: darkTheme,
+            disableDefaultUI: true,
+        }}
     >
         {props.isMarkerShown && <Marker position={{ lat: -34.397, lng: 150.644 }} />}
     </GoogleMap>
