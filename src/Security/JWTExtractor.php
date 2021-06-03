@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\Request;
 class JWTExtractor {
 
     private $headerName;
-
     private $prefix;
 
     public function __construct(string $headerName, string $prefix) {
@@ -38,5 +37,4 @@ class JWTExtractor {
 
         return $headerParts[1];
     }
-
 }

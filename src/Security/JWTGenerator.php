@@ -10,7 +10,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class JWTGenerator {
 
     private $jwtSecret;
-
     private $jwtTTL;
 
     public function __construct(string $jwtSecret, int $jwtTTL) {
@@ -46,5 +45,4 @@ class JWTGenerator {
     public function generateRefreshToken(int $length = 40): string {
         return bin2hex(random_bytes($length));
     }
-
 }
