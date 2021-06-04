@@ -1,8 +1,11 @@
 import useResize from '@/src/hooks/useResize';
 import React, { useRef } from 'react';
+
+// @ts-ignore
 import styles from './Card.scss?module';
 
-const Dots = ({popularity, dotsCount = 5}) => {
+const Dots = ({popularity}) => {
+    const dotsCount = 5;
     const dots = [...Array(5).keys()];
     const filledDots = +popularity / (100 / dotsCount);
 

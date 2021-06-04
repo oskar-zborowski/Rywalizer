@@ -1,0 +1,139 @@
+@import "@/src/App/utils/utils.scss";
+
+$footerHeight: 45px;
+$containersBorderRadius: 15px;
+
+.container {
+    width: 100%;
+    height: 100%;
+    padding: 0 20px 0 20px;
+    display: flex;
+}
+
+.cardsContainer {
+    flex: 53%;
+    height: 100%;
+    display: flex;
+}
+
+.cardsInnerContainer {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.filters {
+    flex: none;
+    height: 150px;
+}
+
+.cardsWrapper {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+    min-height: 0px;
+}
+
+.cards {
+    height: 100%;
+    @include removeScrollbar;
+    overflow: auto;
+    padding: 0 15px ($footerHeight + 15px) 15px;
+}
+
+.cardsGroup {
+    display: grid;
+    margin-bottom: 35px;
+    grid-gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    > * {
+        flex: 1;
+    }
+}
+
+.grad {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 15px;
+    background: linear-gradient($background-secondary, #FF000000);
+    z-index: 2;
+    transition: opacity .15s;
+}
+
+.cardsBackgroundLayer {
+    flex: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: $footerHeight;
+    left: 0;
+    background-color: $background-secondary;
+    border-radius: $containersBorderRadius;
+    z-index: 0;
+}
+
+.scroll {
+    width: 10px;
+    flex: none;
+    padding: $containersBorderRadius 0 ($containersBorderRadius + $footerHeight) 0;
+}
+
+.scrollTrack {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.scrollThumb {
+    position: relative;
+    background-color: $accent;
+    height: 120px;
+    border-radius: 2px;
+}
+
+.mapContainer {
+    flex: 47%;
+    display: flex;
+    flex-flow: column;
+}
+
+.mapInnerContainer {
+    flex: 1;
+    border-radius: $containersBorderRadius;
+    overflow: hidden;
+    background-color: none;
+}
+
+.mapFooter {
+    height: $footerHeight;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.links {
+    display: inline;
+
+    li {
+        display: inline-block;
+        margin-left: 15px;
+        color: #7E7E7E;
+
+        &:first-child {
+            margin-left: 0;
+        }
+    }
+}
+
+.brandName {
+    color: #D0D0D0;
+}

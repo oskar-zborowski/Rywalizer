@@ -1,15 +1,13 @@
 @import "@/src/App/utils/utils.scss";
 
 .topnav {
+    flex: none;
     height: 75px;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 20px 0 20px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0
 }
 
 .logo {
@@ -21,12 +19,12 @@
 .linksWrapper {
     button {
         margin-left: 15px;
+        width: 100px;
     }
 }
 
 .links {
     display: inline;
-    margin-right: 15px;
 
     li {
         display: inline-block;

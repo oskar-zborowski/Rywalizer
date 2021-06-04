@@ -1,12 +1,13 @@
 {
     "compilerOptions": {
+        "baseUrl": "./",
+        "jsx": "react",
         "moduleResolution": "node",
         "resolveJsonModule": true,
         "allowSyntheticDefaultImports": true,
         "forceConsistentCasingInFileNames": true,
         "watch": true,
         "target": "es2017",
-        "baseUrl": "./",
         "paths": {
             "@/*": [
                 "./assets/*"

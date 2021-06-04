@@ -1,4 +1,6 @@
 import React from 'react';
+
+// @ts-ignore
 import styles from './Button.scss?module';
 
 export const Button = props => {

@@ -1,11 +1,12 @@
-import { ButtonLight } from '@/src/components/Button/Button';
-import { Button } from '@/src/components/Button/Button';
-import React, { useRef } from 'react';
+import { Button, ButtonLight } from '@/src/components/Button/Button';
+import React from 'react';
+
+// @ts-ignore
 import styles from './Topnav.scss?module';
 
 const Topnav = props => {
     return (
-        <nav className={styles.topnav}>
+        <header className={styles.topnav}>
             <div className={styles.logo}>NASZA NAZWA</div>
             <div className={styles.linksWrapper}>
                 <ul className={styles.links}>
@@ -16,7 +17,7 @@ const Topnav = props => {
                 <Button>Zaloguj się</Button>
                 <ButtonLight>Rejestracja</ButtonLight>
             </div>
-        </nav>
+        </header>
     );
 };
 

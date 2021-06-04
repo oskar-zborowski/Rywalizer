@@ -1,5 +1,5 @@
+// @ts-nocheck
 import React from 'react';
-import styles from './Map.scss?module';
 import darkTheme from './theme';
 import {
     withScriptjs,
@@ -7,6 +7,9 @@ import {
     GoogleMap,
     Marker
 } from 'react-google-maps';
+
+// @ts-ignore
+import styles from './Map.scss?module';
 
 const MapContainer = withScriptjs(withGoogleMap(props => (
     <GoogleMap
