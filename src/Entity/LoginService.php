@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\LoginFormRepository;
+use App\Repository\LoginServiceRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=LoginFormRepository::class)
+ * @ORM\Entity(repositoryClass=LoginServiceRepository::class)
  */
-class LoginForm
+class LoginService
 {
     /**
      * @ORM\Id

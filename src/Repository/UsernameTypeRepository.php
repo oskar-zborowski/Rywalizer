@@ -2,25 +2,25 @@
 
 namespace App\Repository;
 
-use App\Entity\LoginForm;
+use App\Entity\UsernameType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method LoginForm|null find($id, $lockMode = null, $lockVersion = null)
- * @method LoginForm|null findOneBy(array $criteria, array $orderBy = null)
- * @method LoginForm[]    findAll()
- * @method LoginForm[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method UsernameType|null find($id, $lockMode = null, $lockVersion = null)
+ * @method UsernameType|null findOneBy(array $criteria, array $orderBy = null)
+ * @method UsernameType[]    findAll()
+ * @method UsernameType[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class LoginFormRepository extends ServiceEntityRepository
+class UsernameTypeRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, LoginForm::class);
+        parent::__construct($registry, UsernameType::class);
     }
 
     // /**
-    //  * @return LoginForm[] Returns an array of LoginForm objects
+    //  * @return UsernameType[] Returns an array of UsernameType objects
     //  */
     /*
     public function findByExampleField($value)
@@ -37,7 +37,7 @@ class LoginFormRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?LoginForm
+    public function findOneBySomeField($value): ?UsernameType
     {
         return $this->createQueryBuilder('l')
             ->andWhere('l.exampleField = :val')

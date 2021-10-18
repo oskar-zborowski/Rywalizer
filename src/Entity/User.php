@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -19,20 +21,15 @@ class User implements UserInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=340, unique=true, nullable=true)
+     * @ORM\OneToOne(targetEntity=Username::class, cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $email;
+    private $login;
 
     /**
      * @ORM\Column(type="json")
      */
     private $roles = [];
-
-    /**
-     * @var string The hashed password
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $password;
 
     /**
      * @ORM\Column(type="string", length=40)
@@ -50,11 +47,6 @@ class User implements UserInterface
     private $profile_picture;
 
     /**
-     * @ORM\Column(type="string", length=340, unique=true, nullable=true)
-     */
-    private $external_authentication;
-
-    /**
      * @ORM\Column(type="datetime")
      */
     private $joining_date;
@@ -70,34 +62,38 @@ class User implements UserInterface
     private $is_blocked;
 
     /**
-     * @ORM\ManyToOne(targetEntity=LoginForm::class)
+     * @ORM\OneToOne(targetEntity=RefreshToken::class, mappedBy="user", cascade={"persist", "remove"})
      */
-    private $external_login_form;
+    private $refreshToken;
 
     /**
-     * @ORM\ManyToOne(targetEntity=LoginForm::class)
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\OneToOne(targetEntity=Password::class, mappedBy="user", cascade={"persist", "remove"})
      */
-    private $active_login_form;
+    private $password;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\OneToMany(targetEntity=Username::class, mappedBy="user", orphanRemoval=true)
      */
-    private $is_verified;
+    private $usernames;
+
+    public function __construct()
+    {
+        $this->usernames = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getEmail(): ?string
+    public function getLogin(): ?Username
     {
-        return $this->email;
+        return $this->login;
     }
 
-    public function setEmail(string $email): self
+    public function setLogin(Username $username): self
     {
-        $this->email = $email;
+        $this->login = $username;
 
         return $this;
     }
@@ -107,9 +103,9 @@ class User implements UserInterface
      *
      * @see UserInterface
      */
-    public function getUsername(): string
+    public function getUsername(): ?string
     {
-        return (string) $this->email;
+        return $this->getLogin()->getUsername();
     }
 
     /**
@@ -127,21 +123,6 @@ class User implements UserInterface
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
-
-        return $this;
-    }
-
-    /**
-     * @see UserInterface
-     */
-    public function getPassword(): string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
 
         return $this;
     }
@@ -202,18 +183,6 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getExternalAuthentication(): ?string
-    {
-        return $this->external_authentication;
-    }
-
-    public function setExternalAuthentication(?string $external_authentication): self
-    {
-        $this->external_authentication = $external_authentication;
-
-        return $this;
-    }
-
     public function getJoiningDate(): ?\DateTimeInterface
     {
         return $this->joining_date;
@@ -250,38 +219,66 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getExternalLoginForm(): ?LoginForm
+    public function getRefreshToken(): ?RefreshToken
     {
-        return $this->external_login_form;
+        return $this->refreshToken;
     }
 
-    public function setExternalLoginForm(?LoginForm $external_login_form): self
+    public function setRefreshToken(RefreshToken $refreshToken): self
     {
-        $this->external_login_form = $external_login_form;
+        // set the owning side of the relation if necessary
+        if ($refreshToken->getUser() !== $this) {
+            $refreshToken->setUser($this);
+        }
+
+        $this->refreshToken = $refreshToken;
 
         return $this;
     }
 
-    public function getActiveLoginForm(): ?LoginForm
+    public function getPassword(): ?Password
     {
-        return $this->active_login_form;
+        return $this->password;
     }
 
-    public function setActiveLoginForm(?LoginForm $active_login_form): self
+    public function setPassword(Password $password): self
     {
-        $this->active_login_form = $active_login_form;
+        // set the owning side of the relation if necessary
+        if ($password->getUser() !== $this) {
+            $password->setUser($this);
+        }
+
+        $this->password = $password;
 
         return $this;
     }
 
-    public function getIsVerified(): ?bool
+    /**
+     * @return Collection|Username[]
+     */
+    public function getUsernames(): Collection
     {
-        return $this->is_verified;
+        return $this->usernames;
     }
 
-    public function setIsVerified(bool $is_verified): self
+    public function addUsername(Username $username): self
     {
-        $this->is_verified = $is_verified;
+        if (!$this->usernames->contains($username)) {
+            $this->usernames[] = $username;
+            $username->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUsername(Username $username): self
+    {
+        if ($this->usernames->removeElement($username)) {
+            // set the owning side to null (unless already changed)
+            if ($username->getUser() === $this) {
+                $username->setUser(null);
+            }
+        }
 
         return $this;
     }

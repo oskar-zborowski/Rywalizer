@@ -26,7 +26,7 @@ class JWTAuthenticator extends AbstractGuardAuthenticator {
     public function __construct(string $jwtSecret) {
         $this->jwtSecret = $jwtSecret;
         $this->tokenExtractor = new JWTExtractor('Authorization', 'Bearer');
-        $this->cakeEncoder = new EncodeService();
+        $this->encodeService = new EncodeService();
     }
 
     public function supports(Request $request) {

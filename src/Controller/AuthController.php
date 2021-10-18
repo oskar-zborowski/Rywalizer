@@ -6,7 +6,7 @@ use DateTime;
 use DateInterval;
 use App\Entity\RefreshToken;
 use App\Repository\RefreshTokenRepository;
-use App\Service\CakeEncoder;
+use App\Service\EncodeService;
 use App\Security\JWTGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,13 +15,14 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 
 class AuthController extends AbstractController {
 
     private $entityManager;
 
-    private $cakeEncoder;
+    private $EncodeService;
 
     private $jwtGenerator;
 
@@ -29,20 +30,26 @@ class AuthController extends AbstractController {
 
     private $refreshTokenTTL;
 
+    private $passwordEncoder;
+
     public function __construct(
         EntityManagerInterface $entityManager,
         JWTGenerator $jwtGenerator,
         int $jwtTTL,
-        int $refreshTokenTTL
+        int $refreshTokenTTL,
+        EncodeService $EncodeService,
+        UserPasswordEncoderInterface $passwordEncoder
     ) {
         $this->entityManager = $entityManager;
         $this->jwtGenerator = $jwtGenerator;
         $this->jwtTTL = $jwtTTL;
         $this->refreshTokenTTL = $refreshTokenTTL;
+        $this->EncodeService = $EncodeService;
+        $this->passwordEncoder = $passwordEncoder;
     }
 
     /**
-     * @Route("/login", methods={"POST"})
+     * @Route("/api/login", methods={"POST"})
      */
     public function login(Request $request, UserProviderInterface $userProvider): Response {
         $username = $request->request->get('username');
@@ -52,7 +59,7 @@ class AuthController extends AbstractController {
             throw new UnauthorizedHttpException('Invalid credentials');
         }
 
-        $encodedUsername = $this->cakeEncoder->encode($username);
+        $encodedUsername = $this->EncodeService->Encode($username);
 
         try {
             $user = $userProvider->loadUserByUsername($encodedUsername);
@@ -60,9 +67,7 @@ class AuthController extends AbstractController {
             throw new UnauthorizedHttpException('User not found');
         }
 
-        $encodedPassword = $this->cakeEncoder->hash($password);
-
-        if ($encodedPassword !== $user->getPassword()) {
+        if (!$this->passwordEncoder->isPasswordValid($user, $password)) {
             throw new UnauthorizedHttpException('Invalid password');
         }
 
@@ -96,7 +101,7 @@ class AuthController extends AbstractController {
     }
 
     /**
-     * @Route("/refresh", methods={"POST"})
+     * @Route("/api/refresh", methods={"POST"})
      */
     public function refresh(Request $request, RefreshTokenRepository $tokenRepository): Response {
         $refreshToken = $request->request->get('refresh-token');
@@ -112,8 +117,6 @@ class AuthController extends AbstractController {
         }
 
         $user = $refreshTokenEntity->getUser();
-
-        //TODO: sprawdzenie czy user istnieje ??
 
         if ($refreshTokenEntity->getExpiresAt() < new DateTime()) {
             throw new UnauthorizedHttpException('Refresh token is expired');

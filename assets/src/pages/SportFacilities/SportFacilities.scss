@@ -11,7 +11,7 @@ $containersBorderRadius: 15px;
 }
 
 .cardsContainer {
-    flex: 53%;
+    flex: 58%;
     height: 100%;
     display: flex;
 }
@@ -25,7 +25,7 @@ $containersBorderRadius: 15px;
 
 .filters {
     flex: none;
-    height: 150px;
+    height: 40px;
 }
 
 .cardsWrapper {
@@ -46,7 +46,7 @@ $containersBorderRadius: 15px;
     display: grid;
     margin-bottom: 35px;
     grid-gap: 20px;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 
     &:last-child {
         margin-bottom: 0;
@@ -100,7 +100,7 @@ $containersBorderRadius: 15px;
 }
 
 .mapContainer {
-    flex: 47%;
+    flex: 42%;
     display: flex;
     flex-flow: column;
 }
