@@ -1,0 +1,87 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 2020,
+        "sourceType": "module"
+    },
+    "globals": {
+        "JQuery": true,
+        "electron": true,
+        "React": true,
+        "google": true,
+        "mount": true,
+        "mountWithRouter": true,
+        "shallow": true,
+        "shallowWithRouter": true,
+        "context": true,
+        "expect": true,
+        "jsdom": true,
+        "JSX": true,
+        "jquery": true
+    },
+    "env": {
+        "browser": true,
+        "jquery": true,
+        "node": true,
+        "mocha": true,
+        "es6": true
+    },
+    "rules": {
+        "prefer-arrow-callback": 1,
+        "semi": 1,
+        "strict": 0,
+        "indent": ["error", 4, { "SwitchCase": 1 }],
+        "no-undef": 2,
+        "quotes": [
+            1,
+            "single"
+        ],
+        "no-multiple-empty-lines": [
+            1,
+            {
+                "max": 1,
+                "maxEOF": 0
+            }
+        ],
+        "no-multi-spaces": [
+            1,
+            {
+                "exceptions": {
+                    "VariableDeclarator": true,
+                    "FunctionExpression": true
+                }
+            }
+        ],
+        "key-spacing": [
+            0,
+            {
+                "align": "value"
+            }
+        ],
+        "react/prop-types" : "off",
+        "no-underscore-dangle": 0,
+        "@typescript-eslint/no-var-requires": 0,
+        "@typescript-eslint/no-empty-interface": 0,
+        "@typescript-eslint/no-unused-vars": 0,
+        "@typescript-eslint/no-explicit-any": 0,
+        "@typescript-eslint/explicit-module-boundary-types": "off"
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    },
+    "plugins": [
+        "@typescript-eslint",
+        "jquery"
+    ],
+    "extends": [
+        "plugin:@typescript-eslint/recommended",
+        "plugin:jquery/slim"
+    ],
+    "ignorePatterns": [
+        "node_modules/**/*",
+        "electron/**/*",
+        "build/**/*"
+    ]
+}
