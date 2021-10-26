@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 class BeforeLoginAndRegister
 {
     public function handle(Request $request, Closure $next) {
+        
         if ($request->cookie('JWT')) {
             return response([
                 'message' => 'You are already logged in!'
