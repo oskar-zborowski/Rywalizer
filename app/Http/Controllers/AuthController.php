@@ -99,13 +99,13 @@ class AuthController extends Controller
             // return response($user, Response::HTTP_OK);
 
             return response([
-                'firstName' => $user->first_name,
-                'lastName' => $user->last_name,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
                 'email' => $user->email != null ? $user->email : null,
                 'avatar' => $user->avatar != null ? $user->avatar : null,
-                'genderType' => isset($user->genderType->name) ? $user->genderType->name : null,
-                'roleType' => $user->roleType->name,
-                'birthDate' => $user->birth_date,
+                'gender_type' => isset($user->genderType->name) ? $user->genderType->name : null,
+                'role_type' => $user->roleType->name,
+                'birth_date' => $user->birth_date,
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
