@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Libraries\Encrypter;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
@@ -15,103 +14,88 @@ class AuthController extends Controller
 {
     public function register(RegisterRequest $request, Encrypter $encrypter) {
 
-        try {
-            $encodedEmail = $request->input('email');
-            $plainPassword = $request->input('password');
-    
-            $request->merge(['email' => $encrypter->decrypt($request->input('email'))]);
-            $request->merge(['password' => $encrypter->hash($request->input('password'))]);
+        $encodedEmail = $request->input('email');
+        $plainPassword = $request->input('password');
 
-            User::create($request->only('first_name', 'last_name', 'email', 'password', 'gender_type_id', 'birth_date'));
+        $request->merge(['email' => $encrypter->decrypt($request->input('email'))]);
+        $request->merge(['password' => $encrypter->hash($request->input('password'))]);
 
-            Auth::attempt([
-                'email' => $encodedEmail,
-                'password' => $plainPassword
-            ]);
-    
-            /** @var User $user */
-            $user = Auth::user();
-    
-            $jwt = $user->createToken('JWT')->plainTextToken;
-    
-            $cookie = cookie('JWT', $jwt, env('COOKIE_LIFETIME'));
-    
-            return response([
-                'message' => 'Register successful'
-            ], Response::HTTP_OK)->withCookie($cookie);
+        User::create($request->only('first_name', 'last_name', 'email', 'password', 'gender_type_id', 'birth_date'));
 
-        } catch (Exception $e) {
-            return response([
-                'message' => 'An unexpected error occurred during registration!'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        Auth::attempt([
+            'email' => $encodedEmail,
+            'password' => $plainPassword
+        ]);
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        $jwt = $user->createToken('JWT')->plainTextToken;
+
+        $cookie = cookie('JWT', $jwt, env('COOKIE_LIFETIME'));
+
+        return response([
+            'message' => 'Register successful'
+        ], Response::HTTP_OK)->withCookie($cookie);
     }
 
     public function login(Request $request) {
 
-        try {
-            if (!Auth::attempt($request->only('email', 'password'))) {
-                return response([
-                    'message' => 'Invalid credentials!'
-                ], Response::HTTP_UNAUTHORIZED);
-            }
-    
-            /** @var User $user */
-            $user = Auth::user();
-    
-            $jwt = $user->createToken('JWT')->plainTextToken;
-    
-            $cookie = cookie('JWT', $jwt, env('COOKIE_LIFETIME'));
-    
+        if (!Auth::attempt($request->only('email', 'password'))) {
             return response([
-                'message' => 'Login successful'
-            ], Response::HTTP_OK)->withCookie($cookie);
-
-        } catch (Exception $e) {
-            return response([
-                'message' => 'An unexpected error occurred during registration!'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+                'message' => 'Invalid credentials!'
+            ], Response::HTTP_UNAUTHORIZED);
         }
+    
+        /** @var User $user */
+        $user = Auth::user();
+
+        $jwt = $user->createToken('JWT')->plainTextToken;
+
+        $cookie = cookie('JWT', $jwt, env('COOKIE_LIFETIME'));
+
+        return response([
+            'message' => 'Login successful'
+        ], Response::HTTP_OK)->withCookie($cookie);
+    }
+
+    public function refresh(Request $request) {
+        $request->user()->currentAccessToken()->delete();
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        $jwt = $user->createToken('JWT')->plainTextToken;
+
+        $cookie = cookie('JWT', $jwt, env('COOKIE_LIFETIME'));
+
+        return response([
+            'message' => 'Refreshing token successful'
+        ], Response::HTTP_OK)->withCookie($cookie);
     }
 
     public function logout(Request $request) {
 
-        try {
-            $request->user()->currentAccessToken()->delete();
-            $cookie = Cookie::forget('JWT');
-    
-            return response([
-                'message' => 'Logout successful'
-            ], Response::HTTP_OK)->withCookie($cookie);
+        $request->user()->currentAccessToken()->delete();
+        $cookie = Cookie::forget('JWT');
 
-        } catch (Exception $e) {
-            return response([
-                'message' => 'An unexpected error occurred during registration!'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return response([
+            'message' => 'Logout successful'
+        ], Response::HTTP_OK)->withCookie($cookie);
     }
 
-    public function user() {
-        
-        try {
-            $user = Auth::user();
+    public function user(Request $request) {
 
-            // return response($user, Response::HTTP_OK);
+        return response($request->user(), Response::HTTP_OK);
 
-            return response([
-                'first_name' => $user->first_name,
-                'last_name' => $user->last_name,
-                'email' => $user->email != null ? $user->email : null,
-                'avatar' => $user->avatar != null ? $user->avatar : null,
-                'gender_type' => isset($user->genderType->name) ? $user->genderType->name : null,
-                'role_type' => $user->roleType->name,
-                'birth_date' => $user->birth_date,
-            ], Response::HTTP_OK);
-
-        } catch (Exception $e) {
-            return response([
-                'message' => 'An unexpected error occurred during registration!'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        // return response([
+        //     'first_name' => $user->first_name,
+        //     'last_name' => $user->last_name,
+        //     'email' => $user->email != null ? $user->email : null,
+        //     'avatar' => $user->avatar != null ? $user->avatar : null,
+        //     'gender_type' => isset($user->genderType->name) ? $user->genderType->name : null,
+        //     'role_type' => $user->roleType->name,
+        //     'birth_date' => $user->birth_date,
+        // ], Response::HTTP_OK);
     }
 }
