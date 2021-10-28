@@ -33,6 +33,8 @@ class User extends Authenticatable
 
     protected $hidden = [
         'password',
+        'gender_type_id',
+        'role_type_id',
         'created_at',
         'updated_at'
     ];
@@ -59,6 +61,11 @@ class User extends Authenticatable
         'email' => 254,
         'avatar' => 189,
         'birth_date' => 10
+    ];
+
+    protected $with = [
+        'RoleType',
+        'GenderType'
     ];
 
     public function roleType() {

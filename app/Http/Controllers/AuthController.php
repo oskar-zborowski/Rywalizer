@@ -87,15 +87,5 @@ class AuthController extends Controller
     public function user(Request $request) {
 
         return response($request->user(), Response::HTTP_OK);
-
-        // return response([
-        //     'first_name' => $user->first_name,
-        //     'last_name' => $user->last_name,
-        //     'email' => $user->email != null ? $user->email : null,
-        //     'avatar' => $user->avatar != null ? $user->avatar : null,
-        //     'gender_type' => isset($user->genderType->name) ? $user->genderType->name : null,
-        //     'role_type' => $user->roleType->name,
-        //     'birth_date' => $user->birth_date,
-        // ], Response::HTTP_OK);
     }
 }
