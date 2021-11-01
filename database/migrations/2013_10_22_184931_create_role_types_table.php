@@ -10,7 +10,7 @@ class CreateRoleTypesTable extends Migration
         
         Schema::create('role_types', function (Blueprint $table) {
             $table->tinyIncrements('id');
-            $table->string('name', 10)->unique();
+            $table->string('name', 20)->unique();
         });
     }
 

@@ -24,10 +24,10 @@ class Handler extends ExceptionHandler
         });
     }
 
-    public function render($request, Throwable $exception) {
-        return response([
-            'message' => 'An unexpected error occurred during registration!',
-            'details' => $exception
-        ], Response::HTTP_INTERNAL_SERVER_ERROR);
-    }
+    // public function render($request, Throwable $exception) {
+    //     return response([
+    //         'message' => 'An unexpected error has occurred!',
+    //         'details' => $exception
+    //     ], Response::HTTP_INTERNAL_SERVER_ERROR);
+    // }
 }

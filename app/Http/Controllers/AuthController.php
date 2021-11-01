@@ -30,13 +30,16 @@ class AuthController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        $jwt = $user->createToken('JWT')->plainTextToken;
+        $refreshToken = $encrypter->generateToken(42);
 
-        $cookie = cookie('JWT', $jwt, env('COOKIE_LIFETIME'));
+        $jwt = $user->createToken('JWT', [$refreshToken])->plainTextToken;
+
+        $cookieJWT = cookie('JWT', $jwt, env('COOKIE_LIFETIME'));
+        $cookieRefreshToken = cookie('refreshToken', $refreshToken, env('COOKIE_LIFETIME'));
 
         return response([
             'message' => 'Register successful'
-        ], Response::HTTP_OK)->withCookie($cookie);
+        ], Response::HTTP_OK)->withCookie($cookieJWT)->withCookie($cookieRefreshToken);
     }
 
     public function login(Request $request) {
@@ -50,16 +53,40 @@ class AuthController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
+        $emailVerifiedAt = $request->user()->email_verified_at;
+        $accountBlockedAt = $request->user()->account_blocked_at;
+        $accountDeletedAt = $request->user()->account_deleted_at;
+
+        if ($accountBlockedAt || $accountDeletedAt) {
+
+            if ($accountBlockedAt) {
+                $message = 'The account has been blocked!';
+            } else if ($accountDeletedAt) {
+                $message = 'The account has been submitted for deletion!';
+            }
+
+            return response([
+                'message' => $message
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+
         $jwt = $user->createToken('JWT')->plainTextToken;
 
         $cookie = cookie('JWT', $jwt, env('COOKIE_LIFETIME'));
 
+        if (!$emailVerifiedAt) {
+
+            return response([
+                'message' => 'Unverified email!'
+            ], Response::HTTP_NOT_ACCEPTABLE)->withCookie($cookie);
+        }
+
         return response([
-            'message' => 'Login successful'
+            'message' => 'Logged in successfully'
         ], Response::HTTP_OK)->withCookie($cookie);
     }
 
-    public function refresh(Request $request) {
+    public function refreshToken(Request $request) {
         $request->user()->currentAccessToken()->delete();
 
         /** @var User $user */
@@ -80,12 +107,11 @@ class AuthController extends Controller
         $cookie = Cookie::forget('JWT');
 
         return response([
-            'message' => 'Logout successful'
+            'message' => 'Logged out successfully'
         ], Response::HTTP_OK)->withCookie($cookie);
     }
 
     public function user(Request $request) {
-
         return response($request->user(), Response::HTTP_OK);
     }
 }

@@ -19,14 +19,14 @@ class User extends Authenticatable
         'password',
         'avatar',
         'gender_type_id',
-        'role_type_id',
         'birth_date',
-        'email_verified_at',
-        'account_blocked_at',
-        'account_deleted_at'
     ];
 
     protected $guarded = [
+        'role_type_id',
+        'email_verified_at',
+        'account_blocked_at',
+        'account_deleted_at',
         'created_at',
         'updated_at'
     ];
@@ -35,6 +35,9 @@ class User extends Authenticatable
         'password',
         'gender_type_id',
         'role_type_id',
+        'email_verified_at',
+        'account_blocked_at',
+        'account_deleted_at',
         'created_at',
         'updated_at'
     ];
@@ -59,7 +62,7 @@ class User extends Authenticatable
         'first_name' => 30,
         'last_name' => 30,
         'email' => 254,
-        'avatar' => 189,
+        'avatar' => 21,
         'birth_date' => 10
     ];
 

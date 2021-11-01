@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Hash;
 
 class Encrypter {
 
-    private function fillWithRandomCharacters($value, $maxSize = null) {
+    private function fillWithRandomCharacters($value, $maxSize = null, $rand = null) {
 
         $characters = 'M9w4RimKrF8fJGuTEBpC36gUNDzebW7ZaVSnqdYcXhoQjILv21ltPkAHx5O0sy';
         $charactersLength = strlen($characters);
@@ -18,10 +18,17 @@ class Encrypter {
         $length = $maxSize - strlen($value);
 
         if ($length) {
-            $value .= chr(27); // ESC
 
-            for ($i=0; $i<$length-1; $i++) {
-                $value .= $characters[$i % $charactersLength];
+            if (!$rand) {
+                $value .= chr(27); // ESC
+
+                for ($i=0; $i<$length-1; $i++) {
+                    $value .= $characters[$i % $charactersLength];
+                }
+            } else {
+                for ($i=0; $i<$length; $i++) {
+                    $value .= $characters[rand(0, $charactersLength-1)];
+                }
             }
         }
 
@@ -57,5 +64,9 @@ class Encrypter {
 
     public function hash($value) {
         return Hash::make($value);
+    }
+
+    public function generateToken($size) {
+        return $this->fillWithRandomCharacters('', $size, true);
     }
 }
