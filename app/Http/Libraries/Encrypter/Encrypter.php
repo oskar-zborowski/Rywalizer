@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Libraries;
+namespace App\Http\Libraries\Encrypter;
 
 use Illuminate\Support\Facades\Hash;
 
@@ -18,7 +18,6 @@ class Encrypter {
         $length = $maxSize - strlen($value);
 
         if ($length) {
-
             if (!$rand) {
                 $value .= chr(27); // ESC
 

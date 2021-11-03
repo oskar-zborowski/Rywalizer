@@ -2,7 +2,7 @@
 
 namespace App\Http\Traits;
 
-use App\Http\Libraries\Encrypter;
+use App\Http\Libraries\Encrypter\Encrypter;
 
 trait Encryptable
 {
@@ -11,7 +11,7 @@ trait Encryptable
     }
 
     public function getAttribute($key) {
-
+        
         $value = parent::getAttribute($key);
 
         if ($this->encryptable($key)) {

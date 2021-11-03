@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Http\Traits\Encryptable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable, Encryptable;
 
@@ -77,5 +79,12 @@ class User extends Authenticatable
 
     public function genderType() {
         return $this->belongsTo(GenderType::class);
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $url = 'https://spa.test/reset-password?token=' . $token;
+
+        $this->notify(new ResetPasswordNotification($url));
     }
 }

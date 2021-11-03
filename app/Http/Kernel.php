@@ -43,8 +43,8 @@ class Kernel extends HttpKernel
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            \App\Http\Middleware\ReplaceFieldNamesWithSnakeCase::class,
-            \App\Http\Middleware\ReplaceFieldNamesWithCamelCase::class
+            \App\Http\Middleware\ReplaceFieldNames\ReplaceFieldNamesWithSnakeCase::class,
+            \App\Http\Middleware\ReplaceFieldNames\ReplaceFieldNamesWithCamelCase::class
         ],
     ];
 
@@ -56,8 +56,9 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        'auth' => \App\Http\Middleware\Authenticate::class,
+        'auth' => \App\Http\Middleware\Authenticate\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'before.auth' => \App\Http\Middleware\Authenticate\BeforeAuthenticate::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
@@ -65,6 +66,5 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'before.login-register' => \App\Http\Middleware\BeforeLoginAndRegister::class
     ];
 }
