@@ -28,13 +28,15 @@ class AuthServiceProvider extends ServiceProvider
 
         VerifyEmail::toMailUsing(function ($notificable, $url) {
             
-            $spaUrl = 'https://spa.test?email_verify_url=' . $url;
+            $spaUrl = 'https://spa.test?email_verify_url=' . $url; // TODO Poprawić na prawidłowy URL
 
             return (new MailMessage)
                 ->subject('Potwierdzenie adresu e-mail')
+                ->greeting('Cześć!')
                 ->line('Kliknij w poniższy przycisk, aby zweryfikować adres e-mail')
                 ->action('Potwierdź', $spaUrl)
-                ->line('Dziękujemy za korzystanie z naszego serwisu!');;
+                ->line('Dziękujemy za skorzystanie z naszego serwisu!')
+                ->salutation('Do zobaczenia');
         });
     }
 }

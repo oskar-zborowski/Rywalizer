@@ -69,22 +69,20 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     protected $with = [
-        'RoleType',
-        'GenderType'
+        'GenderType',
+        'RoleType'
     ];
-
-    public function roleType() {
-        return $this->belongsTo(RoleType::class);
-    }
 
     public function genderType() {
         return $this->belongsTo(GenderType::class);
     }
 
-    public function sendPasswordResetNotification($token)
-    {
-        $url = 'https://spa.test/reset-password?token=' . $token;
+    public function roleType() {
+        return $this->belongsTo(RoleType::class);
+    }
 
+    public function sendPasswordResetNotification($token) {
+        $url = 'https://spa.test/reset-password?token=' . $token; // TODO Poprawić na prawidłowy URL
         $this->notify(new ResetPasswordNotification($url));
     }
 }

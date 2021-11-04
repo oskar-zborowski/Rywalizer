@@ -22,7 +22,7 @@ class Authenticate extends Middleware
             $request->headers->set('Authorization', 'Bearer ' . $jwt);
         } else {
             return response([
-                'code' => 'A14',
+                'code' => 'A1',
                 'message' => 'Unauthorized!'
             ], Response::HTTP_UNAUTHORIZED);
         }
@@ -36,7 +36,7 @@ class Authenticate extends Middleware
             $cookie = Cookie::forget('JWT');
 
             return response([
-                'code' => 'A3',
+                'code' => 'A7',
                 'message' => 'The account has been blocked!'
             ], Response::HTTP_UNAUTHORIZED)->withCookie($cookie);
         }

@@ -6,8 +6,12 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateUsersTable extends Migration
 {
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
     public function up() {
-
         Schema::create('users', function (Blueprint $table) {
             $table->mediumIncrements('id');
             $table->string('first_name', 40);
@@ -30,6 +34,11 @@ class CreateUsersTable extends Migration
         });
     }
 
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
     public function down() {
         Schema::dropIfExists('users');
     }

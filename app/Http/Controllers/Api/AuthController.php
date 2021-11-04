@@ -37,14 +37,14 @@ class AuthController extends Controller
 
         if ($accountBlockedAt) {
             return response([
-                'code' => 'A3',
+                'code' => 'A7',
                 'message' => 'The account has been blocked!'
             ], Response::HTTP_UNAUTHORIZED);
         }
 
         if ($accountDeletedAt) {
             return response([
-                'code' => 'A4',
+                'code' => 'A6',
                 'message' => 'The account has been submitted for deletion!'
             ], Response::HTTP_UNAUTHORIZED);
         }
@@ -55,13 +55,13 @@ class AuthController extends Controller
 
         if (!$emailVerifiedAt) {
             return response([
-                'code' => 'A5',
+                'code' => 'A3',
                 'message' => 'Unverified email!'
             ], Response::HTTP_NOT_ACCEPTABLE)->withCookie($cookie);
         }
 
         return response([
-            'code' => 'A6',
+            'code' => 'A4',
             'message' => 'Logged in successfully'
         ], Response::HTTP_OK)->withCookie($cookie);
     }
@@ -91,8 +91,8 @@ class AuthController extends Controller
         $this->sendVerificationEmail($request);
 
         return response([
-            'code' => 'A5',
-            'message' => 'Register successful'
+            'code' => 'A3',
+            'message' => 'Registration successful'
         ], Response::HTTP_OK)->withCookie($cookie);
     }
 
@@ -102,8 +102,8 @@ class AuthController extends Controller
 
         if ($status == Password::RESET_LINK_SENT) {
             return response([
-                'code' => 'A7',
-                'message' => __($status)
+                'code' => 'A12',
+                'message' => __($status) // We have emailed your password reset link!
             ], Response::HTTP_OK);
         }
 
@@ -129,22 +129,22 @@ class AuthController extends Controller
 
         if ($status == Password::PASSWORD_RESET) {
             return response([
-                'code' => 'A8',
-                'message' => __($status)
+                'code' => 'A13',
+                'message' => __($status) // Your password has been reset!
             ], Response::HTTP_OK);
         }
 
         return response([
-            'code' => 'A9',
-            'message' => __($status)
-        ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            'code' => 'A14',
+            'message' => __($status) // We can't find a user with that email address. | This password reset token is invalid.
+        ], Response::HTTP_BAD_REQUEST);
     }
 
     public function sendVerificationEmail(Request $request) {
 
         if ($request->user()->hasVerifiedEmail()) {
             return response([
-                'code' => 'A10',
+                'code' => 'A9',
                 'message' => 'Email already verified!'
             ], Response::HTTP_NOT_ACCEPTABLE);
         }
@@ -152,7 +152,7 @@ class AuthController extends Controller
         $request->user()->sendEmailVerificationNotification();
 
         return response([
-            'code' => 'A11',
+            'code' => 'A10',
             'message' => 'Verification link sent'
         ], Response::HTTP_OK);
     }
@@ -161,7 +161,7 @@ class AuthController extends Controller
     {
         if ($request->user()->hasVerifiedEmail()) {
             return response([
-                'code' => 'A10',
+                'code' => 'A9',
                 'message' => 'Email already verified!'
             ], Response::HTTP_NOT_ACCEPTABLE);
         }
@@ -171,7 +171,7 @@ class AuthController extends Controller
         }
 
         return response([
-            'code' => 'A12',
+            'code' => 'A11',
             'message' => 'Email has been verified'
         ], Response::HTTP_OK);
     }
@@ -182,14 +182,14 @@ class AuthController extends Controller
         $cookie = Cookie::forget('JWT');
 
         return response([
-            'code' => 'A13',
+            'code' => 'A5',
             'message' => 'Logged out successfully'
         ], Response::HTTP_OK)->withCookie($cookie);
     }
 
     public function refreshToken(Request $request) {
 
-        //TODO Całe do poprawy
+        // TODO Całe do poprawy
         
         // $request->user()->currentAccessToken()->delete();
 

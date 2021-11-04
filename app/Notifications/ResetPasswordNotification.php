@@ -43,9 +43,11 @@ class ResetPasswordNotification extends Notification
     {
         return (new MailMessage)
                     ->subject('Reset hasła')
+                    ->greeting('Cześć!')
                     ->line('Nie pamiętasz hasła?')
                     ->action('Kliknij, aby zrestartować', $this->url)
-                    ->line('Dziękujemy za korzystanie z naszego serwisu!');
+                    ->line('Dziękujemy za korzystanie z naszego serwisu!')
+                    ->salutation('Do zobaczenia');
     }
 
     /**

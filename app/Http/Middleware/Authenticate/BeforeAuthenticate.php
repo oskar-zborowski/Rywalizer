@@ -14,7 +14,7 @@ class BeforeAuthenticate
 
         if ($request->cookie('JWT')) {
             return response([
-                'code' => 'A1',
+                'code' => 'A8',
                 'message' => 'You are already logged in!'
             ], Response::HTTP_NOT_ACCEPTABLE);
         }
@@ -29,7 +29,7 @@ class BeforeAuthenticate
         if ($request->url() != $forgotPasswordURL) {
 
             $request->validate([
-                'password' => 'required|string|max:20'
+                'password' => 'required|string|between:8,20'
             ]);
 
             if ($request->url() == $resetPasswordURL) {
