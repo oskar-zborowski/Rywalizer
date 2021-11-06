@@ -27,8 +27,8 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $guarded = [
         'role_type_id',
         'email_verified_at',
-        'account_blocked_at',
         'account_deleted_at',
+        'account_blocked_at',
         'created_at',
         'updated_at'
     ];
@@ -38,16 +38,16 @@ class User extends Authenticatable implements MustVerifyEmail
         'gender_type_id',
         'role_type_id',
         'email_verified_at',
-        'account_blocked_at',
         'account_deleted_at',
+        'account_blocked_at',
         'created_at',
         'updated_at'
     ];
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'account_blocked_at' => 'datetime',
         'account_deleted_at' => 'datetime',
+        'account_blocked_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
@@ -64,7 +64,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'first_name' => 30,
         'last_name' => 30,
         'email' => 254,
-        'avatar' => 21,
+        'avatar' => 24,
         'birth_date' => 10
     ];
 

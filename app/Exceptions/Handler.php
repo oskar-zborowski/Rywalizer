@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+// use App\Http\Libraries\Http\JsonResponse;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 // use Symfony\Component\HttpFoundation\Response;
 use Throwable;
@@ -41,9 +42,10 @@ class Handler extends ExceptionHandler
     }
 
     // public function render($request, Throwable $exception) {
-    //     return response([
-    //         'message' => 'An unexpected error has occurred!',
-    //         'details' => $exception
-    //     ], Response::HTTP_INTERNAL_SERVER_ERROR);
+    //     JsonResponse::sendError(
+    //         'EXC',
+    //         Response::HTTP_INTERNAL_SERVER_ERROR,
+    //         [$exception]
+    //     );
     // }
 }

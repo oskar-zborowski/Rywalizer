@@ -18,7 +18,7 @@ class RegisterRequest extends FormRequest
             'last_name' => 'required|string|alpha|max:30',
             'email' => 'unique:users',
             'gender_type_id' => 'required|integer|between:1,2',
-            'birth_date' => 'required|string|alpha_dash|size:10' // TODO Tutaj potrzebne by było wyrażenie regularne YYYY-MM-DD
+            'birth_date' => 'required|string|date|size:10'
         ];
 
         // 'avatar' => 'required|image|size:2048'

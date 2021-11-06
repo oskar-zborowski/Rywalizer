@@ -37,7 +37,6 @@ trait Encryptable
         $attributes = parent::getArrayableAttributes();
 
         foreach ($attributes as $key => $attribute) {
-            
             if ($this->encryptable($key)) {
                 $encrypter = new Encrypter;
                 $attributes[$key] = $encrypter->decrypt($attribute);

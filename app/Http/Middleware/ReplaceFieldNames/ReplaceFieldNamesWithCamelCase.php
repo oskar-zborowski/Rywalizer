@@ -10,18 +10,18 @@ class ReplaceFieldNamesWithCamelCase
 {
     public function handle(Request $request, Closure $next) {
 
-        $response = $next($request);
+        // $response = $next($request);
 
-        $contentArray = json_decode($response->getContent(), true);
+        // $contentArray = json_decode($response->getContent(), true);
 
-        $fieldNames = [];
+        // $fieldNames = [];
 
-        foreach ($contentArray as $key => $value) {
-            $fieldNames[Str::camel($key)] = $value;
-        }
+        // foreach ($contentArray as $key => $value) {
+        //     $fieldNames[Str::camel($key)] = $value;
+        // }
 
-        $response->setContent(json_encode($fieldNames));
+        // $response->setContent(json_encode($fieldNames));
 
-        return $response;
+        // return $response;
     }
 }

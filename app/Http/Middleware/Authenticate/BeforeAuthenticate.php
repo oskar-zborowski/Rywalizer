@@ -3,6 +3,8 @@
 namespace App\Http\Middleware\Authenticate;
 
 use App\Http\Libraries\Encrypter\Encrypter;
+use App\Http\Libraries\Http\JsonResponse;
+use App\Http\Responses\AuthResponse;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password as RulesPassword;
@@ -13,10 +15,10 @@ class BeforeAuthenticate
     public function handle(Request $request, Closure $next) {
 
         if ($request->cookie('JWT')) {
-            return response([
-                'code' => 'A8',
-                'message' => 'You are already logged in!'
-            ], Response::HTTP_NOT_ACCEPTABLE);
+            JsonResponse::sendError(
+                AuthResponse::ALREADY_LOGGED_IN,
+                Response::HTTP_FORBIDDEN
+            );
         }
 
         $request->validate([

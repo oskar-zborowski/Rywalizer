@@ -2,9 +2,10 @@
 
 namespace App\Http\Middleware\Authenticate;
 
+use App\Http\Libraries\Http\JsonResponse;
+use App\Http\Responses\AuthResponse;
 use Closure;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
-use Illuminate\Support\Facades\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 
 class Authenticate extends Middleware
@@ -21,10 +22,10 @@ class Authenticate extends Middleware
         if ($jwt = $request->cookie('JWT')) {
             $request->headers->set('Authorization', 'Bearer ' . $jwt);
         } else {
-            return response([
-                'code' => 'A1',
-                'message' => 'Unauthorized!'
-            ], Response::HTTP_UNAUTHORIZED);
+            JsonResponse::sendError(
+                AuthResponse::UNAUTHORIZED,
+                Response::HTTP_UNAUTHORIZED
+            );
         }
         
         $this->authenticate($request, $guards);
@@ -33,12 +34,12 @@ class Authenticate extends Middleware
 
         if ($accountBlockedAt) {
             $request->user()->currentAccessToken()->delete();
-            $cookie = Cookie::forget('JWT');
-
-            return response([
-                'code' => 'A7',
-                'message' => 'The account has been blocked!'
-            ], Response::HTTP_UNAUTHORIZED)->withCookie($cookie);
+            
+            JsonResponse::deleteCookie();
+            JsonResponse::sendError(
+                AuthResponse::ACOUNT_BLOCKED,
+                Response::HTTP_UNAUTHORIZED
+            );
         }
 
         return $next($request);

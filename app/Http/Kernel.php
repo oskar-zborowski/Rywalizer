@@ -44,7 +44,7 @@ class Kernel extends HttpKernel
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\ReplaceFieldNames\ReplaceFieldNamesWithSnakeCase::class,
-            \App\Http\Middleware\ReplaceFieldNames\ReplaceFieldNamesWithCamelCase::class
+            // \App\Http\Middleware\ReplaceFieldNames\ReplaceFieldNamesWithCamelCase::class
         ],
     ];
 

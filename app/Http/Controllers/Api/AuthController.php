@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Libraries\Encrypter\Encrypter;
+use App\Http\Libraries\Http\JsonResponse;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Responses\AuthResponse;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Hash;
@@ -22,48 +23,44 @@ class AuthController extends Controller
     public function login(Request $request) {
 
         if (!Auth::attempt($request->only('email', 'password'))) {
-            return response([
-                'code' => 'A2',
-                'message' => 'Invalid credentials!'
-            ], Response::HTTP_UNAUTHORIZED);
+            JsonResponse::sendError(
+                AuthResponse::INVALID_CREDENTIALS,
+                Response::HTTP_UNAUTHORIZED
+            );
         }
     
         /** @var User $user */
         $user = Auth::user();
 
         $emailVerifiedAt = $user->email_verified_at;
-        $accountBlockedAt = $user->account_blocked_at;
         $accountDeletedAt = $user->account_deleted_at;
+        $accountBlockedAt = $user->account_blocked_at;
 
         if ($accountBlockedAt) {
-            return response([
-                'code' => 'A7',
-                'message' => 'The account has been blocked!'
-            ], Response::HTTP_UNAUTHORIZED);
+            JsonResponse::sendError(
+                AuthResponse::ACOUNT_BLOCKED,
+                Response::HTTP_UNAUTHORIZED
+            );
         }
 
         if ($accountDeletedAt) {
-            return response([
-                'code' => 'A6',
-                'message' => 'The account has been submitted for deletion!'
-            ], Response::HTTP_UNAUTHORIZED);
+            JsonResponse::sendError(
+                AuthResponse::ACOUNT_DELETED,
+                Response::HTTP_UNAUTHORIZED
+            );
         }
 
         $jwt = $user->createToken('JWT')->plainTextToken;
-
-        $cookie = cookie('JWT', $jwt, env('COOKIE_LIFETIME'));
+        JsonResponse::setCookie($jwt);
 
         if (!$emailVerifiedAt) {
-            return response([
-                'code' => 'A3',
-                'message' => 'Unverified email!'
-            ], Response::HTTP_NOT_ACCEPTABLE)->withCookie($cookie);
+            JsonResponse::sendError(
+                AuthResponse::UNVERIFIED_EMAIL,
+                Response::HTTP_FORBIDDEN
+            );
         }
 
-        return response([
-            'code' => 'A4',
-            'message' => 'Logged in successfully'
-        ], Response::HTTP_OK)->withCookie($cookie);
+        JsonResponse::sendSuccess([$user]);
     }
 
     public function register(RegisterRequest $request, Encrypter $encrypter) {
@@ -85,15 +82,15 @@ class AuthController extends Controller
         $user = Auth::user();
 
         $jwt = $user->createToken('JWT')->plainTextToken;
+        JsonResponse::setCookie($jwt);
 
-        $cookie = cookie('JWT', $jwt, env('COOKIE_LIFETIME'));
+        $this->sendVerificationEmail($request, true);
 
-        $this->sendVerificationEmail($request);
-
-        return response([
-            'code' => 'A3',
-            'message' => 'Registration successful'
-        ], Response::HTTP_OK)->withCookie($cookie);
+        JsonResponse::sendError(
+            AuthResponse::UNVERIFIED_EMAIL,
+            Response::HTTP_FORBIDDEN,
+            [$user]
+        );
     }
 
     public function forgotPassword(Request $request) {
@@ -101,10 +98,7 @@ class AuthController extends Controller
         $status = Password::sendResetLink($request->only('email'));
 
         if ($status == Password::RESET_LINK_SENT) {
-            return response([
-                'code' => 'A12',
-                'message' => __($status) // We have emailed your password reset link!
-            ], Response::HTTP_OK);
+            JsonResponse::sendSuccess();
         }
 
         throw ValidationException::withMessages([
@@ -113,9 +107,9 @@ class AuthController extends Controller
     }
 
     public function resetPassword(Request $request) {
-        
+
         $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
+            $request->only('password', 'password_confirmation', 'token'),
             function ($user) use ($request) {
                 $user->forceFill([
                     'password' => Hash::make($request->password)
@@ -128,66 +122,55 @@ class AuthController extends Controller
         );
 
         if ($status == Password::PASSWORD_RESET) {
-            return response([
-                'code' => 'A13',
-                'message' => __($status) // Your password has been reset!
-            ], Response::HTTP_OK);
+            JsonResponse::sendSuccess();
         }
 
-        return response([
-            'code' => 'A14',
-            'message' => __($status) // We can't find a user with that email address. | This password reset token is invalid.
-        ], Response::HTTP_BAD_REQUEST);
+        JsonResponse::sendError(
+            AuthResponse::INVALID_PASSWORD_RESET_TOKEN,
+            Response::HTTP_BAD_REQUEST
+        );
     }
 
-    public function sendVerificationEmail(Request $request) {
+    public function sendVerificationEmail(Request $request, bool $afterRegistartion = false) {
 
-        if ($request->user()->hasVerifiedEmail()) {
-            return response([
-                'code' => 'A9',
-                'message' => 'Email already verified!'
-            ], Response::HTTP_NOT_ACCEPTABLE);
+        if (!$afterRegistartion) {
+            if ($request->user()->hasVerifiedEmail()) {
+                JsonResponse::sendError(
+                    AuthResponse::EMAIL_ALREADY_VERIFIED,
+                    Response::HTTP_NOT_ACCEPTABLE
+                );
+            }
+
+            $request->user()->sendEmailVerificationNotification();
+    
+            JsonResponse::sendSuccess();
+        } else {
+            $request->user()->sendEmailVerificationNotification();
         }
-
-        $request->user()->sendEmailVerificationNotification();
-
-        return response([
-            'code' => 'A10',
-            'message' => 'Verification link sent'
-        ], Response::HTTP_OK);
     }
 
-    public function verify(EmailVerificationRequest $request)
-    {
+    public function verify(EmailVerificationRequest $request) {
         if ($request->user()->hasVerifiedEmail()) {
-            return response([
-                'code' => 'A9',
-                'message' => 'Email already verified!'
-            ], Response::HTTP_NOT_ACCEPTABLE);
+            JsonResponse::sendError(
+                AuthResponse::EMAIL_ALREADY_VERIFIED,
+                Response::HTTP_NOT_ACCEPTABLE
+            );
         }
 
         if ($request->user()->markEmailAsVerified()) {
             event(new Verified($request->user()));
         }
 
-        return response([
-            'code' => 'A11',
-            'message' => 'Email has been verified'
-        ], Response::HTTP_OK);
+        JsonResponse::sendSuccess();
     }
 
     public function logout(Request $request) {
-
         $request->user()->currentAccessToken()->delete();
-        $cookie = Cookie::forget('JWT');
-
-        return response([
-            'code' => 'A5',
-            'message' => 'Logged out successfully'
-        ], Response::HTTP_OK)->withCookie($cookie);
+        JsonResponse::deleteCookie();
+        JsonResponse::sendSuccess();
     }
 
-    public function refreshToken(Request $request) {
+    public function refreshToken() {
 
         // TODO Całe do poprawy
         
@@ -206,6 +189,6 @@ class AuthController extends Controller
     }
 
     public function user(Request $request) {
-        return response($request->user(), Response::HTTP_OK);
+        JsonResponse::sendSuccess([$request->user()]);
     }
 }
