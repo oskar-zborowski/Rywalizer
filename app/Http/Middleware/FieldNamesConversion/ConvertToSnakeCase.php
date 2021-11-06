@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Middleware\ReplaceFieldNames;
+namespace App\Http\Middleware\FieldNamesConversion;
 
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-class ReplaceFieldNamesWithSnakeCase
+class ConvertToSnakeCase
 {
     public function handle(Request $request, Closure $next) {
 

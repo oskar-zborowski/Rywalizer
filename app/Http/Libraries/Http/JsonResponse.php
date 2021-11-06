@@ -45,14 +45,21 @@ class JsonResponse
 
     private static function convertToCamelCase(array $data = null) {
 
-        $response = null;
+        $fieldNames = null;
 
         if ($data) {
-            foreach ($data as $key => $value) {
-                $response[Str::camel($key)] = $value;
+            $data = json_encode($data);
+            $data = json_decode($data, true);
+
+            foreach ($data as $d) {
+                if (is_array($d)) {
+                    foreach ($d as $k => $v) {
+                        $fieldNames[Str::camel($k)] = $v;
+                    }
+                }
             }
         }
 
-        return $response;
+        return $fieldNames;
     }
 }
