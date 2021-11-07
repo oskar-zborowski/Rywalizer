@@ -12,6 +12,9 @@ class JsonResponse
         header('Content-Type: application/json');
         http_response_code(Response::HTTP_OK);
 
+        // $data = null;
+        // $data['a_b']['c_d']['e_f']['g_h']['i_j'] = 'jakis_tekst';
+
         echo json_encode([
             'data' => JsonResponse::convertToCamelCase($data),
             'metadata' => JsonResponse::convertToCamelCase($metadata)
@@ -43,7 +46,7 @@ class JsonResponse
         setcookie($name, null, -1);
     }
 
-    private static function convertToCamelCase(array $data = null) {
+    public static function convertToCamelCase(array $data = null, int $from = 0, int $to = null, int $current = 0) {
 
         $fieldNames = null;
 
@@ -51,11 +54,25 @@ class JsonResponse
             $data = json_encode($data);
             $data = json_decode($data, true);
 
-            foreach ($data as $d) {
-                if (is_array($d)) {
-                    foreach ($d as $k => $v) {
-                        $fieldNames[Str::camel($k)] = $v;
+            foreach ($data as $key => $value) {
+                if (is_array($value)) {
+                    if (isset($to)) {
+                        if ($current >= $from && $current <= $to) {
+                            $fieldNames[Str::camel($key)] = JsonResponse::convertToCamelCase($value, $from, $to, ++$current);
+                        } else if ($current < $from) {
+                            // TODO Tutaj dołożyć niezbędną logikę
+                            $fieldNames[Str::camel($key)] = JsonResponse::convertToCamelCase($value, $from, $to, ++$current);
+                        }
+                    } else {
+                        if ($current < $from) {
+                            // TODO Tutaj dołożyć niezbędną logikę
+                            $fieldNames[Str::camel($key)] = JsonResponse::convertToCamelCase($value, $from, $to, ++$current);
+                        } else {
+                            $fieldNames[Str::camel($key)] = JsonResponse::convertToCamelCase($value, $from, $to, ++$current);
+                        }
                     }
+                } else {
+                    $fieldNames[Str::camel($key)] = $value;
                 }
             }
         }

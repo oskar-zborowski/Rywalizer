@@ -38,10 +38,13 @@ class ConvertToCamelCase
                 [$fieldNames]
             );
         } else {
+            $exception = json_encode($exception);
+            $exception = json_decode($exception, true);
+
             JsonResponse::sendError(
                 DefaultResponse::INTERNAL_SERVER_ERROR,
                 Response::HTTP_INTERNAL_SERVER_ERROR,
-                env('APP_DEBUG') ? [$exception] : null
+                env('APP_DEBUG') ? [JsonResponse::convertToCamelCase($exception)] : null
             );
         }
     }
