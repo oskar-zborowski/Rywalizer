@@ -25,6 +25,7 @@ class BeforeAuthenticate
             'email' => 'required|string|email|max:254'
         ]);
 
+        $loginURL = env('APP_URL') . '/api/login';
         $forgotPasswordURL = env('APP_URL') . '/api/forgot-password';
         $resetPasswordURL = env('APP_URL') . '/api/reset-password';
 
@@ -34,11 +35,17 @@ class BeforeAuthenticate
                 'password' => 'required|string|between:8,20'
             ]);
 
-            if ($request->url() == $resetPasswordURL) {
+            if ($request->url() != $loginURL) {
+                
                 $request->validate([
-                    'password' => ['confirmed', RulesPassword::defaults()],
-                    'token' => 'required|string|alpha_num|size:64'
+                    'password' => ['confirmed', RulesPassword::defaults()]
                 ]);
+
+                if ($request->url() == $resetPasswordURL) {
+                    $request->validate([
+                        'token' => 'required|string|alpha_num|size:64'
+                    ]);
+                }
             }
         }
 
