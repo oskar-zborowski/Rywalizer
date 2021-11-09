@@ -17,7 +17,7 @@ class BeforeAuthenticate
         if ($request->cookie('JWT')) {
             JsonResponse::sendError(
                 AuthResponse::ALREADY_LOGGED_IN,
-                Response::HTTP_FORBIDDEN
+                Response::HTTP_NOT_ACCEPTABLE
             );
         }
 

@@ -2,21 +2,19 @@
 
 namespace App\Http\Middleware\FieldNamesConversion;
 
+use App\Http\Libraries\Http\JsonRequest;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class ConvertToSnakeCase
 {
     public function handle(Request $request, Closure $next) {
 
-        $fieldNames = [];
+        $fieldNames = JsonRequest::convertToSnakeCase($request->all());
 
-        foreach ($request->all() as $key => $value) {
-            $fieldNames[Str::snake($key)] = $value;
+        if ($fieldNames) {
+            $request->replace($fieldNames);
         }
-
-        $request->replace($fieldNames);
 
         return $next($request);
     }

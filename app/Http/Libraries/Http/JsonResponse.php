@@ -48,8 +48,11 @@ class JsonResponse
         $fieldNames = null;
 
         if ($data && (isset($to) && $from <= $to || !isset($to))) {
-            $data = json_encode($data);
-            $data = json_decode($data, true);
+
+            if ($current == 0) {
+                $data = json_encode($data);
+                $data = json_decode($data, true);
+            }
 
             foreach ($data as $key => $value) {
                 if (is_array($value)) {
@@ -57,17 +60,17 @@ class JsonResponse
                         if ($current >= $from && $current <= $to) {
                             $fieldNames[Str::camel($key)] = JsonResponse::convertToCamelCase($value, $from, $to, $current+1);
                         } else if ($current < $from) {
-                            $temp = JsonResponse::convertToCamelCase($value, $from, $to, $current+1);
+                            $deep = JsonResponse::convertToCamelCase($value, $from, $to, $current+1);
 
-                            foreach ($temp as $k => $v) {
+                            foreach ($deep as $k => $v) {
                                 $fieldNames[Str::camel($k)] = $v;
                             }
                         }
                     } else {
                         if ($current < $from) {
-                            $temp = JsonResponse::convertToCamelCase($value, $from, $to, $current+1);
+                            $deep = JsonResponse::convertToCamelCase($value, $from, $to, $current+1);
 
-                            foreach ($temp as $k => $v) {
+                            foreach ($deep as $k => $v) {
                                 $fieldNames[Str::camel($k)] = $v;
                             }
                         } else {
