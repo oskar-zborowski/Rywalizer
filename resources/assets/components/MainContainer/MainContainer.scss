@@ -1,0 +1,10 @@
+@import '@/layout/layout.scss';
+
+.mainContainer {
+    @extend %left-column;
+
+    border-radius: 15px;
+    height: 100%;
+    background-color: #18181c;
+    border: 1px solid #29292e;
+}

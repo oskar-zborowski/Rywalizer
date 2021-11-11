@@ -1,9 +1,20 @@
-import React from 'react';
-const App = () => {
+import Content from '@/layout/Content/Content';
+import Footer from '@/layout/Footer/Footer';
+import Topbar from '@/layout/Topbar/Topbar';
+import MainContainer from '@/components/MainContainer/MainContainer';
+import React, { Fragment } from 'react';
+import MapViewer from '@/components/MapViewer/MapViewer';
+
+const App: React.FC = () => {
     return (
-        <div>
-            WKONCU DZIALA
-        </div>
+        <Fragment>
+            <Topbar />
+            <Content>
+                <MainContainer />
+                <MapViewer/>
+            </Content>
+            <Footer />
+        </Fragment>
     );
 };
 

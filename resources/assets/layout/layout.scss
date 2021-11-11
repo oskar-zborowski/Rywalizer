@@ -1,0 +1,7 @@
+$left-column-width: 60%;
+$topbar-height: 60px;
+
+%left-column {
+    flex: $left-column-width;
+    max-width: 1100px;
+}

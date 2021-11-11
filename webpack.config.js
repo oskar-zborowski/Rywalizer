@@ -11,8 +11,9 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, 'public/assets'),
-        filename: '[name].[hash].js',
-        publicPath: 'assets/'
+        filename: '[name].js',
+        //filename: '[name].[hash].js', // Produkcja
+        publicPath: '/assets/'
     },
     optimization: {
         removeAvailableModules: false,
@@ -76,14 +77,15 @@ module.exports = {
         ],
     },
     plugins: [
+        new CleanWebpackPlugin(),
         new MiniCssExtractPlugin({
-            filename: 'app.[hash].css',
+            filename: 'app.css',
+            //filename: 'app.[hash].css' //Produkcja
         }),
         new WebpackManifestPlugin({
             basePath: '/assets/',
             fileName: path.resolve(__dirname, 'public/mix-manifest.json')
-        }),
-        new CleanWebpackPlugin()
+        })
     ],
     resolve: {
         alias: {

@@ -1,0 +1,8 @@
+@import '@/layout/layout.scss';
+
+.mapViewer {
+    border-radius: 15px;
+    overflow: hidden;
+    flex: 100% - $left-column-width;
+    border: 1px solid #29292e;
+}

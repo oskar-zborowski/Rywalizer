@@ -1,0 +1,17 @@
+$breakpoints: (
+    "sm" : (min-width: 576px),      // Small devices (landscape phones, 576px and up)
+    "md" : (min-width: 767px),      // Medium devices (tablets, 768px and up)
+    "lg" : (min-width: 992px),      // Large devices (desktops, 992px and up)
+    "xl" : (min-width: 1200px),     // Extra large devices (large desktops, 1200px and up)
+    "xxl" : (min-width: 1600px)     // Extra extra large devices (1600px and up)
+);
+
+@mixin respond-to($breakpoint) {
+    @if map-has-key($breakpoints, $breakpoint) {
+        @media #{inspect(map-get($breakpoints, $breakpoint))} {
+            @content;
+        }
+    } @else {
+        @error "No value could be retrieved from '#{$breakpoint}'.";
+    }
+}

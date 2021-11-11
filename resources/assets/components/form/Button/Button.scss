@@ -1,0 +1,24 @@
+@import '@/main.scss';
+
+%button {
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    padding: 0 10px;
+    cursor: pointer;
+}
+
+.orangeButton {
+    @extend %button;
+    color: $color-backgroud;
+    background-color: $color-primary;
+    font-weight: bold;
+}
+
+.grayButton {
+    @extend %button;
+    color: #fff;
+    background-color: #29292e;
+}

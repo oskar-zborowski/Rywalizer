@@ -18,6 +18,9 @@
         "jsx": "react",
         "sourceMap": true,
         "experimentalDecorators": true,
-        "baseUrl": "./resources/assets",
+        "baseUrl": ".",
+        "paths": {
+            "@*": ["resources/assets/*"]
+        }
     }
 }
