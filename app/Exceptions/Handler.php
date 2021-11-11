@@ -7,6 +7,7 @@ use App\Http\Responses\DefaultResponse;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -43,13 +44,27 @@ class Handler extends ExceptionHandler
         });
     }
 
-    public function render($request, Throwable $throwable) {
+    /**
+     * Metoda przechwytująca wszystkie napotkane wyjątki i odpowiednio je parsująca przed wysłaniem odpowiedzi zwrotnej.
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @param Throwable $throwable
+     * 
+     * @return void
+     */
+    public function render($request, Throwable $throwable): void {
 
         if ($throwable instanceof ValidationException) {
             JsonResponse::sendError(
                 DefaultResponse::FAILED_VALIDATION,
                 Response::HTTP_BAD_REQUEST,
                 JsonResponse::convertToCamelCase($throwable->errors())
+            );
+        } else if ($throwable instanceof HttpException) {
+            JsonResponse::sendError(
+                DefaultResponse::FAILED_VALIDATION,
+                Response::HTTP_BAD_REQUEST,
+                JsonResponse::convertToCamelCase([$throwable->getMessage()])
             );
         } else {
             $throwable = json_encode($throwable);

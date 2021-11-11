@@ -15,6 +15,7 @@ class CreateRoleTypesTable extends Migration
         Schema::create('role_types', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->string('name', 20)->unique();
+            $table->tinyInteger('access_level')->unsigned();
         });
     }
 

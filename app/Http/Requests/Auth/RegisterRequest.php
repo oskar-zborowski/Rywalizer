@@ -4,6 +4,9 @@ namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Klasa z zasadami walidacji podczas procesu rejestracji
+ */
 class RegisterRequest extends FormRequest
 {
     public function authorize()

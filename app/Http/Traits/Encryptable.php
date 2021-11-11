@@ -4,12 +4,29 @@ namespace App\Http\Traits;
 
 use App\Http\Libraries\Encrypter\Encrypter;
 
+/**
+ * Trait przeprowadzający proces szyfrowania i deszyfrowania pól w bazie danych
+ */
 trait Encryptable
 {
-    private function encryptable($key) {
+    /**
+     * Sprawdzenie czy dane pole powinno być szyfrowane
+     * 
+     * @param string $key
+     * 
+     * @return bool
+     */
+    private function encryptable($key): bool {
         return in_array($key, $this->encryptable);
     }
 
+    /**
+     * Szyfrowanie pola, jeżeli jest szyfrowalne
+     * 
+     * @param string $key
+     * 
+     * @return string
+     */
     public function getAttribute($key) {
         
         $value = parent::getAttribute($key);
@@ -22,6 +39,14 @@ trait Encryptable
         return $value;
     }
 
+    /**
+     * Deszyfrowanie pola, jeżeli jest deszyfrowalne
+     * 
+     * @param string $key
+     * @param string $value
+     * 
+     * @return string
+     */
     public function setAttribute($key, $value) {
 
         if ($this->encryptable($key)) {
@@ -32,7 +57,12 @@ trait Encryptable
         return parent::setAttribute($key, $value);
     }
 
-    public function getArrayableAttributes() {
+    /**
+     * Deszyfrowanie całej grupy pól
+     * 
+     * @return array
+     */
+    public function getArrayableAttributes(): array {
 
         $attributes = parent::getArrayableAttributes();
 

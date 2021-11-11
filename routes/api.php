@@ -14,31 +14,33 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-/*
-|--------------------------------------------------------------------------
-| Enpointy dostępne bez autoryzacji
-|--------------------------------------------------------------------------
-*/
-
-Route::middleware('before.auth')->group(function () {
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/register', [AuthController::class, 'register']);
-
-    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
-});
-
-Route::post('/refresh-token', [AuthController::class, 'refreshToken']);
-
-/*
-|--------------------------------------------------------------------------
-| Enpointy dostępne po autoryzacji, ale bez zweryfikowanego maila
-|--------------------------------------------------------------------------
-*/
-
 Route::middleware('auth:sanctum')->group(function () {
+
+    /*
+    |----------------------------------------------------------------------
+    | Enpointy dostępne bez autoryzacji
+    |----------------------------------------------------------------------
+    */
+
+    Route::middleware('before.auth')->group(function () {
+
+        Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/register', [AuthController::class, 'register']);
+
+        Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+        Route::put('/reset-password', [AuthController::class, 'resetPassword']);
+
+        Route::post('/refresh-token', [AuthController::class, 'refreshToken']);
+    });
+
+    /*
+    |----------------------------------------------------------------------
+    | Enpointy dostępne po autoryzacji, ale bez zweryfikowanego maila
+    |----------------------------------------------------------------------
+    */
+
     Route::post('/email/verification-notification', [AuthController::class, 'sendVerificationEmail']);
-    Route::post('/verify-email/{id}/{hash}', [AuthController::class, 'verify'])->name('verification.verify');
+    Route::put('/verify-email/{id}/{hash}', [AuthController::class, 'verify'])->name('verification.verify');
 
     Route::delete('/logout', [AuthController::class, 'logout']);
 });

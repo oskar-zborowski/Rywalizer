@@ -5,9 +5,20 @@ namespace App\Http\Libraries\Http;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Klasa umożliwiająca przeprowadzanie operacji na zwracanych odpowiedziach
+ */
 class JsonResponse
 {
-    public static function sendSuccess(array $data = null, array $metadata = null) {
+    /**
+     * Wysyłanie pomyślnej odpowiedzi
+     * 
+     * @param array $data tablica z informacjami kierowanymi do wysłania odpowiedzi
+     * @param array $metadata tablica z dodatkowymi informacjami kierowanymi do wysłania odpowiedzi
+     * 
+     * @return void
+     */
+    public static function sendSuccess(array $data = null, array $metadata = null): void {
 
         header('Content-Type: application/json');
         http_response_code(Response::HTTP_OK);
@@ -20,7 +31,17 @@ class JsonResponse
         die;
     }
 
-    public static function sendError(string $errorCode, int $status, array $data = null, array $metadata = null) {
+    /**
+     * Wysyłanie odpowiedzi z błędem
+     * 
+     * @param App\Http\Responses\AuthResponse $errorCode kod błędu
+     * @param Symfony\Component\HttpFoundation\Response $status kod odpowiedzi HTTP
+     * @param array $data tablica z informacjami kierowanymi do wysłania odpowiedzi
+     * @param array $metadata tablica z dodatkowymi informacjami kierowanymi do wysłania odpowiedzi
+     * 
+     * @return void
+     */
+    public static function sendError(string $errorCode, int $status, array $data = null, array $metadata = null): void {
 
         header('Content-Type: application/json');
         http_response_code($status);
@@ -34,15 +55,47 @@ class JsonResponse
         die;
     }
 
-    public static function setCookie(string $value, string $name = 'JWT') {
-        $expires = time()+env('COOKIE_LIFETIME')*60;
+    /**
+     * Ustawianie ciasteczka
+     * 
+     * @param string $value zawartość ciasteczka
+     * @param string $name nazwa ciasteczka
+     * 
+     * @return void
+     */
+    public static function setCookie(string $value, string $name = 'JWT'): void {
+
+        if ($name == 'JWT') {
+            $expires = time()+env('JWT_COOKIE_LIFETIME')*60;
+        } else if ($name == 'REFRESH_TOKEN') {
+            $expires = time()+env('REFRESH_TOKEN_COOKIE_LIFETIME')*60;
+        } else {
+            $expires = time()+env('DEFAULT_COOKIE_LIFETIME')*60;
+        }
+
         setcookie($name, $value, $expires); // TODO Zastanowić się nad $secure (raczej powinno być na true) oraz $httponly
     }
 
-    public static function deleteCookie(string $name = 'JWT') {
+    /**
+     * Usuwanie ciasteczka
+     * 
+     * @param string $name nazwa ciasteczka
+     * 
+     * @return void
+     */
+    public static function deleteCookie(string $name = 'JWT'): void {
         setcookie($name, null, -1); // TODO Zastanowić się nad $secure (raczej powinno być na true) oraz $httponly
     }
 
+    /**
+     * Konwersja nazw pól na formę camelCase
+     * 
+     * @param array $data tablica z informacjami kierowanymi do wysłania odpowiedzi
+     * @param int $from rząd wielkości od którego pola mają być przetwarzane dane
+     * @param int $to rząd wielkości do którego pola mają być przetwarzane dane
+     * 
+     * @return array
+     */
     public static function convertToCamelCase(array $data = null, int $from = 0, int $to = null, int $current = 0) {
 
         $fieldNames = null;

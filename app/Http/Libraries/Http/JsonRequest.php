@@ -4,8 +4,20 @@ namespace App\Http\Libraries\Http;
 
 use Illuminate\Support\Str;
 
+/**
+ * Klasa umożliwiająca przeprowadzanie operacji na przychodzących żądaniach
+ */
 class JsonRequest
 {
+    /**
+     * Konwersja nazw pól na formę snake_case
+     * 
+     * @param array $data tablica z przychodzącymi informacjami z żądania
+     * @param int $from rząd wielkości od którego pola mają być przetwarzane dane
+     * @param int $to rząd wielkości do którego pola mają być przetwarzane dane
+     * 
+     * @return array
+     */
     public static function convertToSnakeCase(array $data = null, int $from = 0, int $to = null, int $current = 0) {
 
         $fieldNames = null;

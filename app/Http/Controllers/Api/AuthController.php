@@ -17,10 +17,22 @@ use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\DB;
 
+/**
+ * Klasa odpowiedzialna za wszelkie kwestie związane z uwierzytelnianiem i jego pochodnymi
+ */
 class AuthController extends Controller
 {
-    public function login(Request $request) {
+    /**
+     * Logowanie użytkownika
+     * 
+     * @param Illuminate\Http\Request $request
+     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
+     * 
+     * @return void
+     */
+    public function login(Request $request, Encrypter $encrypter): void {
 
         if (!Auth::attempt($request->only('email', 'password'))) {
             JsonResponse::sendError(
@@ -50,39 +62,70 @@ class AuthController extends Controller
             );
         }
 
-        $jwt = $user->createToken('JWT')->plainTextToken;
-        JsonResponse::setCookie($jwt);
+        $plainRefreshToken = $encrypter->generatePlainToken(64);
+        $refreshToken = $encrypter->encryptToken($plainRefreshToken);
+
+        $jwt = $user->createToken('JWT');
+        $plainJWT = $jwt->plainTextToken;
+        $jwtId = $jwt->accessToken->getKey();
+
+        DB::table('personal_access_tokens')
+            ->where('id', $jwtId)
+            ->update(['refresh_token' => $refreshToken]);
+
+        JsonResponse::setCookie($plainJWT, 'JWT');
+        JsonResponse::setCookie($plainRefreshToken, 'REFRESH_TOKEN');
 
         if (!$emailVerifiedAt) {
             JsonResponse::sendError(
                 AuthResponse::UNVERIFIED_EMAIL,
-                Response::HTTP_FORBIDDEN
+                Response::HTTP_FORBIDDEN,
+                [$user]
             );
         }
 
         JsonResponse::sendSuccess([$user]);
     }
 
-    public function register(RegisterRequest $request, Encrypter $encrypter) {
+    /**
+     * Rejestracja użytkownika
+     * 
+     * @param App\Http\Requests\Auth\RegisterRequest $request
+     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
+     * 
+     * @return void
+     */
+    public function register(RegisterRequest $request, Encrypter $encrypter): void {
 
-        $encodedEmail = $request->input('email');
+        $encryptedEmail = $request->input('email');
         $plainPassword = $request->input('password');
 
-        $request->merge(['email' => $encrypter->decrypt($request->input('email'))]);
-        $request->merge(['password' => $encrypter->hash($request->input('password'))]);
+        $request->merge(['email' => $encrypter->decrypt($encryptedEmail)]);
+        $request->merge(['password' => $encrypter->hash($plainPassword)]);
 
         User::create($request->only('first_name', 'last_name', 'email', 'password', 'gender_type_id', 'birth_date'));
 
         Auth::attempt([
-            'email' => $encodedEmail,
+            'email' => $encryptedEmail,
             'password' => $plainPassword
         ]);
 
         /** @var User $user */
         $user = Auth::user();
 
-        $jwt = $user->createToken('JWT')->plainTextToken;
-        JsonResponse::setCookie($jwt);
+        $plainRefreshToken = $encrypter->generatePlainToken(64);
+        $refreshToken = $encrypter->encryptToken($plainRefreshToken);
+
+        $jwt = $user->createToken('JWT');
+        $plainJWT = $jwt->plainTextToken;
+        $jwtId = $jwt->accessToken->getKey();
+
+        DB::table('personal_access_tokens')
+            ->where('id', $jwtId)
+            ->update(['refresh_token' => $refreshToken]);
+
+        JsonResponse::setCookie($plainJWT, 'JWT');
+        JsonResponse::setCookie($plainRefreshToken, 'REFRESH_TOKEN');
 
         $this->sendVerificationEmail($request, true);
 
@@ -93,7 +136,14 @@ class AuthController extends Controller
         );
     }
 
-    public function forgotPassword(Request $request) {
+    /**
+     * Wysyłka linku na maila do resetu hasła
+     * 
+     * @param Illuminate\Http\Request $request
+     * 
+     * @return void
+     */
+    public function forgotPassword(Request $request): void {
 
         $status = Password::sendResetLink($request->only('email'));
 
@@ -106,11 +156,19 @@ class AuthController extends Controller
         ]);
     }
 
-    public function resetPassword(Request $request) {
+    /**
+     * Reset hasła
+     * 
+     * @param Illuminate\Http\Request $request
+     * 
+     * @return void
+     */
+    public function resetPassword(Request $request): void {
 
         $status = Password::reset(
             $request->only('password', 'password_confirmation', 'token'),
             function ($user) use ($request) {
+
                 $user->forceFill([
                     'password' => Hash::make($request->password)
                 ])->save();
@@ -131,9 +189,18 @@ class AuthController extends Controller
         );
     }
 
-    public function sendVerificationEmail(Request $request, bool $afterRegistartion = false) {
+    /**
+     * Wysyłka linku aktywacyjnego na maila
+     * 
+     * @param Illuminate\Http\Request $request
+     * @param bool $afterRegistartion flaga z informacją czy wywołanie metody jest pochodną procesu rejestracji
+     * 
+     * @return void
+     */
+    public function sendVerificationEmail(Request $request, bool $afterRegistartion = false): void {
 
         if (!$afterRegistartion) {
+
             if ($request->user()->hasVerifiedEmail()) {
                 JsonResponse::sendError(
                     AuthResponse::EMAIL_ALREADY_VERIFIED,
@@ -144,12 +211,21 @@ class AuthController extends Controller
             $request->user()->sendEmailVerificationNotification();
     
             JsonResponse::sendSuccess();
+
         } else {
             $request->user()->sendEmailVerificationNotification();
         }
     }
 
-    public function verify(EmailVerificationRequest $request) {
+    /**
+     * Weryfikacja maila
+     * 
+     * @param Illuminate\Foundation\Auth\EmailVerificationRequest $request
+     * 
+     * @return void
+     */
+    public function verify(EmailVerificationRequest $request): void {
+
         if ($request->user()->hasVerifiedEmail()) {
             JsonResponse::sendError(
                 AuthResponse::EMAIL_ALREADY_VERIFIED,
@@ -164,31 +240,78 @@ class AuthController extends Controller
         JsonResponse::sendSuccess();
     }
 
-    public function logout(Request $request) {
+    /**
+     * Wylogowanie użytkownika
+     * 
+     * @param Illuminate\Http\Request $request
+     * 
+     * @return void
+     */
+    public function logout(Request $request): void {
+
         $request->user()->currentAccessToken()->delete();
-        JsonResponse::deleteCookie();
+
+        JsonResponse::deleteCookie('JWT');
+        JsonResponse::deleteCookie('REFRESH_TOKEN');
         JsonResponse::sendSuccess();
     }
 
-    public function refreshToken() {
+    /**
+     * Odświeżenie tokenu autoryzacyjnego
+     * 
+     * @param Illuminate\Http\Request $request
+     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
+     * 
+     * @return void
+     */
+    public function refreshToken(Request $request, Encrypter $encrypter): void {
 
-        // TODO Całe do poprawy
-        
-        // $request->user()->currentAccessToken()->delete();
+        $plainRefreshToken = $request->cookie('REFRESH_TOKEN');
+        $refreshToken = $encrypter->encryptToken($plainRefreshToken);
+        $personalAccessToken = DB::table('personal_access_tokens')->where('refresh_token', $refreshToken)->first();
 
-        // /** @var User $user */
-        // $user = Auth::user();
+        if (!$personalAccessToken) {
+            
+            JsonResponse::deleteCookie('REFRESH_TOKEN');
 
-        // $jwt = $user->createToken('JWT')->plainTextToken;
+            JsonResponse::sendError(
+                AuthResponse::INVALID_REFRESH_TOKEN,
+                Response::HTTP_BAD_REQUEST
+            );
+        }
 
-        // $cookie = cookie('JWT', $jwt, env('COOKIE_LIFETIME'));
+        $userId = $personalAccessToken->tokenable_id;
+        $personalAccessTokenId = $personalAccessToken->id;
 
-        // return response([
-        //     'message' => 'Refreshing token successful'
-        // ], Response::HTTP_OK)->withCookie($cookie);
+        DB::table('personal_access_tokens')->where('id', $personalAccessTokenId)->delete();
+
+        /** @var User $user */
+        $user = Auth::loginUsingId($userId);
+
+        $plainRefreshToken = $encrypter->generatePlainToken(64);
+        $refreshToken = $encrypter->encryptToken($plainRefreshToken);
+
+        $jwt = $user->createToken('JWT');
+        $plainJWT = $jwt->plainTextToken;
+        $jwtId = $jwt->accessToken->getKey();
+
+        DB::table('personal_access_tokens')
+            ->where('id', $jwtId)
+            ->update(['refresh_token' => $refreshToken]);
+
+        JsonResponse::setCookie($plainJWT, 'JWT');
+        JsonResponse::setCookie($plainRefreshToken, 'REFRESH_TOKEN');
+        JsonResponse::sendSuccess([$user]);
     }
 
-    public function user(Request $request) {
+    /**
+     * Pobranie informacji o użytkowniku
+     * 
+     * @param Illuminate\Http\Request $request
+     * 
+     * @return void
+     */
+    public function user(Request $request): void {
         JsonResponse::sendSuccess([$request->user()]);
     }
 }

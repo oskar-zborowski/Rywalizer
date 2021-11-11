@@ -2,6 +2,9 @@
 
 namespace App\Http\Responses;
 
+/**
+ * Kody domyślnych odpowiedzi
+ */
 class DefaultResponse
 {
     public const FAILED_VALIDATION = 'DEF1';
