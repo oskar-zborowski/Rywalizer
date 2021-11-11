@@ -72,16 +72,12 @@
         }
     },
     "plugins": [
-        "@typescript-eslint",
-        "jquery"
+        "@typescript-eslint"
     ],
     "extends": [
-        "plugin:@typescript-eslint/recommended",
-        "plugin:jquery/slim"
+        "plugin:@typescript-eslint/recommended"
     ],
     "ignorePatterns": [
-        "node_modules/**/*",
-        "electron/**/*",
-        "build/**/*"
+        "node_modules/**/*"
     ]
 }

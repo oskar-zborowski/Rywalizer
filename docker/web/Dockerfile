@@ -14,7 +14,7 @@ RUN docker-php-ext-install gd;
 # Copy project and config files
 COPY . /var/www/
 COPY docker/web/apache/000-default.conf /etc/apache2/sites-enabled/000-default.conf
-COPY docker/web/ssl/cert /etc/apache2/ssl/
+# COPY docker/web/ssl/cert /etc/apache2/ssl/
 COPY docker/web/php/php.ini /usr/local/etc/php/php.ini
 
 # Install Composer and dependencies
