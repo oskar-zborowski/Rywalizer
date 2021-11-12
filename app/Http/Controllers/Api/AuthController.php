@@ -266,12 +266,23 @@ class AuthController extends Controller
         $personalAccessToken = DB::table('personal_access_tokens')->where('refresh_token', $refreshToken)->first();
 
         if (!$personalAccessToken) {
-            
             JsonResponse::deleteCookie('REFRESH-TOKEN');
 
             JsonResponse::sendError(
                 AuthResponse::INVALID_REFRESH_TOKEN,
-                Response::HTTP_BAD_REQUEST
+                Response::HTTP_UNAUTHORIZED
+            );
+        }
+
+        $expirationDate = date('Y-m-d H:i:s', strtotime('+' . env('REFRESH_TOKEN_LIFETIME') . ' minutes', strtotime($personalAccessToken->created_at)));
+        $now = date('Y-m-d H:i:s');
+
+        if ($now > $expirationDate) {
+            JsonResponse::deleteCookie('REFRESH-TOKEN');
+
+            JsonResponse::sendError(
+                AuthResponse::REFRESH_TOKEN_HAS_EXPIRED,
+                Response::HTTP_UNAUTHORIZED
             );
         }
 

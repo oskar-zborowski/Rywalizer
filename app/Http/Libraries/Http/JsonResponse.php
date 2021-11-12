@@ -66,9 +66,9 @@ class JsonResponse
     public static function setCookie(string $value, string $name = 'JWT'): void {
 
         if ($name == 'JWT') {
-            $expires = time()+env('JWT_COOKIE_LIFETIME')*60;
+            $expires = time()+env('JWT_LIFETIME')*60;
         } else if ($name == 'REFRESH-TOKEN') {
-            $expires = time()+env('REFRESH_TOKEN_COOKIE_LIFETIME')*60;
+            $expires = time()+env('REFRESH_TOKEN_LIFETIME')*60;
         } else {
             $expires = time()+env('DEFAULT_COOKIE_LIFETIME')*60;
         }
