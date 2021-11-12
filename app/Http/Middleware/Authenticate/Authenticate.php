@@ -78,7 +78,7 @@ class Authenticate extends Middleware
                 $request->user()->tokens()->delete();
                 
                 JsonResponse::deleteCookie('JWT');
-                JsonResponse::deleteCookie('REFRESH_TOKEN');
+                JsonResponse::deleteCookie('REFRESH-TOKEN');
                 
                 JsonResponse::sendError(
                     AuthResponse::ACOUNT_BLOCKED,
@@ -100,7 +100,7 @@ class Authenticate extends Middleware
             }
         }
 
-        if ($plainRefreshToken = $request->cookie('REFRESH_TOKEN')) {
+        if ($plainRefreshToken = $request->cookie('REFRESH-TOKEN')) {
 
             if ($request->url() == $loginURL ||
                 $request->url() == $registerURL ||
@@ -117,7 +117,7 @@ class Authenticate extends Middleware
                         Response::HTTP_FORBIDDEN
                     );
                 } else {
-                    JsonResponse::deleteCookie('REFRESH_TOKEN');
+                    JsonResponse::deleteCookie('REFRESH-TOKEN');
                 }
             }
         } else if ($request->url() == $refreshTokenURL) {

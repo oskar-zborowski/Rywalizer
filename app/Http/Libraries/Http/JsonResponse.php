@@ -67,7 +67,7 @@ class JsonResponse
 
         if ($name == 'JWT') {
             $expires = time()+env('JWT_COOKIE_LIFETIME')*60;
-        } else if ($name == 'REFRESH_TOKEN') {
+        } else if ($name == 'REFRESH-TOKEN') {
             $expires = time()+env('REFRESH_TOKEN_COOKIE_LIFETIME')*60;
         } else {
             $expires = time()+env('DEFAULT_COOKIE_LIFETIME')*60;
