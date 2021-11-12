@@ -64,7 +64,7 @@ class JsonRequest
             $fN = null;
 
             foreach ($fieldNames as $key => $value) {
-                if ($value != chr(27)) {
+                if ($value !== chr(27)) {
                     $fN[$key] = $value;
                 }
             }

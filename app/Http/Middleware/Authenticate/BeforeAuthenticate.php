@@ -45,7 +45,8 @@ class BeforeAuthenticate
 
                 if ($request->url() == $resetPasswordURL) {
                     $request->validate([
-                        'token' => 'required|string|alpha_num|size:64'
+                        'token' => 'required|string|alpha_num|size:64',
+                        'do_not_logout' => 'required|boolean'
                     ]);
                 }
             }

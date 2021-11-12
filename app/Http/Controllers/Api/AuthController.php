@@ -146,7 +146,9 @@ class AuthController extends Controller
                     'password' => Hash::make($request->password)
                 ])->save();
 
-                $user->tokens()->delete();
+                if (!$request->do_not_logout) {
+                    $user->tokens()->delete();
+                }
 
                 event(new PasswordReset($user));
             }
