@@ -10,6 +10,7 @@ use App\Http\Responses\AuthResponse;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
@@ -39,8 +40,7 @@ class AuthController extends Controller
                 Response::HTTP_UNAUTHORIZED
             );
         }
-    
-        /** @var User $user */
+
         $user = Auth::user();
 
         $emailVerifiedAt = $user->email_verified_at;
@@ -97,7 +97,6 @@ class AuthController extends Controller
             'password' => $plainPassword
         ]);
 
-        /** @var User $user */
         $user = Auth::user();
 
         $this->prepareCookies();
@@ -292,7 +291,6 @@ class AuthController extends Controller
 
         DB::table('personal_access_tokens')->where('id', $personalAccessTokenId)->delete();
 
-        /** @var User $user */
         $user = Auth::loginUsingId($userId);
 
         $this->prepareCookies();
@@ -303,68 +301,97 @@ class AuthController extends Controller
     /**
      * Przekierowanie użytkownika do zewnętrznego serwisu uwierzytelniającego (FACEBOOK, GOOGLE)
      *
-     * @param string $provider zewnętrzny serwis
+     * @param string $provider nazwa zewnętrznego serwisu
+     * 
+     * @return Illuminate\Http\RedirectResponse
      */
-    public function redirectToProvider(string $provider) {
+    public function redirectToProvider(string $provider): RedirectResponse {
         $this->validateProvider($provider);
         return Socialite::driver($provider)->stateless()->redirect();
     }
 
     /**
-     * Obtain the user information from Provider.
+     * Odebranie informacji o użytkowniku od zewnętrznego serwisu uwierzytelniającego
      *
-     * @param $provider
-     * @return JsonResponse
+     * @param string $provider nazwa zewnętrznego serwisu
+     * 
+     * @return void
      */
-    public function handleProviderCallback($provider) {
-        $validated = $this->validateProvider($provider);
-        if (!is_null($validated)) {
-            return $validated;
-        }
-        try {
-            $user = Socialite::driver($provider)->stateless()->user();
-        } catch (ClientException $exception) {
-            return response()->json(['error' => 'Invalid credentials provided.'], 422);
+    public function handleProviderCallback(string $provider): void {
+
+        $providerId = $this->validateProvider($provider);
+
+        $user = Socialite::driver($provider)->stateless()->user();
+
+        $names = explode(' ', $user->getName());
+        $namesLength = count($names);
+
+        $firstName = $names[0];
+
+        for ($i=1; $i<$namesLength; $i++) {
+            if ($i == $namesLength-1) {
+                $lastName = $names[$i];
+            } else {
+                $firstName .= ' ' . $names[$i];
+            }
         }
 
-        $userCreated = User::firstOrCreate(
+        $createUser = User::firstOrCreate(
             [
                 'email' => $user->getEmail()
             ],
             [
-                'email_verified_at' => now(),
-                'name' => $user->getName(),
-                'status' => true,
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                'avatar' => $user->getAvatar(),
+                'email_verified_at' => filter_var($user->getEmail(), FILTER_VALIDATE_EMAIL) ? now() : null
             ]
         );
-        $userCreated->providers()->updateOrCreate(
-            [
-                'provider' => $provider,
-                'provider_id' => $user->getId(),
-            ],
-            [
-                'avatar' => $user->getAvatar()
-            ]
-        );
-        $token = $userCreated->createToken('token-name')->plainTextToken;
 
-        return response()->json($userCreated, 200, ['Access-Token' => $token]);
+        $createUser->externalAuthentication()->updateOrCreate(
+            [
+                'provider_type_id' => $providerId,
+                'authentication_id' => $user->getId(),
+            ]
+        );
+
+        $this->prepareCookies();
+
+        JsonResponse::sendError(
+            AuthResponse::MISSING_USER_INFORMATION,
+            Response::HTTP_FORBIDDEN,
+            [$createUser]
+        );
     }
 
     /**
      * Sprawdzenie czy dany serwis uwierzytelniający jest dostępny
      * 
-     * @param string $provider zewnętrzny serwis
+     * @param string $provider nazwa zewnętrznego serwisu
      * 
-     * @return void
+     * @return int
      */
-    private function validateProvider(string $provider): void {
-        if (!in_array($provider, ['facebook', 'google'])) {
+    private function validateProvider(string $provider): int {
+
+        $providerTypes = DB::table('provider_types')->where('is_enabled', 1)->get();
+
+        $provider = strtoupper($provider);
+
+        foreach ($providerTypes as $pT) {
+            if ($pT->name == $provider) {
+                $providerId = $pT->id;
+                break;
+            }
+        }
+
+        if (!isset($providerId)) {
             JsonResponse::sendError(
                 AuthResponse::INVALID_PROVIDER,
                 Response::HTTP_NOT_ACCEPTABLE
             );
         }
+
+        return $providerId;
     }
 
     /**

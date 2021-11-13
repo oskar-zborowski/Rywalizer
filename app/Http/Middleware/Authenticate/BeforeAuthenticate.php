@@ -15,10 +15,8 @@ class BeforeAuthenticate
     /**
      * @param Illuminate\Http\Request $request
      * @param Closure $next
-     * 
-     * @return Closure
      */
-    public function handle(Request $request, Closure $next): ?Closure {
+    public function handle(Request $request, Closure $next) {
 
         $loginURL = env('APP_URL') . '/api/login';
         $forgotPasswordURL = env('APP_URL') . '/api/forgot-password';

@@ -3,7 +3,9 @@
 namespace App\Exceptions;
 
 use App\Http\Libraries\Http\JsonResponse;
+use App\Http\Responses\AuthResponse;
 use App\Http\Responses\DefaultResponse;
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
@@ -65,6 +67,12 @@ class Handler extends ExceptionHandler
                 DefaultResponse::FAILED_VALIDATION,
                 Response::HTTP_BAD_REQUEST,
                 JsonResponse::convertToCamelCase([$throwable->getMessage()])
+            );
+        } else if ($throwable instanceof ClientException) {
+            JsonResponse::sendError(
+                AuthResponse::INVALID_CREDENTIALS_PROVIDED,
+                Response::HTTP_UNAUTHORIZED,
+                env('APP_DEBUG') ? JsonResponse::convertToCamelCase([$throwable->getMessage()]) : null
             );
         } else {
             $throwable = json_encode($throwable);

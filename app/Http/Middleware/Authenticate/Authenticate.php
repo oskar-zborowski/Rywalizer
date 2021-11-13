@@ -25,16 +25,15 @@ class Authenticate extends Middleware
     /**
      * @param Illuminate\Http\Request $request
      * @param Closure $next
-     * 
-     * @return Closure
      */
-    public function handle($request, Closure $next, ...$guards): ?Closure {
+    public function handle($request, Closure $next, ...$guards) {
 
         $loginURL = env('APP_URL') . '/api/login';
         $registerURL = env('APP_URL') . '/api/register';
         $forgotPasswordURL = env('APP_URL') . '/api/forgot-password';
         $resetPasswordURL = env('APP_URL') . '/api/reset-password';
         $refreshTokenURL = env('APP_URL') . '/api/refresh-token';
+        $externalAuthenticationURL = env('APP_URL') . '/api/auth';
 
         if ($jwt = $request->cookie('JWT')) {
 
@@ -50,7 +49,8 @@ class Authenticate extends Middleware
                     $request->url() != $registerURL &&
                     $request->url() != $forgotPasswordURL &&
                     $request->url() != $resetPasswordURL &&
-                    $request->url() != $refreshTokenURL)
+                    $request->url() != $refreshTokenURL &&
+                    strpos($request->url(), $externalAuthenticationURL) === false)
                 {
                     JsonResponse::sendError(
                         AuthResponse::UNAUTHORIZED,
@@ -63,7 +63,8 @@ class Authenticate extends Middleware
                 $request->url() == $registerURL ||
                 $request->url() == $forgotPasswordURL ||
                 $request->url() == $resetPasswordURL ||
-                $request->url() == $refreshTokenURL)
+                $request->url() == $refreshTokenURL ||
+                strpos($request->url(), $externalAuthenticationURL) !== false)
             {
                 JsonResponse::sendError(
                     AuthResponse::ALREADY_LOGGED_IN,
@@ -91,7 +92,8 @@ class Authenticate extends Middleware
                 $request->url() != $registerURL &&
                 $request->url() != $forgotPasswordURL &&
                 $request->url() != $resetPasswordURL &&
-                $request->url() != $refreshTokenURL)
+                $request->url() != $refreshTokenURL &&
+                strpos($request->url(), $externalAuthenticationURL) === false)
             {
                 JsonResponse::sendError(
                     AuthResponse::UNAUTHORIZED,
@@ -105,7 +107,8 @@ class Authenticate extends Middleware
             if ($request->url() == $loginURL ||
                 $request->url() == $registerURL ||
                 $request->url() == $forgotPasswordURL ||
-                $request->url() == $resetPasswordURL)
+                $request->url() == $resetPasswordURL ||
+                strpos($request->url(), $externalAuthenticationURL) !== false)
             {
                 $encrypter = new Encrypter;
                 $refreshToken = $encrypter->encryptToken($plainRefreshToken);

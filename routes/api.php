@@ -34,6 +34,15 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     /*
+    |--------------------------------------------------------------------------
+    | Enpointy do zewnętrznego uwierzytelnienia
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('auth/{provider}/redirect', [AuthController::class, 'redirectToProvider']);
+    Route::get('auth/{provider}/callback', [AuthController::class, 'handleProviderCallback']);
+
+    /*
     |----------------------------------------------------------------------
     | Enpointy dostępne po autoryzacji, ale bez zweryfikowanego maila
     |----------------------------------------------------------------------
@@ -45,15 +54,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/logout', [AuthController::class, 'logout']);
     Route::delete('/logout-other-devices', [AuthController::class, 'logoutOtherDevices']);
 });
-
-/*
-|--------------------------------------------------------------------------
-| Enpointy do zewnętrznego uwierzytelnienia
-|--------------------------------------------------------------------------
-*/
-
-Route::get('auth/{provider}/redirect', [AuthController::class, 'redirectToProvider']);
-Route::get('auth/{provider}/callback', [AuthController::class, 'handleProviderCallback']);
 
 /*
 |--------------------------------------------------------------------------

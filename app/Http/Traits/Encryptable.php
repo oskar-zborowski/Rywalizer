@@ -62,7 +62,7 @@ trait Encryptable
      * 
      * @return array
      */
-    public function getArrayableAttributes(): array {
+    public function getArrayableAttributes(): ?array {
 
         $attributes = parent::getArrayableAttributes();
 

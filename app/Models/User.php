@@ -81,8 +81,8 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(RoleType::class);
     }
 
-    public function providers() {
-        return $this->hasMany(Provider::class, 'user_id', 'id');
+    public function externalAuthentication() {
+        return $this->hasMany(ExternalAuthentication::class);
     }
 
     public function sendPasswordResetNotification($token) {
