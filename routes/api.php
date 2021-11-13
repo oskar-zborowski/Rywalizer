@@ -48,6 +48,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| Enpointy do zewnętrznego uwierzytelnienia
+|--------------------------------------------------------------------------
+*/
+
+Route::get('auth/{provider}/redirect', [AuthController::class, 'redirectToProvider']);
+Route::get('auth/{provider}/callback', [AuthController::class, 'handleProviderCallback']);
+
+/*
+|--------------------------------------------------------------------------
 | Enpointy dostępne po autoryzacji oraz ze zweryfikowanym mailem
 |--------------------------------------------------------------------------
 */

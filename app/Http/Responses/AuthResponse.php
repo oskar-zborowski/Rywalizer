@@ -18,4 +18,5 @@ class AuthResponse
     public const INVALID_REFRESH_TOKEN = 'ATH9';
     public const REFRESH_TOKEN_IS_STILL_ACTIVE = 'ATH10';
     public const REFRESH_TOKEN_HAS_EXPIRED = 'ATH11';
+    public const INVALID_PROVIDER = 'ATH12';
 }

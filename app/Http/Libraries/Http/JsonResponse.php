@@ -96,7 +96,7 @@ class JsonResponse
      * 
      * @return array
      */
-    public static function convertToCamelCase(array $data = null, int $from = 0, int $to = null, int $current = 0) {
+    public static function convertToCamelCase(?array $data, int $from = 0, int $to = null, int $current = 0): ?array {
 
         $fieldNames = null;
 

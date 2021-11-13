@@ -18,7 +18,7 @@ class Encrypter
      * 
      * @return string
      */
-    private function fillWithRandomCharacters(string $text = null, int $maxSize = null, bool $rand = false): string {
+    private function fillWithRandomCharacters(?string $text, ?int $maxSize = null, bool $rand = false): string {
 
         $characters = 'M9w4RimKrF8fJGuTEBpC36gUNDzebW7ZaVSnqdYcXhoQjILv21ltPkAHx5O0sy';
         $charactersLength = strlen($characters);
@@ -53,7 +53,7 @@ class Encrypter
      * 
      * @return string
      */
-    private function removeRandomCharacters(string $text = null): string {
+    private function removeRandomCharacters(?string $text): string {
 
         $length = strlen($text);
 
@@ -78,7 +78,7 @@ class Encrypter
      * 
      * @return string
      */
-    public function encrypt(string $text = null, int $maxSize = null): string {
+    public function encrypt(?string $text, ?int $maxSize = null): string {
         $text = $this->fillWithRandomCharacters($text, $maxSize);
         return openssl_encrypt($text, env('OPENSSL_ALGORITHM'), env('OPENSSL_PASSPHRASE'), 0, env('OPENSSL_IV'));
     }
@@ -90,7 +90,7 @@ class Encrypter
      * 
      * @return string
      */
-    public function decrypt(string $cipher = null): string {
+    public function decrypt(?string $cipher): string {
         $text = openssl_decrypt($cipher, env('OPENSSL_ALGORITHM'), env('OPENSSL_PASSPHRASE'), 0, env('OPENSSL_IV'));
         return $this->removeRandomCharacters($text);
     }
@@ -102,7 +102,7 @@ class Encrypter
      * 
      * @return string
      */
-    public function hash(string $text): string {
+    public function hash(?string $text): string {
         return Hash::make($text);
     }
 
@@ -127,7 +127,7 @@ class Encrypter
      * 
      * @return string
      */
-    public function encryptToken(string $plainToken): string {
+    public function encryptToken(?string $plainToken): string {
         return $this->encrypt($plainToken);
     }
 }

@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\DB;
+use Laravel\Socialite\Facades\Socialite;
 
 /**
  * Klasa odpowiedzialna za wszelkie kwestie związane z uwierzytelnianiem i jego pochodnymi
@@ -300,6 +301,73 @@ class AuthController extends Controller
     }
 
     /**
+     * Przekierowanie użytkownika do zewnętrznego serwisu uwierzytelniającego (FACEBOOK, GOOGLE)
+     *
+     * @param string $provider zewnętrzny serwis
+     */
+    public function redirectToProvider(string $provider) {
+        $this->validateProvider($provider);
+        return Socialite::driver($provider)->stateless()->redirect();
+    }
+
+    /**
+     * Obtain the user information from Provider.
+     *
+     * @param $provider
+     * @return JsonResponse
+     */
+    public function handleProviderCallback($provider) {
+        $validated = $this->validateProvider($provider);
+        if (!is_null($validated)) {
+            return $validated;
+        }
+        try {
+            $user = Socialite::driver($provider)->stateless()->user();
+        } catch (ClientException $exception) {
+            return response()->json(['error' => 'Invalid credentials provided.'], 422);
+        }
+
+        $userCreated = User::firstOrCreate(
+            [
+                'email' => $user->getEmail()
+            ],
+            [
+                'email_verified_at' => now(),
+                'name' => $user->getName(),
+                'status' => true,
+            ]
+        );
+        $userCreated->providers()->updateOrCreate(
+            [
+                'provider' => $provider,
+                'provider_id' => $user->getId(),
+            ],
+            [
+                'avatar' => $user->getAvatar()
+            ]
+        );
+        $token = $userCreated->createToken('token-name')->plainTextToken;
+
+        return response()->json($userCreated, 200, ['Access-Token' => $token]);
+    }
+
+    /**
+     * Sprawdzenie czy dany serwis uwierzytelniający jest dostępny
+     * 
+     * @param string $provider zewnętrzny serwis
+     * 
+     * @return void
+     */
+    private function validateProvider(string $provider): void {
+        if (!in_array($provider, ['facebook', 'google'])) {
+            JsonResponse::sendError(
+                AuthResponse::INVALID_PROVIDER,
+                Response::HTTP_NOT_ACCEPTABLE
+            );
+        }
+    }
+
+    /**
      * Pobranie informacji o użytkowniku
      * 
      * @param Illuminate\Http\Request $request
@@ -315,7 +383,7 @@ class AuthController extends Controller
      * 
      * @return void
      */
-    private function prepareCookies() {
+    private function prepareCookies(): void {
 
         /** @var User $user */
         $user = Auth::user();

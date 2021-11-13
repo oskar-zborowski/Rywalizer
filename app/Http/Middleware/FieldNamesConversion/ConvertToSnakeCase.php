@@ -14,8 +14,10 @@ class ConvertToSnakeCase
     /**
      * @param Illuminate\Http\Request $request
      * @param Closure $next
+     * 
+     * @return Closure
      */
-    public function handle(Request $request, Closure $next) {
+    public function handle(Request $request, Closure $next): ?Closure {
 
         $fieldNames = JsonRequest::convertToSnakeCase($request->all());
 

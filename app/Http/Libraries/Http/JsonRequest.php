@@ -18,7 +18,7 @@ class JsonRequest
      * 
      * @return array
      */
-    public static function convertToSnakeCase(array $data = null, int $from = 0, int $to = null, int $current = 0) {
+    public static function convertToSnakeCase(?array $data, int $from = 0, int $to = null, int $current = 0): ?array {
 
         $fieldNames = null;
 

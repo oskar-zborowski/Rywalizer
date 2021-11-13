@@ -26,9 +26,9 @@ class Authenticate extends Middleware
      * @param Illuminate\Http\Request $request
      * @param Closure $next
      * 
-     * @return void
+     * @return Closure
      */
-    public function handle($request, Closure $next, ...$guards) {
+    public function handle($request, Closure $next, ...$guards): ?Closure {
 
         $loginURL = env('APP_URL') . '/api/login';
         $registerURL = env('APP_URL') . '/api/register';

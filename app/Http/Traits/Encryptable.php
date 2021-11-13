@@ -12,22 +12,22 @@ trait Encryptable
     /**
      * Sprawdzenie czy dane pole powinno być szyfrowane
      * 
-     * @param string $key
+     * @param string $key nazwa pola do zaszyfrowania/odszyfrowania
      * 
      * @return bool
      */
-    private function encryptable($key): bool {
+    private function encryptable(?string $key): bool {
         return in_array($key, $this->encryptable);
     }
 
     /**
      * Szyfrowanie pola, jeżeli jest szyfrowalne
      * 
-     * @param string $key
+     * @param string $key nazwa pola do zaszyfrowania
      * 
      * @return string
      */
-    public function getAttribute($key) {
+    public function getAttribute($key): ?string {
         
         $value = parent::getAttribute($key);
 
@@ -42,12 +42,12 @@ trait Encryptable
     /**
      * Deszyfrowanie pola, jeżeli jest deszyfrowalne
      * 
-     * @param string $key
-     * @param string $value
+     * @param string $key nazwa pola do odszyfrowania
+     * @param string $value wartość do odszyfrowania
      * 
      * @return string
      */
-    public function setAttribute($key, $value) {
+    public function setAttribute($key, $value): ?string {
 
         if ($this->encryptable($key)) {
             $encrypter = new Encrypter;

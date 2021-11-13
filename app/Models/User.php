@@ -81,6 +81,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(RoleType::class);
     }
 
+    public function providers() {
+        return $this->hasMany(Provider::class, 'user_id', 'id');
+    }
+
     public function sendPasswordResetNotification($token) {
         $url = 'https://spa.test/reset-password?token=' . $token; // TODO Poprawić na prawidłowy URL
         $this->notify(new ResetPasswordNotification($url));
