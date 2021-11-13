@@ -64,8 +64,8 @@ class Handler extends ExceptionHandler
             );
         } else if ($throwable instanceof HttpException) {
             JsonResponse::sendError(
-                DefaultResponse::FAILED_VALIDATION,
-                Response::HTTP_BAD_REQUEST,
+                DefaultResponse::PERMISSION_DENIED,
+                Response::HTTP_FORBIDDEN,
                 JsonResponse::convertToCamelCase([$throwable->getMessage()])
             );
         } else if ($throwable instanceof ClientException) {

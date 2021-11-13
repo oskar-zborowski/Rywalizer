@@ -117,7 +117,7 @@ class Authenticate extends Middleware
                 if ($personalAccessToken) {
                     JsonResponse::sendError(
                         AuthResponse::REFRESH_TOKEN_IS_STILL_ACTIVE,
-                        Response::HTTP_FORBIDDEN
+                        Response::HTTP_NOT_ACCEPTABLE
                     );
                 } else {
                     JsonResponse::deleteCookie('REFRESH-TOKEN');
