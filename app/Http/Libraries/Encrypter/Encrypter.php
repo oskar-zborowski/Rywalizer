@@ -110,14 +110,19 @@ class Encrypter
      * Generowanie tokenu
      * 
      * @param int $maxSize maksymalny rozmiar pola
+     * @param string $addition dodatkowy tekst, który ma być uwzględniony przy generowaniu tokenu (dopisany na końcu)
      * 
      * @return string
      */
-    public function generatePlainToken(int $maxSize = 32): string {
+    public function generatePlainToken(int $maxSize = 32, string $addition = ''): string {
+
+        $additionLength = strlen($addition);
+
         $maxSize = floor($maxSize * 0.75);
         $modulo = $maxSize % 3;
-        $size = $maxSize - $modulo;
-        return $this->fillWithRandomCharacters('', $size, true);
+        $size = $maxSize - $modulo - $additionLength;
+
+        return $this->fillWithRandomCharacters('', $size, true) . $addition;
     }
 
     /**

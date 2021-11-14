@@ -21,14 +21,14 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'avatar',
         'gender_type_id',
+        'role_type_id',
         'birth_date',
+        'email_verified_at',
+        'account_deleted_at',
+        'account_blocked_at'
     ];
 
     protected $guarded = [
-        'role_type_id',
-        'email_verified_at',
-        'account_deleted_at',
-        'account_blocked_at',
         'created_at',
         'updated_at'
     ];

@@ -14,4 +14,19 @@ class ExternalAuthentication extends Model
         'user_id',
         'provider_type_id'
     ];
+
+    protected $guarded = [
+        'created_at',
+        'updated_at'
+    ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at'
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
+    ];
 }

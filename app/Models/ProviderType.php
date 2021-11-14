@@ -6,26 +6,21 @@ use App\Http\Traits\Encryptable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RoleType extends Model
+class ProviderType extends Model
 {
     use HasFactory, Encryptable;
 
     protected $guarded = [
         'name',
-        'access_level'
-    ];
-
-    protected $casts = [
-        'access_level' => 'int'
+        'is_enabled'
     ];
 
     protected $encryptable = [
         'name',
-        'access_level'
+        'is_enabled'
     ];
 
     protected $maxSize = [
-        'name' => 15,
-        'access_level' => 3
+        'name' => 9
     ];
 }
