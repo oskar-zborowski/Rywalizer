@@ -14,6 +14,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,13 +29,14 @@ use Laravel\Socialite\Facades\Socialite;
 class AuthController extends Controller
 {
     /**
+     * #### `POST` `/api/login`
      * Logowanie użytkownika
      * 
      * @param Illuminate\Http\Request $request
      * 
      * @return void
      */
-    public function login(Request $request, Encrypter $encrypter): void {
+    public function login(Request $request): void {
 
         if (!Auth::attempt($request->only('email', 'password'))) {
             JsonResponse::sendError(
@@ -77,6 +79,7 @@ class AuthController extends Controller
     }
 
     /**
+     * #### `POST` `/api/register`
      * Rejestracja użytkownika
      * 
      * @param App\Http\Requests\Auth\RegisterRequest $request
@@ -86,8 +89,8 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request, Encrypter $encrypter): void {
 
-        $encryptedEmail = $request->input('email');
-        $plainPassword = $request->input('password');
+        $encryptedEmail = $request->email;
+        $plainPassword = $request->password;
 
         $request->merge(['email' => $encrypter->decrypt($encryptedEmail)]);
         $request->merge(['password' => $encrypter->hash($plainPassword)]);
@@ -112,17 +115,44 @@ class AuthController extends Controller
     }
 
     /**
+     * #### `POST` `/api/forgot-password`
      * Wysyłka linku na maila do resetu hasła
      * 
      * @param Illuminate\Http\Request $request
+     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
      * 
      * @return void
      */
-    public function forgotPassword(Request $request): void {
+    public function forgotPassword(Request $request, Encrypter $encrypter): void {
+
+        $resetToken = DB::table('password_resets')
+            ->where('email', $request->email)
+            ->first();
+
+        if ($resetToken) {
+            $waitingDate = date('Y-m-d H:i:s', strtotime('+' . env('PAUSE_BEFORE_RETRYING')*60 . ' seconds', strtotime($resetToken->created_at)));
+            $now = date('Y-m-d H:i:s');
+
+            if ($now <= $waitingDate) {
+                JsonResponse::sendError(
+                    AuthResponse::WAIT_BEFORE_RETRYING,
+                    Response::HTTP_NOT_ACCEPTABLE
+                );
+            } else {
+                DB::table('password_resets')->where('email', $resetToken->email)->delete();
+            }
+        }
 
         $status = Password::sendResetLink($request->only('email'));
 
         if ($status == Password::RESET_LINK_SENT) {
+
+            $email = $encrypter->decrypt($request->email);
+
+            DB::table('password_resets')
+                ->where('email', $email)
+                ->update(['email' => $request->email]);
+
             JsonResponse::sendSuccess();
         }
 
@@ -132,13 +162,30 @@ class AuthController extends Controller
     }
 
     /**
+     * #### `PUT` `/api/reset-password`
      * Reset hasła
      * 
      * @param Illuminate\Http\Request $request
+     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
+     * @param Illuminate\Contracts\Hashing\Hasher $hasher
      * 
      * @return void
      */
-    public function resetPassword(Request $request): void {
+    public function resetPassword(Request $request, Encrypter $encrypter, Hasher $hasher): void {
+
+        $resetTokens = DB::table('password_resets')->get();
+
+        foreach ($resetTokens as $rT) {
+            if ($hasher->check($request->token, $rT->token)) {
+                $email = $encrypter->decrypt($rT->email);
+
+                DB::table('password_resets')
+                    ->where('email', $rT->email)
+                    ->update(['email' => $email]);
+                
+                break;
+            }
+        }
 
         $status = Password::reset(
             $request->only('password', 'password_confirmation', 'token'),
@@ -167,6 +214,7 @@ class AuthController extends Controller
     }
 
     /**
+     * #### `GET` `/api/email/verification-notification`
      * Wysyłka linku aktywacyjnego na maila
      * 
      * @param bool $afterRegistartion flaga z informacją czy wywołanie metody jest pochodną procesu rejestracji
@@ -197,6 +245,7 @@ class AuthController extends Controller
     }
 
     /**
+     * #### `PUT` `/api/verify-email/{id}/{hash}`
      * Weryfikacja maila
      * 
      * @return void
@@ -221,6 +270,7 @@ class AuthController extends Controller
     }
 
     /**
+     * #### `DELETE` `/api/logout`
      * Wylogowanie użytkownika
      * 
      * @param Illuminate\Http\Request $request
@@ -237,6 +287,7 @@ class AuthController extends Controller
     }
 
     /**
+     * #### `DELETE` `/api/logout-other-devices`
      * Wylogowanie użytkownika ze wszystkich urządzeń poza obecnym
      * 
      * @return void
@@ -254,6 +305,7 @@ class AuthController extends Controller
     }
 
     /**
+     * #### `POST` `/api/refresh-token`
      * Odświeżenie tokenu autoryzacyjnego
      * 
      * @param Illuminate\Http\Request $request
@@ -301,6 +353,7 @@ class AuthController extends Controller
     }
 
     /**
+     * #### `GET` `/api/auth/{provider}/redirect`
      * Przekierowanie użytkownika do zewnętrznego serwisu uwierzytelniającego (FACEBOOK, GOOGLE)
      *
      * @param string $provider nazwa zewnętrznego serwisu
@@ -313,6 +366,7 @@ class AuthController extends Controller
     }
 
     /**
+     * #### `GET` `/api/auth/{provider}/callback`
      * Odebranie informacji o użytkowniku od zewnętrznego serwisu uwierzytelniającego
      *
      * @param string $provider nazwa zewnętrznego serwisu
@@ -454,6 +508,18 @@ class AuthController extends Controller
     }
 
     /**
+     * #### `GET` `/api/user`
+     * Pobranie informacji o użytkowniku
+     * 
+     * @param Illuminate\Http\Request $request
+     * 
+     * @return void
+     */
+    public function user(Request $request): void {
+        JsonResponse::sendSuccess([$request->user()]);
+    }
+
+    /**
      * Sprawdzenie czy dany serwis uwierzytelniający jest dostępny
      * 
      * @param string $provider nazwa zewnętrznego serwisu
@@ -483,17 +549,6 @@ class AuthController extends Controller
         }
 
         return $providerId;
-    }
-
-    /**
-     * Pobranie informacji o użytkowniku
-     * 
-     * @param Illuminate\Http\Request $request
-     * 
-     * @return void
-     */
-    public function user(Request $request): void {
-        JsonResponse::sendSuccess([$request->user()]);
     }
 
     /**

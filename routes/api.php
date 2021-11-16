@@ -48,7 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
     |----------------------------------------------------------------------
     */
 
-    Route::post('/email/verification-notification', [AuthController::class, 'sendVerificationEmail']);
+    Route::get('/email/verification-notification', [AuthController::class, 'sendVerificationEmail']);
     Route::put('/verify-email/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
 
     Route::delete('/logout', [AuthController::class, 'logout']);
