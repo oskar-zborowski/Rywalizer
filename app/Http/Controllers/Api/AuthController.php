@@ -429,7 +429,7 @@ class AuthController extends Controller
                     JsonResponse::sendError(
                         DefaultResponse::FAILED_VALIDATION,
                         Response::HTTP_BAD_REQUEST,
-                        ['email' => 'The email has already been taken.'] // TODO Zmienić kiedy pojawią się langi
+                        ['email' => ['The email has already been taken.']] // TODO Zmienić kiedy pojawią się langi
                     );
                 }
             }
