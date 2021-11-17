@@ -125,12 +125,17 @@ class AuthController extends Controller
      */
     public function forgotPassword(Request $request, Encrypter $encrypter): void {
 
-        $resetToken = DB::table('password_resets')
+        $emailSendingCounter = 0;
+
+        $passwordResetToken = DB::table('password_resets')
             ->where('email', $request->email)
             ->first();
 
-        if ($resetToken) {
-            $waitingDate = date('Y-m-d H:i:s', strtotime('+' . env('PAUSE_BEFORE_RETRYING')*60 . ' seconds', strtotime($resetToken->created_at)));
+        if ($passwordResetToken) {
+
+            $emailSendingCounter = $passwordResetToken->email_sending_counter;
+
+            $waitingDate = date('Y-m-d H:i:s', strtotime('+' . env('PAUSE_BEFORE_RETRYING')*60 . ' seconds', strtotime($passwordResetToken->created_at)));
             $now = date('Y-m-d H:i:s');
 
             if ($now <= $waitingDate) {
@@ -139,7 +144,7 @@ class AuthController extends Controller
                     Response::HTTP_NOT_ACCEPTABLE
                 );
             } else {
-                DB::table('password_resets')->where('email', $resetToken->email)->delete();
+                DB::table('password_resets')->where('id', $passwordResetToken->id)->delete();
             }
         }
 
@@ -151,7 +156,10 @@ class AuthController extends Controller
 
             DB::table('password_resets')
                 ->where('email', $email)
-                ->update(['email' => $request->email]);
+                ->update([
+                    'email' => $request->email,
+                    'email_sending_counter' => $emailSendingCounter+1
+                ]);
 
             JsonResponse::sendSuccess();
         }
@@ -180,7 +188,7 @@ class AuthController extends Controller
                 $email = $encrypter->decrypt($rT->email);
 
                 DB::table('password_resets')
-                    ->where('email', $rT->email)
+                    ->where('id', $rT->id)
                     ->update(['email' => $email]);
                 
                 break;
@@ -234,6 +242,23 @@ class AuthController extends Controller
                     Response::HTTP_NOT_ACCEPTABLE
                 );
             }
+
+            $waitingDate = date('Y-m-d H:i:s', strtotime('+' . env('PAUSE_BEFORE_RETRYING')*60 . ' seconds', strtotime($user->updated_at)));
+            $now = date('Y-m-d H:i:s');
+    
+            if ($now <= $waitingDate && $user->verification_email_counter > 1) {
+                JsonResponse::sendError(
+                    AuthResponse::WAIT_BEFORE_RETRYING,
+                    Response::HTTP_NOT_ACCEPTABLE
+                );
+            }
+
+            DB::table('users')
+                ->where('id', $user->id)
+                ->update([
+                    'verification_email_counter' => $user->verification_email_counter+1,
+                    'updated_at' => $now
+                ]);
 
             $user->sendEmailVerificationNotification();
     
@@ -412,45 +437,19 @@ class AuthController extends Controller
                 }
             }
 
-            if ($user->getAvatar()) {
-                if ($providerId == 1) {
-                    $avatarUrl = $user->getAvatar();
-                    $avatarUrlHeaders = get_headers($avatarUrl, 1);
-                    $avatarUrlLocation = $avatarUrlHeaders['Location'];
-                    $avatarUrlSeparators = explode('/', $avatarUrlLocation);
-                    $avatarUrlSeparatorsLength = count($avatarUrlSeparators);
-                    $avatarNewUrl = $avatarUrlSeparators[$avatarUrlSeparatorsLength-1];
-                    $avatarNewUrlSeparators = explode('?', $avatarNewUrl);
-                    $avatarFilename = $avatarNewUrlSeparators[0];
-                    $avatarFileExtension = '';
-                    $avatarFilenameLength = strlen($avatarFilename);
-            
-                    for ($i=$avatarFilenameLength-1; $avatarFilename[$i] != '.'; $i--) {
-                        $avatarFileExtension .= $avatarFilename[$i];
-                    }
-            
-                    $avatarFileExtension = '.' . strrev($avatarFileExtension);
-
-                    do {
-                        $avatarFilename = $encrypter->generatePlainToken(32, $avatarFileExtension);
-                        $avatarFilenameEncrypted = $encrypter->encryptToken($avatarFilename);
-                        $avatarExists = DB::table('users')->where('avatar', $avatarFilenameEncrypted)->first();
-                    } while ($avatarExists);
-                }
-
-                $avatarContents = file_get_contents($avatarUrlLocation);
-                Storage::put($avatarFilename, $avatarContents);
+            if ($user->getAvatar() !== null) {
+                $avatarFilename = $this->saveAvatar($provider, $user->getAvatar());
             }
 
             $newUser = [
                 'first_name' => $firstName,
                 'last_name' => $lastName,
                 'avatar' => isset($avatarFilename) ? $avatarFilename : null,
-                'email_verified_at' => filter_var($user->getEmail(), FILTER_VALIDATE_EMAIL) ? now() : null
             ];
 
-            if ($user->getEmail()) {
+            if (filter_var($user->getEmail(), FILTER_VALIDATE_EMAIL)) {
                 $newUser['email'] = $user->getEmail();
+                $newUser['email_verified_at'] = now();
             }
 
             $createUser = User::create($newUser);
@@ -483,11 +482,7 @@ class AuthController extends Controller
 
         $this->prepareCookies();
 
-        if (!$user->first_name ||
-            !$user->last_name ||
-            !$user->email ||
-            !$user->gender_type_id ||
-            !$user->role_type_id ||
+        if (!$user->email ||
             !$user->birth_date)
         {
             JsonResponse::sendError(
@@ -500,7 +495,8 @@ class AuthController extends Controller
         if (!$user->email_verified_at) {
             JsonResponse::sendError(
                 AuthResponse::UNVERIFIED_EMAIL,
-                Response::HTTP_UNAUTHORIZED,
+                Response::HTTP_FORBIDDEN,
+                [$user]
             );
         }
 
@@ -576,5 +572,55 @@ class AuthController extends Controller
 
         JsonResponse::setCookie($plainJWT, 'JWT');
         JsonResponse::setCookie($plainRefreshToken, 'REFRESH-TOKEN');
+    }
+
+    /**
+     * Zapisanie na serwerze avatara użytkownika pobranego z serwisu uwierzytelniającego
+     * 
+     * @param string $provider nazwa zewnętrznego serwisu
+     * @param string $avatarPath adres URL do zdjecia profilowego z serwisu uwierzytelniającego
+     * 
+     * @return string
+     */
+    private function saveAvatar(string $provider, string $avatarUrl): string {
+
+        $provider = strtoupper($provider);
+
+        if ($provider == 'FACEBOOK') {
+            if (env('FACEBOOK_MODE') == 'development') {
+                $avatarUrlHeaders = get_headers($avatarUrl, 1);
+                $avatarUrlLocation = $avatarUrlHeaders['Location'];
+                $avatarUrlSeparators = explode('/', $avatarUrlLocation);
+                $avatarUrlSeparatorsLength = count($avatarUrlSeparators);
+                $avatarNewUrl = $avatarUrlSeparators[$avatarUrlSeparatorsLength-1];
+                $avatarNewUrlSeparators = explode('?', $avatarNewUrl);
+                $avatarFilename = $avatarNewUrlSeparators[0];
+                $avatarFilenameLength = strlen($avatarFilename);
+                $avatarFileExtension = '';
+
+                for ($i=$avatarFilenameLength-1; $avatarFilename[$i] != '.'; $i--) {
+                    $avatarFileExtension .= $avatarFilename[$i];
+                }
+
+                $avatarFileExtension = '.' . strrev($avatarFileExtension);
+
+                $encrypter = new Encrypter;
+
+                do {
+                    $avatarFilename = $encrypter->generatePlainToken(32, $avatarFileExtension);
+                    $avatarFilenameEncrypted = $encrypter->encryptToken($avatarFilename);
+                    $avatarExists = DB::table('users')->where('avatar', $avatarFilenameEncrypted)->first();
+                } while ($avatarExists);
+            } else if (env('FACEBOOK_MODE') == 'live') {
+                // TODO Uzupełnić zapisywanie zdjęcia z facebooka
+            }
+        } else if ($provider == 'GOOGLE') {
+            // TODO Uzupełnić zapisywanie zdjęcia z google'a
+        }
+
+        $avatarContents = file_get_contents($avatarUrlLocation);
+        Storage::put('avatars/' . $avatarFilename, $avatarContents);
+
+        return $avatarFilename;
     }
 }

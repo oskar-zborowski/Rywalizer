@@ -20,7 +20,7 @@ class RegisterRequest extends FormRequest
             'first_name' => 'required|string|alpha|max:30',
             'last_name' => 'required|string|alpha|max:30',
             'email' => 'unique:users',
-            'gender_type_id' => 'required|integer|between:1,2',
+            'gender_type_id' => 'present|integer|between:1,2|nullable',
             'birth_date' => 'required|string|date|size:10'
         ];
 
