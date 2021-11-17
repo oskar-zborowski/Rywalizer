@@ -562,7 +562,7 @@ class AuthController extends Controller
         $plainRefreshToken = $encrypter->generatePlainToken(64);
         $refreshToken = $encrypter->encryptToken($plainRefreshToken);
 
-        $jwt = $user->createToken('JWT');
+        $jwt = $user->createToken($encrypter->encrypt('JWT', 3));
         $plainJWT = $jwt->plainTextToken;
         $jwtId = $jwt->accessToken->getKey();
 
