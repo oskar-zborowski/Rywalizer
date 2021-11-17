@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Laravel\Socialite\Facades\Socialite;
 
 /**
@@ -420,7 +421,7 @@ class AuthController extends Controller
 
             if (filter_var($user->getEmail(), FILTER_VALIDATE_EMAIL)) {
                 Validator::make(['email' => $encrypter->encrypt($user->getEmail(), 254)], [
-                    'email' => 'unique:users'
+                    'email' => Rule::unique('users'),
                 ]);
             }
 
