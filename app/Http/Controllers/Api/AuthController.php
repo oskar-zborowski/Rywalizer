@@ -7,6 +7,7 @@ use App\Http\Libraries\Encrypter\Encrypter;
 use App\Http\Libraries\Http\JsonResponse;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Responses\AuthResponse;
+use App\Http\Responses\DefaultResponse;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
@@ -420,9 +421,17 @@ class AuthController extends Controller
         if (!$externalAuthentication) {
 
             if (filter_var($user->getEmail(), FILTER_VALIDATE_EMAIL)) {
-                Validator::make(['email' => $encrypter->encrypt($user->getEmail(), 254)], [
-                    'email' => Rule::unique('users'),
-                ]);
+                $externalAuthentication = DB::table('users')
+                    ->where('email', $encrypter->encrypt($user->getEmail(), 254))
+                    ->first();
+
+                if ($externalAuthentication) {
+                    JsonResponse::sendError(
+                        DefaultResponse::FAILED_VALIDATION,
+                        Response::HTTP_BAD_REQUEST,
+                        ['email' => 'The email has already been taken.'] // TODO Zmienić kiedy pojawią się langi
+                    );
+                }
             }
 
             $names = explode(' ', $user->getName());
