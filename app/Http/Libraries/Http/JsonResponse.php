@@ -5,6 +5,8 @@ namespace App\Http\Libraries\Http;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
+use App\Http\ErrorCode\ErrorCode;
+
 /**
  * Klasa umożliwiająca przeprowadzanie operacji na zwracanych odpowiedziach
  */
@@ -41,16 +43,24 @@ class JsonResponse
      * 
      * @return void
      */
-    public static function sendError(string $errorCode, int $status, array $data = null, array $metadata = null): void {
+    public static function sendError(ErrorCode $errorCode, array $data = null, array $metadata = null): void {
 
         header('Content-Type: application/json');
-        http_response_code($status);
+        http_response_code($errorCode->getHttpStatus());
 
-        echo json_encode([
-            'errorCode' => $errorCode,
+        $dataToSend = [];
+
+        if (env('APP_DEBUG')) {
+            $dataToSend['errorCodeMessage'] = $errorCode->getCodeMessage();
+        }
+
+        $dataToSend += [
+            'errorCode' => $errorCode->getCode(),
             'data' => JsonResponse::convertToCamelCase($data),
             'metadata' => JsonResponse::convertToCamelCase($metadata)
-        ]);
+        ];
+
+        echo json_encode($dataToSend);
 
         die;
     }

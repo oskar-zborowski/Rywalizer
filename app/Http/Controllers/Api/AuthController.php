@@ -7,9 +7,10 @@ use App\Http\Libraries\Encrypter\Encrypter;
 use App\Http\Libraries\Http\JsonResponse;
 use App\Http\Requests\Auth\FillMissingUserInfoRequest;
 use App\Http\Requests\Auth\RegisterRequest;
-use App\Http\Responses\AuthResponse;
-use App\Http\Responses\DefaultResponse;
+use App\Http\ErrorCode\AuthResponse;
+use App\Http\ErrorCode\DefaultResponse;
 use App\Models\User;
+use App\Exceptions\ApiException;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -40,10 +41,7 @@ class AuthController extends Controller
     public function login(Request $request): void {
 
         if (!Auth::attempt($request->only('email', 'password'))) {
-            JsonResponse::sendError(
-                AuthResponse::INVALID_CREDENTIALS,
-                Response::HTTP_UNAUTHORIZED
-            );
+            throw new ApiException(AuthResponse::$INVALID_CREDENTIALS);
         }
 
         $this->checkMissingUserInfo(true);
@@ -102,10 +100,7 @@ class AuthController extends Controller
             $now = date('Y-m-d H:i:s');
 
             if ($now <= $waitingDate) {
-                JsonResponse::sendError(
-                    AuthResponse::WAIT_BEFORE_RETRYING,
-                    Response::HTTP_NOT_ACCEPTABLE
-                );
+                throw new ApiException(AuthResponse::$WAIT_BEFORE_RETRYING);
             } else {
                 DB::table('password_resets')
                     ->where('id', $passwordResetToken->id)
@@ -180,10 +175,7 @@ class AuthController extends Controller
             JsonResponse::sendSuccess();
         }
 
-        JsonResponse::sendError(
-            AuthResponse::INVALID_PASSWORD_RESET_TOKEN,
-            Response::HTTP_BAD_REQUEST
-        );
+        throw new ApiException(AuthResponse::$INVALID_PASSWORD_RESET_TOKEN);
     }
 
     /**
@@ -202,20 +194,14 @@ class AuthController extends Controller
         if (!$afterRegistartion) {
 
             if ($user->hasVerifiedEmail()) {
-                JsonResponse::sendError(
-                    AuthResponse::EMAIL_ALREADY_VERIFIED,
-                    Response::HTTP_NOT_ACCEPTABLE
-                );
+                throw new ApiException(AuthResponse::$EMAIL_ALREADY_VERIFIED);
             }
 
             $waitingDate = date('Y-m-d H:i:s', strtotime('+' . env('PAUSE_BEFORE_RETRYING')*60 . ' seconds', strtotime($user->updated_at)));
             $now = date('Y-m-d H:i:s');
     
             if ($now <= $waitingDate && $user->verification_email_counter > 1) {
-                JsonResponse::sendError(
-                    AuthResponse::WAIT_BEFORE_RETRYING,
-                    Response::HTTP_NOT_ACCEPTABLE
-                );
+                throw new ApiException(AuthResponse::$WAIT_BEFORE_RETRYING);
             }
 
             if ($user->verification_email_counter < 255) {
@@ -230,10 +216,7 @@ class AuthController extends Controller
 
                 JsonResponse::sendSuccess();
             } else {
-                JsonResponse::sendError(
-                    DefaultResponse::LIMIT_EXCEEDED,
-                    Response::HTTP_NOT_ACCEPTABLE
-                );
+                throw new ApiException(DefaultResponse::$LIMIT_EXCEEDED);
             }
         } else {
 
@@ -325,10 +308,7 @@ class AuthController extends Controller
         if (!$personalAccessToken) {
             JsonResponse::deleteCookie('REFRESH-TOKEN');
 
-            JsonResponse::sendError(
-                AuthResponse::INVALID_REFRESH_TOKEN,
-                Response::HTTP_UNAUTHORIZED
-            );
+            throw new ApiException(AuthResponse::$INVALID_REFRESH_TOKEN);
         }
 
         $userId = $personalAccessToken->tokenable_id;
@@ -344,10 +324,7 @@ class AuthController extends Controller
         if ($now > $expirationDate) {
             JsonResponse::deleteCookie('REFRESH-TOKEN');
 
-            JsonResponse::sendError(
-                AuthResponse::REFRESH_TOKEN_HAS_EXPIRED,
-                Response::HTTP_UNAUTHORIZED
-            );
+            throw new ApiException(AuthResponse::$REFRESH_TOKEN_HAS_EXPIRED);
         }
 
         Auth::loginUsingId($userId);
@@ -387,9 +364,8 @@ class AuthController extends Controller
         $encryptedAuthenticationId = $encrypter->encrypt($authenticationId, 254);
 
         if (!$authenticationId || strlen($authenticationId) < 1 || strlen($authenticationId) > 254) {
-            JsonResponse::sendError(
-                DefaultResponse::FAILED_VALIDATION,
-                Response::HTTP_BAD_REQUEST,
+            throw new ApiException(
+                DefaultResponse::$FAILED_VALIDATION,
                 ['authentication_id' => ['The provider returned an invalid id.']] // TODO Zmienić kiedy pojawią się langi
             );
         }
@@ -409,9 +385,8 @@ class AuthController extends Controller
                     ->first();
 
                 if ($externalAuthentication) {
-                    JsonResponse::sendError(
-                        DefaultResponse::FAILED_VALIDATION,
-                        Response::HTTP_BAD_REQUEST,
+                    throw new ApiException(
+                        DefaultResponse::$FAILED_VALIDATION,
                         ['email' => ['The email has already been taken.']] // TODO Zmienić kiedy pojawią się langi
                     );
                 }
@@ -553,10 +528,7 @@ class AuthController extends Controller
         }
 
         if (!isset($providerId)) {
-            JsonResponse::sendError(
-                AuthResponse::INVALID_PROVIDER,
-                Response::HTTP_NOT_ACCEPTABLE
-            );
+            throw new ApiException(AuthResponse::$INVALID_PROVIDER);
         }
 
         return $providerId;
@@ -662,10 +634,7 @@ class AuthController extends Controller
             JsonResponse::deleteCookie('JWT');
             JsonResponse::deleteCookie('REFRESH-TOKEN');
 
-            JsonResponse::sendError(
-                AuthResponse::ACOUNT_BLOCKED,
-                Response::HTTP_UNAUTHORIZED
-            );
+            throw new ApiException(AuthResponse::$ACOUNT_BLOCKED);
         }
 
         if ($accountDeletedAt) {
@@ -674,10 +643,7 @@ class AuthController extends Controller
             JsonResponse::deleteCookie('JWT');
             JsonResponse::deleteCookie('REFRESH-TOKEN');
 
-            JsonResponse::sendError(
-                AuthResponse::ACOUNT_DELETED,
-                Response::HTTP_UNAUTHORIZED
-            );
+            throw new ApiException(AuthResponse::$ACOUNT_DELETED);
         }
 
         $missingInfo = null;
@@ -703,9 +669,8 @@ class AuthController extends Controller
         }
 
         if (isset($missingInfo['required'])) {
-            JsonResponse::sendError(
-                $emailVerifiedAt ? AuthResponse::MISSING_USER_INFORMATION : AuthResponse::UNVERIFIED_EMAIL,
-                Response::HTTP_FORBIDDEN,
+            throw new ApiException(
+                $emailVerifiedAt ? AuthResponse::$MISSING_USER_INFORMATION : AuthResponse::$UNVERIFIED_EMAIL,
                 ['user' => $user],
                 [
                     'user' => [

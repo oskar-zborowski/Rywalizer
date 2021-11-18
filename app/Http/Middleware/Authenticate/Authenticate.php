@@ -4,8 +4,9 @@ namespace App\Http\Middleware\Authenticate;
 
 use App\Http\Libraries\Encrypter\Encrypter;
 use App\Http\Libraries\Http\JsonResponse;
-use App\Http\Responses\AuthResponse;
+use App\Http\ErrorCode\AuthResponse;
 use Closure;
+use App\Exceptions\ApiException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Support\Facades\DB;
@@ -52,10 +53,7 @@ class Authenticate extends Middleware
                     $request->url() != $refreshTokenURL &&
                     strpos($request->url(), $externalAuthenticationURL) === false)
                 {
-                    JsonResponse::sendError(
-                        AuthResponse::UNAUTHORIZED,
-                        Response::HTTP_UNAUTHORIZED
-                    );
+                    throw new ApiException(AuthResponse::$UNAUTHORIZED);
                 }
             }
 
@@ -66,10 +64,7 @@ class Authenticate extends Middleware
                 $request->url() == $refreshTokenURL ||
                 strpos($request->url(), $externalAuthenticationURL) !== false)
             {
-                JsonResponse::sendError(
-                    AuthResponse::ALREADY_LOGGED_IN,
-                    Response::HTTP_NOT_ACCEPTABLE
-                );
+                throw new ApiException(AuthResponse::$ALREADY_LOGGED_IN);
             }
 
             $accountBlockedAt = $request->user()->account_blocked_at;
@@ -81,10 +76,7 @@ class Authenticate extends Middleware
                 JsonResponse::deleteCookie('JWT');
                 JsonResponse::deleteCookie('REFRESH-TOKEN');
                 
-                JsonResponse::sendError(
-                    AuthResponse::ACOUNT_BLOCKED,
-                    Response::HTTP_UNAUTHORIZED
-                );
+                throw new ApiException(AuthResponse::$ACOUNT_BLOCKED);
             }
         } else {
 
@@ -95,10 +87,7 @@ class Authenticate extends Middleware
                 $request->url() != $refreshTokenURL &&
                 strpos($request->url(), $externalAuthenticationURL) === false)
             {
-                JsonResponse::sendError(
-                    AuthResponse::UNAUTHORIZED,
-                    Response::HTTP_UNAUTHORIZED
-                );
+                throw new ApiException(AuthResponse::$UNAUTHORIZED);
             }
         }
 
@@ -115,19 +104,13 @@ class Authenticate extends Middleware
                 $personalAccessToken = DB::table('personal_access_tokens')->where('refresh_token', $refreshToken)->first();
     
                 if ($personalAccessToken) {
-                    JsonResponse::sendError(
-                        AuthResponse::REFRESH_TOKEN_IS_STILL_ACTIVE,
-                        Response::HTTP_NOT_ACCEPTABLE
-                    );
+                    throw new ApiException(AuthResponse::$REFRESH_TOKEN_IS_STILL_ACTIVE);
                 } else {
                     JsonResponse::deleteCookie('REFRESH-TOKEN');
                 }
             }
         } else if ($request->url() == $refreshTokenURL) {
-            JsonResponse::sendError(
-                AuthResponse::UNAUTHORIZED,
-                Response::HTTP_UNAUTHORIZED
-            );
+            throw new ApiException(AuthResponse::$UNAUTHORIZED);
         }
 
         return $next($request);

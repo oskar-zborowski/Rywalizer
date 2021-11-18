@@ -3,8 +3,8 @@
 namespace App\Exceptions;
 
 use App\Http\Libraries\Http\JsonResponse;
-use App\Http\Responses\AuthResponse;
-use App\Http\Responses\DefaultResponse;
+use App\Http\ErrorCode\AuthResponse;
+use App\Http\ErrorCode\DefaultResponse;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
@@ -12,8 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
-class Handler extends ExceptionHandler
-{
+class Handler extends ExceptionHandler {
     /**
      * A list of the exception types that are not reported.
      *
@@ -39,8 +38,7 @@ class Handler extends ExceptionHandler
      *
      * @return void
      */
-    public function register()
-    {
+    public function register() {
         $this->reportable(function (Throwable $e) {
             //
         });
@@ -55,32 +53,33 @@ class Handler extends ExceptionHandler
      * @return void
      */
     public function render($request, Throwable $throwable): void {
-
         if ($throwable instanceof ValidationException) {
             JsonResponse::sendError(
-                DefaultResponse::FAILED_VALIDATION,
-                Response::HTTP_BAD_REQUEST,
+                DefaultResponse::$FAILED_VALIDATION,
                 JsonResponse::convertToCamelCase($throwable->errors())
             );
         } else if ($throwable instanceof HttpException) {
             JsonResponse::sendError(
-                DefaultResponse::PERMISSION_DENIED,
-                Response::HTTP_FORBIDDEN,
+                DefaultResponse::$PERMISSION_DENIED,
                 JsonResponse::convertToCamelCase([$throwable->getMessage()])
             );
         } else if ($throwable instanceof ClientException) {
             JsonResponse::sendError(
-                AuthResponse::INVALID_CREDENTIALS_PROVIDED,
-                Response::HTTP_UNAUTHORIZED,
+                AuthResponse::$INVALID_CREDENTIALS_PROVIDED,
                 env('APP_DEBUG') ? JsonResponse::convertToCamelCase([$throwable->getMessage()]) : null
+            );
+        } else if ($throwable instanceof ApiException) {
+            JsonResponse::sendError(
+                $throwable->getErrorCode(),
+                $throwable->getData(),
+                $throwable->getMetadata(),
             );
         } else {
             $throwable = json_encode($throwable);
             $throwable = json_decode($throwable, true);
 
             JsonResponse::sendError(
-                DefaultResponse::INTERNAL_SERVER_ERROR,
-                Response::HTTP_INTERNAL_SERVER_ERROR,
+                DefaultResponse::$INTERNAL_SERVER_ERROR,
                 env('APP_DEBUG') ? JsonResponse::convertToCamelCase($throwable) : null
             );
         }
