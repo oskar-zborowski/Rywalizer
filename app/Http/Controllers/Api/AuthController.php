@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Libraries\Encrypter\Encrypter;
 use App\Http\Libraries\Http\JsonResponse;
+use App\Http\Requests\Auth\FillMissingUserInfoRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Responses\AuthResponse;
 use App\Http\Responses\DefaultResponse;
@@ -21,8 +22,6 @@ use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Laravel\Socialite\Facades\Socialite;
 
 /**
@@ -267,6 +266,13 @@ class AuthController extends Controller
             JsonResponse::sendSuccess();
 
         } else {
+            DB::table('users')
+                ->where('id', $user->id)
+                ->update([
+                    'verification_email_counter' => 1,
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]);
+
             $user->sendEmailVerificationNotification();
         }
     }
@@ -409,9 +415,13 @@ class AuthController extends Controller
 
         $authenticationId = $user->getId() !== null ? (string)($user->getId()) : null;
 
-        Validator::make(['authentication_id' => $authenticationId], [
-            'authentication_id' => 'required|string|between:1,254'
-        ]);
+        if (!$authenticationId || strlen($authenticationId) < 1 || strlen($authenticationId) > 254) {
+            JsonResponse::sendError(
+                DefaultResponse::FAILED_VALIDATION,
+                Response::HTTP_BAD_REQUEST,
+                ['authentication_id' => ['The provider returned an invalid id.']] // TODO Zmienić kiedy pojawią się langi
+            );
+        }
 
         $externalAuthentication = DB::table('external_authentications')
             ->where('authentication_id', $encrypter->encrypt($authenticationId, 254))
@@ -492,13 +502,29 @@ class AuthController extends Controller
 
         $this->prepareCookies();
 
-        if (!$user->email ||
-            !$user->birth_date)
-        {
+        $missingInfo = null;
+
+        if (!$user->email) {
+            $missingInfo['email'] = ['The email field is missing.']; // TODO Zmienić kiedy pojawią się langi
+        }
+
+        if (!$user->birth_date) {
+            $missingInfo['birthDate'] = ['The birth date field is missing.']; // TODO Zmienić kiedy pojawią się langi
+        }
+
+        if (!$user->gender_type_id) {
+            $missingInfo['genderTypeId'] = ['The gender type id field is missing. (NOT REQUIRED)']; // TODO Zmienić kiedy pojawią się langi
+        }
+
+        if (!$user->avatar) {
+            $missingInfo['avatar'] = ['The avatar field is missing. (NOT REQUIRED)']; // TODO Zmienić kiedy pojawią się langi
+        }
+
+        if (isset($missingInfo['email']) || isset($missingInfo['birthDate'])) {
             JsonResponse::sendError(
                 AuthResponse::MISSING_USER_INFORMATION,
                 Response::HTTP_FORBIDDEN,
-                [$user]
+                [$missingInfo]
             );
         }
 
@@ -506,8 +532,12 @@ class AuthController extends Controller
             JsonResponse::sendError(
                 AuthResponse::UNVERIFIED_EMAIL,
                 Response::HTTP_FORBIDDEN,
-                [$user]
+                [$missingInfo ? $missingInfo : $user]
             );
+        }
+
+        if ($missingInfo) {
+            JsonResponse::sendSuccess([$missingInfo]);
         }
 
         JsonResponse::sendSuccess([$user]);
@@ -523,6 +553,108 @@ class AuthController extends Controller
      */
     public function user(Request $request): void {
         JsonResponse::sendSuccess([$request->user()]);
+    }
+
+    /**
+     * #### `POST` `/api/fill-missing-user-info`
+     * Uzupełnienie brakujących informacji o użytkowniku
+     * 
+     * @param App\Http\Requests\Auth\FillMissingUserInfoRequest $request
+     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
+     * 
+     * @return void
+     */
+    public function fillMissingUserInfo(FillMissingUserInfoRequest $request, Encrypter $encrypter): void {
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        if ($user->email_verified_at && $user->avatar && $user->gender_type_id && $user->birth_date) {
+            JsonResponse::sendError(
+                AuthResponse::ALL_USER_FIELDS_ARE_COMPLETE,
+                Response::HTTP_NOT_ACCEPTABLE
+            );
+        }
+
+        $plainEmail = $request->email;
+
+        if (!$user->email && $plainEmail) {
+            $request->merge(['email' => $encrypter->encrypt($plainEmail, 254)]);
+
+            $request->validate([
+                'email' => 'unique:users'
+            ]);
+        }
+
+        $missingInfo = null;
+        $supplementaryInfo = null;
+
+        if (!$user->email) {
+            if (!$plainEmail) {
+                $missingInfo['email'] = ['The email field is missing.']; // TODO Zmienić kiedy pojawią się langi
+            } else {
+                $supplementaryInfo['email'] = $request->email;
+            }
+        }
+
+        if (!$user->birth_date) {
+            if (!$request->birth_date) {
+                $missingInfo['birthDate'] = ['The birth date field is missing.']; // TODO Zmienić kiedy pojawią się langi
+            } else {
+                $supplementaryInfo['birth_date'] = $encrypter->encrypt($request->birth_date, 10);
+            }
+        }
+
+        if (!$user->gender_type_id) {
+            if (!$request->gender_type_id) {
+                $missingInfo['genderTypeId'] = ['The gender type id field is missing. (NOT REQUIRED)']; // TODO Zmienić kiedy pojawią się langi
+            } else {
+                $supplementaryInfo['gender_type_id'] = $request->gender_type_id;
+            }
+        }
+
+        if (!$user->avatar) {
+            if (!$request->avatar) {
+                $missingInfo['avatar'] = ['The avatar field is missing. (NOT REQUIRED)']; // TODO Zmienić kiedy pojawią się langi
+            } else {
+                $supplementaryInfo['avatar'] = $encrypter->encrypt($request->avatar, 24);
+            }
+        }
+
+        if ($supplementaryInfo) {
+            $supplementaryInfo['updated_at'] = date('Y-m-d H:i:s');
+            DB::table('users')
+                ->where('id', $user->id)
+                ->update($supplementaryInfo);
+        }
+
+        $user->refresh();
+
+        if (isset($supplementaryInfo['email'])) {
+            $this->sendVerificationEmail(true);
+        }
+
+        if (isset($missingInfo['email']) || isset($missingInfo['birthDate'])) {
+            JsonResponse::sendError(
+                AuthResponse::MISSING_USER_INFORMATION,
+                Response::HTTP_FORBIDDEN,
+                [$missingInfo]
+            );
+        }
+
+        if (!$user->email_verified_at) {
+            JsonResponse::sendError(
+                AuthResponse::UNVERIFIED_EMAIL,
+                Response::HTTP_FORBIDDEN,
+                [$missingInfo ? $missingInfo : $user]
+            );
+        }
+
+        if ($missingInfo) {
+            JsonResponse::sendSuccess([$missingInfo]);
+        }
+
+        JsonResponse::sendSuccess([$user]);
     }
 
     /**

@@ -22,4 +22,5 @@ class AuthResponse
     public const INVALID_CREDENTIALS_PROVIDED = 'ATH13';
     public const MISSING_USER_INFORMATION = 'ATH14';
     public const WAIT_BEFORE_RETRYING = 'ATH15';
+    public const ALL_USER_FIELDS_ARE_COMPLETE = 'ATH16';
 }

@@ -23,7 +23,7 @@ class CreateUsersTable extends Migration
             $table->tinyInteger('role_type_id')->unsigned()->default(1);
             $table->string('birth_date', 16)->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->tinyInteger('verification_email_counter')->unsigned()->default(1);
+            $table->tinyInteger('verification_email_counter')->unsigned()->default(0);
             $table->timestamp('account_deleted_at')->nullable();
             $table->timestamp('account_blocked_at')->nullable();
             $table->timestamps();
