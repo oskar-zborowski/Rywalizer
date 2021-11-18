@@ -11,7 +11,7 @@ class ApiException extends Exception {
     private array $data;
     private array $metadata;
 
-    public function __construct(ErrorCode $errorCode, array $data = null, array $metadata = null) {
+    public function __construct(ErrorCode $errorCode, array $data = [], array $metadata = []) {
         parent::__construct();
 
         $this->errorCode = $errorCode;
