@@ -52,7 +52,7 @@ class BeforeAuthenticate
 
         if ($request->url() != $resetPasswordURL && $request->url() != $refreshTokenURL) {
             $encrypter = new Encrypter;
-            $request->merge(['email' => $encrypter->encrypt($request->input('email'), 254)]);
+            $request->merge(['email' => $encrypter->encrypt($request->email, 254)]);
         }
 
         return $next($request);

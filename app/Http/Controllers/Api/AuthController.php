@@ -46,7 +46,7 @@ class AuthController extends Controller
             );
         }
 
-        $this->checkmissingUserInfo(true);
+        $this->checkMissingUserInfo(true);
     }
 
     /**
@@ -74,7 +74,7 @@ class AuthController extends Controller
         ]);
 
         $this->sendVerificationEmail(true);
-        $this->checkmissingUserInfo(true);
+        $this->checkMissingUserInfo(true);
     }
 
     /**
@@ -261,7 +261,7 @@ class AuthController extends Controller
                 ->update(['updated_at' => date('Y-m-d H:i:s')]);
         }
 
-        $this->checkmissingUserInfo();
+        $this->checkMissingUserInfo();
     }
 
     /**
@@ -346,7 +346,7 @@ class AuthController extends Controller
 
         Auth::loginUsingId($userId);
 
-        $this->checkmissingUserInfo(true);
+        $this->checkMissingUserInfo(true);
     }
 
     /**
@@ -451,7 +451,7 @@ class AuthController extends Controller
             Auth::loginUsingId($externalAuthentication->user_id);
         }
 
-        $this->checkmissingUserInfo(true);
+        $this->checkMissingUserInfo(true);
     }
 
     /**
@@ -461,7 +461,7 @@ class AuthController extends Controller
      * @return void
      */
     public function user(): void {
-        $this->checkmissingUserInfo();
+        $this->checkMissingUserInfo();
     }
 
     /**
@@ -521,7 +521,7 @@ class AuthController extends Controller
             $this->sendVerificationEmail(true);
         }
 
-        $this->checkmissingUserInfo();
+        $this->checkMissingUserInfo();
     }
 
     /**
@@ -641,7 +641,7 @@ class AuthController extends Controller
      * 
      * @return void
      */
-    private function checkmissingUserInfo($withTokens = false): void {
+    private function checkMissingUserInfo($withTokens = false): void {
 
         /** @var User $user */
         $user = Auth::user();
@@ -652,7 +652,7 @@ class AuthController extends Controller
 
         if ($accountBlockedAt) {
             $user->tokens()->delete();
-            
+
             JsonResponse::deleteCookie('JWT');
             JsonResponse::deleteCookie('REFRESH-TOKEN');
 
