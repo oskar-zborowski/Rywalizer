@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function () {
 
     /*
     |-------------------------------------------------------------------------------------------------------
@@ -24,13 +24,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('before.auth')->group(function () {
 
-        Route::post('/login', [AuthController::class, 'login']);
-        Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/login', [AuthController::class, 'login'])->middleware(['throttle:loginLimit']);
+        Route::post('/register', [AuthController::class, 'register'])->middleware(['throttle:registerLimit']);
 
-        Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-        Route::put('/reset-password', [AuthController::class, 'resetPassword']);
+        Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware(['throttle:forgotPasswordLimit']);
+        Route::put('/reset-password', [AuthController::class, 'resetPassword'])->middleware(['throttle:resetPasswordLimit']);
 
-        Route::post('/refresh-token', [AuthController::class, 'refreshToken']);
+        Route::post('/refresh-token', [AuthController::class, 'refreshToken'])->middleware(['throttle:refreshTokenLimit']);
     });
 
     /*
@@ -39,8 +39,8 @@ Route::middleware('auth:sanctum')->group(function () {
     |-------------------------------------------------------------------------------------------------------
     */
 
-    Route::get('auth/{provider}/redirect', [AuthController::class, 'redirectToProvider']);
-    Route::get('auth/{provider}/callback', [AuthController::class, 'handleProviderCallback']);
+    Route::get('auth/{provider}/redirect', [AuthController::class, 'redirectToProvider'])->middleware(['throttle:providerRedirectLimit']);
+    Route::get('auth/{provider}/callback', [AuthController::class, 'handleProviderCallback'])->withoutMiddleware('throttle:defaultAuthLimit');
 
     /*
     |-------------------------------------------------------------------------------------------------------
@@ -57,8 +57,8 @@ Route::middleware('auth:sanctum')->group(function () {
     |-------------------------------------------------------------------------------------------------------
     */
 
-    Route::delete('/logout', [AuthController::class, 'logout']);
-    Route::delete('/logout-other-devices', [AuthController::class, 'logoutOtherDevices']);
+    Route::delete('/logout', [AuthController::class, 'logout'])->withoutMiddleware('throttle:defaultAuthLimit');
+    Route::delete('/logout-other-devices', [AuthController::class, 'logoutOtherDevices'])->middleware(['throttle:logoutOtherDevicesLimit']);
 
     Route::post('/fill-missing-user-info', [AuthController::class, 'fillMissingUserInfo']);
 });
@@ -69,6 +69,6 @@ Route::middleware('auth:sanctum')->group(function () {
 |-----------------------------------------------------------------------------------------------------------
 */
 
-Route::middleware('auth:sanctum', 'verified')->group(function () {
+Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum', 'verified'])->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
 });

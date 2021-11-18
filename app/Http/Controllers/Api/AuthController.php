@@ -218,17 +218,23 @@ class AuthController extends Controller
                 );
             }
 
-            DB::table('users')
-                ->where('id', $user->id)
-                ->update([
-                    'verification_email_counter' => $user->verification_email_counter+1,
-                    'updated_at' => $now
-                ]);
+            if ($user->verification_email_counter < 255) {
+                DB::table('users')
+                    ->where('id', $user->id)
+                    ->update([
+                        'verification_email_counter' => $user->verification_email_counter+1,
+                        'updated_at' => $now
+                    ]);
 
-            $user->sendEmailVerificationNotification();
-    
-            JsonResponse::sendSuccess();
+                $user->sendEmailVerificationNotification();
 
+                JsonResponse::sendSuccess();
+            } else {
+                JsonResponse::sendError(
+                    DefaultResponse::LIMIT_EXCEEDED,
+                    Response::HTTP_NOT_ACCEPTABLE
+                );
+            }
         } else {
 
             DB::table('users')

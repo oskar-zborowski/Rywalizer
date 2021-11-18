@@ -57,7 +57,39 @@ class RouteServiceProvider extends ServiceProvider
     protected function configureRateLimiting()
     {
         RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
+            return Limit::none();
+        });
+
+        RateLimiter::for('defaultAuthLimit', function (Request $request) {
+            return Limit::perMinute(env('DEFAULT_AUTH_RATE_LIMITER_PER_MINUTE'))->by($request->user());
+        });
+
+        RateLimiter::for('loginLimit', function (Request $request) {
+            return Limit::perDay(env('DEFAULT_AUTH_RATE_LIMITER_PER_DAY'))->by($request->ip());
+        });
+
+        RateLimiter::for('registerLimit', function (Request $request) {
+            return Limit::perDay(env('DEFAULT_AUTH_RATE_LIMITER_PER_DAY'))->by($request->ip());
+        });
+
+        RateLimiter::for('forgotPasswordLimit', function (Request $request) {
+            return Limit::perDay(env('DEFAULT_AUTH_RATE_LIMITER_PER_DAY'))->by($request->ip());
+        });
+
+        RateLimiter::for('resetPasswordLimit', function (Request $request) {
+            return Limit::perDay(env('DEFAULT_AUTH_RATE_LIMITER_PER_DAY'))->by($request->ip());
+        });
+
+        RateLimiter::for('refreshTokenLimit', function (Request $request) {
+            return Limit::perDay(env('DEFAULT_AUTH_RATE_LIMITER_PER_DAY'))->by($request->ip());
+        });
+
+        RateLimiter::for('providerRedirectLimit', function (Request $request) {
+            return Limit::perDay(env('DEFAULT_AUTH_RATE_LIMITER_PER_DAY'))->by($request->ip());
+        });
+
+        RateLimiter::for('logoutOtherDevicesLimit', function (Request $request) {
+            return Limit::perDay(5)->by($request->user()->id);
         });
     }
 }
