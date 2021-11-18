@@ -4,7 +4,7 @@ namespace App\Http\Middleware\Authenticate;
 
 use App\Http\Libraries\Encrypter\Encrypter;
 use App\Http\Libraries\Http\JsonResponse;
-use App\Http\ErrorCode\AuthResponse;
+use App\Http\ErrorCode\AuthErrorCode;
 use Closure;
 use App\Exceptions\ApiException;
 use Illuminate\Auth\AuthenticationException;
@@ -53,7 +53,7 @@ class Authenticate extends Middleware
                     $request->url() != $refreshTokenURL &&
                     strpos($request->url(), $externalAuthenticationURL) === false)
                 {
-                    throw new ApiException(AuthResponse::$UNAUTHORIZED);
+                    throw new ApiException(AuthErrorCode::UNAUTHORIZED());
                 }
             }
 
@@ -64,7 +64,7 @@ class Authenticate extends Middleware
                 $request->url() == $refreshTokenURL ||
                 strpos($request->url(), $externalAuthenticationURL) !== false)
             {
-                throw new ApiException(AuthResponse::$ALREADY_LOGGED_IN);
+                throw new ApiException(AuthErrorCode::ALREADY_LOGGED_IN());
             }
 
             $accountBlockedAt = $request->user()->account_blocked_at;
@@ -76,7 +76,7 @@ class Authenticate extends Middleware
                 JsonResponse::deleteCookie('JWT');
                 JsonResponse::deleteCookie('REFRESH-TOKEN');
                 
-                throw new ApiException(AuthResponse::$ACOUNT_BLOCKED);
+                throw new ApiException(AuthErrorCode::ACOUNT_BLOCKED());
             }
         } else {
 
@@ -87,7 +87,7 @@ class Authenticate extends Middleware
                 $request->url() != $refreshTokenURL &&
                 strpos($request->url(), $externalAuthenticationURL) === false)
             {
-                throw new ApiException(AuthResponse::$UNAUTHORIZED);
+                throw new ApiException(AuthErrorCode::UNAUTHORIZED());
             }
         }
 
@@ -104,13 +104,13 @@ class Authenticate extends Middleware
                 $personalAccessToken = DB::table('personal_access_tokens')->where('refresh_token', $refreshToken)->first();
     
                 if ($personalAccessToken) {
-                    throw new ApiException(AuthResponse::$REFRESH_TOKEN_IS_STILL_ACTIVE);
+                    throw new ApiException(AuthErrorCode::REFRESH_TOKEN_IS_STILL_ACTIVE());
                 } else {
                     JsonResponse::deleteCookie('REFRESH-TOKEN');
                 }
             }
         } else if ($request->url() == $refreshTokenURL) {
-            throw new ApiException(AuthResponse::$UNAUTHORIZED);
+            throw new ApiException(AuthErrorCode::UNAUTHORIZED());
         }
 
         return $next($request);

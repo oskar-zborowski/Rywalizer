@@ -3,8 +3,8 @@
 namespace App\Exceptions;
 
 use App\Http\Libraries\Http\JsonResponse;
-use App\Http\ErrorCode\AuthResponse;
-use App\Http\ErrorCode\DefaultResponse;
+use App\Http\ErrorCode\AuthErrorCode;
+use App\Http\ErrorCode\BaseErrorCode;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
@@ -55,17 +55,17 @@ class Handler extends ExceptionHandler {
     public function render($request, Throwable $throwable): void {
         if ($throwable instanceof ValidationException) {
             JsonResponse::sendError(
-                DefaultResponse::$FAILED_VALIDATION,
+                BaseErrorCode::$FAILED_VALIDATION,
                 JsonResponse::convertToCamelCase($throwable->errors())
             );
         } else if ($throwable instanceof HttpException) {
             JsonResponse::sendError(
-                DefaultResponse::$PERMISSION_DENIED,
+                BaseErrorCode::$PERMISSION_DENIED,
                 JsonResponse::convertToCamelCase([$throwable->getMessage()])
             );
         } else if ($throwable instanceof ClientException) {
             JsonResponse::sendError(
-                AuthResponse::$INVALID_CREDENTIALS_PROVIDED,
+                AuthErrorCode::$INVALID_CREDENTIALS_PROVIDED,
                 env('APP_DEBUG') ? JsonResponse::convertToCamelCase([$throwable->getMessage()]) : null
             );
         } else if ($throwable instanceof ApiException) {
@@ -79,7 +79,7 @@ class Handler extends ExceptionHandler {
             $throwable = json_decode($throwable, true);
 
             JsonResponse::sendError(
-                DefaultResponse::$INTERNAL_SERVER_ERROR,
+                BaseErrorCode::$INTERNAL_SERVER_ERROR,
                 env('APP_DEBUG') ? JsonResponse::convertToCamelCase($throwable) : null
             );
         }
