@@ -46,37 +46,7 @@ class AuthController extends Controller
             );
         }
 
-        $user = Auth::user();
-
-        $emailVerifiedAt = $user->email_verified_at;
-        $accountDeletedAt = $user->account_deleted_at;
-        $accountBlockedAt = $user->account_blocked_at;
-
-        if ($accountBlockedAt) {
-            JsonResponse::sendError(
-                AuthResponse::ACOUNT_BLOCKED,
-                Response::HTTP_UNAUTHORIZED
-            );
-        }
-
-        if ($accountDeletedAt) {
-            JsonResponse::sendError(
-                AuthResponse::ACOUNT_DELETED,
-                Response::HTTP_UNAUTHORIZED
-            );
-        }
-
-        $this->prepareCookies();
-
-        if (!$emailVerifiedAt) {
-            JsonResponse::sendError(
-                AuthResponse::UNVERIFIED_EMAIL,
-                Response::HTTP_FORBIDDEN,
-                [$user]
-            );
-        }
-
-        JsonResponse::sendSuccess([$user]);
+        $this->checkmissingUserInfo(true);
     }
 
     /**
@@ -103,16 +73,8 @@ class AuthController extends Controller
             'password' => $plainPassword
         ]);
 
-        $user = Auth::user();
-
-        $this->prepareCookies();
         $this->sendVerificationEmail(true);
-
-        JsonResponse::sendError(
-            AuthResponse::UNVERIFIED_EMAIL,
-            Response::HTTP_FORBIDDEN,
-            [$user]
-        );
+        $this->checkmissingUserInfo(true);
     }
 
     /**
@@ -145,7 +107,9 @@ class AuthController extends Controller
                     Response::HTTP_NOT_ACCEPTABLE
                 );
             } else {
-                DB::table('password_resets')->where('id', $passwordResetToken->id)->delete();
+                DB::table('password_resets')
+                    ->where('id', $passwordResetToken->id)
+                    ->delete();
             }
         }
 
@@ -266,6 +230,7 @@ class AuthController extends Controller
             JsonResponse::sendSuccess();
 
         } else {
+
             DB::table('users')
                 ->where('id', $user->id)
                 ->update([
@@ -288,18 +253,15 @@ class AuthController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        if ($user->hasVerifiedEmail()) {
-            JsonResponse::sendError(
-                AuthResponse::EMAIL_ALREADY_VERIFIED,
-                Response::HTTP_NOT_ACCEPTABLE
-            );
-        }
-
-        if ($user->markEmailAsVerified()) {
+        if (!$user->hasVerifiedEmail() && $user->markEmailAsVerified()) {
             event(new Verified($user));
+
+            DB::table('users')
+                ->where('id', $user->id)
+                ->update(['updated_at' => date('Y-m-d H:i:s')]);
         }
 
-        JsonResponse::sendSuccess();
+        $this->checkmissingUserInfo();
     }
 
     /**
@@ -350,7 +312,9 @@ class AuthController extends Controller
 
         $plainRefreshToken = $request->cookie('REFRESH-TOKEN');
         $refreshToken = $encrypter->encryptToken($plainRefreshToken);
-        $personalAccessToken = DB::table('personal_access_tokens')->where('refresh_token', $refreshToken)->first();
+        $personalAccessToken = DB::table('personal_access_tokens')
+            ->where('refresh_token', $refreshToken)
+            ->first();
 
         if (!$personalAccessToken) {
             JsonResponse::deleteCookie('REFRESH-TOKEN');
@@ -360,6 +324,13 @@ class AuthController extends Controller
                 Response::HTTP_UNAUTHORIZED
             );
         }
+
+        $userId = $personalAccessToken->tokenable_id;
+        $personalAccessTokenId = $personalAccessToken->id;
+
+        DB::table('personal_access_tokens')
+            ->where('id', $personalAccessTokenId)
+            ->delete();
 
         $expirationDate = date('Y-m-d H:i:s', strtotime('+' . env('REFRESH_TOKEN_LIFETIME') . ' minutes', strtotime($personalAccessToken->created_at)));
         $now = date('Y-m-d H:i:s');
@@ -373,16 +344,9 @@ class AuthController extends Controller
             );
         }
 
-        $userId = $personalAccessToken->tokenable_id;
-        $personalAccessTokenId = $personalAccessToken->id;
+        Auth::loginUsingId($userId);
 
-        DB::table('personal_access_tokens')->where('id', $personalAccessTokenId)->delete();
-
-        $user = Auth::loginUsingId($userId);
-
-        $this->prepareCookies();
-
-        JsonResponse::sendSuccess([$user]);
+        $this->checkmissingUserInfo(true);
     }
 
     /**
@@ -414,6 +378,7 @@ class AuthController extends Controller
         $user = Socialite::driver($provider)->stateless()->user();
 
         $authenticationId = $user->getId() !== null ? (string)($user->getId()) : null;
+        $encryptedAuthenticationId = $encrypter->encrypt($authenticationId, 254);
 
         if (!$authenticationId || strlen($authenticationId) < 1 || strlen($authenticationId) > 254) {
             JsonResponse::sendError(
@@ -424,15 +389,17 @@ class AuthController extends Controller
         }
 
         $externalAuthentication = DB::table('external_authentications')
-            ->where('authentication_id', $encrypter->encrypt($authenticationId, 254))
+            ->where('authentication_id', $encryptedAuthenticationId)
             ->where('provider_type_id', $providerId)
             ->first();
 
         if (!$externalAuthentication) {
 
-            if (filter_var($user->getEmail(), FILTER_VALIDATE_EMAIL)) {
+            if (filter_var($user->getEmail(), FILTER_VALIDATE_EMAIL)) {    
+                $encryptedEmail = $encrypter->encrypt($user->getEmail(), 254);
+
                 $externalAuthentication = DB::table('users')
-                    ->where('email', $encrypter->encrypt($user->getEmail(), 254))
+                    ->where('email', $encryptedEmail)
                     ->first();
 
                 if ($externalAuthentication) {
@@ -475,7 +442,7 @@ class AuthController extends Controller
             $createUser = User::create($newUser);
 
             $createUser->externalAuthentication()->create([
-                'authentication_id' => $encrypter->encrypt($authenticationId, 254),
+                'authentication_id' => $encryptedAuthenticationId,
                 'provider_type_id' => $providerId
             ]);
 
@@ -484,75 +451,17 @@ class AuthController extends Controller
             Auth::loginUsingId($externalAuthentication->user_id);
         }
 
-        $user = Auth::user();
-
-        if ($user->account_blocked_at) {
-            JsonResponse::sendError(
-                AuthResponse::ACOUNT_BLOCKED,
-                Response::HTTP_UNAUTHORIZED,
-            );
-        }
-
-        if ($user->account_deleted_at) {
-            JsonResponse::sendError(
-                AuthResponse::ACOUNT_DELETED,
-                Response::HTTP_UNAUTHORIZED,
-            );
-        }
-
-        $this->prepareCookies();
-
-        $missingInfo = null;
-
-        if (!$user->email) {
-            $missingInfo['email'] = ['The email field is missing.']; // TODO Zmienić kiedy pojawią się langi
-        }
-
-        if (!$user->birth_date) {
-            $missingInfo['birthDate'] = ['The birth date field is missing.']; // TODO Zmienić kiedy pojawią się langi
-        }
-
-        if (!$user->gender_type_id) {
-            $missingInfo['genderTypeId'] = ['The gender type id field is missing. (NOT REQUIRED)']; // TODO Zmienić kiedy pojawią się langi
-        }
-
-        if (!$user->avatar) {
-            $missingInfo['avatar'] = ['The avatar field is missing. (NOT REQUIRED)']; // TODO Zmienić kiedy pojawią się langi
-        }
-
-        if (isset($missingInfo['email']) || isset($missingInfo['birthDate'])) {
-            JsonResponse::sendError(
-                AuthResponse::MISSING_USER_INFORMATION,
-                Response::HTTP_FORBIDDEN,
-                [$missingInfo]
-            );
-        }
-
-        if (!$user->email_verified_at) {
-            JsonResponse::sendError(
-                AuthResponse::UNVERIFIED_EMAIL,
-                Response::HTTP_FORBIDDEN,
-                [$missingInfo ? $missingInfo : $user]
-            );
-        }
-
-        if ($missingInfo) {
-            JsonResponse::sendSuccess([$missingInfo]);
-        }
-
-        JsonResponse::sendSuccess([$user]);
+        $this->checkmissingUserInfo(true);
     }
 
     /**
      * #### `GET` `/api/user`
      * Pobranie informacji o użytkowniku
      * 
-     * @param Illuminate\Http\Request $request
-     * 
      * @return void
      */
-    public function user(Request $request): void {
-        JsonResponse::sendSuccess([$request->user()]);
+    public function user(): void {
+        $this->checkmissingUserInfo();
     }
 
     /**
@@ -569,56 +478,34 @@ class AuthController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        if ($user->email_verified_at && $user->avatar && $user->gender_type_id && $user->birth_date) {
-            JsonResponse::sendError(
-                AuthResponse::ALL_USER_FIELDS_ARE_COMPLETE,
-                Response::HTTP_NOT_ACCEPTABLE
-            );
-        }
-
         $plainEmail = $request->email;
+        $encryptedBirthDate = $request->birth_date ? $encrypter->encrypt($request->birth_date, 10) : null;
 
         if (!$user->email && $plainEmail) {
-            $request->merge(['email' => $encrypter->encrypt($plainEmail, 254)]);
-
+            $encryptedEmail = $encrypter->encrypt($plainEmail, 254);
+            $request->merge(['email' => $encryptedEmail]);
             $request->validate([
                 'email' => 'unique:users'
             ]);
         }
 
-        $missingInfo = null;
         $supplementaryInfo = null;
 
-        if (!$user->email) {
-            if (!$plainEmail) {
-                $missingInfo['email'] = ['The email field is missing.']; // TODO Zmienić kiedy pojawią się langi
-            } else {
-                $supplementaryInfo['email'] = $request->email;
-            }
+        if (!$user->email && $plainEmail) {
+            $supplementaryInfo['email'] = $request->email;
         }
 
-        if (!$user->birth_date) {
-            if (!$request->birth_date) {
-                $missingInfo['birthDate'] = ['The birth date field is missing.']; // TODO Zmienić kiedy pojawią się langi
-            } else {
-                $supplementaryInfo['birth_date'] = $encrypter->encrypt($request->birth_date, 10);
-            }
+        if (!$user->birth_date && $encryptedBirthDate) {
+            $supplementaryInfo['birth_date'] = $encryptedBirthDate;
         }
 
-        if (!$user->gender_type_id) {
-            if (!$request->gender_type_id) {
-                $missingInfo['genderTypeId'] = ['The gender type id field is missing. (NOT REQUIRED)']; // TODO Zmienić kiedy pojawią się langi
-            } else {
-                $supplementaryInfo['gender_type_id'] = $request->gender_type_id;
-            }
+        if (!$user->gender_type_id && $request->gender_type_id) {
+            $supplementaryInfo['gender_type_id'] = $request->gender_type_id;
         }
 
-        if (!$user->avatar) {
-            if (!$request->avatar) {
-                $missingInfo['avatar'] = ['The avatar field is missing. (NOT REQUIRED)']; // TODO Zmienić kiedy pojawią się langi
-            } else {
-                $supplementaryInfo['avatar'] = $encrypter->encrypt($request->avatar, 24);
-            }
+        if (!$user->avatar && $request->avatar) {
+            // TODO Zrobić wgrywanie i zapisywanie zdjęć przez formularz
+            $supplementaryInfo['avatar'] = $encrypter->encrypt($request->avatar, 24);
         }
 
         if ($supplementaryInfo) {
@@ -634,27 +521,7 @@ class AuthController extends Controller
             $this->sendVerificationEmail(true);
         }
 
-        if (isset($missingInfo['email']) || isset($missingInfo['birthDate'])) {
-            JsonResponse::sendError(
-                AuthResponse::MISSING_USER_INFORMATION,
-                Response::HTTP_FORBIDDEN,
-                [$missingInfo]
-            );
-        }
-
-        if (!$user->email_verified_at) {
-            JsonResponse::sendError(
-                AuthResponse::UNVERIFIED_EMAIL,
-                Response::HTTP_FORBIDDEN,
-                [$missingInfo ? $missingInfo : $user]
-            );
-        }
-
-        if ($missingInfo) {
-            JsonResponse::sendSuccess([$missingInfo]);
-        }
-
-        JsonResponse::sendSuccess([$user]);
+        $this->checkmissingUserInfo();
     }
 
     /**
@@ -704,7 +571,8 @@ class AuthController extends Controller
         $plainRefreshToken = $encrypter->generatePlainToken(64);
         $refreshToken = $encrypter->encryptToken($plainRefreshToken);
 
-        $jwt = $user->createToken($encrypter->encrypt('JWT', 3));
+        $jwtEncryptedName = $encrypter->encrypt('JWT', 3);
+        $jwt = $user->createToken($jwtEncryptedName);
         $plainJWT = $jwt->plainTextToken;
         $jwtId = $jwt->accessToken->getKey();
 
@@ -764,5 +632,90 @@ class AuthController extends Controller
         Storage::put('avatars/' . $avatarFilename, $avatarContents);
 
         return $avatarFilename;
+    }
+
+    /**
+     * Sprawdzenie brakujących informacji o użytkowniku i zwrócenie właściwych informacji
+     * 
+     * @param bool $withTokens flaga określająca czy mają zostać utworzone tokeny autoryzacyjne
+     * 
+     * @return void
+     */
+    private function checkmissingUserInfo($withTokens = false): void {
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        $emailVerifiedAt = $user->email_verified_at;
+        $accountDeletedAt = $user->account_deleted_at;
+        $accountBlockedAt = $user->account_blocked_at;
+
+        if ($accountBlockedAt) {
+            $user->tokens()->delete();
+            
+            JsonResponse::deleteCookie('JWT');
+            JsonResponse::deleteCookie('REFRESH-TOKEN');
+
+            JsonResponse::sendError(
+                AuthResponse::ACOUNT_BLOCKED,
+                Response::HTTP_UNAUTHORIZED
+            );
+        }
+
+        if ($accountDeletedAt) {
+            $user->tokens()->delete();
+
+            JsonResponse::deleteCookie('JWT');
+            JsonResponse::deleteCookie('REFRESH-TOKEN');
+
+            JsonResponse::sendError(
+                AuthResponse::ACOUNT_DELETED,
+                Response::HTTP_UNAUTHORIZED
+            );
+        }
+
+        $missingInfo = null;
+
+        if (!$user->email) {
+            $missingInfo['required']['email'] = ['The email field is missing.']; // TODO Zmienić kiedy pojawią się langi
+        }
+
+        if (!$user->birth_date) {
+            $missingInfo['required']['birthDate'] = ['The birth date field is missing.']; // TODO Zmienić kiedy pojawią się langi
+        }
+
+        if (!$user->avatar) {
+            $missingInfo['optional']['avatar'] = ['The avatar field is missing.']; // TODO Zmienić kiedy pojawią się langi
+        }
+
+        if (!$user->gender_type_id) {
+            $missingInfo['optional']['genderTypeId'] = ['The gender type id field is missing.']; // TODO Zmienić kiedy pojawią się langi
+        }
+
+        if ($withTokens) {
+            $this->prepareCookies();
+        }
+
+        if (isset($missingInfo['required'])) {
+            JsonResponse::sendError(
+                $emailVerifiedAt ? AuthResponse::MISSING_USER_INFORMATION : AuthResponse::UNVERIFIED_EMAIL,
+                Response::HTTP_FORBIDDEN,
+                ['user' => $user],
+                [
+                    'user' => [
+                        'missing_info' => $missingInfo
+                    ]
+                ]
+            );
+        }
+
+        JsonResponse::sendSuccess(
+            ['user' => $user],
+            [
+                'user' => [
+                    'missing_info' => $missingInfo
+                ]
+            ]
+        );
     }
 }
