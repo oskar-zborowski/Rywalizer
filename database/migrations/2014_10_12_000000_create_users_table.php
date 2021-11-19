@@ -26,6 +26,7 @@ class CreateUsersTable extends Migration
             $table->tinyInteger('verification_email_counter')->unsigned()->default(0);
             $table->timestamp('account_deleted_at')->nullable();
             $table->timestamp('account_blocked_at')->nullable();
+            $table->timestamp('last_logged_in')->default(time());
             $table->timestamps();
         });
 

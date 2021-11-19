@@ -26,7 +26,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at',
         'verification_email_counter',
         'account_deleted_at',
-        'account_blocked_at'
+        'account_blocked_at',
+        'last_logged_in'
     ];
 
     protected $guarded = [
@@ -51,7 +52,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'account_deleted_at' => 'datetime',
         'account_blocked_at' => 'datetime',
         'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'updated_at' => 'datetime',
+        'last_logged_in' => 'datetime',
     ];
 
     protected $encryptable = [

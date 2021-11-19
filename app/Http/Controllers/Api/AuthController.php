@@ -43,6 +43,13 @@ class AuthController extends Controller
             throw new ApiException(AuthErrorCode::INVALID_CREDENTIALS());
         }
 
+        /** @var User $user */
+        $user = Auth::user();
+
+        DB::table('users')
+            ->where('id', $user->id)
+            ->update(['last_logged_in' => time()]);
+
         $this->checkMissingUserInfo(true);
     }
 
@@ -69,6 +76,13 @@ class AuthController extends Controller
             'email' => $encryptedEmail,
             'password' => $plainPassword
         ]);
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        DB::table('users')
+            ->where('id', $user->id)
+            ->update(['last_logged_in' => time()]);
 
         $this->sendVerificationEmail(true);
         $this->checkMissingUserInfo(true);
@@ -306,7 +320,6 @@ class AuthController extends Controller
 
         if (!$personalAccessToken) {
             JsonResponse::deleteCookie('REFRESH-TOKEN');
-
             throw new ApiException(AuthErrorCode::INVALID_REFRESH_TOKEN());
         }
 
@@ -322,7 +335,6 @@ class AuthController extends Controller
 
         if ($now > $expirationDate) {
             JsonResponse::deleteCookie('REFRESH-TOKEN');
-
             throw new ApiException(AuthErrorCode::REFRESH_TOKEN_HAS_EXPIRED());
         }
 
@@ -370,7 +382,7 @@ class AuthController extends Controller
 
         if (!$authenticationId || strlen($authenticationId) < 1 || strlen($authenticationId) > 254) {
             throw new ApiException(
-                BaseErrorCode::FAILED_VALIDATION(),
+                AuthErrorCode::INVALID_CREDENTIALS_PROVIDED(),
                 ['authentication_id' => ['The provider returned an invalid id.']] // TODO Zmienić kiedy pojawią się langi
             );
         }
@@ -410,7 +422,7 @@ class AuthController extends Controller
                 }
             }
 
-            if ($user->getAvatar() !== null) {
+            if ($user->getAvatar() !== null) { //TODO Sprawdzić wariant co jest zwracane kiedy użytkownik nie ma ustawionego zdjęcia profilowego
                 $avatarFilename = $this->saveAvatar($provider, $user->getAvatar());
             }
 
@@ -490,7 +502,7 @@ class AuthController extends Controller
         }
 
         if (!$user->avatar && $request->avatar) {
-            // TODO Zrobić wgrywanie i zapisywanie zdjęć przez formularz
+            // TODO Zrobić wgrywanie i zapisywanie zdjęć przez formularz (wykorzystać metodę saveAvatar)
             $supplementaryInfo['avatar'] = $encrypter->encrypt($request->avatar, 24);
         }
 
@@ -609,6 +621,8 @@ class AuthController extends Controller
             }
         } else if ($provider == 'GOOGLE') {
             // TODO Uzupełnić zapisywanie zdjęcia z google'a
+        } else if ($provider == 'FORM') {
+            // TODO Uzupełnić zapisywanie zdjęcia z formularza
         }
 
         $avatarContents = file_get_contents($avatarUrlLocation);
@@ -657,21 +671,13 @@ class AuthController extends Controller
             throw new ApiException(
                 $emailVerifiedAt ? AuthErrorCode::MISSING_USER_INFORMATION() : AuthErrorCode::UNVERIFIED_EMAIL(),
                 ['user' => $user],
-                [
-                    'user' => [
-                        'missing_info' => $missingInfo
-                    ]
-                ]
+                ['missing_user_information' => $missingInfo]
             );
         }
 
         JsonResponse::sendSuccess(
             ['user' => $user],
-            [
-                'user' => [
-                    'missing_info' => $missingInfo
-                ]
-            ]
+            ['missing_user_information' => $missingInfo]
         );
     }
 }
