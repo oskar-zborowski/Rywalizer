@@ -2,17 +2,18 @@
 
 namespace App\Exceptions;
 
-use App\Http\Libraries\Http\JsonResponse;
-use App\Http\ErrorCode\AuthErrorCode;
-use App\Http\ErrorCode\BaseErrorCode;
+use App\Http\Responses\JsonResponse;
+use App\Http\ErrorCodes\AuthErrorCode;
+use App\Http\ErrorCodes\BaseErrorCode;
+use App\Http\Libraries\FieldsConversion\FieldConversion;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
-class Handler extends ExceptionHandler {
+class Handler extends ExceptionHandler
+{
     /**
      * A list of the exception types that are not reported.
      *
@@ -53,35 +54,51 @@ class Handler extends ExceptionHandler {
      * @return void
      */
     public function render($request, Throwable $throwable): void {
-        if ($throwable instanceof ValidationException) {
-            JsonResponse::sendError(
-                BaseErrorCode::$FAILED_VALIDATION,
-                JsonResponse::convertToCamelCase($throwable->errors())
-            );
-        } else if ($throwable instanceof HttpException) {
-            JsonResponse::sendError(
-                BaseErrorCode::$PERMISSION_DENIED,
-                JsonResponse::convertToCamelCase([$throwable->getMessage()])
-            );
-        } else if ($throwable instanceof ClientException) {
-            JsonResponse::sendError(
-                AuthErrorCode::$INVALID_CREDENTIALS_PROVIDED,
-                env('APP_DEBUG') ? JsonResponse::convertToCamelCase([$throwable->getMessage()]) : null
-            );
-        } else if ($throwable instanceof ApiException) {
-            JsonResponse::sendError(
-                $throwable->getErrorCode(),
-                $throwable->getData(),
-                $throwable->getMetadata(),
-            );
-        } else {
-            $throwable = json_encode($throwable);
-            $throwable = json_decode($throwable, true);
 
-            JsonResponse::sendError(
-                BaseErrorCode::$INTERNAL_SERVER_ERROR,
-                env('APP_DEBUG') ? JsonResponse::convertToCamelCase($throwable) : null
-            );
+        $class = get_class($throwable);
+
+        switch ($class) {
+
+            case ValidationException::class:
+                JsonResponse::sendError(
+                    BaseErrorCode::FAILED_VALIDATION(),
+                    FieldConversion::convertToCamelCase($throwable->getMessage())
+                );
+                break;
+
+            case HttpException::class:
+                JsonResponse::sendError(
+                    BaseErrorCode::PERMISSION_DENIED(),
+                    FieldConversion::convertToCamelCase($throwable->getMessage())
+                );
+                break;
+
+            case ClientException::class:
+                JsonResponse::sendError(
+                    AuthErrorCode::INVALID_CREDENTIALS_PROVIDED(),
+                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase($throwable->getMessage()) : null
+                );
+                break;
+
+            case ApiException::class:
+                /** @var ApiException $throwable */
+
+                JsonResponse::sendError(
+                    $throwable->getErrorCode(),
+                    FieldConversion::convertToCamelCase($throwable->getData()),
+                    FieldConversion::convertToCamelCase($throwable->getMetadata()),
+                );
+                break;
+
+            default:
+                $throwable = json_encode($throwable);
+                $throwable = json_decode($throwable, true);
+
+                JsonResponse::sendError(
+                    BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase($throwable) : null
+                );
+                break;
         }
     }
 }

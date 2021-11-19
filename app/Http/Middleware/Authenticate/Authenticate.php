@@ -3,14 +3,13 @@
 namespace App\Http\Middleware\Authenticate;
 
 use App\Http\Libraries\Encrypter\Encrypter;
-use App\Http\Libraries\Http\JsonResponse;
-use App\Http\ErrorCode\AuthErrorCode;
+use App\Http\Responses\JsonResponse;
+use App\Http\ErrorCodes\AuthErrorCode;
 use Closure;
 use App\Exceptions\ApiException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Klasa wywoływana przed autoryzacją
@@ -70,7 +69,6 @@ class Authenticate extends Middleware
             $accountBlockedAt = $request->user()->account_blocked_at;
 
             if ($accountBlockedAt) {
-
                 $request->user()->tokens()->delete();
                 
                 JsonResponse::deleteCookie('JWT');
@@ -110,7 +108,7 @@ class Authenticate extends Middleware
                 }
             }
         } else if ($request->url() == $refreshTokenURL) {
-            throw new ApiException(AuthErrorCode::UNAUTHORIZED());
+            throw new ApiException(AuthErrorCode::REFRESH_TOKEN_HAS_EXPIRED());
         }
 
         return $next($request);

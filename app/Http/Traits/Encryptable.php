@@ -16,16 +16,16 @@ trait Encryptable
      * 
      * @return bool
      */
-    private function encryptable(?string $key): bool {
+    private function encryptable(string $key): bool {
         return in_array($key, $this->encryptable);
     }
 
     /**
-     * Szyfrowanie pola, jeżeli jest szyfrowalne
+     * Deszyfrowanie pola, jeżeli jest deszyfrowalne
      * 
      * @param string $key nazwa pola do zaszyfrowania
      * 
-     * @return string
+     * @return string|null
      */
     public function getAttribute($key): ?string {
         
@@ -40,12 +40,12 @@ trait Encryptable
     }
 
     /**
-     * Deszyfrowanie pola, jeżeli jest deszyfrowalne
+     * Szyfrowanie pola, jeżeli jest szyfrowalne
      * 
      * @param string $key nazwa pola do odszyfrowania
      * @param string $value wartość do odszyfrowania
      * 
-     * @return string
+     * @return string|null
      */
     public function setAttribute($key, $value): ?string {
 
@@ -62,7 +62,7 @@ trait Encryptable
      * 
      * @return array
      */
-    public function getArrayableAttributes(): ?array {
+    public function getArrayableAttributes(): array {
 
         $attributes = parent::getArrayableAttributes();
 

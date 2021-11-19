@@ -17,11 +17,11 @@ class FillMissingUserInfoRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'present|string|email|max:254|nullable',
-            'gender_type_id' => 'present|integer|between:1,2|nullable',
-            'birth_date' => 'present|string|date|size:10|nullable'
+            'email' => 'string|email|max:254',
+            'gender_type_id' => 'integer|between:1,2',
+            'birth_date' => 'string|date|size:10'
         ];
 
-        // 'avatar' => 'present|image|size:2048|nullable',
+        // 'avatar' => 'image|size:2048',
     }
 }

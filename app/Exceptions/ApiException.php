@@ -3,15 +3,25 @@
 namespace App\Exceptions;
 
 use Exception;
-use App\Http\ErrorCode\ErrorCode;
+use App\Http\ErrorCodes\ErrorCode;
 
-class ApiException extends Exception {
-
+/**
+ * Klasa przechowująca strukturę zwracanej odpowiedzi
+ */
+class ApiException extends Exception
+{
     private ErrorCode $errorCode;
-    private array $data;
-    private array $metadata;
+    private mixed $data;
+    private mixed $metadata;
 
-    public function __construct(ErrorCode $errorCode, array $data = [], array $metadata = []) {
+    /**
+     * Ustawienie obiektu błędu, danych oraz metadanych
+     * 
+     * @param App\Http\ErrorCodes\ErrorCode $errorCode obiekt zwracanego błędu
+     * @param mixed $data podstawowe zwracane informacje
+     * @param mixed $metadata dodatkowe informacje
+     */
+    public function __construct(ErrorCode $errorCode, mixed $data = null, mixed $metadata = null) {
         parent::__construct();
 
         $this->errorCode = $errorCode;
@@ -30,5 +40,4 @@ class ApiException extends Exception {
     public function getMetadata() {
         return $this->metadata;
     }
-
 }

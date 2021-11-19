@@ -18,7 +18,7 @@ class Encrypter
      * 
      * @return string
      */
-    private function fillWithRandomCharacters(?string $text, int $maxSize = null, bool $rand = false): string {
+    private function fillWithRandomCharacters(string $text = '', int $maxSize = null, bool $rand = false): string {
 
         $characters = 'M9w4RimKrF8fJGuTEBpC36gUNDzebW7ZaVSnqdYcXhoQjILv21ltPkAHx5O0sy';
         $charactersLength = strlen($characters);
@@ -53,7 +53,7 @@ class Encrypter
      * 
      * @return string
      */
-    private function removeRandomCharacters(?string $text): string {
+    private function removeRandomCharacters(string $text): string {
 
         $length = strlen($text);
 
@@ -73,48 +73,63 @@ class Encrypter
     /**
      * Zaszyfrowanie tekstu
      * 
-     * @param string $text pole do zaszyfrowania
+     * @param string|null $text pole do zaszyfrowania
      * @param int $maxSize maksymalny rozmiar pola
      * 
-     * @return string
+     * @return string|null
      */
-    public function encrypt(?string $text, int $maxSize = null): string {
-        $text = $this->fillWithRandomCharacters($text, $maxSize);
-        return openssl_encrypt($text, env('OPENSSL_ALGORITHM'), env('OPENSSL_PASSPHRASE'), 0, env('OPENSSL_IV'));
+    public function encrypt(?string $text, int $maxSize = null): ?string {
+
+        if ($text !== null && strlen($text) > 0) {
+            $text = $this->fillWithRandomCharacters($text, $maxSize);
+            $text = openssl_encrypt($text, env('OPENSSL_ALGORITHM'), env('OPENSSL_PASSPHRASE'), 0, env('OPENSSL_IV'));
+        }
+
+        return $text;
     }
 
     /**
      * Odszyfrowanie tekstu
      * 
-     * @param string $cipher pole do odszyfrowania
+     * @param string|null $text pole do odszyfrowania
      * 
-     * @return string
+     * @return string|null
      */
-    public function decrypt(?string $cipher): string {
-        $text = openssl_decrypt($cipher, env('OPENSSL_ALGORITHM'), env('OPENSSL_PASSPHRASE'), 0, env('OPENSSL_IV'));
-        return $this->removeRandomCharacters($text);
+    public function decrypt(?string $text): ?string {
+
+        if ($text !== null && strlen($text) > 0) {
+            $text = openssl_decrypt($text, env('OPENSSL_ALGORITHM'), env('OPENSSL_PASSPHRASE'), 0, env('OPENSSL_IV'));
+            $text = $this->removeRandomCharacters($text);
+        }
+
+        return $text;
     }
 
     /**
      * Zahashowanie tekstu
      * 
-     * @param string $text pole do zahashowania
+     * @param string|null $text pole do zahashowania
      * 
-     * @return string
+     * @return string|null
      */
-    public function hash(string $text): string {
-        return Hash::make($text);
+    public function hash(?string $text): ?string {
+
+        if ($text !== null && strlen($text) > 0) {
+            $text = Hash::make($text);
+        }
+
+        return $text;
     }
 
     /**
      * Generowanie tokenu
      * 
-     * @param int $maxSize maksymalny rozmiar pola
+     * @param int $maxSize maksymalny rozmiar pola w bazie danych
      * @param string $addition dodatkowy tekst, który ma być uwzględniony przy generowaniu tokenu (dopisany na końcu)
      * 
-     * @return string
+     * @return string|null
      */
-    public function generatePlainToken(int $maxSize = 32, string $addition = ''): string {
+    public function generatePlainToken(int $maxSize = 32, string $addition = ''): ?string {
 
         $additionLength = strlen($addition);
 
@@ -122,17 +137,30 @@ class Encrypter
         $modulo = $maxSize % 3;
         $size = $maxSize - $modulo - $additionLength;
 
-        return $this->fillWithRandomCharacters('', $size, true) . $addition;
+        $plainToken = null;
+
+        if ($size >= 0) {
+            $plainToken = $this->fillWithRandomCharacters('', $size, true) . $addition;
+        }
+
+        return $plainToken;
     }
 
     /**
      * Szyfrowanie tokenu do przechowywania w bazie danych
      * 
-     * @param string $plainToken token do zaszyfrowania
+     * @param string|null $plainToken token do zaszyfrowania
      * 
-     * @return string
+     * @return string|null
      */
-    public function encryptToken(string $plainToken): string {
-        return $this->encrypt($plainToken);
+    public function encryptToken(?string $plainToken): ?string {
+
+        $encryptedToken = null;
+
+        if ($plainToken !== null && strlen($plainToken) > 0) {
+            $encryptedToken = $this->encrypt($plainToken);
+        }
+
+        return $encryptedToken;
     }
 }

@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Libraries\Encrypter\Encrypter;
-use App\Http\Libraries\Http\JsonResponse;
+use App\Http\Responses\JsonResponse;
 use App\Http\Requests\Auth\FillMissingUserInfoRequest;
 use App\Http\Requests\Auth\RegisterRequest;
-use App\Http\ErrorCode\AuthErrorCode;
-use App\Http\ErrorCode\BaseErrorCode;
+use App\Http\ErrorCodes\AuthErrorCode;
+use App\Http\ErrorCodes\BaseErrorCode;
 use App\Models\User;
 use App\Exceptions\ApiException;
 use Illuminate\Auth\Events\Verified;
@@ -20,7 +20,6 @@ use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Socialite\Facades\Socialite;
@@ -41,7 +40,7 @@ class AuthController extends Controller
     public function login(Request $request): void {
 
         if (!Auth::attempt($request->only('email', 'password'))) {
-            throw new ApiException(AuthErrorCode::$INVALID_CREDENTIALS);
+            throw new ApiException(AuthErrorCode::INVALID_CREDENTIALS());
         }
 
         $this->checkMissingUserInfo(true);
@@ -631,26 +630,6 @@ class AuthController extends Controller
         $user = Auth::user();
 
         $emailVerifiedAt = $user->email_verified_at;
-        $accountDeletedAt = $user->account_deleted_at;
-        $accountBlockedAt = $user->account_blocked_at;
-
-        if ($accountBlockedAt) {
-            $user->tokens()->delete();
-
-            JsonResponse::deleteCookie('JWT');
-            JsonResponse::deleteCookie('REFRESH-TOKEN');
-
-            throw new ApiException(AuthErrorCode::ACOUNT_BLOCKED());
-        }
-
-        if ($accountDeletedAt) {
-            $user->tokens()->delete();
-
-            JsonResponse::deleteCookie('JWT');
-            JsonResponse::deleteCookie('REFRESH-TOKEN');
-
-            throw new ApiException(AuthErrorCode::ACOUNT_DELETED());
-        }
 
         $missingInfo = null;
 

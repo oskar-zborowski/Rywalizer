@@ -27,6 +27,9 @@ class BeforeAuthenticate
             $request->validate([
                 'email' => 'required|string|email|max:254'
             ]);
+            
+            $encrypter = new Encrypter;
+            $request->merge(['email' => $encrypter->encrypt($request->email, 254)]);
         }
 
         if ($request->url() != $forgotPasswordURL && $request->url() != $refreshTokenURL) {
@@ -48,11 +51,6 @@ class BeforeAuthenticate
                     ]);
                 }
             }
-        }
-
-        if ($request->url() != $resetPasswordURL && $request->url() != $refreshTokenURL) {
-            $encrypter = new Encrypter;
-            $request->merge(['email' => $encrypter->encrypt($request->email, 254)]);
         }
 
         return $next($request);
