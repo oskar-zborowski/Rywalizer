@@ -48,7 +48,10 @@ class AuthController extends Controller
 
         DB::table('users')
             ->where('id', $user->id)
-            ->update(['last_logged_in' => time()]);
+            ->update([
+                'last_logged_in' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
 
         $this->checkMissingUserInfo(true);
     }
@@ -82,7 +85,10 @@ class AuthController extends Controller
 
         DB::table('users')
             ->where('id', $user->id)
-            ->update(['last_logged_in' => time()]);
+            ->update([
+                'last_logged_in' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
 
         $this->sendVerificationEmail(true);
         $this->checkMissingUserInfo(true);
@@ -667,7 +673,7 @@ class AuthController extends Controller
             $this->prepareCookies();
         }
 
-        if (isset($missingInfo['required'])) {
+        if (isset($missingInfo['required']) || !$emailVerifiedAt) {
             throw new ApiException(
                 $emailVerifiedAt ? AuthErrorCode::MISSING_USER_INFORMATION() : AuthErrorCode::UNVERIFIED_EMAIL(),
                 ['user' => $user],

@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateUsersTable extends Migration
@@ -26,7 +27,7 @@ class CreateUsersTable extends Migration
             $table->tinyInteger('verification_email_counter')->unsigned()->default(0);
             $table->timestamp('account_deleted_at')->nullable();
             $table->timestamp('account_blocked_at')->nullable();
-            $table->timestamp('last_logged_in')->default(time());
+            $table->timestamp('last_logged_in')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamps();
         });
 

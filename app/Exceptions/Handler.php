@@ -60,13 +60,17 @@ class Handler extends ExceptionHandler
         switch ($class) {
 
             case ValidationException::class:
+                /** @var ValidationException $throwable */
+
                 JsonResponse::sendError(
                     BaseErrorCode::FAILED_VALIDATION(),
-                    FieldConversion::convertToCamelCase($throwable->getMessage())
+                    FieldConversion::convertToCamelCase($throwable->errors())
                 );
                 break;
 
             case HttpException::class:
+                /** @var HttpException $throwable */
+
                 JsonResponse::sendError(
                     BaseErrorCode::PERMISSION_DENIED(),
                     FieldConversion::convertToCamelCase($throwable->getMessage())
@@ -74,6 +78,8 @@ class Handler extends ExceptionHandler
                 break;
 
             case ClientException::class:
+                /** @var ClientException $throwable */
+
                 JsonResponse::sendError(
                     AuthErrorCode::INVALID_CREDENTIALS_PROVIDED(),
                     env('APP_DEBUG') ? FieldConversion::convertToCamelCase($throwable->getMessage()) : null

@@ -61,6 +61,7 @@ Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function
     Route::delete('/logout-other-devices', [AuthController::class, 'logoutOtherDevices'])->middleware(['throttle:logoutOtherDevicesLimit']);
 
     Route::post('/fill-missing-user-info', [AuthController::class, 'fillMissingUserInfo']);
+    Route::get('/user', [AuthController::class, 'user']);
 });
 
 /*
@@ -70,5 +71,5 @@ Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function
 */
 
 Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum', 'verified'])->group(function () {
-    Route::get('/user', [AuthController::class, 'user']);
+    // TODO
 });

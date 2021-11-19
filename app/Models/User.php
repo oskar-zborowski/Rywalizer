@@ -53,7 +53,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'account_blocked_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-        'last_logged_in' => 'datetime',
+        'last_logged_in' => 'datetime'
     ];
 
     protected $encryptable = [
