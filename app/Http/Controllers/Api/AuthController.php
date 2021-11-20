@@ -455,6 +455,16 @@ class AuthController extends Controller
             Auth::loginUsingId($externalAuthentication->user_id);
         }
 
+        /** @var User $user */
+        $user = Auth::user();
+
+        DB::table('users')
+            ->where('id', $user->id)
+            ->update([
+                'last_logged_in' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+
         $this->checkMissingUserInfo(true);
     }
 
