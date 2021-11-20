@@ -57,7 +57,7 @@ class RouteServiceProvider extends ServiceProvider
     protected function configureRateLimiting()
     {
         RateLimiter::for('api', function (Request $request) {
-            return Limit::none();
+            return Limit::none()->by($request->ip());
         });
 
         RateLimiter::for('defaultAuthLimit', function (Request $request) {
@@ -77,10 +77,6 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('resetPasswordLimit', function (Request $request) {
-            return Limit::perDay(env('DEFAULT_AUTH_RATE_LIMITER_PER_DAY'))->by($request->ip());
-        });
-
-        RateLimiter::for('refreshTokenLimit', function (Request $request) {
             return Limit::perDay(env('DEFAULT_AUTH_RATE_LIMITER_PER_DAY'))->by($request->ip());
         });
 

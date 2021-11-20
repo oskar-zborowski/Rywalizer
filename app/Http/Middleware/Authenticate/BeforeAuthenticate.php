@@ -24,6 +24,7 @@ class BeforeAuthenticate
         $refreshTokenURL = env('APP_URL') . '/api/refresh-token';
 
         if ($request->url() != $resetPasswordURL && $request->url() != $refreshTokenURL) {
+
             $request->validate([
                 'email' => 'required|string|email|max:254'
             ]);

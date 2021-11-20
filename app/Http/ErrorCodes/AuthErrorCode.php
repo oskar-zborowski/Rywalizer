@@ -68,4 +68,8 @@ class AuthErrorCode
     public static function WAIT_BEFORE_RETRYING(): ErrorCode {
         return new ErrorCode('ATH15', 'WAIT BEFORE RETRYING', Response::HTTP_NOT_ACCEPTABLE);
     }
+
+    public static function UNIDENTIFIED_USER(): ErrorCode {
+        return new ErrorCode('ATH16', 'UNIDENTIFIED USER', Response::HTTP_NOT_ACCEPTABLE);
+    }
 }

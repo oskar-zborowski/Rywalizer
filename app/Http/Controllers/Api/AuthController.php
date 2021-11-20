@@ -46,12 +46,22 @@ class AuthController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        DB::table('users')
-            ->where('id', $user->id)
-            ->update([
-                'last_logged_in' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
-            ]);
+        $accountDeletedAt = $user->account_deleted_at;
+        $accountBlockedAt = $user->account_blocked_at;
+
+        if ($accountBlockedAt) {
+
+            $user->tokens()->delete();
+
+            throw new ApiException(AuthErrorCode::ACOUNT_BLOCKED());
+        }
+
+        if ($accountDeletedAt) {
+
+            $user->tokens()->delete();
+
+            throw new ApiException(AuthErrorCode::ACOUNT_DELETED());
+        }
 
         $this->checkMissingUserInfo(true);
     }
@@ -80,16 +90,6 @@ class AuthController extends Controller
             'password' => $plainPassword
         ]);
 
-        /** @var User $user */
-        $user = Auth::user();
-
-        DB::table('users')
-            ->where('id', $user->id)
-            ->update([
-                'last_logged_in' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
-            ]);
-
         $this->sendVerificationEmail(true);
         $this->checkMissingUserInfo(true);
     }
@@ -115,8 +115,8 @@ class AuthController extends Controller
 
             $emailSendingCounter = $passwordResetToken->email_sending_counter;
 
-            $waitingDate = date('Y-m-d H:i:s', strtotime('+' . env('PAUSE_BEFORE_RETRYING')*60 . ' seconds', strtotime($passwordResetToken->created_at)));
             $now = date('Y-m-d H:i:s');
+            $waitingDate = date('Y-m-d H:i:s', strtotime('+' . env('PAUSE_BEFORE_RETRYING')*60 . ' seconds', strtotime($passwordResetToken->created_at)));
 
             if ($now <= $waitingDate) {
                 throw new ApiException(AuthErrorCode::WAIT_BEFORE_RETRYING());
@@ -131,10 +131,10 @@ class AuthController extends Controller
 
         if ($status == Password::RESET_LINK_SENT) {
 
-            $email = $encrypter->decrypt($request->email);
+            $plainEmail = $encrypter->decrypt($request->email);
 
             DB::table('password_resets')
-                ->where('email', $email)
+                ->where('email', $plainEmail)
                 ->update([
                     'email' => $request->email,
                     'email_sending_counter' => $emailSendingCounter+1
@@ -164,11 +164,11 @@ class AuthController extends Controller
 
         foreach ($resetTokens as $rT) {
             if ($hasher->check($request->token, $rT->token)) {
-                $email = $encrypter->decrypt($rT->email);
+                $plainEmail = $encrypter->decrypt($rT->email);
 
                 DB::table('password_resets')
                     ->where('id', $rT->id)
-                    ->update(['email' => $email]);
+                    ->update(['email' => $plainEmail]);
                 
                 break;
             }
@@ -216,14 +216,15 @@ class AuthController extends Controller
                 throw new ApiException(AuthErrorCode::EMAIL_ALREADY_VERIFIED());
             }
 
-            $waitingDate = date('Y-m-d H:i:s', strtotime('+' . env('PAUSE_BEFORE_RETRYING')*60 . ' seconds', strtotime($user->updated_at)));
             $now = date('Y-m-d H:i:s');
+            $waitingDate = date('Y-m-d H:i:s', strtotime('+' . env('PAUSE_BEFORE_RETRYING')*60 . ' seconds', strtotime($user->updated_at)));
     
             if ($now <= $waitingDate && $user->verification_email_counter > 1) {
                 throw new ApiException(AuthErrorCode::WAIT_BEFORE_RETRYING());
             }
 
             if ($user->verification_email_counter < 255) {
+
                 DB::table('users')
                     ->where('id', $user->id)
                     ->update([
@@ -234,6 +235,7 @@ class AuthController extends Controller
                 $user->sendEmailVerificationNotification();
 
                 JsonResponse::sendSuccess();
+
             } else {
                 throw new ApiException(BaseErrorCode::LIMIT_EXCEEDED());
             }
@@ -262,6 +264,7 @@ class AuthController extends Controller
         $user = Auth::user();
 
         if (!$user->hasVerifiedEmail() && $user->markEmailAsVerified()) {
+
             event(new Verified($user));
 
             DB::table('users')
@@ -277,15 +280,33 @@ class AuthController extends Controller
      * Wylogowanie użytkownika
      * 
      * @param Illuminate\Http\Request $request
+     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
      * 
      * @return void
      */
-    public function logout(Request $request): void {
+    public function logout(Request $request, Encrypter $encrypter): void {
 
-        $request->user()->currentAccessToken()->delete();
+        if ($plainRefreshToken = $request->cookie('REFRESH-TOKEN')) {
+
+            $refreshToken = $encrypter->encryptToken($plainRefreshToken);
+
+            $personalAccessToken = DB::table('personal_access_tokens')
+                ->where('refresh_token', $refreshToken)
+                ->first();
+
+            if ($personalAccessToken) {
+
+                $personalAccessTokenId = $personalAccessToken->id;
+
+                DB::table('personal_access_tokens')
+                    ->where('id', $personalAccessTokenId)
+                    ->delete();
+            }
+
+            JsonResponse::deleteCookie('REFRESH-TOKEN');
+        }
 
         JsonResponse::deleteCookie('JWT');
-        JsonResponse::deleteCookie('REFRESH-TOKEN');
         JsonResponse::sendSuccess();
     }
 
@@ -302,51 +323,8 @@ class AuthController extends Controller
 
         $user->tokens()->delete();
 
-        $this->prepareCookies();
-
+        JsonResponse::prepareCookies();
         JsonResponse::sendSuccess();
-    }
-
-    /**
-     * #### `POST` `/api/refresh-token`
-     * Odświeżenie tokenu autoryzacyjnego
-     * 
-     * @param Illuminate\Http\Request $request
-     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
-     * 
-     * @return void
-     */
-    public function refreshToken(Request $request, Encrypter $encrypter): void {
-
-        $plainRefreshToken = $request->cookie('REFRESH-TOKEN');
-        $refreshToken = $encrypter->encryptToken($plainRefreshToken);
-        $personalAccessToken = DB::table('personal_access_tokens')
-            ->where('refresh_token', $refreshToken)
-            ->first();
-
-        if (!$personalAccessToken) {
-            JsonResponse::deleteCookie('REFRESH-TOKEN');
-            throw new ApiException(AuthErrorCode::INVALID_REFRESH_TOKEN());
-        }
-
-        $userId = $personalAccessToken->tokenable_id;
-        $personalAccessTokenId = $personalAccessToken->id;
-
-        DB::table('personal_access_tokens')
-            ->where('id', $personalAccessTokenId)
-            ->delete();
-
-        $expirationDate = date('Y-m-d H:i:s', strtotime('+' . env('REFRESH_TOKEN_LIFETIME') . ' minutes', strtotime($personalAccessToken->created_at)));
-        $now = date('Y-m-d H:i:s');
-
-        if ($now > $expirationDate) {
-            JsonResponse::deleteCookie('REFRESH-TOKEN');
-            throw new ApiException(AuthErrorCode::REFRESH_TOKEN_HAS_EXPIRED());
-        }
-
-        Auth::loginUsingId($userId);
-
-        $this->checkMissingUserInfo(true);
     }
 
     /**
@@ -376,6 +354,7 @@ class AuthController extends Controller
      * @return void
      */
     public function handleProviderCallback(string $provider, Encrypter $encrypter): void {
+
         $providerId = $this->validateProvider($provider);
 
         /** @var \Laravel\Socialite\Two\AbstractProvider */
@@ -383,8 +362,8 @@ class AuthController extends Controller
 
         $user = $driver->stateless()->user();
 
-        $authenticationId = $user->getId() !== null ? (string)($user->getId()) : null;
-        $encryptedAuthenticationId = $encrypter->encrypt($authenticationId, 254);
+        $authenticationId = $user->getId();
+        $encryptedAuthenticationId = $authenticationId ? $encrypter->encrypt($authenticationId, 254) : null;
 
         if (!$authenticationId || strlen($authenticationId) < 1 || strlen($authenticationId) > 254) {
             throw new ApiException(
@@ -400,7 +379,8 @@ class AuthController extends Controller
 
         if (!$externalAuthentication) {
 
-            if (filter_var($user->getEmail(), FILTER_VALIDATE_EMAIL)) {    
+            if (filter_var($user->getEmail(), FILTER_VALIDATE_EMAIL)) {
+
                 $encryptedEmail = $encrypter->encrypt($user->getEmail(), 254);
 
                 $externalAuthentication = DB::table('users')
@@ -428,7 +408,7 @@ class AuthController extends Controller
                 }
             }
 
-            if ($user->getAvatar() !== null) { //TODO Sprawdzić wariant co jest zwracane kiedy użytkownik nie ma ustawionego zdjęcia profilowego
+            if ($user->getAvatar()) { //TODO Sprawdzić wariant co jest zwracane kiedy użytkownik nie ma ustawionego zdjęcia profilowego
                 $avatarFilename = $this->saveAvatar($provider, $user->getAvatar());
             }
 
@@ -438,7 +418,7 @@ class AuthController extends Controller
                 'avatar' => isset($avatarFilename) ? $avatarFilename : null,
             ];
 
-            if (filter_var($user->getEmail(), FILTER_VALIDATE_EMAIL)) {
+            if (isset($encryptedEmail)) {
                 $newUser['email'] = $user->getEmail();
                 $newUser['email_verified_at'] = now();
             }
@@ -451,6 +431,7 @@ class AuthController extends Controller
             ]);
 
             Auth::loginUsingId($createUser->id);
+
         } else {
             Auth::loginUsingId($externalAuthentication->user_id);
         }
@@ -496,7 +477,9 @@ class AuthController extends Controller
         $encryptedBirthDate = $request->birth_date ? $encrypter->encrypt($request->birth_date, 10) : null;
 
         if (!$user->email && $plainEmail) {
+
             $encryptedEmail = $encrypter->encrypt($plainEmail, 254);
+
             $request->merge(['email' => $encryptedEmail]);
             $request->validate([
                 'email' => 'unique:users'
@@ -505,8 +488,8 @@ class AuthController extends Controller
 
         $supplementaryInfo = null;
 
-        if (!$user->email && $plainEmail) {
-            $supplementaryInfo['email'] = $request->email;
+        if (!$user->email && isset($encryptedEmail)) {
+            $supplementaryInfo['email'] = $encryptedEmail;
         }
 
         if (!$user->birth_date && $encryptedBirthDate) {
@@ -523,7 +506,9 @@ class AuthController extends Controller
         }
 
         if ($supplementaryInfo) {
+
             $supplementaryInfo['updated_at'] = date('Y-m-d H:i:s');
+            
             DB::table('users')
                 ->where('id', $user->id)
                 ->update($supplementaryInfo);
@@ -565,34 +550,6 @@ class AuthController extends Controller
         }
 
         return $providerId;
-    }
-
-    /**
-     * Stworzenie ciasteczek JWT oraz REFRESH-TOKEN
-     * 
-     * @return void
-     */
-    private function prepareCookies(): void {
-
-        /** @var User $user */
-        $user = Auth::user();
-
-        $encrypter = new Encrypter;
-
-        $plainRefreshToken = $encrypter->generatePlainToken(64);
-        $refreshToken = $encrypter->encryptToken($plainRefreshToken);
-
-        $jwtEncryptedName = $encrypter->encrypt('JWT', 3);
-        $jwt = $user->createToken($jwtEncryptedName);
-        $plainJWT = $jwt->plainTextToken;
-        $jwtId = $jwt->accessToken->getKey();
-
-        DB::table('personal_access_tokens')
-            ->where('id', $jwtId)
-            ->update(['refresh_token' => $refreshToken]);
-
-        JsonResponse::setCookie($plainJWT, 'JWT');
-        JsonResponse::setCookie($plainRefreshToken, 'REFRESH-TOKEN');
     }
 
     /**
@@ -668,7 +625,7 @@ class AuthController extends Controller
         }
 
         if (!$user->birth_date) {
-            $missingInfo['required']['birthDate'] = ['The birth date field is missing.']; // TODO Zmienić kiedy pojawią się langi
+            $missingInfo['required']['birth_date'] = ['The birth date field is missing.']; // TODO Zmienić kiedy pojawią się langi
         }
 
         if (!$user->avatar) {
@@ -676,11 +633,11 @@ class AuthController extends Controller
         }
 
         if (!$user->gender_type_id) {
-            $missingInfo['optional']['genderTypeId'] = ['The gender type id field is missing.']; // TODO Zmienić kiedy pojawią się langi
+            $missingInfo['optional']['gender_type_id'] = ['The gender type id field is missing.']; // TODO Zmienić kiedy pojawią się langi
         }
 
         if ($withTokens) {
-            $this->prepareCookies();
+            JsonResponse::prepareCookies();
         }
 
         if (isset($missingInfo['required']) || !$emailVerifiedAt) {

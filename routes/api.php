@@ -4,9 +4,9 @@ use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
-|--------------------------------------------------------------------------
+|----------------------------------------------------------------------------------------------------------
 | API Routes
-|--------------------------------------------------------------------------
+|----------------------------------------------------------------------------------------------------------
 |
 | Here is where you can register API routes for your application. These
 | routes are loaded by the RouteServiceProvider within a group which
@@ -29,8 +29,6 @@ Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function
 
         Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware(['throttle:forgotPasswordLimit']);
         Route::put('/reset-password', [AuthController::class, 'resetPassword'])->middleware(['throttle:resetPasswordLimit']);
-
-        Route::post('/refresh-token', [AuthController::class, 'refreshToken'])->middleware(['throttle:refreshTokenLimit']);
     });
 
     /*
@@ -44,24 +42,18 @@ Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function
 
     /*
     |-------------------------------------------------------------------------------------------------------
-    | Enpointy dostępne po autoryzacji oraz bez zweryfikowanego maila
+    | Enpointy dostępne po autoryzacji
     |-------------------------------------------------------------------------------------------------------
     */
 
     Route::get('/email/verification-notification', [AuthController::class, 'sendVerificationEmail']);
     Route::put('/verify-email/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
 
-    /*
-    |-------------------------------------------------------------------------------------------------------
-    | Enpointy dostępne po autoryzacji
-    |-------------------------------------------------------------------------------------------------------
-    */
-
     Route::delete('/logout', [AuthController::class, 'logout'])->withoutMiddleware('throttle:defaultAuthLimit');
     Route::delete('/logout-other-devices', [AuthController::class, 'logoutOtherDevices'])->middleware(['throttle:logoutOtherDevicesLimit']);
 
-    Route::post('/fill-missing-user-info', [AuthController::class, 'fillMissingUserInfo']);
     Route::get('/user', [AuthController::class, 'user']);
+    Route::post('/fill-missing-user-info', [AuthController::class, 'fillMissingUserInfo']);
 });
 
 /*

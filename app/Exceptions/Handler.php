@@ -9,7 +9,11 @@ use App\Http\Libraries\FieldsConversion\FieldConversion;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use ErrorException;
+use Error;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -82,7 +86,43 @@ class Handler extends ExceptionHandler
 
                 JsonResponse::sendError(
                     AuthErrorCode::INVALID_CREDENTIALS_PROVIDED(),
+                    FieldConversion::convertToCamelCase($throwable->getMessage())
+                );
+                break;
+
+            case ThrottleRequestsException::class:
+                /** @var ThrottleRequestsException $throwable */
+
+                JsonResponse::sendError(
+                    BaseErrorCode::LIMIT_EXCEEDED(),
+                    FieldConversion::convertToCamelCase($throwable->getMessage())
+                );
+                break;
+
+            case MethodNotAllowedHttpException::class:
+                /** @var MethodNotAllowedHttpException $throwable */
+
+                JsonResponse::sendError(
+                    BaseErrorCode::INTERNAL_SERVER_ERROR(),
                     env('APP_DEBUG') ? FieldConversion::convertToCamelCase($throwable->getMessage()) : null
+                );
+                break;
+
+            case ErrorException::class:
+                /** @var ErrorException $throwable */
+
+                JsonResponse::sendError(
+                    BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase($throwable->getMessage()) : null
+                );
+                break;
+
+            case Error::class:
+                /** @var Error $throwable */
+
+                JsonResponse::sendError(
+                    BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase([$throwable->getMessage()]) : null
                 );
                 break;
 
@@ -102,7 +142,7 @@ class Handler extends ExceptionHandler
 
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase($throwable) : null
+                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase($class) : null
                 );
                 break;
         }

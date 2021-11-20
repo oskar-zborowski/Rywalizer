@@ -2,8 +2,14 @@
 
 namespace App\Http\Responses;
 
+use App\Exceptions\ApiException;
+use App\Http\ErrorCodes\AuthErrorCode;
 use App\Http\ErrorCodes\ErrorCode;
+use App\Http\Libraries\Encrypter\Encrypter;
 use App\Http\Libraries\FieldsConversion\FieldConversion;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -59,8 +65,91 @@ class JsonResponse
         ];
 
         echo json_encode($dataToSend);
-
         die;
+    }
+
+    /**
+     * Stworzenie ciasteczek JWT oraz REFRESH-TOKEN
+     * 
+     * @return void
+     */
+    public static function prepareCookies(): void {
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        $encrypter = new Encrypter;
+
+        $plainRefreshToken = $encrypter->generatePlainToken(64);
+        $refreshToken = $encrypter->encryptToken($plainRefreshToken);
+
+        $jwtEncryptedName = $encrypter->encrypt('JWT', 3);
+        $jwt = $user->createToken($jwtEncryptedName);
+        $plainJWT = $jwt->plainTextToken;
+        $jwtId = $jwt->accessToken->getKey();
+
+        DB::table('personal_access_tokens')
+            ->where('id', $jwtId)
+            ->update(['refresh_token' => $refreshToken]);
+
+        DB::table('users')
+            ->where('id', $user->id)
+            ->update([
+                'last_logged_in' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+
+        JsonResponse::setCookie($plainJWT, 'JWT');
+        JsonResponse::setCookie($plainRefreshToken, 'REFRESH-TOKEN');
+    }
+
+    /**
+     * Odświeżenie tokenu autoryzacyjnego
+     * 
+     * @param int $userId id autoryzowanego użytkownika
+     * @param int $personalAccessTokenId id rekordu w bazie z tokenem uwierzytelniającym
+     * 
+     * @return void
+     */
+    public static function refreshToken(int $userId, int $personalAccessTokenId): void {
+
+        if ($userId) {
+
+            Auth::loginUsingId($userId);
+
+            /** @var User $user */
+            $user = Auth::user();
+
+            $accountDeletedAt = $user->account_deleted_at;
+            $accountBlockedAt = $user->account_blocked_at;
+
+            if ($accountBlockedAt) {
+
+                $user->tokens()->delete();
+
+                JsonResponse::deleteCookie('REFRESH-TOKEN');
+
+                throw new ApiException(AuthErrorCode::ACOUNT_BLOCKED());
+            }
+
+            if ($accountDeletedAt) {
+
+                $user->tokens()->delete();
+                
+                JsonResponse::deleteCookie('REFRESH-TOKEN');
+                
+                throw new ApiException(AuthErrorCode::ACOUNT_DELETED());
+            }
+
+            DB::table('personal_access_tokens')
+                ->where('id', $personalAccessTokenId)
+                ->delete();
+
+            self::prepareCookies();
+
+        } else {
+            throw new ApiException(AuthErrorCode::UNIDENTIFIED_USER());
+        }
     }
 
     /**
@@ -100,5 +189,68 @@ class JsonResponse
      */
     public static function deleteCookie(string $name): void {
         setcookie($name, null, -1, '/', env('APP_DOMAIN'), true, true);
+    }
+
+    /**
+     * Sprawdzenie czy REFRESH-TOKEN jest ważny
+     * 
+     * @param Illuminate\Http\Request $request
+     * @param bool $withExceptions parametr określający czy w przypadku napotkania wyjątku ma być on zwrócony
+     * 
+     * @return array
+     */
+    public static function isRefreshTokenValid(Request $request, bool $withExceptions = false): array {
+
+        $data['userId'] = 0;
+
+        if ($plainRefreshToken = $request->cookie('REFRESH-TOKEN')) {
+
+            $encrypter = new Encrypter;
+
+            $refreshToken = $encrypter->encryptToken($plainRefreshToken);
+
+            $personalAccessToken = DB::table('personal_access_tokens')
+                ->where('refresh_token', $refreshToken)
+                ->first();
+    
+            if (!$personalAccessToken) {
+
+                JsonResponse::deleteCookie('REFRESH-TOKEN');
+
+                if ($withExceptions) {
+                    throw new ApiException(AuthErrorCode::INVALID_REFRESH_TOKEN());
+                }
+
+            } else {
+
+                $personalAccessTokenId = $personalAccessToken->id;
+        
+                $now = date('Y-m-d H:i:s');
+                $expirationDate = date('Y-m-d H:i:s', strtotime('+' . env('REFRESH_TOKEN_LIFETIME') . ' minutes', strtotime($personalAccessToken->created_at)));
+
+                if ($now <= $expirationDate) {
+                    $data['userId'] = $personalAccessToken->tokenable_id;
+                    $data['personalAccessTokenId'] = $personalAccessTokenId;
+                } else {
+
+                    JsonResponse::deleteCookie('REFRESH-TOKEN');
+    
+                    DB::table('personal_access_tokens')
+                        ->where('id', $personalAccessTokenId)
+                        ->delete();
+
+                    if ($withExceptions) {
+                        throw new ApiException(AuthErrorCode::REFRESH_TOKEN_HAS_EXPIRED());
+                    }
+                }
+            }
+
+        } else {
+            if ($withExceptions) {
+                throw new ApiException(AuthErrorCode::REFRESH_TOKEN_HAS_EXPIRED());
+            }
+        }
+
+        return $data;
     }
 }
