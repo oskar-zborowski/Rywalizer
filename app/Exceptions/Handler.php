@@ -12,6 +12,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Illuminate\Database\QueryException;
 use ErrorException;
 use Error;
 use Throwable;
@@ -123,6 +124,15 @@ class Handler extends ExceptionHandler
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),
                     env('APP_DEBUG') ? FieldConversion::convertToCamelCase([$throwable->getMessage()]) : null
+                );
+                break;
+
+            case QueryException::class:
+                /** @var QueryException $throwable */
+
+                JsonResponse::sendError(
+                    BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase([$throwable->errorInfo]) : null
                 );
                 break;
 
