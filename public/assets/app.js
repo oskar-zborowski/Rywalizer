@@ -187218,7 +187218,8 @@ __webpack_require__.r(__webpack_exports__);
 
 (faker__WEBPACK_IMPORTED_MODULE_3___default().locale) = 'pl';
 const fakeData = [];
-for (let i = 0; i < 20; i++) {
+const tilesCount = Math.trunc(Math.random() * 40) + 5;
+for (let i = 0; i < tilesCount; i++) {
     const availableTickets = Math.round(Math.random() * 100) + 10;
     const soldTickets = Math.round(Math.random() * availableTickets);
     fakeData.push({

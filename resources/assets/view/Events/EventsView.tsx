@@ -6,7 +6,9 @@ import faker from 'faker';
 faker.locale = 'pl';
 const fakeData: EventTileProps[] = [];
 
-for (let i = 0; i < 20; i++) {
+const tilesCount = Math.trunc(Math.random() * 40) + 5;
+
+for (let i = 0; i < tilesCount; i++) {
     const availableTickets = Math.round(Math.random() * 100) + 10;
     const soldTickets = Math.round(Math.random() * availableTickets);
 

@@ -212,6 +212,7 @@
   flex-grow: 1;
   background-color: #353538;
   max-width: 130px;
+  overflow: hidden;
 }
 .EventTile_eventTile__hs_H4 .EventTile_busyBar__raR9V .EventTile_innerBar__MEZ_I {
   border-radius: 4px;
