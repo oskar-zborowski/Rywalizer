@@ -1,8 +1,16 @@
 @import '@/layout/layout.scss';
+@import '@/scss/bootstrap.scss';
 
 .mapViewer {
+    @extend %right-column;
+
+    @include respond-to(null, 'lg') {
+        display: none;
+    }
+
     border-radius: 15px;
     overflow: hidden;
-    flex: 100% - $left-column-width;
+    flex: auto;
     border: 1px solid #29292e;
+    background-color: #29292e;
 }
