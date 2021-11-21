@@ -1,0 +1,79 @@
+.eventTile {
+    background-color: #18181c;
+    border-radius: 8px;
+    border: 1px solid #29292e;
+    padding: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+    min-width: 0; /* POD ŻADNYM POZOREM NIE USUWAĆ TEJ LINII !!! */
+
+    &:hover {
+        background-color: #29292e;
+
+        .image {
+            opacity: 1;
+            filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.7));
+        }
+    }
+
+    .image {
+        // opacity: 0.4;
+        border-radius: 8px;
+        object-fit: cover;
+        height: 150px;
+        width: 100%;
+        transition: 0.2s;
+    }
+
+    .detailsRow {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-width: 0;
+        gap: 10px;
+    }
+
+    .locationName {
+        font-weight: 900;
+    }
+
+    .address {
+        color: gray;
+    }
+
+    .locationName,
+    .address {
+        flex: 1;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .price {
+        font-weight: bold;
+    }
+
+    .date {
+        color: gray;
+    }
+
+    .divider {
+        height: 1px;
+        background-color: #353538;
+        margin: 10px 0;
+    }
+
+    .busyBar {
+        height: 8px;
+        border-radius: 4px;
+        flex-grow: 1;
+        background-color: #353538;
+        max-width: 130px;
+
+        .innerBar {
+            border-radius: 4px;
+            height: 100%;
+            background-color: #7ab661;
+        }
+    }
+}

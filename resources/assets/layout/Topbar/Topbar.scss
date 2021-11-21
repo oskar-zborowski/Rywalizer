@@ -1,5 +1,5 @@
 @import '@/layout/layout.scss';
-@import '@/main.scss';
+@import '@/scss/bootstrap.scss';
 
 .topbar {
     width: 100%;
@@ -7,31 +7,23 @@
     display: flex;
     align-items: center;
     flex-direction: row;
+    justify-content: space-between;
+    flex: none;
 }
 
-.brandbar {
-    @extend %left-column;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    .logo {
-        color: $color-primary;
-        font-size: 30px;
-        font-weight: 1000;
-    }
-
-    .authButtons > * {
-        width: 120px;
-        margin-left: 8px;
-        float: left;
-    }
+.logo {
+    color: $color-primary;
+    font-size: 30px;
+    font-weight: 1000;
 }
 
 .links {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    flex: 100% - $left-column-width;
     gap: 20px;
+
+    @include respond-to(null, 'lg') {
+        display: none;
+    }
 }

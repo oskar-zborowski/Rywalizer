@@ -1,17 +1,28 @@
 $breakpoints: (
-    "sm" : (min-width: 576px),      // Small devices (landscape phones, 576px and up)
-    "md" : (min-width: 767px),      // Medium devices (tablets, 768px and up)
-    "lg" : (min-width: 992px),      // Large devices (desktops, 992px and up)
-    "xl" : (min-width: 1200px),     // Extra large devices (large desktops, 1200px and up)
-    "xxl" : (min-width: 1600px)     // Extra extra large devices (1600px and up)
+    "sm": 576px,
+    "md": 767px,
+    "lg": 992px,
+    "xl": 1200px,
+    "2xl": 1400px,
+    "3xl": 1600px,
 );
 
-@mixin respond-to($breakpoint) {
-    @if map-has-key($breakpoints, $breakpoint) {
-        @media #{inspect(map-get($breakpoints, $breakpoint))} {
+@mixin respond-to($min, $max: null) {
+    @if $max == null {
+        $minWidth: map-get($breakpoints, $min);
+        @media (min-width: $minWidth) {
+            @content;
+        }
+    } @else if $min == null {
+        $maxWidth: map-get($breakpoints, $max);
+        @media (max-width: $maxWidth) {
             @content;
         }
     } @else {
-        @error "No value could be retrieved from '#{$breakpoint}'.";
+        $minWidth: map-get($breakpoints, $min) + 1px;
+        $maxWidth: map-get($breakpoints, $max);
+        @media (min-width: $minWidth) and (max-width: $maxWidth) {
+            @content;
+        }
     }
 }

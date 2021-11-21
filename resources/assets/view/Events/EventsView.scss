@@ -1,0 +1,53 @@
+@import "@/scss/bootstrap.scss";
+
+.eventsView {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.filters {
+    height: 60px;
+    width: 100%;
+    flex: none;
+}
+
+.containerWrapper {
+    min-height: 0;
+    flex: 1;
+    overflow: auto;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.eventTilesContainer {
+    display: grid;
+    gap: 25px;
+    padding: 0 25px 25px 25px;
+    grid-template-columns: repeat(4, 1fr);
+    transition: padding 0.2s, gap 0.2s;
+
+    @include respond-to(null, "sm") {
+        grid-template-columns: 1fr;
+        padding: 0 15px 15px 15px;
+        gap: 15px;
+    }
+
+    @include respond-to("sm", "lg") {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include respond-to("lg", "xl") {
+        grid-template-columns: 1fr;
+    }
+
+    @include respond-to("xl", "2xl") {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include respond-to("2xl", "3xl") {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

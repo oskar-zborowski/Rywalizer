@@ -1,0 +1,14 @@
+@import '@/scss/bootstrap.scss';
+
+.splitter {
+    @include respond-to(null, 'lg') {
+        display: none;
+    }
+
+    margin: 0 40px;
+    border-radius: 4px;
+    border: 1px solid #29292e;
+    width: 12px;
+    background-color: #18181c;
+    flex: none;
+}

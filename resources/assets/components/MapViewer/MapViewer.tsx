@@ -4,7 +4,7 @@ import styles from './MapViewer.scss';
 import mapStyle from './mapStyle';
 
 const center = {
-    lat: 50,
+    lat: 52,
     lng: 20
 };
 
@@ -17,8 +17,8 @@ const MapViewer: React.FC = () => {
     const [map, setMap] = useState(null);
 
     const onLoad = useCallback((map) => {
-        const bounds = new window.google.maps.LatLngBounds();
-        map.fitBounds(bounds);
+        // const bounds = new window.google.maps.LatLngBounds();
+        // map.fitBounds(bounds);
         setMap(map);
     }, []);
 

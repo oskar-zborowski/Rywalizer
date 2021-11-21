@@ -1,4 +1,5 @@
 @import "@/layout/layout.scss";
+@import "@/scss/bootstrap.scss";
 
 .footer {
     height: $topbar-height;
@@ -6,6 +7,11 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex: none;
+
+    @include respond-to(null, 'lg') {
+        display: none;
+    }
 }
 
 .links {

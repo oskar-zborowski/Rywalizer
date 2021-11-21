@@ -16,7 +16,7 @@ html {
 }
 
 body {
-    overflow: hidden;
+    overflow-x: hidden;
     font-family: 'Poppins', sans-serif;
     background-color: $color-backgroud;
     color: #fff;
@@ -52,5 +52,14 @@ button:focus {
         display: flex;
         flex-direction: column;
         padding: 0 40px;
+        transition: padding .2s, padding-bottom 0s;
+
+        @include respond-to(null, 'md') {
+            padding: 0 20px 20px 20px;
+        }
+
+        @include respond-to(null, 'lg') {
+            padding: 0 25px 25px 25px;
+        }
     }
 }
