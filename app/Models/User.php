@@ -24,7 +24,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'role_type_id',
         'birth_date',
         'email_verified_at',
-        'verification_email_counter',
         'account_deleted_at',
         'account_blocked_at',
         'last_logged_in'
@@ -40,7 +39,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'gender_type_id',
         'role_type_id',
         'email_verified_at',
-        'verification_email_counter',
         'account_deleted_at',
         'account_blocked_at',
         'created_at',
@@ -68,7 +66,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'first_name' => 30,
         'last_name' => 30,
         'email' => 254,
-        'avatar' => 24,
+        'avatar' => 48,
         'birth_date' => 10
     ];
 

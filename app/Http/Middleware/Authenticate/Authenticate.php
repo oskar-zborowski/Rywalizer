@@ -99,7 +99,7 @@ class Authenticate extends Middleware
             $data = JsonResponse::isRefreshTokenValid($request);
 
             if ($data['userId']) {
-
+                
                 if ($request->url() == $loginURL ||
                     $request->url() == $registerURL ||
                     $request->url() == $forgotPasswordURL ||

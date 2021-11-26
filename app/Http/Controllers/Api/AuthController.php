@@ -11,7 +11,8 @@ use App\Http\ErrorCodes\AuthErrorCode;
 use App\Http\ErrorCodes\BaseErrorCode;
 use App\Models\User;
 use App\Exceptions\ApiException;
-use Illuminate\Auth\Events\Verified;
+use App\Mail\VerificationEmail;
+use App\Models\EmailVerification;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +22,7 @@ use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -50,16 +52,12 @@ class AuthController extends Controller
         $accountBlockedAt = $user->account_blocked_at;
 
         if ($accountBlockedAt) {
-
             $user->tokens()->delete();
-
             throw new ApiException(AuthErrorCode::ACOUNT_BLOCKED());
         }
 
         if ($accountDeletedAt) {
-
             $user->tokens()->delete();
-
             throw new ApiException(AuthErrorCode::ACOUNT_DELETED());
         }
 
@@ -115,16 +113,20 @@ class AuthController extends Controller
 
             $emailSendingCounter = $passwordResetToken->email_sending_counter;
 
+            if ($emailSendingCounter == 255) {
+                throw new ApiException(BaseErrorCode::LIMIT_EXCEEDED());
+            }
+
             $now = date('Y-m-d H:i:s');
             $waitingDate = date('Y-m-d H:i:s', strtotime('+' . env('PAUSE_BEFORE_RETRYING')*60 . ' seconds', strtotime($passwordResetToken->created_at)));
 
             if ($now <= $waitingDate) {
                 throw new ApiException(AuthErrorCode::WAIT_BEFORE_RETRYING());
-            } else {
-                DB::table('password_resets')
-                    ->where('id', $passwordResetToken->id)
-                    ->delete();
             }
+
+            DB::table('password_resets')
+                ->where('id', $passwordResetToken->id)
+                ->delete();
         }
 
         $status = Password::sendResetLink($request->only('email'));
@@ -162,8 +164,16 @@ class AuthController extends Controller
 
         $resetTokens = DB::table('password_resets')->get();
 
+        $passwordReset = null;
+
         foreach ($resetTokens as $rT) {
+
             if ($hasher->check($request->token, $rT->token)) {
+
+                $passwordReset = DB::table('password_resets')
+                    ->where('id', $rT->id)
+                    ->first();
+
                 $plainEmail = $encrypter->decrypt($rT->email);
 
                 DB::table('password_resets')
@@ -172,6 +182,10 @@ class AuthController extends Controller
                 
                 break;
             }
+        }
+
+        if (!$passwordReset) {
+            throw new ApiException(AuthErrorCode::INVALID_PASSWORD_RESET_TOKEN());
         }
 
         $status = Password::reset(
@@ -194,7 +208,22 @@ class AuthController extends Controller
             JsonResponse::sendSuccess();
         }
 
-        throw new ApiException(AuthErrorCode::INVALID_PASSWORD_RESET_TOKEN());
+        DB::table('password_resets')
+            ->where('id', $passwordReset->id)
+            ->delete();
+
+        $now = date('Y-m-d H:i:s');
+        $expirationDate = date('Y-m-d H:i:s', strtotime('+' . env('EMAIL_TOKEN_LIFETIME') . ' minutes', strtotime($passwordReset->created_at)));
+
+        if ($now > $expirationDate) {
+            throw new ApiException(AuthErrorCode::PASSWORD_RESET_TOKEN_HAS_EXPIRED());
+        }
+
+        $encryptedEmail = $encrypter->encrypt($plainEmail);
+
+        DB::table('password_resets')
+            ->where('id', $passwordReset->id)
+            ->update(['email' => $encryptedEmail]);
     }
 
     /**
@@ -210,67 +239,99 @@ class AuthController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
+        $emailSendingCounter = 0;
+
         if (!$afterRegistartion) {
 
             if ($user->hasVerifiedEmail()) {
                 throw new ApiException(AuthErrorCode::EMAIL_ALREADY_VERIFIED());
             }
 
-            $now = date('Y-m-d H:i:s');
-            $waitingDate = date('Y-m-d H:i:s', strtotime('+' . env('PAUSE_BEFORE_RETRYING')*60 . ' seconds', strtotime($user->updated_at)));
-    
-            if ($now <= $waitingDate && $user->verification_email_counter > 1) {
-                throw new ApiException(AuthErrorCode::WAIT_BEFORE_RETRYING());
+            $emailVerification = DB::table('email_verifications')
+                ->where('user_id', $user->id)
+                ->first();
+
+            if ($emailVerification) {
+
+                $emailSendingCounter = $emailVerification->email_sending_counter;
+
+                if ($emailSendingCounter == 255) {
+                    throw new ApiException(BaseErrorCode::LIMIT_EXCEEDED());
+                }
+
+                $now = date('Y-m-d H:i:s');
+                $waitingDate = date('Y-m-d H:i:s', strtotime('+' . env('PAUSE_BEFORE_RETRYING')*60 . ' seconds', strtotime($emailVerification->updated_at)));
+        
+                if ($now <= $waitingDate && $emailVerification->email_sending_counter > 1) {
+                    throw new ApiException(AuthErrorCode::WAIT_BEFORE_RETRYING());
+                }
             }
+        }
 
-            if ($user->verification_email_counter < 255) {
+        $encrypter = new Encrypter;
 
-                DB::table('users')
-                    ->where('id', $user->id)
-                    ->update([
-                        'verification_email_counter' => $user->verification_email_counter+1,
-                        'updated_at' => $now
-                    ]);
+        $plainToken = $encrypter->generatePlainToken(64);
+        $encryptedToken = $encrypter->encryptToken($plainToken);
 
-                $user->sendEmailVerificationNotification();
+        EmailVerification::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'token' => $encryptedToken,
+                'email_sending_counter' => $emailSendingCounter+1,
+            ]
+        );
 
-                JsonResponse::sendSuccess();
+        $url = 'https://spa.test/email_verify?token=' . $plainToken; // TODO Poprawić na prawidłowy URL
+        Mail::to($user)->send(new VerificationEmail($url));
 
-            } else {
-                throw new ApiException(BaseErrorCode::LIMIT_EXCEEDED());
-            }
-        } else {
-
-            DB::table('users')
-                ->where('id', $user->id)
-                ->update([
-                    'verification_email_counter' => 1,
-                    'updated_at' => date('Y-m-d H:i:s')
-                ]);
-
-            $user->sendEmailVerificationNotification();
+        if (!$afterRegistartion) {
+            JsonResponse::sendSuccess();
         }
     }
 
     /**
-     * #### `PUT` `/api/verify-email/{id}/{hash}`
+     * #### `PUT` `/api/verify-email/{token}`
      * Weryfikacja maila
+     * 
+     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
      * 
      * @return void
      */
-    public function verifyEmail(): void {
+    public function verifyEmail(string $token = null, Encrypter $encrypter): void {
 
         /** @var User $user */
         $user = Auth::user();
 
-        if (!$user->hasVerifiedEmail() && $user->markEmailAsVerified()) {
-
-            event(new Verified($user));
-
-            DB::table('users')
-                ->where('id', $user->id)
-                ->update(['updated_at' => date('Y-m-d H:i:s')]);
+        if ($user->hasVerifiedEmail()) {
+            throw new ApiException(AuthErrorCode::EMAIL_ALREADY_VERIFIED());
         }
+
+        if (!$token) {
+            throw new ApiException(AuthErrorCode::INVALID_EMAIL_VERIFIFICATION_TOKEN());
+        }
+
+        $encryptedToken = $encrypter->encryptToken($token);
+
+        $emailVerification = DB::table('email_verifications')
+            ->where('token', $encryptedToken)
+            ->first();
+
+        if (!$emailVerification) {
+            throw new ApiException(AuthErrorCode::INVALID_EMAIL_VERIFIFICATION_TOKEN());
+        }
+
+        DB::table('email_verifications')
+            ->where('id', $emailVerification->id)
+            ->delete();
+
+        $now = date('Y-m-d H:i:s');
+        $expirationDate = date('Y-m-d H:i:s', strtotime('+' . env('EMAIL_TOKEN_LIFETIME') . ' minutes', strtotime($emailVerification->updated_at)));
+
+        if ($now > $expirationDate) {
+            throw new ApiException(AuthErrorCode::EMAIL_VERIFIFICATION_TOKEN_HAS_EXPIRED());
+        }
+
+        $user->markEmailAsVerified();
 
         $this->checkMissingUserInfo();
     }
@@ -502,7 +563,7 @@ class AuthController extends Controller
 
         if (!$user->avatar && $request->avatar) {
             // TODO Zrobić wgrywanie i zapisywanie zdjęć przez formularz (wykorzystać metodę saveAvatar)
-            $supplementaryInfo['avatar'] = $encrypter->encrypt($request->avatar, 24);
+            $supplementaryInfo['avatar'] = $encrypter->encrypt($request->avatar, 48);
         }
 
         if ($supplementaryInfo) {
@@ -562,10 +623,14 @@ class AuthController extends Controller
      */
     private function saveAvatar(string $provider, string $avatarUrl): string {
 
+        // TODO Zamienić na switch case'a
+
         $provider = strtoupper($provider);
 
         if ($provider == 'FACEBOOK') {
+
             if (env('FACEBOOK_MODE') == 'development') {
+
                 $avatarUrlHeaders = get_headers($avatarUrl, 1);
                 $avatarUrlLocation = $avatarUrlHeaders['Location'];
                 $avatarUrlSeparators = explode('/', $avatarUrlLocation);
@@ -585,10 +650,11 @@ class AuthController extends Controller
                 $encrypter = new Encrypter;
 
                 do {
-                    $avatarFilename = $encrypter->generatePlainToken(32, $avatarFileExtension);
+                    $avatarFilename = $encrypter->generatePlainToken(64, $avatarFileExtension);
                     $avatarFilenameEncrypted = $encrypter->encryptToken($avatarFilename);
                     $avatarExists = DB::table('users')->where('avatar', $avatarFilenameEncrypted)->first();
                 } while ($avatarExists);
+                
             } else if (env('FACEBOOK_MODE') == 'live') {
                 // TODO Uzupełnić zapisywanie zdjęcia z facebooka
             }

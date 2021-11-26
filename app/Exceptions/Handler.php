@@ -12,9 +12,12 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\ErrorHandler\Error\FatalError;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Database\QueryException;
 use ErrorException;
 use Error;
+use BadMethodCallException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -136,6 +139,33 @@ class Handler extends ExceptionHandler
                 );
                 break;
 
+            case BadMethodCallException::class:
+                /** @var BadMethodCallException $throwable */
+
+                JsonResponse::sendError(
+                    BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase([$throwable->getMessage()]) : null
+                );
+                break;
+
+            case FatalError::class:
+                /** @var FatalError $throwable */
+
+                JsonResponse::sendError(
+                    BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase([$throwable->getMessage()]) : null
+                );
+                break;
+
+            case NotFoundHttpException::class:
+                /** @var NotFoundHttpException $throwable */
+
+                JsonResponse::sendError(
+                    BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase([$throwable->getMessage()]) : null
+                );
+                break;
+
             case ApiException::class:
                 /** @var ApiException $throwable */
 
@@ -152,7 +182,7 @@ class Handler extends ExceptionHandler
 
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase($class) : null
+                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase($throwable) : null
                 );
                 break;
         }

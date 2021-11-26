@@ -90,8 +90,8 @@ return [
         'users' => [
             'provider' => 'users',
             'table' => 'password_resets',
-            'expire' => 60,
-            'throttle' => 60,
+            'expire' => env('EMAIL_TOKEN_LIFETIME'),
+            'throttle' => env('EMAIL_TOKEN_LIFETIME'),
         ],
     ],
 

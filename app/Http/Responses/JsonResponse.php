@@ -124,20 +124,14 @@ class JsonResponse
             $accountBlockedAt = $user->account_blocked_at;
 
             if ($accountBlockedAt) {
-
                 $user->tokens()->delete();
-
                 JsonResponse::deleteCookie('REFRESH-TOKEN');
-
                 throw new ApiException(AuthErrorCode::ACOUNT_BLOCKED());
             }
 
             if ($accountDeletedAt) {
-
-                $user->tokens()->delete();
-                
+                $user->tokens()->delete();    
                 JsonResponse::deleteCookie('REFRESH-TOKEN');
-                
                 throw new ApiException(AuthErrorCode::ACOUNT_DELETED());
             }
 

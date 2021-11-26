@@ -94,6 +94,7 @@ class FieldConversion
             }
     
             if ($current == 0 && $fieldNames != null) {
+                
                 $fN = null;
     
                 foreach ($fieldNames as $key => $value) {
@@ -104,6 +105,7 @@ class FieldConversion
     
                 $fieldNames = $fN;
             }
+
         } else {
             $fieldNames = $data;
         }

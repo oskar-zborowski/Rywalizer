@@ -16,7 +16,7 @@ class CreatePasswordResetsTable extends Migration
             $table->bigIncrements('id');
             $table->string('email', 340)->unique();
             $table->string('token', 60)->unique();
-            $table->tinyInteger('email_sending_counter')->unsigned()->default(1);
+            $table->tinyInteger('email_sending_counter')->unsigned()->default(0);
             $table->timestamp('created_at')->nullable();
         });
     }

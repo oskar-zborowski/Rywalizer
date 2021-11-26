@@ -129,7 +129,7 @@ class Encrypter
      * 
      * @return string|null
      */
-    public function generatePlainToken(int $maxSize = 32, string $addition = ''): ?string {
+    public function generatePlainToken(int $maxSize = 64, string $addition = ''): ?string {
 
         $additionLength = strlen($addition);
 

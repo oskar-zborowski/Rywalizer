@@ -19,12 +19,11 @@ class CreateUsersTable extends Migration
             $table->string('last_name', 40);
             $table->string('email', 340)->unique()->nullable();
             $table->string('password', 60)->nullable();
-            $table->string('avatar', 32)->unique()->nullable();
+            $table->string('avatar', 64)->unique()->nullable();
             $table->tinyInteger('gender_type_id')->unsigned()->nullable();
             $table->tinyInteger('role_type_id')->unsigned()->default(1);
             $table->string('birth_date', 16)->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->tinyInteger('verification_email_counter')->unsigned()->default(0);
             $table->timestamp('account_deleted_at')->nullable();
             $table->timestamp('account_blocked_at')->nullable();
             $table->timestamp('last_logged_in')->default(DB::raw('CURRENT_TIMESTAMP'));

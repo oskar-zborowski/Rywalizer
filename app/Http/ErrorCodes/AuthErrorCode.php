@@ -37,39 +37,51 @@ class AuthErrorCode
         return new ErrorCode('ATH7', 'EMAIL ALREADY VERIFIED', Response::HTTP_NOT_ACCEPTABLE);
     }
 
+    public static function INVALID_EMAIL_VERIFIFICATION_TOKEN(): ErrorCode {
+        return new ErrorCode('ATH8', 'INVALID EMAIL VERIFIFICATION TOKEN', Response::HTTP_NOT_ACCEPTABLE);
+    }
+
+    public static function EMAIL_VERIFIFICATION_TOKEN_HAS_EXPIRED(): ErrorCode {
+        return new ErrorCode('ATH9', 'EMAIL VERIFIFICATION TOKEN HAS EXPIRED', Response::HTTP_NOT_ACCEPTABLE);
+    }
+
     public static function INVALID_PASSWORD_RESET_TOKEN(): ErrorCode {
-        return new ErrorCode('ATH8', 'INVALID PASSWORD RESET TOKEN', Response::HTTP_BAD_REQUEST);
+        return new ErrorCode('ATH10', 'INVALID PASSWORD RESET TOKEN', Response::HTTP_BAD_REQUEST);
+    }
+
+    public static function PASSWORD_RESET_TOKEN_HAS_EXPIRED(): ErrorCode {
+        return new ErrorCode('ATH11', 'PASSWORD RESET TOKEN HAS EXPIRED', Response::HTTP_NOT_ACCEPTABLE);
     }
 
     public static function INVALID_REFRESH_TOKEN(): ErrorCode {
-        return new ErrorCode('ATH9', 'INVALID REFRESH TOKEN', Response::HTTP_UNAUTHORIZED);
+        return new ErrorCode('ATH12', 'INVALID REFRESH TOKEN', Response::HTTP_UNAUTHORIZED);
     }
 
     public static function REFRESH_TOKEN_IS_STILL_ACTIVE(): ErrorCode {
-        return new ErrorCode('ATH10', 'REFRESH TOKEN IS STILL ACTIVE', Response::HTTP_NOT_ACCEPTABLE);
+        return new ErrorCode('ATH13', 'REFRESH TOKEN IS STILL ACTIVE', Response::HTTP_NOT_ACCEPTABLE);
     }
 
     public static function REFRESH_TOKEN_HAS_EXPIRED(): ErrorCode {
-        return new ErrorCode('ATH11', 'REFRESH TOKEN HAS EXPIRED', Response::HTTP_UNAUTHORIZED);
+        return new ErrorCode('ATH14', 'REFRESH TOKEN HAS EXPIRED', Response::HTTP_UNAUTHORIZED);
     }
 
     public static function INVALID_PROVIDER(): ErrorCode {
-        return new ErrorCode('ATH12', 'INVALID PROVIDER', Response::HTTP_BAD_REQUEST);
+        return new ErrorCode('ATH15', 'INVALID PROVIDER', Response::HTTP_BAD_REQUEST);
     }
 
     public static function INVALID_CREDENTIALS_PROVIDED(): ErrorCode {
-        return new ErrorCode('ATH13', 'INVALID CREDENTIALS PROVIDED', Response::HTTP_UNAUTHORIZED);
+        return new ErrorCode('ATH16', 'INVALID CREDENTIALS PROVIDED', Response::HTTP_UNAUTHORIZED);
     }
 
     public static function MISSING_USER_INFORMATION(): ErrorCode {
-        return new ErrorCode('ATH14', 'MISSING USER INFORMATION', Response::HTTP_FORBIDDEN);
+        return new ErrorCode('ATH17', 'MISSING USER INFORMATION', Response::HTTP_FORBIDDEN);
     }
 
     public static function WAIT_BEFORE_RETRYING(): ErrorCode {
-        return new ErrorCode('ATH15', 'WAIT BEFORE RETRYING', Response::HTTP_NOT_ACCEPTABLE);
+        return new ErrorCode('ATH18', 'WAIT BEFORE RETRYING', Response::HTTP_NOT_ACCEPTABLE);
     }
 
     public static function UNIDENTIFIED_USER(): ErrorCode {
-        return new ErrorCode('ATH16', 'UNIDENTIFIED USER', Response::HTTP_NOT_ACCEPTABLE);
+        return new ErrorCode('ATH19', 'UNIDENTIFIED USER', Response::HTTP_NOT_ACCEPTABLE);
     }
 }
