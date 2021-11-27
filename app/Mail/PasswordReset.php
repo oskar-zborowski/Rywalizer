@@ -6,7 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class VerificationEmail extends Mailable
+class PasswordReset extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -27,10 +27,10 @@ class VerificationEmail extends Mailable
      * @return $this
      */
     public function build() {
-        $html = "Kliknij w poniższy link, aby zweryfikować adres e-mail:<br>
+        $html = "Kliknij w poniższy link, aby zmienić hasło:<br>
                 $this->url";
 
-        return $this->subject('Potwierdzenie adresu e-mail')
+        return $this->subject('Reset Hasła')
                     ->html($html);
     }
 }

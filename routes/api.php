@@ -46,8 +46,8 @@ Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function
     |-------------------------------------------------------------------------------------------------------
     */
 
-    Route::get('/email/verification-notification', [AuthController::class, 'sendVerificationEmail']);
-    Route::put('/verify-email/{token?}', [AuthController::class, 'verifyEmail']);
+    Route::post('/email/verification-notification', [AuthController::class, 'sendVerificationEmail']);
+    Route::put('/email/verify', [AuthController::class, 'verifyEmail']);
 
     Route::delete('/logout', [AuthController::class, 'logout'])->withoutMiddleware('throttle:defaultAuthLimit');
     Route::delete('/logout-other-devices', [AuthController::class, 'logoutOtherDevices'])->middleware(['throttle:logoutOtherDevicesLimit']);

@@ -6,7 +6,7 @@ use App\Http\Traits\Encryptable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class EmailVerification extends Model
+class PasswordReset extends Model
 {
     use HasFactory, Encryptable;
 
@@ -43,4 +43,8 @@ class EmailVerification extends Model
     protected $maxSize = [
         'token' => 48
     ];
+
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
 }

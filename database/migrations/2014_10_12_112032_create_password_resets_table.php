@@ -11,13 +11,18 @@ class CreatePasswordResetsTable extends Migration
      *
      * @return void
      */
-    public function up() {
+    public function up(): void {
+
         Schema::create('password_resets', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('email', 340)->unique();
-            $table->string('token', 60)->unique();
-            $table->tinyInteger('email_sending_counter')->unsigned()->default(0);
-            $table->timestamp('created_at')->nullable();
+            $table->mediumInteger('user_id')->unsigned();
+            $table->string('token', 64)->unique();
+            $table->tinyInteger('email_sending_counter')->unsigned();
+            $table->timestamps();
+        });
+
+        Schema::table('password_resets', function (Blueprint $table) {
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -26,7 +31,7 @@ class CreatePasswordResetsTable extends Migration
      *
      * @return void
      */
-    public function down() {
+    public function down(): void {
         Schema::dropIfExists('password_resets');
     }
 }

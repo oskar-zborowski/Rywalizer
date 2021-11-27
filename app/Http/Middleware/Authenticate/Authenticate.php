@@ -2,10 +2,10 @@
 
 namespace App\Http\Middleware\Authenticate;
 
-use App\Http\Responses\JsonResponse;
-use App\Http\ErrorCodes\AuthErrorCode;
-use Closure;
 use App\Exceptions\ApiException;
+use App\Http\ErrorCodes\AuthErrorCode;
+use App\Http\Responses\JsonResponse;
+use Closure;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Http\Request;
@@ -39,7 +39,6 @@ class Authenticate extends Middleware
         if ($jwt = $request->cookie('JWT')) {
 
             $request->headers->set('Authorization', 'Bearer ' . $jwt);
-
             $authenticated = true;
 
             try {
@@ -48,10 +47,9 @@ class Authenticate extends Middleware
 
                 JsonResponse::deleteCookie('JWT');
 
-                $data = JsonResponse::isRefreshTokenValid($request);
+                $personalAccessToken = JsonResponse::isRefreshTokenValid($request);
 
-                if ($data['userId']) {
-
+                if ($personalAccessToken) {
                     if ($request->url() == $loginURL ||
                         $request->url() == $registerURL ||
                         $request->url() == $forgotPasswordURL ||
@@ -61,8 +59,9 @@ class Authenticate extends Middleware
                         throw new ApiException(AuthErrorCode::REFRESH_TOKEN_IS_STILL_ACTIVE());
                     }
 
-                    JsonResponse::refreshToken($data['userId'], $data['personalAccessTokenId']);
-
+                    if ($request->url() != $logoutURL) {
+                        JsonResponse::refreshToken($personalAccessToken);
+                    }
                 } else {
 
                     if ($request->url() != $loginURL &&
@@ -93,13 +92,10 @@ class Authenticate extends Middleware
                     throw new ApiException(AuthErrorCode::ALREADY_LOGGED_IN());
                 }
             }
-
         } else {
+            $personalAccessToken = JsonResponse::isRefreshTokenValid($request);
 
-            $data = JsonResponse::isRefreshTokenValid($request);
-
-            if ($data['userId']) {
-                
+            if ($personalAccessToken) {
                 if ($request->url() == $loginURL ||
                     $request->url() == $registerURL ||
                     $request->url() == $forgotPasswordURL ||
@@ -109,10 +105,10 @@ class Authenticate extends Middleware
                     throw new ApiException(AuthErrorCode::REFRESH_TOKEN_IS_STILL_ACTIVE());
                 }
 
-                JsonResponse::refreshToken($data['userId'], $data['personalAccessTokenId']);
-
+                if ($request->url() != $logoutURL) {
+                    JsonResponse::refreshToken($personalAccessToken);
+                }
             } else {
-
                 if ($request->url() != $loginURL &&
                     $request->url() != $registerURL &&
                     $request->url() != $forgotPasswordURL &&

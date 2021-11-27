@@ -19,12 +19,11 @@ class BeforeAuthenticate
     public function handle(Request $request, Closure $next) {
 
         $loginURL = env('APP_URL') . '/api/login';
+        $registerURL = env('APP_URL') . '/api/register';
         $forgotPasswordURL = env('APP_URL') . '/api/forgot-password';
         $resetPasswordURL = env('APP_URL') . '/api/reset-password';
-        $refreshTokenURL = env('APP_URL') . '/api/refresh-token';
 
-        if ($request->url() != $resetPasswordURL && $request->url() != $refreshTokenURL) {
-
+        if ($request->url() == $loginURL || $request->url() == $registerURL || $request->url() == $forgotPasswordURL) {
             $request->validate([
                 'email' => 'required|string|email|max:254'
             ]);
@@ -33,25 +32,23 @@ class BeforeAuthenticate
             $request->merge(['email' => $encrypter->encrypt($request->email, 254)]);
         }
 
-        if ($request->url() != $forgotPasswordURL && $request->url() != $refreshTokenURL) {
-
+        if ($request->url() == $loginURL || $request->url() == $registerURL || $request->url() == $resetPasswordURL) {
             $request->validate([
                 'password' => 'required|string|between:8,20'
             ]);
+        }
 
-            if ($request->url() != $loginURL) {
-                
-                $request->validate([
-                    'password' => ['confirmed', RulesPassword::defaults()]
-                ]);
-
-                if ($request->url() == $resetPasswordURL) {
-                    $request->validate([
-                        'token' => 'required|string|alpha_num|size:64',
-                        'do_not_logout' => 'required|boolean'
-                    ]);
-                }
-            }
+        if ($request->url() == $registerURL || $request->url() == $resetPasswordURL) {  
+            $request->validate([
+                'password' => ['confirmed', RulesPassword::defaults()]
+            ]);
+        }
+        
+        if ($request->url() == $resetPasswordURL) {
+            $request->validate([
+                'token' => 'required|string|alpha_num|size:48',
+                'do_not_logout' => 'required|boolean'
+            ]);
         }
 
         return $next($request);

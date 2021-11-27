@@ -11,7 +11,8 @@ class CreateGenderTypesTable extends Migration
      *
      * @return void
      */
-    public function up() {
+    public function up(): void {
+
         Schema::create('gender_types', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->string('name', 8)->unique();
@@ -23,7 +24,7 @@ class CreateGenderTypesTable extends Migration
      *
      * @return void
      */
-    public function down() {
+    public function down(): void {
         Schema::dropIfExists('gender_types');
     }
 }

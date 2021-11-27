@@ -38,11 +38,11 @@ class AuthErrorCode
     }
 
     public static function INVALID_EMAIL_VERIFIFICATION_TOKEN(): ErrorCode {
-        return new ErrorCode('ATH8', 'INVALID EMAIL VERIFIFICATION TOKEN', Response::HTTP_NOT_ACCEPTABLE);
+        return new ErrorCode('ATH8', 'INVALID EMAIL VERIFIFICATION TOKEN', Response::HTTP_BAD_REQUEST);
     }
 
     public static function EMAIL_VERIFIFICATION_TOKEN_HAS_EXPIRED(): ErrorCode {
-        return new ErrorCode('ATH9', 'EMAIL VERIFIFICATION TOKEN HAS EXPIRED', Response::HTTP_NOT_ACCEPTABLE);
+        return new ErrorCode('ATH9', 'EMAIL VERIFIFICATION TOKEN HAS EXPIRED', Response::HTTP_BAD_REQUEST);
     }
 
     public static function INVALID_PASSWORD_RESET_TOKEN(): ErrorCode {
@@ -50,7 +50,7 @@ class AuthErrorCode
     }
 
     public static function PASSWORD_RESET_TOKEN_HAS_EXPIRED(): ErrorCode {
-        return new ErrorCode('ATH11', 'PASSWORD RESET TOKEN HAS EXPIRED', Response::HTTP_NOT_ACCEPTABLE);
+        return new ErrorCode('ATH11', 'PASSWORD RESET TOKEN HAS EXPIRED', Response::HTTP_BAD_REQUEST);
     }
 
     public static function INVALID_REFRESH_TOKEN(): ErrorCode {
@@ -79,9 +79,5 @@ class AuthErrorCode
 
     public static function WAIT_BEFORE_RETRYING(): ErrorCode {
         return new ErrorCode('ATH18', 'WAIT BEFORE RETRYING', Response::HTTP_NOT_ACCEPTABLE);
-    }
-
-    public static function UNIDENTIFIED_USER(): ErrorCode {
-        return new ErrorCode('ATH19', 'UNIDENTIFIED USER', Response::HTTP_NOT_ACCEPTABLE);
     }
 }

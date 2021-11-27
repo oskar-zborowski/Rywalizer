@@ -11,13 +11,13 @@ class CreateEmailVerificationsTable extends Migration
      *
      * @return void
      */
-    public function up()
-    {
+    public function up(): void {
+        
         Schema::create('email_verifications', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->mediumInteger('user_id')->unsigned();
             $table->string('token', 64)->unique();
-            $table->tinyInteger('email_sending_counter')->unsigned()->default(0);
+            $table->tinyInteger('email_sending_counter')->unsigned();
             $table->timestamps();
         });
 
@@ -31,8 +31,7 @@ class CreateEmailVerificationsTable extends Migration
      *
      * @return void
      */
-    public function down()
-    {
+    public function down(): void {
         Schema::dropIfExists('email_verifications');
     }
 }

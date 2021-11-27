@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Http\Traits\Encryptable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -21,20 +20,22 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'avatar',
         'gender_type_id',
-        'role_type_id',
         'birth_date',
-        'email_verified_at',
-        'account_deleted_at',
-        'account_blocked_at',
         'last_logged_in'
     ];
 
     protected $guarded = [
+        'id',
+        'role_type_id',
+        'email_verified_at',
+        'account_deleted_at',
+        'account_blocked_at',
         'created_at',
         'updated_at'
     ];
 
     protected $hidden = [
+        'id',
         'password',
         'gender_type_id',
         'role_type_id',
@@ -50,8 +51,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'account_deleted_at' => 'datetime',
         'account_blocked_at' => 'datetime',
         'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'last_logged_in' => 'datetime'
+        'updated_at' => 'datetime'
     ];
 
     protected $encryptable = [
@@ -84,11 +84,14 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function externalAuthentication() {
-        return $this->hasMany(ExternalAuthentication::class);
+        return $this->hasOne(ExternalAuthentication::class);
     }
 
-    public function sendPasswordResetNotification($token) {
-        $url = 'https://spa.test/reset-password?token=' . $token; // TODO Poprawić na prawidłowy URL
-        $this->notify(new ResetPasswordNotification($url));
+    public function passwordReset() {
+        return $this->hasOne(PasswordReset::class);
+    }
+
+    public function emailVerification() {
+        return $this->hasOne(EmailVerification::class);
     }
 }

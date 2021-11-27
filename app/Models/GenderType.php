@@ -11,7 +11,12 @@ class GenderType extends Model
     use HasFactory, Encryptable;
 
     protected $guarded = [
+        'id',
         'name'
+    ];
+
+    protected $hidden = [
+        'id'
     ];
 
     protected $encryptable = [

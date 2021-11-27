@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateUsersTable extends Migration
@@ -12,7 +11,8 @@ class CreateUsersTable extends Migration
      *
      * @return void
      */
-    public function up() {
+    public function up(): void {
+
         Schema::create('users', function (Blueprint $table) {
             $table->mediumIncrements('id');
             $table->string('first_name', 40);
@@ -26,7 +26,7 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('account_deleted_at')->nullable();
             $table->timestamp('account_blocked_at')->nullable();
-            $table->timestamp('last_logged_in')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('last_logged_in')->nullable();
             $table->timestamps();
         });
 
@@ -41,7 +41,7 @@ class CreateUsersTable extends Migration
      *
      * @return void
      */
-    public function down() {
+    public function down(): void {
         Schema::dropIfExists('users');
     }
 }

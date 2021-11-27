@@ -11,8 +11,13 @@ class RoleType extends Model
     use HasFactory, Encryptable;
 
     protected $guarded = [
+        'id',
         'name',
         'access_level'
+    ];
+
+    protected $hidden = [
+        'id'
     ];
 
     protected $casts = [
