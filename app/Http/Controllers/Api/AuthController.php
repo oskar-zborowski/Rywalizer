@@ -559,7 +559,7 @@ class AuthController extends Controller
             case 'FACEBOOK':
             case 'GOOGLE':
                 $avatarUrlHeaders = get_headers($avatarUrl, 1);
-                $avatarUrlLocation = $avatarUrlHeaders['Location'] ? $avatarUrlHeaders['Location'] : $avatarUrl;
+                $avatarUrlLocation = isset($avatarUrlHeaders['Location']) ? $avatarUrlHeaders['Location'] : $avatarUrl;
                 $avatarContentType = $avatarUrlHeaders['Content-Type'];
 
                 if (is_array($avatarContentType)) {
