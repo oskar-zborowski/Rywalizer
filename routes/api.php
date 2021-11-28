@@ -28,7 +28,7 @@ Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function
         Route::post('/register', [AuthController::class, 'register'])->middleware(['throttle:registerLimit']);
 
         Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-        Route::put('/reset-password', [AuthController::class, 'resetPassword']);
+        Route::patch('/reset-password', [AuthController::class, 'resetPassword']);
     });
 
     /*
@@ -47,13 +47,13 @@ Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function
     */
 
     Route::post('/email/verification-notification', [AuthController::class, 'sendVerificationEmail']);
-    Route::put('/email/verify', [AuthController::class, 'verifyEmail']);
+    Route::patch('/email/verify', [AuthController::class, 'verifyEmail']);
 
     Route::delete('/logout', [AuthController::class, 'logout'])->withoutMiddleware('throttle:defaultAuthLimit');
     Route::delete('/logout-other-devices', [AuthController::class, 'logoutOtherDevices'])->middleware(['throttle:logoutOtherDevicesLimit']);
 
-    Route::post('/fill-missing-user-info', [AuthController::class, 'fillMissingUserInfo']);
-    Route::get('/user', [AuthController::class, 'user']);
+    Route::get('/user', [AuthController::class, 'getUser']);
+    Route::patch('/user', [AuthController::class, 'updateUser']);
 });
 
 /*

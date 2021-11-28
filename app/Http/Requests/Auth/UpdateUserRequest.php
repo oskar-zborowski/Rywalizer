@@ -5,9 +5,9 @@ namespace App\Http\Requests\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Klasa z zasadami walidacji podczas uzupełniania brakujących informacji o użytkowniku
+ * Klasa z zasadami walidacji podczas uzupełniania danych użytkownika, bądź też aktualizacji już istniejących
  */
-class FillMissingUserInfoRequest extends FormRequest
+class UpdateUserRequest extends FormRequest
 {
     public function authorize()
     {

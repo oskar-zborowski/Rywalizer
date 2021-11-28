@@ -7,8 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\ErrorCodes\AuthErrorCode;
 use App\Http\ErrorCodes\BaseErrorCode;
 use App\Http\Libraries\Encrypter\Encrypter;
-use App\Http\Requests\Auth\FillMissingUserInfoRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\UpdateUserRequest;
 use App\Http\Responses\JsonResponse;
 use App\Mail\PasswordReset as MailPasswordReset;
 use App\Mail\VerificationEmail;
@@ -133,7 +133,7 @@ class AuthController extends Controller
     }
 
     /**
-     * #### `PUT` `/api/reset-password`
+     * #### `PATCH` `/api/reset-password`
      * Reset hasła
      * 
      * @param Illuminate\Http\Request $request
@@ -168,7 +168,7 @@ class AuthController extends Controller
     }
 
     /**
-     * #### `GET` `/api/email/verification-notification`
+     * #### `POST` `/api/email/verification-notification`
      * Wysyłka linku aktywacyjnego na maila
      * 
      * @param bool $afterRegistartion flaga z informacją czy wywołanie metody jest pochodną procesu rejestracji
@@ -228,7 +228,7 @@ class AuthController extends Controller
     }
 
     /**
-     * #### `PUT` `/api/email/verify`
+     * #### `PATCH` `/api/email/verify`
      * Weryfikacja maila
      * 
      * @param Illuminate\Http\Request $request
@@ -448,15 +448,15 @@ class AuthController extends Controller
     }
 
     /**
-     * #### `POST` `/api/fill-missing-user-info`
-     * Uzupełnienie brakujących informacji o użytkowniku
+     * #### `PATCH` `/api/user`
+     * Uzupełnienie danych użytkownika, bądź też zaktualizowanie istniejących
      * 
-     * @param App\Http\Requests\Auth\FillMissingUserInfoRequest $request
+     * @param App\Http\Requests\Auth\UpdateUserRequest $request
      * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
      * 
      * @return void
      */
-    public function fillMissingUserInfo(FillMissingUserInfoRequest $request, Encrypter $encrypter): void {
+    public function updateUser(UpdateUserRequest $request, Encrypter $encrypter): void {
 
         /** @var User $user */
         $user = Auth::user();
@@ -514,7 +514,7 @@ class AuthController extends Controller
      * 
      * @return void
      */
-    public function user(): void {
+    public function getUser(): void {
         $this->checkMissingUserInfo();
     }
 
