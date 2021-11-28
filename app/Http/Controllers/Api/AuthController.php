@@ -447,16 +447,6 @@ class AuthController extends Controller
     }
 
     /**
-     * #### `GET` `/api/user`
-     * Pobranie informacji o użytkowniku
-     * 
-     * @return void
-     */
-    public function user(): void {
-        $this->checkMissingUserInfo();
-    }
-
-    /**
      * #### `POST` `/api/fill-missing-user-info`
      * Uzupełnienie brakujących informacji o użytkowniku
      * 
@@ -514,6 +504,16 @@ class AuthController extends Controller
             $this->sendVerificationEmail(true);
         }
 
+        $this->checkMissingUserInfo();
+    }
+
+    /**
+     * #### `GET` `/api/user`
+     * Pobranie informacji o użytkowniku
+     * 
+     * @return void
+     */
+    public function user(): void {
         $this->checkMissingUserInfo();
     }
 
