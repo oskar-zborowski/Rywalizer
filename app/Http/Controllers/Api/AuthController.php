@@ -430,16 +430,19 @@ class AuthController extends Controller
             /** @var User $createUser */
             $createUser = User::create($newUser);
 
-            if ($createUser->email) {
-                $createUser->markEmailAsVerified();
-            }
-
             $createUser->externalAuthentication()->create([
                 'authentication_id' => $authenticationId,
                 'provider_type_id' => $providerId
             ]);
 
             Auth::loginUsingId($createUser->id);
+
+            /** @var User $user */
+            $user = Auth::user();
+
+            if ($user->email) {
+                $user->markEmailAsVerified();
+            }
 
         } else {
             Auth::loginUsingId($externalAuthentication->user_id);
