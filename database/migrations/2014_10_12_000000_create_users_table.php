@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateUsersTable extends Migration
@@ -12,22 +11,22 @@ class CreateUsersTable extends Migration
      *
      * @return void
      */
-    public function up() {
+    public function up(): void {
+
         Schema::create('users', function (Blueprint $table) {
             $table->mediumIncrements('id');
             $table->string('first_name', 40);
             $table->string('last_name', 40);
             $table->string('email', 340)->unique()->nullable();
             $table->string('password', 60)->nullable();
-            $table->string('avatar', 32)->unique()->nullable();
+            $table->string('avatar', 64)->unique()->nullable();
             $table->tinyInteger('gender_type_id')->unsigned()->nullable();
             $table->tinyInteger('role_type_id')->unsigned()->default(1);
             $table->string('birth_date', 16)->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->tinyInteger('verification_email_counter')->unsigned()->default(0);
             $table->timestamp('account_deleted_at')->nullable();
             $table->timestamp('account_blocked_at')->nullable();
-            $table->timestamp('last_logged_in')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('last_logged_in')->nullable();
             $table->timestamps();
         });
 
@@ -42,7 +41,7 @@ class CreateUsersTable extends Migration
      *
      * @return void
      */
-    public function down() {
+    public function down(): void {
         Schema::dropIfExists('users');
     }
 }

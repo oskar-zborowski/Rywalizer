@@ -18,17 +18,17 @@ Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function
 
     /*
     |-------------------------------------------------------------------------------------------------------
-    | Enpointy dostępne wyłącznie bez autoryzacji - w przypadku nowych pozycji należy uzupełnić before.auth
+    | Enpointy dostępne wyłącznie bez autoryzacji - w przypadku nowych pozycji należy uzupełnić middleware'y
     |-------------------------------------------------------------------------------------------------------
     */
 
     Route::middleware('before.auth')->group(function () {
-
+        
         Route::post('/login', [AuthController::class, 'login'])->middleware(['throttle:loginLimit']);
         Route::post('/register', [AuthController::class, 'register'])->middleware(['throttle:registerLimit']);
 
-        Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware(['throttle:forgotPasswordLimit']);
-        Route::put('/reset-password', [AuthController::class, 'resetPassword'])->middleware(['throttle:resetPasswordLimit']);
+        Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+        Route::patch('/reset-password', [AuthController::class, 'resetPassword']);
     });
 
     /*
@@ -37,7 +37,7 @@ Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function
     |-------------------------------------------------------------------------------------------------------
     */
 
-    Route::get('auth/{provider}/redirect', [AuthController::class, 'redirectToProvider'])->middleware(['throttle:providerRedirectLimit']);
+    Route::get('auth/{provider}/redirect', [AuthController::class, 'redirectToProvider'])->middleware(['throttle:loginLimit']);
     Route::get('auth/{provider}/callback', [AuthController::class, 'handleProviderCallback'])->withoutMiddleware('throttle:defaultAuthLimit');
 
     /*
@@ -46,14 +46,14 @@ Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function
     |-------------------------------------------------------------------------------------------------------
     */
 
-    Route::get('/email/verification-notification', [AuthController::class, 'sendVerificationEmail']);
-    Route::put('/verify-email/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
+    Route::post('/email/verification-notification', [AuthController::class, 'sendVerificationEmail']);
+    Route::patch('/email/verify', [AuthController::class, 'verifyEmail']);
 
     Route::delete('/logout', [AuthController::class, 'logout'])->withoutMiddleware('throttle:defaultAuthLimit');
     Route::delete('/logout-other-devices', [AuthController::class, 'logoutOtherDevices'])->middleware(['throttle:logoutOtherDevicesLimit']);
 
-    Route::get('/user', [AuthController::class, 'user']);
-    Route::post('/fill-missing-user-info', [AuthController::class, 'fillMissingUserInfo']);
+    Route::get('/user', [AuthController::class, 'getUser']);
+    Route::patch('/user', [AuthController::class, 'updateUser']);
 });
 
 /*

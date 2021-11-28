@@ -11,16 +11,26 @@ class ProviderType extends Model
     use HasFactory, Encryptable;
 
     protected $guarded = [
+        'id',
+        'name',
+        'is_enabled'
+    ];
+
+    protected $hidden = [
+        'id',
         'name',
         'is_enabled'
     ];
 
     protected $encryptable = [
-        'name',
-        'is_enabled'
+        'name'
     ];
 
     protected $maxSize = [
         'name' => 9
     ];
+
+    public function externalAuthentication() {
+        return $this->hasMany(ExternalAuthentication::class);
+    }
 }

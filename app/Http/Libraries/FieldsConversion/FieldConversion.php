@@ -9,26 +9,26 @@ class FieldConversion
     /**
      * Konwersja nazw pól na formę camelCase
      * 
-     * @param mixed $data tablica z informacjami kierowanymi do wysłania odpowiedzi
+     * @param $data tablica z informacjami kierowanymi do wysłania odpowiedzi
      * @param int $from rząd wielkości od którego pola mają być przetwarzane dane
      * @param int $to rząd wielkości do którego pola mają być przetwarzane dane
      * 
      * @return array|string|null
      */
-    public static function convertToCamelCase(mixed $data, int $from = 0, int $to = null) {
+    public static function convertToCamelCase($data, int $from = 0, int $to = null) {
         return self::convertByDefault('camel', $data, $from, $to, 0);
     }
 
     /**
      * Konwersja nazw pól na formę snake_Case
      * 
-     * @param mixed $data tablica z informacjami kierowanymi do wysłania odpowiedzi
+     * @param $data tablica z informacjami kierowanymi do wysłania odpowiedzi
      * @param int $from rząd wielkości od którego pola mają być przetwarzane dane
      * @param int $to rząd wielkości do którego pola mają być przetwarzane dane
      * 
      * @return array|string|null
      */
-    public static function convertToSnakeCase(mixed $data, int $from = 0, int $to = null) {
+    public static function convertToSnakeCase($data, int $from = 0, int $to = null) {
         return self::convertByDefault('snake', $data, $from, $to, 0);
     }
 
@@ -36,14 +36,14 @@ class FieldConversion
      * Uniwersalna konwersja nazw pól
      * 
      * @param string $conversionType informacja o typie konwersji (camel, snake)
-     * @param mixed $data tablica z informacjami kierowanymi do wysłania odpowiedzi
+     * @param $data tablica z informacjami kierowanymi do wysłania odpowiedzi
      * @param int $from rząd wielkości od którego pola mają być przetwarzane dane
      * @param int $to rząd wielkości do którego pola mają być przetwarzane dane
      * @param int $current bieżący rząd wielkości
      * 
      * @return array|string|null
      */
-    private static function convertByDefault(string $conversionType, mixed $data, int $from = 0, int $to = null, int $current) {
+    private static function convertByDefault(string $conversionType, $data, int $from = 0, int $to = null, int $current) {
 
         if (is_array($data) || $current > 0) {
 
@@ -94,6 +94,7 @@ class FieldConversion
             }
     
             if ($current == 0 && $fieldNames != null) {
+                
                 $fN = null;
     
                 foreach ($fieldNames as $key => $value) {
@@ -104,6 +105,7 @@ class FieldConversion
     
                 $fieldNames = $fN;
             }
+
         } else {
             $fieldNames = $data;
         }

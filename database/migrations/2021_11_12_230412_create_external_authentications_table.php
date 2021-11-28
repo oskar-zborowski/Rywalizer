@@ -11,8 +11,8 @@ class CreateExternalAuthenticationsTable extends Migration
      *
      * @return void
      */
-    public function up()
-    {
+    public function up(): void {
+        
         Schema::create('external_authentications', function (Blueprint $table) {
             $table->mediumIncrements('id');
             $table->string('authentication_id', 340);
@@ -32,8 +32,7 @@ class CreateExternalAuthenticationsTable extends Migration
      *
      * @return void
      */
-    public function down()
-    {
+    public function down(): void {
         Schema::dropIfExists('providers');
     }
 }

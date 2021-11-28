@@ -2,9 +2,7 @@
 
 namespace App\Providers;
 
-use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Illuminate\Notifications\Messages\MailMessage;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -22,21 +20,7 @@ class AuthServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
-    {
+    public function boot(): void {
         $this->registerPolicies();
-
-        VerifyEmail::toMailUsing(function ($notificable, $url) {
-            
-            $spaUrl = 'https://spa.test?email_verify_url=' . $url; // TODO Poprawić na prawidłowy URL
-
-            return (new MailMessage)
-                ->subject('Potwierdzenie adresu e-mail')
-                ->greeting('Cześć!')
-                ->line('Kliknij w poniższy przycisk, aby zweryfikować adres e-mail')
-                ->action('Potwierdź', $spaUrl)
-                ->line('Dziękujemy za skorzystanie z naszego serwisu!')
-                ->salutation('Do zobaczenia');
-        });
     }
 }

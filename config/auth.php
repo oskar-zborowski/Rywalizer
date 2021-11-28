@@ -15,7 +15,7 @@ return [
 
     'defaults' => [
         'guard' => 'web',
-        'passwords' => 'users',
+        'passwords' => 'users'
     ],
 
     /*
@@ -38,8 +38,8 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
-        ],
+            'provider' => 'users'
+        ]
     ],
 
     /*
@@ -62,8 +62,8 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
-        ],
+            'model' => App\Models\User::class
+        ]
 
         // 'users' => [
         //     'driver' => 'database',
@@ -90,9 +90,9 @@ return [
         'users' => [
             'provider' => 'users',
             'table' => 'password_resets',
-            'expire' => 60,
-            'throttle' => 60,
-        ],
+            'expire' => env('EMAIL_TOKEN_LIFETIME'),
+            'throttle' => env('EMAIL_TOKEN_LIFETIME')
+        ]
     ],
 
     /*
@@ -107,5 +107,4 @@ return [
     */
 
     'password_timeout' => 10800,
-
 ];

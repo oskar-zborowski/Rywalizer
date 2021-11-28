@@ -11,7 +11,12 @@ class GenderType extends Model
     use HasFactory, Encryptable;
 
     protected $guarded = [
+        'id',
         'name'
+    ];
+
+    protected $hidden = [
+        'id'
     ];
 
     protected $encryptable = [
@@ -21,4 +26,8 @@ class GenderType extends Model
     protected $maxSize = [
         'name' => 6
     ];
+
+    public function user() {
+        return $this->hasMany(User::class);
+    }
 }

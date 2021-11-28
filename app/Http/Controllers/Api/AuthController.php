@@ -2,25 +2,26 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
-use App\Http\Libraries\Encrypter\Encrypter;
-use App\Http\Responses\JsonResponse;
-use App\Http\Requests\Auth\FillMissingUserInfoRequest;
-use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\ErrorCodes\AuthErrorCode;
 use App\Http\ErrorCodes\BaseErrorCode;
+use App\Http\Libraries\Encrypter\Encrypter;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\UpdateUserRequest;
+use App\Http\Responses\JsonResponse;
+use App\Mail\PasswordReset as MailPasswordReset;
+use App\Mail\VerificationEmail;
+use App\Models\EmailVerification;
+use App\Models\ExternalAuthentication;
+use App\Models\PasswordReset;
+use App\Models\PersonalAccessToken;
+use App\Models\ProviderType;
 use App\Models\User;
-use App\Exceptions\ApiException;
-use Illuminate\Auth\Events\Verified;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Contracts\Hashing\Hasher;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -43,25 +44,7 @@ class AuthController extends Controller
             throw new ApiException(AuthErrorCode::INVALID_CREDENTIALS());
         }
 
-        /** @var User $user */
-        $user = Auth::user();
-
-        $accountDeletedAt = $user->account_deleted_at;
-        $accountBlockedAt = $user->account_blocked_at;
-
-        if ($accountBlockedAt) {
-
-            $user->tokens()->delete();
-
-            throw new ApiException(AuthErrorCode::ACOUNT_BLOCKED());
-        }
-
-        if ($accountDeletedAt) {
-
-            $user->tokens()->delete();
-
-            throw new ApiException(AuthErrorCode::ACOUNT_DELETED());
-        }
+        JsonResponse::checkUserAccess();
 
         $this->checkMissingUserInfo(true);
     }
@@ -77,18 +60,15 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request, Encrypter $encrypter): void {
 
-        $encryptedEmail = $request->email;
-        $plainPassword = $request->password;
+        $plainEmail = $encrypter->decrypt($request->email);
+        $encryptedPassword = $encrypter->hash($request->password);
 
-        $request->merge(['email' => $encrypter->decrypt($encryptedEmail)]);
-        $request->merge(['password' => $encrypter->hash($plainPassword)]);
+        $request->merge(['email' => $plainEmail]);
+        $request->merge(['password' => $encryptedPassword]);
 
-        User::create($request->only('first_name', 'last_name', 'email', 'password', 'gender_type_id', 'birth_date'));
+        $user = User::create($request->all());
 
-        Auth::attempt([
-            'email' => $encryptedEmail,
-            'password' => $plainPassword
-        ]);
+        Auth::loginUsingId($user->id);
 
         $this->sendVerificationEmail(true);
         $this->checkMissingUserInfo(true);
@@ -105,100 +85,90 @@ class AuthController extends Controller
      */
     public function forgotPassword(Request $request, Encrypter $encrypter): void {
 
-        $emailSendingCounter = 0;
+        /** @var User $user */
+        $user = User::where('email', $request->email)->first();
 
-        $passwordResetToken = DB::table('password_resets')
-            ->where('email', $request->email)
-            ->first();
+        if (!$user) {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                __('passwords.user')
+            );
+        }
 
-        if ($passwordResetToken) {
+        /** @var PasswordReset $passwordReset */
+        $passwordReset = $user->passwordReset()->first();
 
-            $emailSendingCounter = $passwordResetToken->email_sending_counter;
+        $emailSendingCounter = 1;
+
+        if ($passwordReset) {
+
+            $emailSendingCounter += $passwordReset->email_sending_counter;
 
             $now = date('Y-m-d H:i:s');
-            $waitingDate = date('Y-m-d H:i:s', strtotime('+' . env('PAUSE_BEFORE_RETRYING')*60 . ' seconds', strtotime($passwordResetToken->created_at)));
-
+            $waitingDate = date('Y-m-d H:i:s', strtotime('+' . env('PAUSE_BEFORE_RETRYING')*60 . ' seconds', strtotime($passwordReset->updated_at)));
+    
             if ($now <= $waitingDate) {
                 throw new ApiException(AuthErrorCode::WAIT_BEFORE_RETRYING());
-            } else {
-                DB::table('password_resets')
-                    ->where('id', $passwordResetToken->id)
-                    ->delete();
+            }
+
+            if ($emailSendingCounter > 255) {
+                $emailSendingCounter = 1;
+                $passwordReset->delete();
             }
         }
 
-        $status = Password::sendResetLink($request->only('email'));
+        $plainToken = $encrypter->generatePlainToken(64);
 
-        if ($status == Password::RESET_LINK_SENT) {
-
-            $plainEmail = $encrypter->decrypt($request->email);
-
-            DB::table('password_resets')
-                ->where('email', $plainEmail)
-                ->update([
-                    'email' => $request->email,
-                    'email_sending_counter' => $emailSendingCounter+1
-                ]);
-
-            JsonResponse::sendSuccess();
-        }
-
-        throw ValidationException::withMessages([
-            'email' => [trans($status)],
+        $user->passwordReset()->updateOrCreate([],
+        [
+            'token' => $plainToken,
+            'email_sending_counter' => $emailSendingCounter
         ]);
+
+        $url = env('APP_URL') . '/reset-password?token=' . $plainToken; // TODO Poprawić na prawidłowy URL
+
+        Mail::to($user)->send(new MailPasswordReset($url));
+
+        JsonResponse::sendSuccess();
     }
 
     /**
-     * #### `PUT` `/api/reset-password`
+     * #### `PATCH` `/api/reset-password`
      * Reset hasła
      * 
      * @param Illuminate\Http\Request $request
      * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
-     * @param Illuminate\Contracts\Hashing\Hasher $hasher
      * 
      * @return void
      */
-    public function resetPassword(Request $request, Encrypter $encrypter, Hasher $hasher): void {
+    public function resetPassword(Request $request, Encrypter $encrypter): void {
 
-        $resetTokens = DB::table('password_resets')->get();
+        $encryptedToken = $encrypter->encryptToken($request->token);
 
-        foreach ($resetTokens as $rT) {
-            if ($hasher->check($request->token, $rT->token)) {
-                $plainEmail = $encrypter->decrypt($rT->email);
+        /** @var PasswordReset $passwordReset */
+        $passwordReset = PasswordReset::where('token', $encryptedToken)->first();
 
-                DB::table('password_resets')
-                    ->where('id', $rT->id)
-                    ->update(['email' => $plainEmail]);
-                
-                break;
-            }
+        if (!$passwordReset) {
+            throw new ApiException(AuthErrorCode::INVALID_PASSWORD_RESET_TOKEN());
         }
 
-        $status = Password::reset(
-            $request->only('password', 'password_confirmation', 'token'),
-            function ($user) use ($request) {
+        $now = date('Y-m-d H:i:s');
+        $expirationDate = date('Y-m-d H:i:s', strtotime('+' . env('EMAIL_TOKEN_LIFETIME') . ' minutes', strtotime($passwordReset->updated_at)));
 
-                $user->forceFill([
-                    'password' => Hash::make($request->password)
-                ])->save();
-
-                if (!$request->do_not_logout) {
-                    $user->tokens()->delete();
-                }
-
-                event(new PasswordReset($user));
-            }
-        );
-
-        if ($status == Password::PASSWORD_RESET) {
-            JsonResponse::sendSuccess();
+        if ($now > $expirationDate) {
+            throw new ApiException(AuthErrorCode::PASSWORD_RESET_TOKEN_HAS_EXPIRED());
         }
 
-        throw new ApiException(AuthErrorCode::INVALID_PASSWORD_RESET_TOKEN());
+        $encryptedPassword = $encrypter->hash($request->password);
+
+        $passwordReset->user()->first()->update(['password' => $encryptedPassword]);
+        $passwordReset->delete();
+
+        JsonResponse::sendSuccess();
     }
 
     /**
-     * #### `GET` `/api/email/verification-notification`
+     * #### `POST` `/api/email/verification-notification`
      * Wysyłka linku aktywacyjnego na maila
      * 
      * @param bool $afterRegistartion flaga z informacją czy wywołanie metody jest pochodną procesu rejestracji
@@ -210,67 +180,93 @@ class AuthController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
+        $emailSendingCounter = 1;
+
         if (!$afterRegistartion) {
 
             if ($user->hasVerifiedEmail()) {
                 throw new ApiException(AuthErrorCode::EMAIL_ALREADY_VERIFIED());
             }
 
-            $now = date('Y-m-d H:i:s');
-            $waitingDate = date('Y-m-d H:i:s', strtotime('+' . env('PAUSE_BEFORE_RETRYING')*60 . ' seconds', strtotime($user->updated_at)));
-    
-            if ($now <= $waitingDate && $user->verification_email_counter > 1) {
-                throw new ApiException(AuthErrorCode::WAIT_BEFORE_RETRYING());
+            /** @var EmailVerification $emailVerification */
+            $emailVerification = $user->emailVerification()->first();
+
+            if ($emailVerification) {
+
+                $emailSendingCounter += $emailVerification->email_sending_counter;
+
+                $now = date('Y-m-d H:i:s');
+                $waitingDate = date('Y-m-d H:i:s', strtotime('+' . env('PAUSE_BEFORE_RETRYING')*60 . ' seconds', strtotime($emailVerification->updated_at)));
+        
+                if ($now <= $waitingDate) {
+                    throw new ApiException(AuthErrorCode::WAIT_BEFORE_RETRYING());
+                }
+
+                if ($emailSendingCounter > 255) {
+                    $emailSendingCounter = 1;
+                    $emailVerification->delete();
+                }
             }
+        }
 
-            if ($user->verification_email_counter < 255) {
+        $encrypter = new Encrypter;
+        $plainToken = $encrypter->generatePlainToken(64);
 
-                DB::table('users')
-                    ->where('id', $user->id)
-                    ->update([
-                        'verification_email_counter' => $user->verification_email_counter+1,
-                        'updated_at' => $now
-                    ]);
+        $user->emailVerification()->updateOrCreate([],
+        [
+            'token' => $plainToken,
+            'email_sending_counter' => $emailSendingCounter
+        ]);
 
-                $user->sendEmailVerificationNotification();
+        $url = env('APP_URL') . '/email/verify?token=' . $plainToken; // TODO Poprawić na prawidłowy URL
 
-                JsonResponse::sendSuccess();
+        Mail::to($user)->send(new VerificationEmail($url));
 
-            } else {
-                throw new ApiException(BaseErrorCode::LIMIT_EXCEEDED());
-            }
-        } else {
-
-            DB::table('users')
-                ->where('id', $user->id)
-                ->update([
-                    'verification_email_counter' => 1,
-                    'updated_at' => date('Y-m-d H:i:s')
-                ]);
-
-            $user->sendEmailVerificationNotification();
+        if (!$afterRegistartion) {
+            JsonResponse::sendSuccess();
         }
     }
 
     /**
-     * #### `PUT` `/api/verify-email/{id}/{hash}`
+     * #### `PATCH` `/api/email/verify`
      * Weryfikacja maila
+     * 
+     * @param Illuminate\Http\Request $request
+     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
      * 
      * @return void
      */
-    public function verifyEmail(): void {
+    public function verifyEmail(Request $request, Encrypter $encrypter): void {
 
         /** @var User $user */
         $user = Auth::user();
 
-        if (!$user->hasVerifiedEmail() && $user->markEmailAsVerified()) {
-
-            event(new Verified($user));
-
-            DB::table('users')
-                ->where('id', $user->id)
-                ->update(['updated_at' => date('Y-m-d H:i:s')]);
+        if ($user->hasVerifiedEmail()) {
+            throw new ApiException(AuthErrorCode::EMAIL_ALREADY_VERIFIED());
         }
+
+        if (!$request->token) {
+            throw new ApiException(AuthErrorCode::INVALID_EMAIL_VERIFIFICATION_TOKEN());
+        }
+
+        $encryptedToken = $encrypter->encryptToken($request->token);
+
+        /** @var EmailVerification $emailVerification */
+        $emailVerification = $user->emailVerification()->where('token', $encryptedToken)->first();
+
+        if (!$emailVerification) {
+            throw new ApiException(AuthErrorCode::INVALID_EMAIL_VERIFIFICATION_TOKEN());
+        }
+
+        $now = date('Y-m-d H:i:s');
+        $expirationDate = date('Y-m-d H:i:s', strtotime('+' . env('EMAIL_TOKEN_LIFETIME') . ' minutes', strtotime($emailVerification->updated_at)));
+
+        if ($now > $expirationDate) {
+            throw new ApiException(AuthErrorCode::EMAIL_VERIFIFICATION_TOKEN_HAS_EXPIRED());
+        }
+
+        $user->markEmailAsVerified();
+        $emailVerification->delete();
 
         $this->checkMissingUserInfo();
     }
@@ -286,21 +282,23 @@ class AuthController extends Controller
      */
     public function logout(Request $request, Encrypter $encrypter): void {
 
+        if ($request->user()) {
+            $request->user()->currentAccessToken()->delete();
+
+            JsonResponse::deleteCookie('JWT');
+            JsonResponse::deleteCookie('REFRESH-TOKEN');
+            JsonResponse::sendSuccess();
+        }
+
         if ($plainRefreshToken = $request->cookie('REFRESH-TOKEN')) {
 
             $refreshToken = $encrypter->encryptToken($plainRefreshToken);
 
-            $personalAccessToken = DB::table('personal_access_tokens')
-                ->where('refresh_token', $refreshToken)
-                ->first();
+            /** @var PersonalAccessToken $personalAccessToken */
+            $personalAccessToken = PersonalAccessToken::where('refresh_token', $refreshToken)->first();
 
             if ($personalAccessToken) {
-
-                $personalAccessTokenId = $personalAccessToken->id;
-
-                DB::table('personal_access_tokens')
-                    ->where('id', $personalAccessTokenId)
-                    ->delete();
+                $personalAccessToken->delete();
             }
 
             JsonResponse::deleteCookie('REFRESH-TOKEN');
@@ -336,6 +334,7 @@ class AuthController extends Controller
      * @return Illuminate\Http\RedirectResponse
      */
     public function redirectToProvider(string $provider): RedirectResponse {
+
         $this->validateProvider($provider);
 
         /** @var \Laravel\Socialite\Two\AbstractProvider */
@@ -355,27 +354,26 @@ class AuthController extends Controller
      */
     public function handleProviderCallback(string $provider, Encrypter $encrypter): void {
 
-        $providerId = $this->validateProvider($provider);
+        /** @var ProviderType $providerType */
+        $providerType = $this->validateProvider($provider);
 
         /** @var \Laravel\Socialite\Two\AbstractProvider */
         $driver = Socialite::driver($provider);
 
         $user = $driver->stateless()->user();
 
-        $authenticationId = $user->getId();
-        $encryptedAuthenticationId = $authenticationId ? $encrypter->encrypt($authenticationId, 254) : null;
+        $authenticationId = (strlen($user->getId()) > 0 && strlen($user->getId()) < 255) ? $user->getId() : null;
+        $encryptedAuthenticationId = $encrypter->encrypt($authenticationId, 254);
 
-        if (!$authenticationId || strlen($authenticationId) < 1 || strlen($authenticationId) > 254) {
+        if (!$authenticationId) {
             throw new ApiException(
                 AuthErrorCode::INVALID_CREDENTIALS_PROVIDED(),
-                ['authentication_id' => ['The provider returned an invalid id.']] // TODO Zmienić kiedy pojawią się langi
+                __('validation.custom.invalid-provider-id'),
             );
         }
 
-        $externalAuthentication = DB::table('external_authentications')
-            ->where('authentication_id', $encryptedAuthenticationId)
-            ->where('provider_type_id', $providerId)
-            ->first();
+        /** @var ExternalAuthentication $externalAuthentication */
+        $externalAuthentication = $providerType->externalAuthentication()->where('authentication_id', $encryptedAuthenticationId)->first();
 
         if (!$externalAuthentication) {
 
@@ -383,14 +381,13 @@ class AuthController extends Controller
 
                 $encryptedEmail = $encrypter->encrypt($user->getEmail(), 254);
 
-                $externalAuthentication = DB::table('users')
-                    ->where('email', $encryptedEmail)
-                    ->first();
+                /** @var User $userExist */
+                $userExist = User::where('email', $encryptedEmail)->first();
 
-                if ($externalAuthentication) {
+                if ($userExist) {
                     throw new ApiException(
                         BaseErrorCode::FAILED_VALIDATION(),
-                        ['email' => ['The email has already been taken.']] // TODO Zmienić kiedy pojawią się langi
+                        ['email' => [__('validation.unique', ['attribute' => 'email'])]]
                     );
                 }
             }
@@ -408,92 +405,85 @@ class AuthController extends Controller
                 }
             }
 
-            if ($user->getAvatar()) { //TODO Sprawdzić wariant co jest zwracane kiedy użytkownik nie ma ustawionego zdjęcia profilowego
+            if (strlen($user->getAvatar())) { //TODO Sprawdzić wariant co jest zwracane kiedy użytkownik nie ma ustawionego zdjęcia profilowego
                 $avatarFilename = $this->saveAvatar($provider, $user->getAvatar());
             }
 
             $newUser = [
                 'first_name' => $firstName,
-                'last_name' => $lastName,
-                'avatar' => isset($avatarFilename) ? $avatarFilename : null,
+                'last_name' => $lastName
             ];
 
             if (isset($encryptedEmail)) {
                 $newUser['email'] = $user->getEmail();
-                $newUser['email_verified_at'] = now();
             }
 
+            if (isset($avatarFilename)) {
+                $newUser['avatar'] = $avatarFilename;
+            }
+
+            /** @var User $createUser */
             $createUser = User::create($newUser);
 
             $createUser->externalAuthentication()->create([
-                'authentication_id' => $encryptedAuthenticationId,
-                'provider_type_id' => $providerId
+                'authentication_id' => $authenticationId,
+                'provider_type_id' => $providerType->id
             ]);
 
             Auth::loginUsingId($createUser->id);
 
+            /** @var User $user */
+            $user = Auth::user();
+
+            if ($user->email) {
+                $user->markEmailAsVerified();
+            }
+
         } else {
             Auth::loginUsingId($externalAuthentication->user_id);
+            JsonResponse::checkUserAccess();
         }
-
-        /** @var User $user */
-        $user = Auth::user();
-
-        DB::table('users')
-            ->where('id', $user->id)
-            ->update([
-                'last_logged_in' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
-            ]);
 
         $this->checkMissingUserInfo(true);
     }
 
     /**
-     * #### `GET` `/api/user`
-     * Pobranie informacji o użytkowniku
+     * #### `PATCH` `/api/user`
+     * Uzupełnienie danych użytkownika, bądź też zaktualizowanie istniejących
      * 
-     * @return void
-     */
-    public function user(): void {
-        $this->checkMissingUserInfo();
-    }
-
-    /**
-     * #### `POST` `/api/fill-missing-user-info`
-     * Uzupełnienie brakujących informacji o użytkowniku
-     * 
-     * @param App\Http\Requests\Auth\FillMissingUserInfoRequest $request
+     * @param App\Http\Requests\Auth\UpdateUserRequest $request
      * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
      * 
      * @return void
      */
-    public function fillMissingUserInfo(FillMissingUserInfoRequest $request, Encrypter $encrypter): void {
+    public function updateUser(UpdateUserRequest $request, Encrypter $encrypter): void {
 
         /** @var User $user */
         $user = Auth::user();
 
-        $plainEmail = $request->email;
-        $encryptedBirthDate = $request->birth_date ? $encrypter->encrypt($request->birth_date, 10) : null;
+        if (!$user->email && $request->email) {
 
-        if (!$user->email && $plainEmail) {
+            $encryptedEmail = $encrypter->encrypt($request->email, 254);
 
-            $encryptedEmail = $encrypter->encrypt($plainEmail, 254);
+            /** @var User $userExist */
+            $userExist = User::where('email', $encryptedEmail)->first();
 
-            $request->merge(['email' => $encryptedEmail]);
-            $request->validate([
-                'email' => 'unique:users'
-            ]);
+            if ($userExist) {
+                throw new ApiException(
+                    BaseErrorCode::FAILED_VALIDATION(),
+                    ['email' => [__('validation.unique', ['attribute' => 'email'])]]
+                );
+            }
         }
 
         $supplementaryInfo = null;
 
-        if (!$user->email && isset($encryptedEmail)) {
-            $supplementaryInfo['email'] = $encryptedEmail;
+        if (!$user->email && $request->email) {
+            $supplementaryInfo['email'] = $request->email;
         }
 
-        if (!$user->birth_date && $encryptedBirthDate) {
-            $supplementaryInfo['birth_date'] = $encryptedBirthDate;
+        if (!$user->birth_date && $request->birth_date) {
+            $supplementaryInfo['birth_date'] = $request->birth_date;
         }
 
         if (!$user->gender_type_id && $request->gender_type_id) {
@@ -502,16 +492,11 @@ class AuthController extends Controller
 
         if (!$user->avatar && $request->avatar) {
             // TODO Zrobić wgrywanie i zapisywanie zdjęć przez formularz (wykorzystać metodę saveAvatar)
-            $supplementaryInfo['avatar'] = $encrypter->encrypt($request->avatar, 24);
+            $supplementaryInfo['avatar'] = $request->avatar;
         }
 
         if ($supplementaryInfo) {
-
-            $supplementaryInfo['updated_at'] = date('Y-m-d H:i:s');
-            
-            DB::table('users')
-                ->where('id', $user->id)
-                ->update($supplementaryInfo);
+            $user->update($supplementaryInfo);
         }
 
         $user->refresh();
@@ -524,39 +509,46 @@ class AuthController extends Controller
     }
 
     /**
+     * #### `GET` `/api/user`
+     * Pobranie informacji o użytkowniku
+     * 
+     * @return void
+     */
+    public function getUser(): void {
+        $this->checkMissingUserInfo();
+    }
+
+    /**
      * Sprawdzenie czy dany serwis uwierzytelniający jest dostępny
      * 
      * @param string $provider nazwa zewnętrznego serwisu
      * 
-     * @return int
+     * @return App\Models\ProviderType
      */
-    private function validateProvider(string $provider): int {
+    private function validateProvider(string $provider): ProviderType {
 
         $encrypter = new Encrypter;
-
-        $providerTypes = DB::table('provider_types')->where('is_enabled', 1)->get();
-
         $provider = strtoupper($provider);
+        $encryptedProviderName = $encrypter->encrypt($provider, 9);
 
-        foreach ($providerTypes as $pT) {
-            if ($encrypter->decrypt($pT->name) == $provider) {
-                $providerId = $pT->id;
-                break;
-            }
-        }
+        /** @var ProviderType $providerTypes */
+        $providerType = ProviderType::where([
+            'name' => $encryptedProviderName,
+            'is_enabled' => 1
+        ])->first();
 
-        if (!isset($providerId)) {
+        if (!$providerType) {
             throw new ApiException(AuthErrorCode::INVALID_PROVIDER());
         }
 
-        return $providerId;
+        return $providerType;
     }
 
     /**
      * Zapisanie na serwerze avatara użytkownika pobranego z serwisu uwierzytelniającego
      * 
      * @param string $provider nazwa zewnętrznego serwisu
-     * @param string $avatarPath adres URL do zdjecia profilowego z serwisu uwierzytelniającego
+     * @param string $avatarUrl adres URL do zdjecia profilowego z serwisu uwierzytelniającego
      * 
      * @return string
      */
@@ -564,39 +556,37 @@ class AuthController extends Controller
 
         $provider = strtoupper($provider);
 
-        if ($provider == 'FACEBOOK') {
-            if (env('FACEBOOK_MODE') == 'development') {
-                $avatarUrlHeaders = get_headers($avatarUrl, 1);
-                $avatarUrlLocation = $avatarUrlHeaders['Location'];
-                $avatarUrlSeparators = explode('/', $avatarUrlLocation);
-                $avatarUrlSeparatorsLength = count($avatarUrlSeparators);
-                $avatarNewUrl = $avatarUrlSeparators[$avatarUrlSeparatorsLength-1];
-                $avatarNewUrlSeparators = explode('?', $avatarNewUrl);
-                $avatarFilename = $avatarNewUrlSeparators[0];
-                $avatarFilenameLength = strlen($avatarFilename);
-                $avatarFileExtension = '';
+        switch ($provider) {
 
-                for ($i=$avatarFilenameLength-1; $avatarFilename[$i] != '.'; $i--) {
-                    $avatarFileExtension .= $avatarFilename[$i];
+            case 'FACEBOOK':
+            case 'GOOGLE':
+                $avatarUrlHeaders = get_headers($avatarUrl, 1);
+                $avatarUrlLocation = isset($avatarUrlHeaders['Location']) ? $avatarUrlHeaders['Location'] : $avatarUrl;
+                $avatarContentType = $avatarUrlHeaders['Content-Type'];
+
+                if (is_array($avatarContentType)) {
+                    $avatarContentType = $avatarContentType[0];
                 }
 
-                $avatarFileExtension = '.' . strrev($avatarFileExtension);
+                $avatarFileExtensionSeparators = explode('/', $avatarContentType);
+                $avatarFileExtensionSeparatorsLength = count($avatarFileExtensionSeparators);
+                $avatarFileExtension = '.' . $avatarFileExtensionSeparators[$avatarFileExtensionSeparatorsLength-1];
+                break;
 
-                $encrypter = new Encrypter;
-
-                do {
-                    $avatarFilename = $encrypter->generatePlainToken(32, $avatarFileExtension);
-                    $avatarFilenameEncrypted = $encrypter->encryptToken($avatarFilename);
-                    $avatarExists = DB::table('users')->where('avatar', $avatarFilenameEncrypted)->first();
-                } while ($avatarExists);
-            } else if (env('FACEBOOK_MODE') == 'live') {
-                // TODO Uzupełnić zapisywanie zdjęcia z facebooka
-            }
-        } else if ($provider == 'GOOGLE') {
-            // TODO Uzupełnić zapisywanie zdjęcia z google'a
-        } else if ($provider == 'FORM') {
-            // TODO Uzupełnić zapisywanie zdjęcia z formularza
+            default:
+                // TODO Uzupełnić zapisywanie zdjęcia z formularza
+                break;
         }
+
+        $encrypter = new Encrypter;
+    
+        do {
+            $avatarFilename = $encrypter->generatePlainToken(64, $avatarFileExtension);
+            $avatarFilenameEncrypted = $encrypter->encryptToken($avatarFilename);
+
+            /** @var User $avatarExists */
+            $avatarExists = User::where('avatar', $avatarFilenameEncrypted)->first();
+        } while ($avatarExists);
 
         $avatarContents = file_get_contents($avatarUrlLocation);
         Storage::put('avatars/' . $avatarFilename, $avatarContents);
@@ -605,7 +595,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Sprawdzenie brakujących informacji o użytkowniku i zwrócenie właściwych informacji
+     * Sprawdzenie brakujących informacji o użytkowniku i zwrócenie obiektu użytkownika
      * 
      * @param bool $withTokens flaga określająca czy mają zostać utworzone tokeny autoryzacyjne
      * 
@@ -616,33 +606,31 @@ class AuthController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        $emailVerifiedAt = $user->email_verified_at;
-
         $missingInfo = null;
 
         if (!$user->email) {
-            $missingInfo['required']['email'] = ['The email field is missing.']; // TODO Zmienić kiedy pojawią się langi
+            $missingInfo['required']['email'] = [__('validation.custom.is-missing', ['attribute' => 'email'])];
         }
 
         if (!$user->birth_date) {
-            $missingInfo['required']['birth_date'] = ['The birth date field is missing.']; // TODO Zmienić kiedy pojawią się langi
+            $missingInfo['required']['birth_date'] = [__('validation.custom.is-missing', ['attribute' => 'birthDate'])];
         }
 
         if (!$user->avatar) {
-            $missingInfo['optional']['avatar'] = ['The avatar field is missing.']; // TODO Zmienić kiedy pojawią się langi
+            $missingInfo['optional']['avatar'] = [__('validation.custom.is-missing', ['attribute' => 'avatar'])];
         }
 
         if (!$user->gender_type_id) {
-            $missingInfo['optional']['gender_type_id'] = ['The gender type id field is missing.']; // TODO Zmienić kiedy pojawią się langi
+            $missingInfo['optional']['gender_type_id'] = [__('validation.custom.is-missing', ['attribute' => 'genderTypeId'])];
         }
 
         if ($withTokens) {
             JsonResponse::prepareCookies();
         }
 
-        if (isset($missingInfo['required']) || !$emailVerifiedAt) {
+        if (isset($missingInfo['required']) || !$user->email_verified_at) {
             throw new ApiException(
-                $emailVerifiedAt ? AuthErrorCode::MISSING_USER_INFORMATION() : AuthErrorCode::UNVERIFIED_EMAIL(),
+                $user->email_verified_at ? AuthErrorCode::MISSING_USER_INFORMATION() : AuthErrorCode::UNVERIFIED_EMAIL(),
                 ['user' => $user],
                 ['missing_user_information' => $missingInfo]
             );
