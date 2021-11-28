@@ -21,7 +21,6 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Socialite\Facades\Socialite;
@@ -558,35 +557,36 @@ class AuthController extends Controller
         switch ($provider) {
 
             case 'FACEBOOK':
-                if (env('FACEBOOK_MODE') == 'development') {
+                $avatarUrlHeaders = get_headers($avatarUrl, 1);
+                $avatarUrlLocation = $avatarUrlHeaders['Location'];
+                $avatarContentType = $avatarUrlHeaders['Content-Type'];
 
-                    $avatarUrlHeaders = get_headers($avatarUrl, 1);
-                    $avatarUrlLocation = $avatarUrlHeaders['Location'];
-                    $avatarUrlSeparators = explode('/', $avatarUrlLocation);
-                    $avatarUrlSeparatorsLength = count($avatarUrlSeparators);
-                    $avatarNewUrl = $avatarUrlSeparators[$avatarUrlSeparatorsLength-1];
-                    $avatarNewUrlSeparators = explode('?', $avatarNewUrl);
-                    $avatarFilename = $avatarNewUrlSeparators[0];
-                    $avatarFilenameLength = strlen($avatarFilename);
-                    $avatarFileExtension = '';
-    
-                    for ($i=$avatarFilenameLength-1; $avatarFilename[$i] != '.'; $i--) {
-                        $avatarFileExtension .= $avatarFilename[$i];
-                    }
-    
-                    $avatarFileExtension = '.' . strrev($avatarFileExtension);
-    
-                    $encrypter = new Encrypter;
-    
-                    do {
-                        $avatarFilename = $encrypter->generatePlainToken(64, $avatarFileExtension);
-                        $avatarFilenameEncrypted = $encrypter->encryptToken($avatarFilename);
-                        $avatarExists = DB::table('users')->where('avatar', $avatarFilenameEncrypted)->first();
-                    } while ($avatarExists);
-                    
-                } else if (env('FACEBOOK_MODE') == 'live') {
-                    // TODO Uzupełnić zapisywanie zdjęcia z facebooka
+                if (is_array($avatarContentType)) {
+                    $avatarContentType = $avatarContentType[0];
                 }
+
+                $avatarExtensionSeparators = explode('/', $avatarContentType);
+                $avatarExtensionSeparatorsLength = count($avatarExtensionSeparators);
+                $avatarFileExtension = '.' . $avatarExtensionSeparators[$avatarExtensionSeparatorsLength-1];
+
+                // if (env('FACEBOOK_MODE') == 'development') {
+                //     $avatarUrlSeparators = explode('/', $avatarUrlLocation);
+                //     $avatarUrlSeparatorsLength = count($avatarUrlSeparators);
+                //     $avatarNewUrl = $avatarUrlSeparators[$avatarUrlSeparatorsLength-1];
+                //     $avatarNewUrlSeparators = explode('?', $avatarNewUrl);
+                //     $avatarFilename = $avatarNewUrlSeparators[0];
+                //     $avatarFilenameLength = strlen($avatarFilename);
+                //     $avatarFileExtension = '';
+    
+                //     for ($i=$avatarFilenameLength-1; $avatarFilename[$i] != '.'; $i--) {
+                //         $avatarFileExtension .= $avatarFilename[$i];
+                //     }
+    
+                //     $avatarFileExtension = '.' . strrev($avatarFileExtension);
+                    
+                // } else if (env('FACEBOOK_MODE') == 'live') {
+                    
+                // }
                 break;
 
             case 'GOOGLE':
@@ -597,6 +597,16 @@ class AuthController extends Controller
                 // TODO Uzupełnić zapisywanie zdjęcia z formularza
                 break;
         }
+
+        $encrypter = new Encrypter;
+    
+        do {
+            $avatarFilename = $encrypter->generatePlainToken(64, $avatarFileExtension);
+            $avatarFilenameEncrypted = $encrypter->encryptToken($avatarFilename);
+
+            /** @var User $avatarExists */
+            $avatarExists = User::where('avatar', $avatarFilenameEncrypted)->first();
+        } while ($avatarExists);
 
         $avatarContents = file_get_contents($avatarUrlLocation);
         Storage::put('avatars/' . $avatarFilename, $avatarContents);
