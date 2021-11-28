@@ -101,8 +101,9 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
-            throw new ApiException(BaseErrorCode::FAILED_VALIDATION(),
-                ['We can\'t find a user with that email address.'] // TODO Zmienić kiedy pojawią się langi
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                __('passwords.user')
             );
         }
 
@@ -373,7 +374,7 @@ class AuthController extends Controller
         if (!$authenticationId) {
             throw new ApiException(
                 AuthErrorCode::INVALID_CREDENTIALS_PROVIDED(),
-                ['authentication_id' => ['The provider returned an invalid id.']] // TODO Zmienić kiedy pojawią się langi
+                __('validation.custom.invalid-provider-id'),
             );
         }
 
@@ -395,7 +396,7 @@ class AuthController extends Controller
                 if ($userExist) {
                     throw new ApiException(
                         BaseErrorCode::FAILED_VALIDATION(),
-                        ['email' => ['The email has already been taken.']] // TODO Zmienić kiedy pojawią się langi
+                        ['email' => [__('validation.unique', ['attribute' => 'email'])]]
                     );
                 }
             }
@@ -479,7 +480,7 @@ class AuthController extends Controller
             if ($userExist) {
                 throw new ApiException(
                     BaseErrorCode::FAILED_VALIDATION(),
-                    ['email' => ['The email has already been taken.']] // TODO Zmienić kiedy pojawią się langi
+                    ['email' => [__('validation.unique', ['attribute' => 'email'])]]
                 );
             }
         }
@@ -618,19 +619,19 @@ class AuthController extends Controller
         $missingInfo = null;
 
         if (!$user->email) {
-            $missingInfo['required']['email'] = ['The email field is missing.']; // TODO Zmienić kiedy pojawią się langi
+            $missingInfo['required']['email'] = [__('validation.custom.is-missing', ['attribute' => 'email'])];
         }
 
         if (!$user->birth_date) {
-            $missingInfo['required']['birth_date'] = ['The birth date field is missing.']; // TODO Zmienić kiedy pojawią się langi
+            $missingInfo['required']['birth_date'] = [__('validation.custom.is-missing', ['attribute' => 'birthDate'])];
         }
 
         if (!$user->avatar) {
-            $missingInfo['optional']['avatar'] = ['The avatar field is missing.']; // TODO Zmienić kiedy pojawią się langi
+            $missingInfo['optional']['avatar'] = [__('validation.custom.is-missing', ['attribute' => 'avatar'])];
         }
 
         if (!$user->gender_type_id) {
-            $missingInfo['optional']['gender_type_id'] = ['The gender type id field is missing.']; // TODO Zmienić kiedy pojawią się langi
+            $missingInfo['optional']['gender_type_id'] = [__('validation.custom.is-missing', ['attribute' => 'genderTypeId'])];
         }
 
         if ($withTokens) {

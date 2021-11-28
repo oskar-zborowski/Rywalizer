@@ -139,7 +139,9 @@ return [
     'custom' => [
         'attribute-name' => [
             'rule-name' => 'custom-message'
-        ]
+        ],
+        'invalid-provider-id' => 'The OAuth provider returned an invalid id.',
+        'is-missing' => 'Complete the field :attribute.'
     ],
 
     /*

@@ -10,7 +10,6 @@ use App\Http\Libraries\FieldsConversion\FieldConversion;
 use App\Models\PersonalAccessToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
