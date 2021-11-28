@@ -425,11 +425,14 @@ class AuthController extends Controller
 
             if (isset($encryptedEmail)) {
                 $newUser['email'] = $user->getEmail();
-                $newUser['email_verified_at'] = date('Y-m-d H:i:s');
             }
 
             /** @var User $createUser */
             $createUser = User::create($newUser);
+
+            if ($createUser->email) {
+                $createUser->markEmailAsVerified();
+            }
 
             $createUser->externalAuthentication()->create([
                 'authentication_id' => $authenticationId,
