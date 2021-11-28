@@ -1,7 +1,8 @@
-import React from 'react';
-import EventTile, { EventTileProps } from './EventTile';
-import styles from './EventsView.scss';
+import useScrollbar from '@/components/MainContainer/Scrollbar/Scrollbar';
 import faker from 'faker';
+import React from 'react';
+import styles from './EventsView.scss';
+import EventTile, { EventTileProps } from './EventTile';
 
 faker.locale = 'pl';
 const fakeData: EventTileProps[] = [];
@@ -24,10 +25,12 @@ for (let i = 0; i < tilesCount; i++) {
 }
 
 const EventsView: React.FC = () => {
+    const { containerRef } = useScrollbar();
+
     return (
         <div className={styles.eventsView}>
             <div className={styles.filters}></div>
-            <div className={styles.containerWrapper}>
+            <div className={styles.containerWrapper} ref={containerRef}>
                 <div className={styles.eventTilesContainer}>
                     {fakeData.map((d, i) => <EventTile {...d} key={i} />)}
                 </div>

@@ -85,6 +85,30 @@
   color: #fff;
   background-color: #29292e;
 }
+/*!***********************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/MainContainer/Scrollbar/Scrollbar.scss ***!
+  \***********************************************************************************************************************************************************************************************************************************************/
+.Scrollbar_scrollbar__AcmfO {
+  margin: 0 40px;
+  border-radius: 4px;
+  border: 1px solid #29292e;
+  width: 12px;
+  background-color: #18181c;
+  flex: none;
+  position: relative;
+  overflow: hidden;
+}
+@media (max-width: 992px) {
+  .Scrollbar_scrollbar__AcmfO {
+    display: none;
+  }
+}
+.Scrollbar_scrollbar__AcmfO .Scrollbar_thumb__xrkTh {
+  background-color: #ce8f3e;
+  border-radius: 3px;
+  width: 100%;
+  position: absolute;
+}
 /*!*****************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/MainContainer/MainContainer.scss ***!
   \*****************************************************************************************************************************************************************************************************************************************/
@@ -111,6 +135,13 @@
   margin-left: 8px;
   float: left;
 }
+@media (max-width: 576px) {
+  .MainContainer_mainContainer__PXJXG {
+    background-color: transparent;
+    border-radius: 0;
+    border: none;
+  }
+}
 /*!*********************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/MapViewer/MapViewer.scss ***!
   \*********************************************************************************************************************************************************************************************************************************/
@@ -130,94 +161,6 @@
   .MapViewer_mapViewer__xi5kE {
     display: none;
   }
-}
-/*!*******************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Splitter/Splitter.scss ***!
-  \*******************************************************************************************************************************************************************************************************************************/
-.Splitter_splitter__HIJYB {
-  margin: 0 40px;
-  border-radius: 4px;
-  border: 1px solid #29292e;
-  width: 12px;
-  background-color: #18181c;
-  flex: none;
-}
-@media (max-width: 992px) {
-  .Splitter_splitter__HIJYB {
-    display: none;
-  }
-}
-/*!************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/view/Events/EventTile.scss ***!
-  \************************************************************************************************************************************************************************************************************************/
-@charset "UTF-8";
-.EventTile_eventTile__hs_H4 {
-  background-color: #18181c;
-  border-radius: 8px;
-  border: 1px solid #29292e;
-  padding: 10px;
-  cursor: pointer;
-  transition: 0.2s;
-  min-width: 0;
-  /* POD ŻADNYM POZOREM NIE USUWAĆ TEJ LINII !!! */
-}
-.EventTile_eventTile__hs_H4:hover {
-  background-color: #29292e;
-}
-.EventTile_eventTile__hs_H4:hover .EventTile_image__iPt7c {
-  opacity: 1;
-  filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.7));
-}
-.EventTile_eventTile__hs_H4 .EventTile_image__iPt7c {
-  border-radius: 8px;
-  object-fit: cover;
-  height: 150px;
-  width: 100%;
-  transition: 0.2s;
-}
-.EventTile_eventTile__hs_H4 .EventTile_detailsRow__Gf0XI {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-width: 0;
-  gap: 10px;
-}
-.EventTile_eventTile__hs_H4 .EventTile_locationName__P9MRG {
-  font-weight: 900;
-}
-.EventTile_eventTile__hs_H4 .EventTile_address__puumU {
-  color: gray;
-}
-.EventTile_eventTile__hs_H4 .EventTile_locationName__P9MRG,
-.EventTile_eventTile__hs_H4 .EventTile_address__puumU {
-  flex: 1;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
-.EventTile_eventTile__hs_H4 .EventTile_price__r_kb_ {
-  font-weight: bold;
-}
-.EventTile_eventTile__hs_H4 .EventTile_date__TU6pa {
-  color: gray;
-}
-.EventTile_eventTile__hs_H4 .EventTile_divider__gWnL2 {
-  height: 1px;
-  background-color: #353538;
-  margin: 10px 0;
-}
-.EventTile_eventTile__hs_H4 .EventTile_busyBar__raR9V {
-  height: 8px;
-  border-radius: 4px;
-  flex-grow: 1;
-  background-color: #353538;
-  max-width: 130px;
-  overflow: hidden;
-}
-.EventTile_eventTile__hs_H4 .EventTile_busyBar__raR9V .EventTile_innerBar__MEZ_I {
-  border-radius: 4px;
-  height: 100%;
-  background-color: #7ab661;
 }
 /*!*************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/view/Events/EventsView.scss ***!
@@ -253,7 +196,7 @@
 @media (max-width: 576px) {
   .EventsView_eventTilesContainer__VYeOa {
     grid-template-columns: 1fr;
-    padding: 0 15px 15px 15px;
+    padding: 0;
     gap: 15px;
   }
 }
@@ -276,6 +219,80 @@
   .EventsView_eventTilesContainer__VYeOa {
     grid-template-columns: repeat(3, 1fr);
   }
+}
+/*!************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/view/Events/EventTile.scss ***!
+  \************************************************************************************************************************************************************************************************************************/
+@charset "UTF-8";
+.EventTile_eventTile__hs_H4 {
+  background-color: #18181c;
+  border-radius: 8px;
+  border: 1px solid #29292e;
+  padding: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+  min-width: 0;
+  /* POD ŻADNYM POZOREM NIE USUWAĆ TEJ LINII !!! */
+}
+.EventTile_eventTile__hs_H4:hover {
+  background-color: #29292e;
+}
+.EventTile_eventTile__hs_H4:hover .EventTile_image__iPt7c {
+  opacity: 1;
+  filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.7));
+}
+.EventTile_eventTile__hs_H4 .EventTile_image__iPt7c {
+  border-radius: 8px;
+  object-fit: cover;
+  height: 180px;
+  width: 100%;
+  transition: 0.2s;
+}
+.EventTile_eventTile__hs_H4 .EventTile_detailsRow__Gf0XI {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  gap: 10px;
+}
+.EventTile_eventTile__hs_H4 .EventTile_locationName__P9MRG {
+  font-weight: 900;
+  font-size: 14px;
+}
+.EventTile_eventTile__hs_H4 .EventTile_address__puumU {
+  color: gray;
+}
+.EventTile_eventTile__hs_H4 .EventTile_locationName__P9MRG,
+.EventTile_eventTile__hs_H4 .EventTile_address__puumU {
+  flex: 1;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.EventTile_eventTile__hs_H4 .EventTile_price__r_kb_ {
+  font-weight: bold;
+  font-size: 14px;
+}
+.EventTile_eventTile__hs_H4 .EventTile_date__TU6pa {
+  color: gray;
+}
+.EventTile_eventTile__hs_H4 .EventTile_divider__gWnL2 {
+  height: 1px;
+  background-color: #353538;
+  margin: 10px 0;
+}
+.EventTile_eventTile__hs_H4 .EventTile_busyBar__raR9V {
+  height: 8px;
+  border-radius: 4px;
+  flex-grow: 1;
+  background-color: #353538;
+  max-width: 130px;
+  overflow: hidden;
+}
+.EventTile_eventTile__hs_H4 .EventTile_busyBar__raR9V .EventTile_innerBar__MEZ_I {
+  border-radius: 4px;
+  height: 100%;
+  background-color: #7ab661;
 }
 /*!***********************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/main.scss (1) ***!
@@ -332,14 +349,9 @@ button:focus {
   padding: 0 40px;
   transition: padding 0.2s, padding-bottom 0s;
 }
-@media (max-width: 767px) {
+@media (max-width: 576px) {
   #app {
-    padding: 0 20px 20px 20px;
-  }
-}
-@media (max-width: 992px) {
-  #app {
-    padding: 0 25px 25px 25px;
+    padding: 0 15px 15px 15px;
   }
 }
 

@@ -20,7 +20,7 @@
         // opacity: 0.4;
         border-radius: 8px;
         object-fit: cover;
-        height: 150px;
+        height: 180px;
         width: 100%;
         transition: 0.2s;
     }
@@ -35,6 +35,7 @@
 
     .locationName {
         font-weight: 900;
+        font-size: 14px;
     }
 
     .address {
@@ -51,6 +52,7 @@
 
     .price {
         font-weight: bold;
+        font-size: 14px;
     }
 
     .date {

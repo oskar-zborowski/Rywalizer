@@ -156636,6 +156636,22 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/assets/components/MainContainer/Scrollbar/Scrollbar.scss":
+/*!****************************************************************************!*\
+  !*** ./resources/assets/components/MainContainer/Scrollbar/Scrollbar.scss ***!
+  \****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// extracted by mini-css-extract-plugin
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({"scrollbar":"Scrollbar_scrollbar__AcmfO","thumb":"Scrollbar_thumb__xrkTh"});
+
+/***/ }),
+
 /***/ "./resources/assets/components/MapViewer/MapViewer.scss":
 /*!**************************************************************!*\
   !*** ./resources/assets/components/MapViewer/MapViewer.scss ***!
@@ -156649,22 +156665,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 // extracted by mini-css-extract-plugin
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({"mapViewer":"MapViewer_mapViewer__xi5kE"});
-
-/***/ }),
-
-/***/ "./resources/assets/components/Splitter/Splitter.scss":
-/*!************************************************************!*\
-  !*** ./resources/assets/components/Splitter/Splitter.scss ***!
-  \************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-// extracted by mini-css-extract-plugin
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({"splitter":"Splitter_splitter__HIJYB"});
 
 /***/ }),
 
@@ -186617,9 +186617,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_MainContainer_MainContainer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @/components/MainContainer/MainContainer */ "./resources/assets/components/MainContainer/MainContainer.tsx");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var _components_MapViewer_MapViewer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @/components/MapViewer/MapViewer */ "./resources/assets/components/MapViewer/MapViewer.tsx");
-/* harmony import */ var _components_Splitter_Splitter__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @/components/Splitter/Splitter */ "./resources/assets/components/Splitter/Splitter.tsx");
-/* harmony import */ var _view_Events_EventsView__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @/view/Events/EventsView */ "./resources/assets/view/Events/EventsView.tsx");
-
+/* harmony import */ var _view_Events_EventsView__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @/view/Events/EventsView */ "./resources/assets/view/Events/EventsView.tsx");
 
 
 
@@ -186632,8 +186630,7 @@ const App = () => {
         react__WEBPACK_IMPORTED_MODULE_4__.createElement(_layout_Topbar_Topbar__WEBPACK_IMPORTED_MODULE_2__["default"], null),
         react__WEBPACK_IMPORTED_MODULE_4__.createElement(_layout_Content_Content__WEBPACK_IMPORTED_MODULE_0__["default"], null,
             react__WEBPACK_IMPORTED_MODULE_4__.createElement(_components_MainContainer_MainContainer__WEBPACK_IMPORTED_MODULE_3__["default"], null,
-                react__WEBPACK_IMPORTED_MODULE_4__.createElement(_view_Events_EventsView__WEBPACK_IMPORTED_MODULE_7__["default"], null)),
-            react__WEBPACK_IMPORTED_MODULE_4__.createElement(_components_Splitter_Splitter__WEBPACK_IMPORTED_MODULE_6__["default"], null),
+                react__WEBPACK_IMPORTED_MODULE_4__.createElement(_view_Events_EventsView__WEBPACK_IMPORTED_MODULE_6__["default"], null)),
             react__WEBPACK_IMPORTED_MODULE_4__.createElement(_components_MapViewer_MapViewer__WEBPACK_IMPORTED_MODULE_5__["default"], null)),
         react__WEBPACK_IMPORTED_MODULE_4__.createElement(_layout_Footer_Footer__WEBPACK_IMPORTED_MODULE_1__["default"], null)));
 };
@@ -186655,18 +186652,84 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _components_form_Button_Button__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @/components/form/Button/Button */ "./resources/assets/components/form/Button/Button.tsx");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var _MainContainer_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MainContainer.scss */ "./resources/assets/components/MainContainer/MainContainer.scss");
+/* harmony import */ var _Scrollbar_Scrollbar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Scrollbar/Scrollbar */ "./resources/assets/components/MainContainer/Scrollbar/Scrollbar.tsx");
+/* harmony import */ var _MainContainer_scss__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./MainContainer.scss */ "./resources/assets/components/MainContainer/MainContainer.scss");
+
 
 
 
 const MainContainer = (props) => {
-    return (react__WEBPACK_IMPORTED_MODULE_1__.createElement("main", { className: _MainContainer_scss__WEBPACK_IMPORTED_MODULE_2__["default"].mainContainer },
-        react__WEBPACK_IMPORTED_MODULE_1__.createElement("div", { className: _MainContainer_scss__WEBPACK_IMPORTED_MODULE_2__["default"].authButtons },
-            react__WEBPACK_IMPORTED_MODULE_1__.createElement(_components_form_Button_Button__WEBPACK_IMPORTED_MODULE_0__.OrangeButton, null, "Zaloguj si\u0119"),
-            react__WEBPACK_IMPORTED_MODULE_1__.createElement(_components_form_Button_Button__WEBPACK_IMPORTED_MODULE_0__.GrayButton, null, "Zarejestruj si\u0119")),
-        props.children));
+    return (react__WEBPACK_IMPORTED_MODULE_1__.createElement(_Scrollbar_Scrollbar__WEBPACK_IMPORTED_MODULE_2__.ScrollbarProvider, null,
+        react__WEBPACK_IMPORTED_MODULE_1__.createElement("main", { className: _MainContainer_scss__WEBPACK_IMPORTED_MODULE_3__["default"].mainContainer },
+            react__WEBPACK_IMPORTED_MODULE_1__.createElement("div", { className: _MainContainer_scss__WEBPACK_IMPORTED_MODULE_3__["default"].authButtons },
+                react__WEBPACK_IMPORTED_MODULE_1__.createElement(_components_form_Button_Button__WEBPACK_IMPORTED_MODULE_0__.OrangeButton, null, "Zaloguj si\u0119"),
+                react__WEBPACK_IMPORTED_MODULE_1__.createElement(_components_form_Button_Button__WEBPACK_IMPORTED_MODULE_0__.GrayButton, null, "Zarejestruj si\u0119")),
+            props.children),
+        react__WEBPACK_IMPORTED_MODULE_1__.createElement(_Scrollbar_Scrollbar__WEBPACK_IMPORTED_MODULE_2__.Scrollbar, null)));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MainContainer);
+
+
+/***/ }),
+
+/***/ "./resources/assets/components/MainContainer/Scrollbar/Scrollbar.tsx":
+/*!***************************************************************************!*\
+  !*** ./resources/assets/components/MainContainer/Scrollbar/Scrollbar.tsx ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "ScrollbarContext": () => (/* binding */ ScrollbarContext),
+/* harmony export */   "ScrollbarProvider": () => (/* binding */ ScrollbarProvider),
+/* harmony export */   "Scrollbar": () => (/* binding */ Scrollbar),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _hooks_useResize__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @/hooks/useResize */ "./resources/assets/hooks/useResize.ts");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var _Scrollbar_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Scrollbar.scss */ "./resources/assets/components/MainContainer/Scrollbar/Scrollbar.scss");
+
+
+
+const ScrollbarContext = (0,react__WEBPACK_IMPORTED_MODULE_1__.createContext)({});
+const ScrollbarProvider = (props) => {
+    const containerRef = (0,react__WEBPACK_IMPORTED_MODULE_1__.useRef)(null);
+    return (react__WEBPACK_IMPORTED_MODULE_1__.createElement(ScrollbarContext.Provider, { value: { containerRef } }, props.children));
+};
+const Scrollbar = () => {
+    var _a, _b;
+    const { containerRef } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useContext)(ScrollbarContext);
+    const scrollbarRef = (0,react__WEBPACK_IMPORTED_MODULE_1__.useRef)(null);
+    const [thumbLength, setThumbLength] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0);
+    const [thumbPosition, setThumbPosition] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0);
+    const scrollbarHeight = (0,_hooks_useResize__WEBPACK_IMPORTED_MODULE_0__["default"])(scrollbarRef).height;
+    const containerHeight = (0,_hooks_useResize__WEBPACK_IMPORTED_MODULE_0__["default"])(containerRef).height;
+    const scrollHeight = (_a = containerRef === null || containerRef === void 0 ? void 0 : containerRef.current) === null || _a === void 0 ? void 0 : _a.scrollHeight;
+    const scrollTop = (_b = containerRef === null || containerRef === void 0 ? void 0 : containerRef.current) === null || _b === void 0 ? void 0 : _b.scrollTop;
+    (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
+        const updateScroll = () => {
+            setThumbLength(containerHeight * scrollbarHeight / scrollHeight);
+            setThumbPosition(scrollTop / scrollHeight * 100);
+        };
+        if (containerRef && containerRef.current) {
+            updateScroll();
+            containerRef.current.addEventListener('scroll', updateScroll, false);
+            return () => {
+                containerRef.current.removeEventListener('scroll', updateScroll, false);
+            };
+        }
+    }, [containerRef, scrollbarHeight, containerHeight]);
+    return (react__WEBPACK_IMPORTED_MODULE_1__.createElement("div", { className: _Scrollbar_scss__WEBPACK_IMPORTED_MODULE_2__["default"].scrollbar, ref: scrollbarRef },
+        react__WEBPACK_IMPORTED_MODULE_1__.createElement("div", { className: _Scrollbar_scss__WEBPACK_IMPORTED_MODULE_2__["default"].thumb, style: {
+                height: thumbLength + 'px',
+                top: thumbPosition + '%'
+            } })));
+};
+const useScrollbar = () => {
+    return (0,react__WEBPACK_IMPORTED_MODULE_1__.useContext)(ScrollbarContext);
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (useScrollbar);
 
 
 /***/ }),
@@ -187016,29 +187079,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/assets/components/Splitter/Splitter.tsx":
-/*!***********************************************************!*\
-  !*** ./resources/assets/components/Splitter/Splitter.tsx ***!
-  \***********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var _Splitter_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Splitter.scss */ "./resources/assets/components/Splitter/Splitter.scss");
-
-
-const Splitter = () => {
-    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { className: _Splitter_scss__WEBPACK_IMPORTED_MODULE_1__["default"].splitter }));
-};
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Splitter);
-
-
-/***/ }),
-
 /***/ "./resources/assets/components/form/Button/Button.tsx":
 /*!************************************************************!*\
   !*** ./resources/assets/components/form/Button/Button.tsx ***!
@@ -187061,6 +187101,41 @@ const OrangeButton = (props) => {
 const GrayButton = (props) => {
     return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { type: "button", className: _Button_scss__WEBPACK_IMPORTED_MODULE_1__["default"].grayButton }, props.children));
 };
+
+
+/***/ }),
+
+/***/ "./resources/assets/hooks/useResize.ts":
+/*!*********************************************!*\
+  !*** ./resources/assets/hooks/useResize.ts ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+const useResize = (ref) => {
+    const [width, setWidth] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0);
+    const [height, setHeight] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0);
+    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+        setWidth(ref.current.offsetWidth);
+        setHeight(ref.current.offsetHeight);
+        const handleResize = () => {
+            setWidth(ref.current.offsetWidth);
+            setHeight(ref.current.offsetHeight);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [ref]);
+    return { width, height };
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (useResize);
 
 
 /***/ }),
@@ -187158,6 +187233,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _EventTile_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EventTile.scss */ "./resources/assets/view/Events/EventTile.scss");
 /* harmony import */ var chroma_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! chroma-js */ "./node_modules/chroma-js/chroma.js");
 /* harmony import */ var chroma_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(chroma_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _components_MainContainer_Scrollbar_Scrollbar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @/components/MainContainer/Scrollbar/Scrollbar */ "./resources/assets/components/MainContainer/Scrollbar/Scrollbar.tsx");
+
 
 
 
@@ -187169,6 +187246,7 @@ const EventTile = (props) => {
     const percent = ratio * 100;
     //TODO nieliniowa funckja - powinno być znacznie więcej zielonego ??
     const color = colors[Math.trunc(ratio * (colors.length - 1))];
+    const { containerRef } = (0,_components_MainContainer_Scrollbar_Scrollbar__WEBPACK_IMPORTED_MODULE_3__["default"])();
     return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { className: _EventTile_scss__WEBPACK_IMPORTED_MODULE_1__["default"].eventTile },
         react__WEBPACK_IMPORTED_MODULE_0__.createElement("img", { src: props.imageSrc, className: _EventTile_scss__WEBPACK_IMPORTED_MODULE_1__["default"].image }),
         react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { className: _EventTile_scss__WEBPACK_IMPORTED_MODULE_1__["default"].detailsRow },
@@ -187207,16 +187285,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var _EventTile__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EventTile */ "./resources/assets/view/Events/EventTile.tsx");
-/* harmony import */ var _EventsView_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EventsView.scss */ "./resources/assets/view/Events/EventsView.scss");
-/* harmony import */ var faker__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! faker */ "./node_modules/faker/index.js");
-/* harmony import */ var faker__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(faker__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _components_MainContainer_Scrollbar_Scrollbar__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @/components/MainContainer/Scrollbar/Scrollbar */ "./resources/assets/components/MainContainer/Scrollbar/Scrollbar.tsx");
+/* harmony import */ var faker__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! faker */ "./node_modules/faker/index.js");
+/* harmony import */ var faker__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(faker__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var _EventsView_scss__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EventsView.scss */ "./resources/assets/view/Events/EventsView.scss");
+/* harmony import */ var _EventTile__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EventTile */ "./resources/assets/view/Events/EventTile.tsx");
 
 
 
 
-(faker__WEBPACK_IMPORTED_MODULE_3___default().locale) = 'pl';
+
+(faker__WEBPACK_IMPORTED_MODULE_1___default().locale) = 'pl';
 const fakeData = [];
 const tilesCount = Math.trunc(Math.random() * 40) + 5;
 for (let i = 0; i < tilesCount; i++) {
@@ -187226,17 +187306,18 @@ for (let i = 0; i < tilesCount; i++) {
         availableTickets,
         soldTickets,
         price: 3500,
-        address: faker__WEBPACK_IMPORTED_MODULE_3___default().address.cityName(),
-        locationName: faker__WEBPACK_IMPORTED_MODULE_3___default().address.cityName(),
-        imageSrc: faker__WEBPACK_IMPORTED_MODULE_3___default().image.image(),
+        address: faker__WEBPACK_IMPORTED_MODULE_1___default().address.cityName(),
+        locationName: faker__WEBPACK_IMPORTED_MODULE_1___default().address.cityName(),
+        imageSrc: faker__WEBPACK_IMPORTED_MODULE_1___default().image.image(),
         date: new Date()
     });
 }
 const EventsView = () => {
-    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { className: _EventsView_scss__WEBPACK_IMPORTED_MODULE_2__["default"].eventsView },
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { className: _EventsView_scss__WEBPACK_IMPORTED_MODULE_2__["default"].filters }),
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { className: _EventsView_scss__WEBPACK_IMPORTED_MODULE_2__["default"].containerWrapper },
-            react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { className: _EventsView_scss__WEBPACK_IMPORTED_MODULE_2__["default"].eventTilesContainer }, fakeData.map((d, i) => react__WEBPACK_IMPORTED_MODULE_0__.createElement(_EventTile__WEBPACK_IMPORTED_MODULE_1__["default"], Object.assign({}, d, { key: i })))))));
+    const { containerRef } = (0,_components_MainContainer_Scrollbar_Scrollbar__WEBPACK_IMPORTED_MODULE_0__["default"])();
+    return (react__WEBPACK_IMPORTED_MODULE_2__.createElement("div", { className: _EventsView_scss__WEBPACK_IMPORTED_MODULE_3__["default"].eventsView },
+        react__WEBPACK_IMPORTED_MODULE_2__.createElement("div", { className: _EventsView_scss__WEBPACK_IMPORTED_MODULE_3__["default"].filters }),
+        react__WEBPACK_IMPORTED_MODULE_2__.createElement("div", { className: _EventsView_scss__WEBPACK_IMPORTED_MODULE_3__["default"].containerWrapper, ref: containerRef },
+            react__WEBPACK_IMPORTED_MODULE_2__.createElement("div", { className: _EventsView_scss__WEBPACK_IMPORTED_MODULE_3__["default"].eventTilesContainer }, fakeData.map((d, i) => react__WEBPACK_IMPORTED_MODULE_2__.createElement(_EventTile__WEBPACK_IMPORTED_MODULE_4__["default"], Object.assign({}, d, { key: i })))))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (EventsView);
 

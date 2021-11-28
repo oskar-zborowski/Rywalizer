@@ -1,4 +1,5 @@
 @import "@/layout/layout.scss";
+@import "@/scss/bootstrap.scss";
 
 .mainContainer {
     @extend %left-column;
@@ -20,5 +21,11 @@
             margin-left: 8px;
             float: left;
         }
+    }
+
+    @include respond-to(null, "sm") {
+        background-color: transparent;
+        border-radius: 0;
+        border: none;
     }
 }

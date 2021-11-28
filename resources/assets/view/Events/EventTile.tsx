@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './EventTile.scss';
 import chroma from 'chroma-js';
+import useScrollbar from '@/components/MainContainer/Scrollbar/Scrollbar';
 
 export interface EventTileProps {
     imageSrc: string;
@@ -22,6 +23,7 @@ const EventTile: React.FC<EventTileProps> = (props) => {
 
     //TODO nieliniowa funckja - powinno być znacznie więcej zielonego ??
     const color = colors[Math.trunc(ratio * (colors.length - 1))];
+    const { containerRef } = useScrollbar();
 
     return (
         <div className={styles.eventTile}>
@@ -37,7 +39,7 @@ const EventTile: React.FC<EventTileProps> = (props) => {
             <div className={styles.divider}></div>
             <div className={styles.detailsRow}>
                 <div className={styles.busyBar}>
-                    <div className={styles.innerBar} style={{ 
+                    <div className={styles.innerBar} style={{
                         width: percent + '%',
                         backgroundColor: color
                     }}></div>

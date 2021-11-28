@@ -4,7 +4,6 @@ import Topbar from '@/layout/Topbar/Topbar';
 import MainContainer from '@/components/MainContainer/MainContainer';
 import React, { Fragment } from 'react';
 import MapViewer from '@/components/MapViewer/MapViewer';
-import Splitter from '@/components/Splitter/Splitter';
 import EventsView from '@/view/Events/EventsView';
 
 const App: React.FC = () => {
@@ -15,7 +14,6 @@ const App: React.FC = () => {
                 <MainContainer>
                     <EventsView/>
                 </MainContainer>
-                <Splitter />
                 <MapViewer/>
             </Content>
             <Footer />

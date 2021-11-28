@@ -54,12 +54,9 @@ button:focus {
         padding: 0 40px;
         transition: padding .2s, padding-bottom 0s;
 
-        @include respond-to(null, 'md') {
-            padding: 0 20px 20px 20px;
+        @include respond-to(null, 'sm') {
+            padding: 0 15px 15px 15px;
         }
 
-        @include respond-to(null, 'lg') {
-            padding: 0 25px 25px 25px;
-        }
     }
 }
