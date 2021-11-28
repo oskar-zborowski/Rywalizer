@@ -33,4 +33,8 @@ class RoleType extends Model
         'name' => 15,
         'access_level' => 3
     ];
+
+    public function user() {
+        return $this->hasMany(User::class);
+    }
 }

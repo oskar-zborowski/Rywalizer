@@ -83,6 +83,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(RoleType::class);
     }
 
+    public function personalAccessToken() {
+        return $this->hasMany(PersonalAccessToken::class);
+    }
+
     public function externalAuthentication() {
         return $this->hasOne(ExternalAuthentication::class);
     }

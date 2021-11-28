@@ -29,4 +29,8 @@ class ProviderType extends Model
     protected $maxSize = [
         'name' => 9
     ];
+
+    public function externalAuthentication() {
+        return $this->hasMany(ExternalAuthentication::class);
+    }
 }

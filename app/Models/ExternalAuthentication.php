@@ -43,4 +43,12 @@ class ExternalAuthentication extends Model
     protected $maxSize = [
         'authentication_id' => 254
     ];
+
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
+
+    public function providerType() {
+        return $this->belongsTo(ProviderType::class);
+    }
 }

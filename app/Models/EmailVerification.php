@@ -43,4 +43,8 @@ class EmailVerification extends Model
     protected $maxSize = [
         'token' => 48
     ];
+
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
 }

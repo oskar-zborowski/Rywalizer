@@ -26,4 +26,8 @@ class GenderType extends Model
     protected $maxSize = [
         'name' => 6
     ];
+
+    public function user() {
+        return $this->hasMany(User::class);
+    }
 }
