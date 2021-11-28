@@ -557,8 +557,9 @@ class AuthController extends Controller
         switch ($provider) {
 
             case 'FACEBOOK':
+            case 'GOOGLE':
                 $avatarUrlHeaders = get_headers($avatarUrl, 1);
-                $avatarUrlLocation = $avatarUrlHeaders['Location'];
+                $avatarUrlLocation = $avatarUrlHeaders['Location'] ? $avatarUrlHeaders['Location'] : $avatarUrl;
                 $avatarContentType = $avatarUrlHeaders['Content-Type'];
 
                 if (is_array($avatarContentType)) {
@@ -568,10 +569,6 @@ class AuthController extends Controller
                 $avatarFileExtensionSeparators = explode('/', $avatarContentType);
                 $avatarFileExtensionSeparatorsLength = count($avatarFileExtensionSeparators);
                 $avatarFileExtension = '.' . $avatarFileExtensionSeparators[$avatarFileExtensionSeparatorsLength-1];
-                break;
-
-            case 'GOOGLE':
-                // TODO Uzupełnić zapisywanie zdjęcia z google'a
                 break;
 
             default:
