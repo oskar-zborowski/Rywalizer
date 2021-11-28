@@ -565,28 +565,9 @@ class AuthController extends Controller
                     $avatarContentType = $avatarContentType[0];
                 }
 
-                $avatarExtensionSeparators = explode('/', $avatarContentType);
-                $avatarExtensionSeparatorsLength = count($avatarExtensionSeparators);
-                $avatarFileExtension = '.' . $avatarExtensionSeparators[$avatarExtensionSeparatorsLength-1];
-
-                // if (env('FACEBOOK_MODE') == 'development') {
-                //     $avatarUrlSeparators = explode('/', $avatarUrlLocation);
-                //     $avatarUrlSeparatorsLength = count($avatarUrlSeparators);
-                //     $avatarNewUrl = $avatarUrlSeparators[$avatarUrlSeparatorsLength-1];
-                //     $avatarNewUrlSeparators = explode('?', $avatarNewUrl);
-                //     $avatarFilename = $avatarNewUrlSeparators[0];
-                //     $avatarFilenameLength = strlen($avatarFilename);
-                //     $avatarFileExtension = '';
-    
-                //     for ($i=$avatarFilenameLength-1; $avatarFilename[$i] != '.'; $i--) {
-                //         $avatarFileExtension .= $avatarFilename[$i];
-                //     }
-    
-                //     $avatarFileExtension = '.' . strrev($avatarFileExtension);
-                    
-                // } else if (env('FACEBOOK_MODE') == 'live') {
-                    
-                // }
+                $avatarFileExtensionSeparators = explode('/', $avatarContentType);
+                $avatarFileExtensionSeparatorsLength = count($avatarFileExtensionSeparators);
+                $avatarFileExtension = '.' . $avatarFileExtensionSeparators[$avatarFileExtensionSeparatorsLength-1];
                 break;
 
             case 'GOOGLE':
