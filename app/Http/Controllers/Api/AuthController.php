@@ -44,18 +44,7 @@ class AuthController extends Controller
             throw new ApiException(AuthErrorCode::INVALID_CREDENTIALS());
         }
 
-        /** @var User $user */
-        $user = Auth::user();
-
-        if ($user->account_blocked_at) {
-            $user->tokens()->delete();
-            throw new ApiException(AuthErrorCode::ACOUNT_BLOCKED());
-        }
-
-        if ($user->account_deleted_at) {
-            $user->tokens()->delete();
-            throw new ApiException(AuthErrorCode::ACOUNT_DELETED());
-        }
+        JsonResponse::checkUserAccess();
 
         $this->checkMissingUserInfo(true);
     }
@@ -137,6 +126,7 @@ class AuthController extends Controller
         ]);
 
         $url = env('APP_URL') . '/reset-password?token=' . $plainToken; // TODO Poprawić na prawidłowy URL
+
         Mail::to($user)->send(new MailPasswordReset($url));
 
         JsonResponse::sendSuccess();
@@ -170,6 +160,7 @@ class AuthController extends Controller
         }
 
         $encryptedPassword = $encrypter->hash($request->password);
+
         $passwordReset->user()->first()->update(['password' => $encryptedPassword]);
         $passwordReset->delete();
 
@@ -228,6 +219,7 @@ class AuthController extends Controller
         ]);
 
         $url = env('APP_URL') . '/email/verify?token=' . $plainToken; // TODO Poprawić na prawidłowy URL
+
         Mail::to($user)->send(new VerificationEmail($url));
 
         if (!$afterRegistartion) {
@@ -275,6 +267,7 @@ class AuthController extends Controller
 
         $user->markEmailAsVerified();
         $emailVerification->delete();
+
         $this->checkMissingUserInfo();
     }
 
@@ -291,6 +284,7 @@ class AuthController extends Controller
 
         if ($request->user()) {
             $request->user()->currentAccessToken()->delete();
+
             JsonResponse::deleteCookie('JWT');
             JsonResponse::deleteCookie('REFRESH-TOKEN');
             JsonResponse::sendSuccess();
@@ -360,7 +354,8 @@ class AuthController extends Controller
      */
     public function handleProviderCallback(string $provider, Encrypter $encrypter): void {
 
-        $providerId = $this->validateProvider($provider);
+        /** @var ProviderType $providerType */
+        $providerType = $this->validateProvider($provider);
 
         /** @var \Laravel\Socialite\Two\AbstractProvider */
         $driver = Socialite::driver($provider);
@@ -378,10 +373,7 @@ class AuthController extends Controller
         }
 
         /** @var ExternalAuthentication $externalAuthentication */
-        $externalAuthentication = ExternalAuthentication::where([
-            'authentication_id' => $encryptedAuthenticationId,
-            'provider_type_id' => $providerId
-        ])->first();
+        $externalAuthentication = $providerType->externalAuthentication()->where('authentication_id', $encryptedAuthenticationId)->first();
 
         if (!$externalAuthentication) {
 
@@ -419,12 +411,15 @@ class AuthController extends Controller
 
             $newUser = [
                 'first_name' => $firstName,
-                'last_name' => $lastName,
-                'avatar' => isset($avatarFilename) ? $avatarFilename : null,
+                'last_name' => $lastName
             ];
 
             if (isset($encryptedEmail)) {
                 $newUser['email'] = $user->getEmail();
+            }
+
+            if (isset($avatarFilename)) {
+                $newUser['avatar'] = $avatarFilename;
             }
 
             /** @var User $createUser */
@@ -432,7 +427,7 @@ class AuthController extends Controller
 
             $createUser->externalAuthentication()->create([
                 'authentication_id' => $authenticationId,
-                'provider_type_id' => $providerId
+                'provider_type_id' => $providerType->id
             ]);
 
             Auth::loginUsingId($createUser->id);
@@ -446,6 +441,7 @@ class AuthController extends Controller
 
         } else {
             Auth::loginUsingId($externalAuthentication->user_id);
+            JsonResponse::checkUserAccess();
         }
 
         $this->checkMissingUserInfo(true);
@@ -527,9 +523,9 @@ class AuthController extends Controller
      * 
      * @param string $provider nazwa zewnętrznego serwisu
      * 
-     * @return int
+     * @return App\Models\ProviderType
      */
-    private function validateProvider(string $provider): int {
+    private function validateProvider(string $provider): ProviderType {
 
         $encrypter = new Encrypter;
         $provider = strtoupper($provider);
@@ -545,7 +541,7 @@ class AuthController extends Controller
             throw new ApiException(AuthErrorCode::INVALID_PROVIDER());
         }
 
-        return $providerType->id;
+        return $providerType;
     }
 
     /**
