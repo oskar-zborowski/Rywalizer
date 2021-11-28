@@ -1,3 +1,8 @@
 const mix = require('laravel-mix');
 
-mix.js('resources/test.js', 'public/js').version();
+mix.ts('resources/assets/main.ts', 'public/assets/app.js')
+    .vue({extractStyles: 'assets/app.css'})
+    .sourceMaps(false, 'source-map')
+    .disableNotifications()
+    .version()
+    .extract();
