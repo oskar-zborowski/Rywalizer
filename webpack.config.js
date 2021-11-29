@@ -2,12 +2,13 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const path = require('path');
+const { ProvidePlugin } = require('webpack');
 
 module.exports = {
     mode: 'development',
     stats: 'minimal',
     entry: {
-        app: path.resolve(__dirname, 'resources/assets/main.tsx')
+        app: path.resolve(__dirname, 'resources/assets/main.ts')
     },
     output: {
         path: path.resolve(__dirname, 'public/assets'),
@@ -85,12 +86,15 @@ module.exports = {
         new WebpackManifestPlugin({
             basePath: '/assets/',
             fileName: path.resolve(__dirname, 'public/mix-manifest.json')
+        }),
+        new ProvidePlugin({
+            $: 'jquery',
         })
     ],
     resolve: {
         alias: {
             '@': path.resolve(__dirname, 'resources/assets')
         },
-        extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.json', '.scss']
+        extensions: ['.js', '.ts', '.css', '.json', '.scss']
     }
 };
