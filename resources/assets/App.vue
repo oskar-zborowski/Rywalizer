@@ -20,6 +20,7 @@ body {
     font-family: "Poppins", sans-serif;
     color: #fff;
     font-size: 13px;
+    background-color: #141417;
 }
 
 ul {
@@ -54,22 +55,25 @@ button:focus {
 }
 </style>
 
-<style scoped>
-.test {
-    color: pink;
-}
-</style>
-
 <template>
-    <div>Hello World</div>
-    <div class="test">asdas</div>
+    <Topbar/>
+    <Content>
+        <MainContainer/>
+        <MapViewer/>
+    </Content>
+    <Footer/>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import MainContainer from "./components/MainContainer.vue";
+import MapViewer from "./components/MapViewer.vue";
+import Topbar from "./layout/Topbar.vue";
+import Content from "./layout/Content.vue";
+import Footer from "./layout/Footer.vue";
 
 export default defineComponent({
     name: "App",
-    components: {},
+    components: { MainContainer, MapViewer, Topbar, Content, Footer },
 });
 </script>

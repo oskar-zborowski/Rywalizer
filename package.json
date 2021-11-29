@@ -20,7 +20,9 @@
         "webpack-cli": "^4.9.1"
     },
     "dependencies": {
+        "mitt": "^3.0.0",
         "vue": "^3.2.23",
-        "vue-router": "^3.5.3"
+        "vue-router": "^3.5.3",
+        "vue3-google-map": "^0.8.2"
     }
 }

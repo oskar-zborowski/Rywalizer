@@ -25,7 +25,7 @@
     },
     "include": [
         "resources/**/*.ts",
-        "resources/**/*.vue",
+        "resources/**/*.vue", "typings.d.ts",
     ],
     "exclude": [
         "node_modules"

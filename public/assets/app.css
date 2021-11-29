@@ -1,4 +1,119 @@
 @import url(https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap);
+.scrollbar[data-v-09208765] {
+  margin: 0 40px;
+  border-radius: 4px;
+  border: 1px solid #29292e;
+  width: 12px;
+  background-color: #18181c;
+  flex: none;
+  position: relative;
+  overflow: hidden;
+}
+@media (max-width: 992px) {
+.scrollbar[data-v-09208765] {
+    display: none;
+}
+}
+.scrollbar .thumb[data-v-09208765] {
+  background-color: orange;
+  border-radius: 3px;
+  width: 100%;
+  position: absolute;
+}
+.main-container[data-v-6fcd0a73] {
+  flex: 50%;
+  max-width: 1050px;
+}
+.main-container[data-v-6fcd0a73] {
+  position: relative;
+  border-radius: 15px;
+  height: 100%;
+  background-color: #18181c;
+  border: 1px solid #29292e;
+  overflow: auto;
+}
+.main-container .auth-buttons[data-v-6fcd0a73] {
+  position: absolute;
+  right: 0;
+  top: -30px;
+  transform: translateY(-50%);
+}
+.main-container .auth-buttons *[data-v-6fcd0a73] {
+  width: 120px;
+  margin-left: 8px;
+  float: left;
+}
+@media (max-width: 576px) {
+.main-container[data-v-6fcd0a73] {
+    background-color: transparent;
+    border-radius: 0;
+    border: none;
+}
+}
+.mapViewer[data-v-1849c0b9] {
+  flex: 30%;
+  min-width: 450px;
+}
+.mapViewer[data-v-1849c0b9] {
+  border-radius: 15px;
+  overflow: hidden;
+  flex: auto;
+  border: 1px solid #29292e;
+  background-color: #29292e;
+}
+@media (max-width: 992px) {
+.mapViewer[data-v-1849c0b9] {
+    display: none;
+}
+}
+.topbar[data-v-9ab54c22] {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  flex: none;
+}
+.logo[data-v-9ab54c22] {
+  color: orange;
+  font-size: 30px;
+  font-weight: 1000;
+}
+.links[data-v-9ab54c22] {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+}
+@media (max-width: 992px) {
+.links[data-v-9ab54c22] {
+    display: none;
+}
+}
+.content[data-v-96bcdc10] {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  min-height: 0;
+}
+.footer[data-v-a478eb28] {
+  height: 60px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: none;
+}
+@media (max-width: 992px) {
+.footer[data-v-a478eb28] {
+    display: none;
+}
+}
+.links[data-v-a478eb28] {
+  display: flex;
+  gap: 20px;
+}
 
 *,
 *:before,
@@ -17,6 +132,7 @@ body {
     font-family: "Poppins", sans-serif;
     color: #fff;
     font-size: 13px;
+    background-color: #141417;
 }
 ul {
     list-style-type: none;
@@ -43,11 +159,6 @@ button:focus {
     flex-direction: column;
     padding: 0 40px;
     transition: padding 0.2s, padding-bottom 0s;
-}
-
-
-.test[data-v-2c8a2ea6] {
-    color: pink;
 }
 
 

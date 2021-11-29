@@ -1,4 +1,9 @@
+import mitt from 'mitt';
 import { createApp } from 'vue';
 import App from './App.vue';
 
-createApp(App).mount('#app');
+const emitter = mitt();
+const app = createApp(App);
+
+app.provide('emitter', emitter);
+app.mount('#app');
