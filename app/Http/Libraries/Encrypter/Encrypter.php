@@ -80,7 +80,7 @@ class Encrypter
      */
     public function encrypt(?string $text, int $maxSize = null): ?string {
 
-        if (strlen($text) > 0) {
+        if (is_string($text) && strlen($text) > 0) {
             $text = $this->fillWithRandomCharacters($text, $maxSize);
             $text = openssl_encrypt($text, env('OPENSSL_ALGORITHM'), env('OPENSSL_PASSPHRASE'), 0, env('OPENSSL_IV'));
         } else {
@@ -99,7 +99,7 @@ class Encrypter
      */
     public function decrypt(?string $text): ?string {
 
-        if (strlen($text) > 0) {
+        if (is_string($text) && strlen($text) > 0) {
             $text = openssl_decrypt($text, env('OPENSSL_ALGORITHM'), env('OPENSSL_PASSPHRASE'), 0, env('OPENSSL_IV'));
             $text = $this->removeRandomCharacters($text);
         } else {
@@ -118,7 +118,7 @@ class Encrypter
      */
     public function hash(?string $text): ?string {
 
-        if (strlen($text) > 0) {
+        if (is_string($text) && strlen($text) > 0) {
             $text = Hash::make($text);
         } else {
             $text = null;
@@ -143,7 +143,7 @@ class Encrypter
         $modulo = $maxSize % 3;
         $maxSize -= $modulo + $additionLength;
 
-        if ($maxSize >= 0) {
+        if ($maxSize > 0) {
             $plainToken = $this->fillWithRandomCharacters('', $maxSize, true) . $addition;
         } else {
             $plainToken = null;
@@ -161,7 +161,7 @@ class Encrypter
      */
     public function encryptToken(?string $plainToken): ?string {
 
-        if (strlen($plainToken) > 0) {
+        if (is_string($plainToken) && strlen($plainToken) > 0) {
             $encryptedToken = $this->encrypt($plainToken);
         } else {
             $encryptedToken = null;

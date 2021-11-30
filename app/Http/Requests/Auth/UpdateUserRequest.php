@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Klasa z zasadami walidacji podczas uzupełniania danych użytkownika, bądź też aktualizacji już istniejących
@@ -16,12 +17,19 @@ class UpdateUserRequest extends FormRequest
 
     public function rules()
     {
-        return [
-            'email' => 'string|email|max:254|nullable',
-            'gender_type_id' => 'integer|between:1,2|nullable',
-            'birth_date' => 'string|date|size:10|nullable'
-        ];
+        /** @var User $user */
+        $user = Auth::user();
 
-        // 'avatar' => 'image|size:2048|nullable',
+        return [
+            'first_name' => 'string|alpha|max:30|nullable',
+            'last_name' => 'string|alpha|max:30|nullable',
+            'email' => 'unique:users,email,' . $user->id,
+            'avatar' => 'image|size:2048|nullable',
+            'birth_date' => 'string|date|size:10|nullable',
+            'address_coordinates' => 'string|size:15|nullable',
+            'telephone' => 'unique:users,telephone,' . $user->id,
+            'facebook_profile' => 'unique:users,facebook_profile,' . $user->id,
+            'gender_type_id' => 'integer|exists:gender_types,id|nullable'
+        ];
     }
 }

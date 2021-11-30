@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\ErrorCodes\AuthErrorCode;
 use App\Http\ErrorCodes\BaseErrorCode;
 use App\Http\Libraries\Encrypter\Encrypter;
+use App\Http\Libraries\Validation\Validation;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\UpdateUserRequest;
 use App\Http\Responses\JsonResponse;
@@ -43,10 +44,10 @@ class AuthController extends Controller
         if (!Auth::attempt($request->only('email', 'password'))) {
             throw new ApiException(AuthErrorCode::INVALID_CREDENTIALS());
         }
+    
+        JsonResponse::checkUserAccess($request);
 
-        JsonResponse::checkUserAccess();
-
-        $this->checkMissingUserInfo(true);
+        $this->checkMissingUserInformation(true);
     }
 
     /**
@@ -61,17 +62,14 @@ class AuthController extends Controller
     public function register(RegisterRequest $request, Encrypter $encrypter): void {
 
         $plainEmail = $encrypter->decrypt($request->email);
-        $encryptedPassword = $encrypter->hash($request->password);
-
         $request->merge(['email' => $plainEmail]);
-        $request->merge(['password' => $encryptedPassword]);
 
-        $user = User::create($request->all());
+        $user = User::create($request->only('first_name', 'last_name', 'email', 'password', 'birth_date', 'gender_type_id'));
 
         Auth::loginUsingId($user->id);
 
         $this->sendVerificationEmail(true);
-        $this->checkMissingUserInfo(true);
+        $this->checkMissingUserInformation(true);
     }
 
     /**
@@ -88,13 +86,6 @@ class AuthController extends Controller
         /** @var User $user */
         $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
-            throw new ApiException(
-                BaseErrorCode::FAILED_VALIDATION(),
-                __('passwords.user')
-            );
-        }
-
         /** @var PasswordReset $passwordReset */
         $passwordReset = $user->passwordReset()->first();
 
@@ -104,10 +95,7 @@ class AuthController extends Controller
 
             $emailSendingCounter += $passwordReset->email_sending_counter;
 
-            $now = date('Y-m-d H:i:s');
-            $waitingDate = date('Y-m-d H:i:s', strtotime('+' . env('PAUSE_BEFORE_RETRYING')*60 . ' seconds', strtotime($passwordReset->updated_at)));
-    
-            if ($now <= $waitingDate) {
+            if (Validation::timeComparison($passwordReset->updated_at, env('PAUSE_BEFORE_RETRYING')*60, '<=', 'seconds')) {
                 throw new ApiException(AuthErrorCode::WAIT_BEFORE_RETRYING());
             }
 
@@ -137,31 +125,27 @@ class AuthController extends Controller
      * Reset hasła
      * 
      * @param Illuminate\Http\Request $request
-     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
      * 
      * @return void
      */
-    public function resetPassword(Request $request, Encrypter $encrypter): void {
-
-        $encryptedToken = $encrypter->encryptToken($request->token);
+    public function resetPassword(Request $request): void {
 
         /** @var PasswordReset $passwordReset */
-        $passwordReset = PasswordReset::where('token', $encryptedToken)->first();
+        $passwordReset = PasswordReset::where('token', $request->token)->first();
 
-        if (!$passwordReset) {
-            throw new ApiException(AuthErrorCode::INVALID_PASSWORD_RESET_TOKEN());
-        }
-
-        $now = date('Y-m-d H:i:s');
-        $expirationDate = date('Y-m-d H:i:s', strtotime('+' . env('EMAIL_TOKEN_LIFETIME') . ' minutes', strtotime($passwordReset->updated_at)));
-
-        if ($now > $expirationDate) {
+        if (Validation::timeComparison($passwordReset->updated_at, env('EMAIL_TOKEN_LIFETIME'), '>')) {
             throw new ApiException(AuthErrorCode::PASSWORD_RESET_TOKEN_HAS_EXPIRED());
         }
 
-        $encryptedPassword = $encrypter->hash($request->password);
+        $passwordReset->user()->first()->update([
+            'password' => $request->password,
+            'last_time_password_changed' => now()
+        ]);
 
-        $passwordReset->user()->first()->update(['password' => $encryptedPassword]);
+        if ($request->do_not_logout === false) {
+            PersonalAccessToken::where('tokenable_id', $passwordReset->user_id)->delete();
+        }
+
         $passwordReset->delete();
 
         JsonResponse::sendSuccess();
@@ -180,50 +164,56 @@ class AuthController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        $emailSendingCounter = 1;
+        if ($user->email) {
 
-        if (!$afterRegistartion) {
+            $emailSendingCounter = 1;
 
-            if ($user->hasVerifiedEmail()) {
-                throw new ApiException(AuthErrorCode::EMAIL_ALREADY_VERIFIED());
+            if (!$afterRegistartion) {
+    
+                if ($user->hasVerifiedEmail()) {
+                    throw new ApiException(AuthErrorCode::EMAIL_ALREADY_VERIFIED());
+                }
+    
+                /** @var EmailVerification $emailVerification */
+                $emailVerification = $user->emailVerification()->first();
+    
+                if ($emailVerification) {
+    
+                    $emailSendingCounter += $emailVerification->email_sending_counter;
+            
+                    if (Validation::timeComparison($emailVerification->updated_at, env('PAUSE_BEFORE_RETRYING')*60, '<=', 'seconds')) {
+                        throw new ApiException(AuthErrorCode::WAIT_BEFORE_RETRYING());
+                    }
+    
+                    if ($emailSendingCounter > 255) {
+                        $emailSendingCounter = 1;
+                        $emailVerification->delete();
+                    }
+                }
+            }
+    
+            $encrypter = new Encrypter;
+            $plainToken = $encrypter->generatePlainToken(64);
+    
+            $user->emailVerification()->updateOrCreate([],
+            [
+                'token' => $plainToken,
+                'email_sending_counter' => $emailSendingCounter
+            ]);
+    
+            $url = env('APP_URL') . '/email/verify?token=' . $plainToken; // TODO Poprawić na prawidłowy URL
+    
+            Mail::to($user)->send(new VerificationEmail($url));
+    
+            if (!$afterRegistartion) {
+                JsonResponse::sendSuccess();
             }
 
-            /** @var EmailVerification $emailVerification */
-            $emailVerification = $user->emailVerification()->first();
-
-            if ($emailVerification) {
-
-                $emailSendingCounter += $emailVerification->email_sending_counter;
-
-                $now = date('Y-m-d H:i:s');
-                $waitingDate = date('Y-m-d H:i:s', strtotime('+' . env('PAUSE_BEFORE_RETRYING')*60 . ' seconds', strtotime($emailVerification->updated_at)));
-        
-                if ($now <= $waitingDate) {
-                    throw new ApiException(AuthErrorCode::WAIT_BEFORE_RETRYING());
-                }
-
-                if ($emailSendingCounter > 255) {
-                    $emailSendingCounter = 1;
-                    $emailVerification->delete();
-                }
-            }
-        }
-
-        $encrypter = new Encrypter;
-        $plainToken = $encrypter->generatePlainToken(64);
-
-        $user->emailVerification()->updateOrCreate([],
-        [
-            'token' => $plainToken,
-            'email_sending_counter' => $emailSendingCounter
-        ]);
-
-        $url = env('APP_URL') . '/email/verify?token=' . $plainToken; // TODO Poprawić na prawidłowy URL
-
-        Mail::to($user)->send(new VerificationEmail($url));
-
-        if (!$afterRegistartion) {
-            JsonResponse::sendSuccess();
+        } else {
+            throw new ApiException(
+                AuthErrorCode::INVALID_CREDENTIALS_PROVIDED(),
+                ['email' => [__('validation.custom.is-missing', ['attribute' => 'adres email'])]]
+            );
         }
     }
 
@@ -232,11 +222,10 @@ class AuthController extends Controller
      * Weryfikacja maila
      * 
      * @param Illuminate\Http\Request $request
-     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
      * 
      * @return void
      */
-    public function verifyEmail(Request $request, Encrypter $encrypter): void {
+    public function verifyEmail(Request $request): void {
 
         /** @var User $user */
         $user = Auth::user();
@@ -245,30 +234,17 @@ class AuthController extends Controller
             throw new ApiException(AuthErrorCode::EMAIL_ALREADY_VERIFIED());
         }
 
-        if (!$request->token) {
-            throw new ApiException(AuthErrorCode::INVALID_EMAIL_VERIFIFICATION_TOKEN());
-        }
-
-        $encryptedToken = $encrypter->encryptToken($request->token);
-
         /** @var EmailVerification $emailVerification */
-        $emailVerification = $user->emailVerification()->where('token', $encryptedToken)->first();
+        $emailVerification = $user->emailVerification()->where('token', $request->token)->first();
 
-        if (!$emailVerification) {
-            throw new ApiException(AuthErrorCode::INVALID_EMAIL_VERIFIFICATION_TOKEN());
-        }
-
-        $now = date('Y-m-d H:i:s');
-        $expirationDate = date('Y-m-d H:i:s', strtotime('+' . env('EMAIL_TOKEN_LIFETIME') . ' minutes', strtotime($emailVerification->updated_at)));
-
-        if ($now > $expirationDate) {
+        if (Validation::timeComparison($emailVerification->updated_at, env('EMAIL_TOKEN_LIFETIME'), '>')) {
             throw new ApiException(AuthErrorCode::EMAIL_VERIFIFICATION_TOKEN_HAS_EXPIRED());
         }
 
         $user->markEmailAsVerified();
         $emailVerification->delete();
 
-        $this->checkMissingUserInfo();
+        $this->checkMissingUserInformation();
     }
 
     /**
@@ -284,10 +260,7 @@ class AuthController extends Controller
 
         if ($request->user()) {
             $request->user()->currentAccessToken()->delete();
-
             JsonResponse::deleteCookie('JWT');
-            JsonResponse::deleteCookie('REFRESH-TOKEN');
-            JsonResponse::sendSuccess();
         }
 
         if ($plainRefreshToken = $request->cookie('REFRESH-TOKEN')) {
@@ -304,7 +277,6 @@ class AuthController extends Controller
             JsonResponse::deleteCookie('REFRESH-TOKEN');
         }
 
-        JsonResponse::deleteCookie('JWT');
         JsonResponse::sendSuccess();
     }
 
@@ -368,7 +340,7 @@ class AuthController extends Controller
         if (!$authenticationId) {
             throw new ApiException(
                 AuthErrorCode::INVALID_CREDENTIALS_PROVIDED(),
-                __('validation.custom.invalid-provider-id'),
+                __('validation.custom.invalid-provider-id')
             );
         }
 
@@ -381,13 +353,21 @@ class AuthController extends Controller
 
                 $encryptedEmail = $encrypter->encrypt($user->getEmail(), 254);
 
-                /** @var User $userExist */
-                $userExist = User::where('email', $encryptedEmail)->first();
-
-                if ($userExist) {
+                if (!Validation::checkUserUniqueness('email', $encryptedEmail)) {
                     throw new ApiException(
                         BaseErrorCode::FAILED_VALIDATION(),
                         ['email' => [__('validation.unique', ['attribute' => 'email'])]]
+                    );
+                }
+
+            } else if (strlen($user->getEmail()) > 0 && strlen($user->getEmail()) < 25) {
+                
+                $encryptedTelephone = $encrypter->encrypt($user->getEmail(), 24);
+
+                if (!Validation::checkUserUniqueness('telephone', $encryptedTelephone)) {
+                    throw new ApiException(
+                        BaseErrorCode::FAILED_VALIDATION(),
+                        ['telephone' => [__('validation.unique', ['attribute' => 'numer telefonu'])]]
                     );
                 }
             }
@@ -405,7 +385,8 @@ class AuthController extends Controller
                 }
             }
 
-            if (strlen($user->getAvatar())) { //TODO Sprawdzić wariant co jest zwracane kiedy użytkownik nie ma ustawionego zdjęcia profilowego
+            if (strlen($user->getAvatar())) {
+                //TODO Sprawdzić wariant co jest zwracane kiedy użytkownik nie ma ustawionego zdjęcia profilowego
                 $avatarFilename = $this->saveAvatar($provider, $user->getAvatar());
             }
 
@@ -416,6 +397,11 @@ class AuthController extends Controller
 
             if (isset($encryptedEmail)) {
                 $newUser['email'] = $user->getEmail();
+                $newUser['email_verified_at'] = now();
+            }
+
+            if (isset($encryptedTelephone)) {
+                $newUser['telephone'] = $user->getEmail();
             }
 
             if (isset($avatarFilename)) {
@@ -432,19 +418,12 @@ class AuthController extends Controller
 
             Auth::loginUsingId($createUser->id);
 
-            /** @var User $user */
-            $user = Auth::user();
-
-            if ($user->email) {
-                $user->markEmailAsVerified();
-            }
-
         } else {
             Auth::loginUsingId($externalAuthentication->user_id);
             JsonResponse::checkUserAccess();
         }
 
-        $this->checkMissingUserInfo(true);
+        $this->checkMissingUserInformation(true);
     }
 
     /**
@@ -461,51 +440,140 @@ class AuthController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        if (!$user->email && $request->email) {
+        $updateUserInformation = null;
 
-            $encryptedEmail = $encrypter->encrypt($request->email, 254);
+        $plainEmail = $encrypter->decrypt($request->email);
+        $request->merge(['email' => $plainEmail]);
 
-            /** @var User $userExist */
-            $userExist = User::where('email', $encryptedEmail)->first();
+        $plainTelephone = $encrypter->decrypt($request->telephone);
+        $request->merge(['telephone' => $plainTelephone]);
 
-            if ($userExist) {
+        $plainFacebookProfile = $encrypter->decrypt($request->facebook_profile);
+        $request->merge(['facebook_profile' => $plainFacebookProfile]);
+
+        $userFirstName = $request->first_name && $request->first_name != $user->first_name ? true : false;
+        $userLastName = $request->last_name && $request->last_name != $user->last_name ? true : false;
+        $userEmail = $request->email && $request->email != $user->email ? true : false;
+        $userBirthDate = $request->birth_date && $request->birth_date != $user->birth_date ? true : false;
+        $userAddressCoordinates = $request->address_coordinates && $request->address_coordinates != $user->address_coordinates ? true : false;
+        $userTelephone = $request->telephone && $request->telephone != $user->telephone ? true : false;
+        $userFacebookProfile = $request->facebook_profile && $request->facebook_profile != $user->facebook_profile ? true : false;
+        $userGenderTypeId = $request->gender_type_id && $request->gender_type_id != $user->gender_type_id ? true : false;
+
+        if ($userFirstName || $userLastName) {
+
+            if ($user->last_time_name_changed) {
+                if (Validation::timeComparison($user->last_time_name_changed, env('PAUSE_BEFORE_CHANGING_NAME'), '<=')) {
+                    throw new ApiException(
+                        AuthErrorCode::WAIT_BEFORE_CHANGING_NAME()
+                    );
+                }
+            }
+                
+            if ($userFirstName) {
+                $updateUserInformation['first_name'] = $request->first_name;
+            }
+
+            if ($userLastName) {
+                $updateUserInformation['last_name'] = $request->last_name;
+            }
+
+            $updateUserInformation['last_time_name_changed'] = now();
+        }
+
+        if ($userEmail) {
+            $updateUserInformation['email'] = $plainEmail;
+            $updateUserInformation['email_verified_at'] = null;
+        }
+
+        if ($request->password) {
+            $updateUserInformation['password'] = $request->password;
+            $updateUserInformation['last_time_password_changed'] = now();
+        }
+
+        if ($request->avatar) {
+            // TODO Zrobić wgrywanie i zapisywanie zdjęć przez formularz (wykorzystać metodę saveAvatar)
+        }
+
+        if ($userBirthDate) {
+            $updateUserInformation['birth_date'] = $request->birth_date;
+        }
+
+        if ($userAddressCoordinates) {
+
+            $addressCoordinatesSeparators = explode(';', $request->address_coordinates);
+
+            if (count($addressCoordinatesSeparators) != 2) {
                 throw new ApiException(
                     BaseErrorCode::FAILED_VALIDATION(),
-                    ['email' => [__('validation.unique', ['attribute' => 'email'])]]
+                    ['address_coordinates' => [__('validation.regex', ['attribute' => 'addressCoordinates'])]]
                 );
             }
+
+            $latitudeLength = strlen($addressCoordinatesSeparators[0]);
+            $longitudeLength = strlen($addressCoordinatesSeparators[1]);
+
+            if ($latitudeLength != 7 ||
+                $longitudeLength != 7 ||
+                $addressCoordinatesSeparators[0][2] != '.' ||
+                $addressCoordinatesSeparators[1][2] != '.')
+            {
+                throw new ApiException(
+                    BaseErrorCode::FAILED_VALIDATION(),
+                    ['address_coordinates' => [__('validation.regex', ['attribute' => 'addressCoordinates'])]]
+                );
+            }
+
+            for ($i=0; $i<$latitudeLength; $i++) {
+
+                if (!is_numeric($addressCoordinatesSeparators[0][$i]) && $addressCoordinatesSeparators[0][$i] != '.' ||
+                    !is_numeric($addressCoordinatesSeparators[1][$i]) && $addressCoordinatesSeparators[1][$i] != '.')
+                {
+                    throw new ApiException(
+                        BaseErrorCode::FAILED_VALIDATION(),
+                        ['address_coordinates' => [__('validation.regex', ['attribute' => 'addressCoordinates'])]]
+                    );
+                }
+            }
+
+            $updateUserInformation['address_coordinates'] = $request->address_coordinates;
         }
 
-        $supplementaryInfo = null;
+        if ($userTelephone) {
 
-        if (!$user->email && $request->email) {
-            $supplementaryInfo['email'] = $request->email;
+            $telephoneLength = strlen($request->telephone);
+
+            for ($i=0; $i<$telephoneLength; $i++) {
+                if (!is_numeric($request->telephone[$i])) {
+                    throw new ApiException(
+                        BaseErrorCode::FAILED_VALIDATION(),
+                        ['telephone' => [__('validation.regex', ['attribute' => 'numeru telefonu'])]]
+                    );
+                }
+            }
+
+            $updateUserInformation['telephone'] = $request->telephone;
         }
 
-        if (!$user->birth_date && $request->birth_date) {
-            $supplementaryInfo['birth_date'] = $request->birth_date;
+        if ($userFacebookProfile) {
+            $updateUserInformation['facebook_profile'] = $request->facebook_profile;
         }
 
-        if (!$user->gender_type_id && $request->gender_type_id) {
-            $supplementaryInfo['gender_type_id'] = $request->gender_type_id;
+        if ($userGenderTypeId) {
+            $updateUserInformation['gender_type_id'] = $request->gender_type_id;
         }
 
-        if (!$user->avatar && $request->avatar) {
-            // TODO Zrobić wgrywanie i zapisywanie zdjęć przez formularz (wykorzystać metodę saveAvatar)
-            $supplementaryInfo['avatar'] = $request->avatar;
-        }
-
-        if ($supplementaryInfo) {
-            $user->update($supplementaryInfo);
+        if ($updateUserInformation) {
+            $user->update($updateUserInformation);
         }
 
         $user->refresh();
 
-        if (isset($supplementaryInfo['email'])) {
+        if (isset($updateUserInformation['email'])) {
             $this->sendVerificationEmail(true);
         }
 
-        $this->checkMissingUserInfo();
+        $this->checkMissingUserInformation();
     }
 
     /**
@@ -515,7 +583,7 @@ class AuthController extends Controller
      * @return void
      */
     public function getUser(): void {
-        $this->checkMissingUserInfo();
+        $this->checkMissingUserInformation();
     }
 
     /**
@@ -545,14 +613,15 @@ class AuthController extends Controller
     }
 
     /**
-     * Zapisanie na serwerze avatara użytkownika pobranego z serwisu uwierzytelniającego
+     * Zapisanie na serwerze zdjęcia profilowego użytkownika
      * 
-     * @param string $provider nazwa zewnętrznego serwisu
-     * @param string $avatarUrl adres URL do zdjecia profilowego z serwisu uwierzytelniającego
+     * @param string $provider nazwa serwisu uwierzytelniającego bądź "form" dla opcji wgrywania przez formularz
+     * @param string|null $avatarUrl adres URL do zdjecia profilowego z serwisu uwierzytelniającego
+     * @param Illuminate\Http\Request $request
      * 
      * @return string
      */
-    private function saveAvatar(string $provider, string $avatarUrl): string {
+    private function saveAvatar(string $provider, ?string $avatarUrl = null, Request $request = null): string {
 
         $provider = strtoupper($provider);
 
@@ -583,10 +652,7 @@ class AuthController extends Controller
         do {
             $avatarFilename = $encrypter->generatePlainToken(64, $avatarFileExtension);
             $avatarFilenameEncrypted = $encrypter->encryptToken($avatarFilename);
-
-            /** @var User $avatarExists */
-            $avatarExists = User::where('avatar', $avatarFilenameEncrypted)->first();
-        } while ($avatarExists);
+        } while (!$this->checkUniqueness('avatar', $avatarFilenameEncrypted));
 
         $avatarContents = file_get_contents($avatarUrlLocation);
         Storage::put('avatars/' . $avatarFilename, $avatarContents);
@@ -601,44 +667,56 @@ class AuthController extends Controller
      * 
      * @return void
      */
-    private function checkMissingUserInfo($withTokens = false): void {
+    private function checkMissingUserInformation($withTokens = false): void {
 
         /** @var User $user */
         $user = Auth::user();
 
-        $missingInfo = null;
+        $missingUserInformation = null;
 
         if (!$user->email) {
-            $missingInfo['required']['email'] = [__('validation.custom.is-missing', ['attribute' => 'email'])];
+            $missingUserInformation['required']['email'] = [__('validation.custom.is-missing', ['attribute' => 'adres email'])];
         }
 
         if (!$user->birth_date) {
-            $missingInfo['required']['birth_date'] = [__('validation.custom.is-missing', ['attribute' => 'birthDate'])];
+            $missingUserInformation['required']['birth_date'] = [__('validation.custom.is-missing', ['attribute' => 'datę urodzenia'])];
         }
 
         if (!$user->avatar) {
-            $missingInfo['optional']['avatar'] = [__('validation.custom.is-missing', ['attribute' => 'avatar'])];
+            $missingUserInformation['optional']['avatar'] = [__('validation.custom.is-missing', ['attribute' => 'zdjęcie profilowe'])];
+        }
+
+        if (!$user->address_coordinates) {
+            $missingUserInformation['optional']['address_coordinates'] = [__('validation.custom.is-missing', ['attribute' => 'adres zamieszkania'])];
+        }
+
+        if (!$user->telephone) {
+            $missingUserInformation['optional']['telephone'] = [__('validation.custom.is-missing', ['attribute' => 'numer telefonu'])];
+        }
+
+        if (!$user->facebook_profile) {
+            $missingUserInformation['optional']['facebook_profile'] = [__('validation.custom.is-missing', ['attribute' => 'adres profilu na Facebooku'])];
         }
 
         if (!$user->gender_type_id) {
-            $missingInfo['optional']['gender_type_id'] = [__('validation.custom.is-missing', ['attribute' => 'genderTypeId'])];
+            $missingUserInformation['optional']['gender_type_id'] = [__('validation.custom.is-missing', ['attribute' => 'płeć'])];
         }
 
         if ($withTokens) {
             JsonResponse::prepareCookies();
         }
 
-        if (isset($missingInfo['required']) || !$user->email_verified_at) {
+        if (isset($missingUserInformation['required']) || !$user->email_verified_at) {
             throw new ApiException(
                 $user->email_verified_at ? AuthErrorCode::MISSING_USER_INFORMATION() : AuthErrorCode::UNVERIFIED_EMAIL(),
                 ['user' => $user],
-                ['missing_user_information' => $missingInfo]
+                ['missing_user_information' => $missingUserInformation]
             );
         }
 
         JsonResponse::sendSuccess(
             ['user' => $user],
-            ['missing_user_information' => $missingInfo]
+            ['missing_user_information' => $missingUserInformation]
         );
     }
 }

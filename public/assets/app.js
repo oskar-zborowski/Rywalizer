@@ -186698,17 +186698,17 @@ const ScrollbarProvider = (props) => {
     return (react__WEBPACK_IMPORTED_MODULE_1__.createElement(ScrollbarContext.Provider, { value: { containerRef } }, props.children));
 };
 const Scrollbar = () => {
-    var _a, _b;
     const { containerRef } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useContext)(ScrollbarContext);
     const scrollbarRef = (0,react__WEBPACK_IMPORTED_MODULE_1__.useRef)(null);
     const [thumbLength, setThumbLength] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0);
     const [thumbPosition, setThumbPosition] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0);
     const scrollbarHeight = (0,_hooks_useResize__WEBPACK_IMPORTED_MODULE_0__["default"])(scrollbarRef).height;
     const containerHeight = (0,_hooks_useResize__WEBPACK_IMPORTED_MODULE_0__["default"])(containerRef).height;
-    const scrollHeight = (_a = containerRef === null || containerRef === void 0 ? void 0 : containerRef.current) === null || _a === void 0 ? void 0 : _a.scrollHeight;
-    const scrollTop = (_b = containerRef === null || containerRef === void 0 ? void 0 : containerRef.current) === null || _b === void 0 ? void 0 : _b.scrollTop;
     (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
         const updateScroll = () => {
+            var _a, _b;
+            const scrollHeight = (_a = containerRef === null || containerRef === void 0 ? void 0 : containerRef.current) === null || _a === void 0 ? void 0 : _a.scrollHeight;
+            const scrollTop = (_b = containerRef === null || containerRef === void 0 ? void 0 : containerRef.current) === null || _b === void 0 ? void 0 : _b.scrollTop;
             setThumbLength(containerHeight * scrollbarHeight / scrollHeight);
             setThumbPosition(scrollTop / scrollHeight * 100);
         };

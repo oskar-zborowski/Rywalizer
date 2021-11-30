@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware\FieldNamesConversion;
 
-use App\Http\Libraries\FieldsConversion\FieldConversion;
+use App\Http\Libraries\FieldConversion\FieldConversion;
 use Closure;
 use Illuminate\Http\Request;
 

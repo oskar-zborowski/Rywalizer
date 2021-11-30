@@ -22,33 +22,94 @@ class BeforeAuthenticate
         $registerURL = env('APP_URL') . '/api/register';
         $forgotPasswordURL = env('APP_URL') . '/api/forgot-password';
         $resetPasswordURL = env('APP_URL') . '/api/reset-password';
+        $verifyEmailURL = env('APP_URL') . '/api/email/verify';
+        $updateUserURL = env('APP_URL') . '/api/user';
 
-        if ($request->url() == $loginURL || $request->url() == $registerURL || $request->url() == $forgotPasswordURL) {
+        $encrypter = new Encrypter;
+
+        if ($request->url() == $loginURL ||
+            $request->url() == $registerURL ||
+            $request->url() == $forgotPasswordURL ||
+            $request->url() == $updateUserURL)
+        {
             $request->validate([
-                'email' => 'required|string|email|max:254'
+                'email' => 'string|email|max:254|nullable'
             ]);
+
+            if ($request->url() != $updateUserURL) {
+                $request->validate([
+                    'email' => 'required'
+                ]);
+            }
             
-            $encrypter = new Encrypter;
-            $request->merge(['email' => $encrypter->encrypt($request->email, 254)]);
+            $encryptedEmail = $encrypter->encrypt($request->email, 254);
+            $request->merge(['email' => $encryptedEmail]);
+
+            if ($request->url() == $forgotPasswordURL) {
+                $request->validate([
+                    'email' => 'exists:users'
+                ]);
+            }
         }
 
-        if ($request->url() == $loginURL || $request->url() == $registerURL || $request->url() == $resetPasswordURL) {
+        if ($request->url() == $loginURL ||
+            $request->url() == $registerURL ||
+            $request->url() == $resetPasswordURL ||
+            $request->url() == $updateUserURL)
+        {
             $request->validate([
-                'password' => 'required|string|between:8,20'
+                'password' => 'string|between:8,20|nullable'
             ]);
-        }
 
-        if ($request->url() == $registerURL || $request->url() == $resetPasswordURL) {  
-            $request->validate([
-                'password' => ['confirmed', RulesPassword::defaults()]
-            ]);
+            if ($request->url() != $updateUserURL) {
+                $request->validate([
+                    'password' => 'required'
+                ]);
+            }
+
+            if ($request->url() != $loginURL) {
+                $request->validate([
+                    'password' => ['confirmed', RulesPassword::defaults()]
+                ]);
+
+                $encryptedPassword = $encrypter->hash($request->password);
+                $request->merge(['password' => $encryptedPassword]);
+            }
         }
         
-        if ($request->url() == $resetPasswordURL) {
+        if ($request->url() == $resetPasswordURL ||
+            $request->url() == $verifyEmailURL)
+        {
             $request->validate([
-                'token' => 'required|string|alpha_num|size:48',
-                'do_not_logout' => 'required|boolean'
+                'token' => 'required|string|alpha_num|size:48'
             ]);
+
+            $encryptedToken = $encrypter->encryptToken($request->token);
+            $request->merge(['token' => $encryptedToken]);
+
+            if ($request->url() == $resetPasswordURL) {
+                $request->validate([
+                    'token' => 'exists:password_resets',
+                    'do_not_logout' => 'boolean|nullable'
+                ]);
+            } else {
+                $request->validate([
+                    'token' => 'exists:email_verifications'
+                ]);
+            }
+        }
+
+        if ($request->url() == $updateUserURL){
+            $request->validate([
+                'telephone' => 'string|max:24|nullable',
+                'facebook_profile' => 'string|url|max:254|nullable'
+            ]);
+
+            $encryptedTelephone = $encrypter->encrypt($request->telephone, 24);
+            $encryptedFacebookProfile = $encrypter->encrypt($request->facebook_profile, 254);
+
+            $request->merge(['telephone' => $encryptedTelephone]);
+            $request->merge(['facebook_profile' => $encryptedFacebookProfile]);
         }
 
         return $next($request);

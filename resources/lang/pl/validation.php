@@ -18,7 +18,7 @@ return [
     'active_url'           => 'Pole :attribute jest nieprawidłowym adresem URL.',
     'after'                => 'Pole :attribute musi być datą późniejszą od :date.',
     'after_or_equal'       => 'Pole :attribute musi być datą nie wcześniejszą niż :date.',
-    'alpha'                => 'Pole :attribute może zawierać jedynie litery.',
+    'alpha'                => 'To pole może zawierać jedynie litery.', // Zmieniłem z 'Pole :attribute może zawierać jedynie litery.'
     'alpha_dash'           => 'Pole :attribute może zawierać jedynie litery, cyfry i myślniki.',
     'alpha_num'            => 'Pole :attribute może zawierać jedynie litery i cyfry.',
     'array'                => 'Pole :attribute musi być tablicą.',
@@ -29,12 +29,12 @@ return [
         'array'   => 'Pole :attribute musi składać się z :min - :max elementów.',
         'file'    => 'Pole :attribute musi zawierać się w granicach :min - :max kilobajtów.',
         'numeric' => 'Pole :attribute musi zawierać się w granicach :min - :max.',
-        'string'  => 'Pole :attribute musi zawierać się w granicach :min - :max znaków.'
+        'string'  => 'To pole musi zawierać od :min do :max znaków.' // Zmieniłem z 'Pole :attribute musi zawierać się w granicach :min - :max znaków.'
     ],
     'boolean'              => 'Pole :attribute musi mieć wartość logiczną prawda albo fałsz.',
-    'confirmed'            => 'Potwierdzenie pola :attribute nie zgadza się.',
+    'confirmed'            => 'Hasła nie są identyczne.', // Zmieniłem z 'Potwierdzenie pola :attribute nie zgadza się.'
     'current_password'     => 'Hasło jest nieprawidłowe.',
-    'date'                 => 'Pole :attribute nie jest prawidłową datą.',
+    'date'                 => 'To pole nie jest prawidłową datą.', // Zmieniłem z 'Pole :attribute nie jest prawidłową datą.'
     'date_equals'          => 'Pole :attribute musi być datą równą :date.',
     'date_format'          => 'Pole :attribute nie jest w formacie :format.',
     'declined'             => 'Pole :attribute musi zostać odrzucony.',
@@ -44,9 +44,9 @@ return [
     'digits_between'       => 'Pole :attribute musi mieć od :min do :max cyfr.',
     'dimensions'           => 'Pole :attribute ma niepoprawne wymiary.',
     'distinct'             => 'Pole :attribute ma zduplikowane wartości.',
-    'email'                => 'Pole :attribute nie jest poprawnym adresem e-mail.',
+    'email'                => 'To pole nie jest poprawnym adresem e-mail.', // Zmieniłem z 'Pole :attribute nie jest poprawnym adresem e-mail.'
     'ends_with'            => 'Pole :attribute musi kończyć się jedną z następujących wartości: :values.',
-    'exists'               => 'Zaznaczone pole :attribute jest nieprawidłowe.',
+    'exists'               => 'Podany :attribute jest nieprawidłowy.', // Zmieniłem z 'Zaznaczone pole :attribute jest nieprawidłowe.'
     'file'                 => 'Pole :attribute musi być plikiem.',
     'filled'               => 'Pole :attribute nie może być puste.',
     'gt'                   => [
@@ -85,7 +85,7 @@ return [
         'array'   => 'Pole :attribute nie może mieć więcej niż :max elementów.',
         'file'    => 'Pole :attribute nie może być większe niż :max kilobajtów.',
         'numeric' => 'Pole :attribute nie może być większe niż :max.',
-        'string'  => 'Pole :attribute nie może być dłuższe niż :max znaków.'
+        'string'  => 'To pole nie może być dłuższe niż :max znaków.' // Zmieniłem z 'Pole :attribute nie może być dłuższe niż :max znaków.'
     ],
     'mimes'                => 'Pole :attribute musi być plikiem typu :values.',
     'mimetypes'            => 'Pole :attribute musi być plikiem typu :values.',
@@ -105,9 +105,9 @@ return [
     'prohibited_if'        => 'Pole :attribute jest zabronione, gdy :other to :value.',
     'prohibited_unless'    => 'Pole :attribute jest zabronione, chyba że :other jest w :values.',
     'prohibits'            => 'Pole :attribute zabrania obecności :other.',
-    'regex'                => 'Format pola :attribute jest nieprawidłowy.',
+    'regex'                => 'Format pola jest nieprawidłowy.', // Zmieniłem z 'Format pola :attribute jest nieprawidłowy.'
     'relatable'            => 'Ten :attribute może nie być powiązany z tym zasobem.',
-    'required'             => 'Pole :attribute jest wymagane.',
+    'required'             => 'To pole jest wymagane.', // Zmieniłem z 'Pole :attribute jest wymagane.'
     'required_if'          => 'Pole :attribute jest wymagane gdy :other ma wartość :value.',
     'required_unless'      => 'Pole :attribute jest wymagane jeżeli :other nie znajduje się w :values.',
     'required_with'        => 'Pole :attribute jest wymagane gdy :values jest obecny.',
@@ -119,14 +119,14 @@ return [
         'array'   => 'Pole :attribute musi zawierać :size elementów.',
         'file'    => 'Pole :attribute musi mieć :size kilobajtów.',
         'numeric' => 'Pole :attribute musi mieć :size.',
-        'string'  => 'Pole :attribute musi mieć :size znaków.'
+        'string'  => 'To pole musi składać się z :size znaków.' // Zmieniłem z 'Pole :attribute musi mieć :size znaków.'
     ],
     'starts_with'          => 'Pole :attribute musi zaczynać się jedną z następujących wartości: :values.',
-    'string'               => 'Pole :attribute musi być ciągiem znaków.',
+    'string'               => 'To pole musi być ciągiem znaków.', // Zmieniłem z 'Pole :attribute musi być ciągiem znaków.'
     'timezone'             => 'Pole :attribute musi być prawidłową strefą czasową.',
-    'unique'               => 'Taki :attribute już występuje.',
+    'unique'               => 'Taki :attribute już istnieje.',
     'uploaded'             => 'Nie udało się wgrać pliku :attribute.',
-    'url'                  => 'Format pola :attribute jest nieprawidłowy.',
+    'url'                  => 'To pole nie jest poprawnym adresem URL.', // Zmieniłem z 'Format pola :attribute jest nieprawidłowy.'
     'uuid'                 => 'Pole :attribute musi być poprawnym identyfikatorem UUID.',
 
     /*
@@ -145,7 +145,7 @@ return [
             'rule-name' => 'custom-message'
         ],
         'invalid-provider-id' => 'Dostawca OAuth zwrócił nieprawidłową wartość id.',
-        'is-missing' => 'Uzupełnij pole :attribute.'
+        'is-missing' => 'Uzupełnij :attribute.'
     ],
 
     /*

@@ -29,6 +29,10 @@ Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function
 
         Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
         Route::patch('/reset-password', [AuthController::class, 'resetPassword']);
+
+        Route::patch('/email/verify', [AuthController::class, 'verifyEmail']);
+
+        Route::patch('/user', [AuthController::class, 'updateUser']);
     });
 
     /*
@@ -47,21 +51,19 @@ Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function
     */
 
     Route::post('/email/verification-notification', [AuthController::class, 'sendVerificationEmail']);
-    Route::patch('/email/verify', [AuthController::class, 'verifyEmail']);
 
     Route::delete('/logout', [AuthController::class, 'logout'])->withoutMiddleware('throttle:defaultAuthLimit');
     Route::delete('/logout-other-devices', [AuthController::class, 'logoutOtherDevices'])->middleware(['throttle:logoutOtherDevicesLimit']);
 
     Route::get('/user', [AuthController::class, 'getUser']);
-    Route::patch('/user', [AuthController::class, 'updateUser']);
-});
 
-/*
-|-----------------------------------------------------------------------------------------------------------
-| Enpointy dostępne po autoryzacji oraz ze zweryfikowanym mailem
-|-----------------------------------------------------------------------------------------------------------
-*/
+    /*
+    |-------------------------------------------------------------------------------------------------------
+    | Enpointy dostępne po autoryzacji oraz ze zweryfikowanym mailem
+    |-------------------------------------------------------------------------------------------------------
+    */
 
-Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum', 'verified'])->group(function () {
-    // TODO
+    Route::middleware('verified')->group(function () {
+        // TODO
+    });
 });

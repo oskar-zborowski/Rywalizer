@@ -15,7 +15,11 @@ use Illuminate\Http\Request;
  */
 class Authenticate extends Middleware
 {
+    /**
+     * @param Illuminate\Http\Request $request
+     */
     protected function redirectTo($request) {
+
         // if (!$request->expectsJson()) {
         //     return route('login');
         // }
@@ -29,10 +33,11 @@ class Authenticate extends Middleware
 
         /** @var Request $request */
 
-        $loginURL = env('APP_URL') . '/api/login';
-        $registerURL = env('APP_URL') . '/api/register';
-        $forgotPasswordURL = env('APP_URL') . '/api/forgot-password';
-        $resetPasswordURL = env('APP_URL') . '/api/reset-password';
+        $exceptionalURLs['login'] = env('APP_URL') . '/api/login';
+        $exceptionalURLs['register'] = env('APP_URL') . '/api/register';
+        $exceptionalURLs['forgotPassword'] = env('APP_URL') . '/api/forgot-password';
+        $exceptionalURLs['resetPassword'] = env('APP_URL') . '/api/reset-password';
+
         $externalAuthenticationURL = env('APP_URL') . '/api/auth';
         $logoutURL = env('APP_URL') . '/api/logout';
 
@@ -50,30 +55,28 @@ class Authenticate extends Middleware
                 $personalAccessToken = JsonResponse::isRefreshTokenValid($request);
 
                 if ($personalAccessToken) {
-                    if ($request->url() == $loginURL ||
-                        $request->url() == $registerURL ||
-                        $request->url() == $forgotPasswordURL ||
-                        $request->url() == $resetPasswordURL ||
+
+                    if (in_array($request->url(), $exceptionalURLs) ||
                         strpos($request->url(), $externalAuthenticationURL) !== false)
                     {
                         throw new ApiException(AuthErrorCode::REFRESH_TOKEN_IS_STILL_ACTIVE());
                     }
 
-                    if ($request->url() != $logoutURL) {
+                    if ($request->url() == $logoutURL) {
+                        JsonResponse::deleteCookie('REFRESH-TOKEN');
+                    } else {
                         JsonResponse::refreshToken($personalAccessToken);
                     }
+
                 } else {
 
-                    if ($request->url() != $loginURL &&
-                        $request->url() != $registerURL &&
-                        $request->url() != $forgotPasswordURL &&
-                        $request->url() != $resetPasswordURL &&
+                    if ($request->url() == $logoutURL) {
+                        JsonResponse::sendSuccess();
+                    }
+
+                    if (!in_array($request->url(), $exceptionalURLs) &&
                         strpos($request->url(), $externalAuthenticationURL) === false)
                     {
-                        if ($request->url() == $logoutURL) {
-                            JsonResponse::sendSuccess();
-                        }
-                        
                         throw new ApiException(AuthErrorCode::UNAUTHORIZED());
                     }
 
@@ -83,42 +86,43 @@ class Authenticate extends Middleware
 
             if ($authenticated) {
 
-                if ($request->url() == $loginURL ||
-                    $request->url() == $registerURL ||
-                    $request->url() == $forgotPasswordURL ||
-                    $request->url() == $resetPasswordURL ||
+                JsonResponse::checkUserAccess($request);
+
+                if (in_array($request->url(), $exceptionalURLs) ||
                     strpos($request->url(), $externalAuthenticationURL) !== false)
                 {
                     throw new ApiException(AuthErrorCode::ALREADY_LOGGED_IN());
                 }
             }
+
         } else {
+
             $personalAccessToken = JsonResponse::isRefreshTokenValid($request);
 
             if ($personalAccessToken) {
-                if ($request->url() == $loginURL ||
-                    $request->url() == $registerURL ||
-                    $request->url() == $forgotPasswordURL ||
-                    $request->url() == $resetPasswordURL ||
+
+                if (in_array($request->url(), $exceptionalURLs) ||
                     strpos($request->url(), $externalAuthenticationURL) !== false)
                 {
                     throw new ApiException(AuthErrorCode::REFRESH_TOKEN_IS_STILL_ACTIVE());
                 }
 
-                if ($request->url() != $logoutURL) {
+                if ($request->url() == $logoutURL) {
+                    JsonResponse::deleteCookie('REFRESH-TOKEN');
+                } else {
                     JsonResponse::refreshToken($personalAccessToken);
+                    JsonResponse::checkUserAccess($request);
                 }
+
             } else {
-                if ($request->url() != $loginURL &&
-                    $request->url() != $registerURL &&
-                    $request->url() != $forgotPasswordURL &&
-                    $request->url() != $resetPasswordURL &&
+
+                if ($request->url() == $logoutURL) {
+                    JsonResponse::sendSuccess();
+                }
+
+                if (!in_array($request->url(), $exceptionalURLs) &&
                     strpos($request->url(), $externalAuthenticationURL) === false)
                 {
-                    if ($request->url() == $logoutURL) {
-                        JsonResponse::sendSuccess();
-                    }
-
                     throw new ApiException(AuthErrorCode::UNAUTHORIZED());
                 }
             }

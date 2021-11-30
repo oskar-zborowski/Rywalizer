@@ -20,8 +20,8 @@ class RegisterRequest extends FormRequest
             'first_name' => 'required|string|alpha|max:30',
             'last_name' => 'required|string|alpha|max:30',
             'email' => 'unique:users',
-            'gender_type_id' => 'integer|between:1,2|nullable',
-            'birth_date' => 'required|string|date|size:10'
+            'birth_date' => 'required|string|date|size:10',
+            'gender_type_id' => 'integer|exists:gender_types,id|nullable'
         ];
     }
 }

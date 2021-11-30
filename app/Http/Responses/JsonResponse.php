@@ -6,7 +6,8 @@ use App\Exceptions\ApiException;
 use App\Http\ErrorCodes\AuthErrorCode;
 use App\Http\ErrorCodes\ErrorCode;
 use App\Http\Libraries\Encrypter\Encrypter;
-use App\Http\Libraries\FieldsConversion\FieldConversion;
+use App\Http\Libraries\FieldConversion\FieldConversion;
+use App\Http\Libraries\Validation\Validation;
 use App\Models\PersonalAccessToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -87,9 +88,8 @@ class JsonResponse
         $plainJWT = $jwt->plainTextToken;
         $jwtId = $jwt->accessToken->getKey();
 
-        PersonalAccessToken::where('id', $jwtId)->update(['refresh_token' => $refreshToken]);
-
-        $user->update(['last_logged_in' => date('Y-m-d H:i:s')]);
+        $user->personalAccessToken()->where('id', $jwtId)->update(['refresh_token' => $refreshToken]);
+        $user->update(['last_logged_in' => now()]);
 
         self::setCookie($plainJWT, 'JWT');
         self::setCookie($plainRefreshToken, 'REFRESH-TOKEN');
@@ -107,8 +107,7 @@ class JsonResponse
         Auth::loginUsingId($personalAccessToken->tokenable_id);
 
         $personalAccessToken->delete();
-
-        self::checkUserAccess(true);
+        
         self::prepareCookies();
     }
 
@@ -155,11 +154,10 @@ class JsonResponse
      * Sprawdzenie czy REFRESH-TOKEN jest ważny
      * 
      * @param Illuminate\Http\Request $request
-     * @param bool $withExceptions parametr określający czy w przypadku napotkania wyjątku ma być on zwrócony
      * 
      * @return App\Models\PersonalAccessToken|null
      */
-    public static function isRefreshTokenValid(Request $request, bool $withExceptions = false): ?PersonalAccessToken {
+    public static function isRefreshTokenValid(Request $request): ?PersonalAccessToken {
 
         $personalAccessToken = null;
 
@@ -171,31 +169,14 @@ class JsonResponse
             /** @var PersonalAccessToken $personalAccessToken */
             $personalAccessToken = PersonalAccessToken::where('refresh_token', $refreshToken)->first();
     
-            if (!$personalAccessToken) {
-                self::deleteCookie('REFRESH-TOKEN');
-
-                if ($withExceptions) {
-                    throw new ApiException(AuthErrorCode::INVALID_REFRESH_TOKEN());
+            if ($personalAccessToken) {
+                if (Validation::timeComparison($personalAccessToken->created_at, env('REFRESH_TOKEN_LIFETIME'), '>')) {
+                    $personalAccessToken->delete();
+                    self::deleteCookie('REFRESH-TOKEN');
+                    $personalAccessToken = null;
                 }
             } else {
-
-                $now = date('Y-m-d H:i:s');
-                $expirationDate = date('Y-m-d H:i:s', strtotime('+' . env('REFRESH_TOKEN_LIFETIME') . ' minutes', strtotime($personalAccessToken->created_at)));
-
-                if ($now > $expirationDate) {
-
-                    self::deleteCookie('REFRESH-TOKEN');
-    
-                    $personalAccessToken->delete();
-
-                    if ($withExceptions) {
-                        throw new ApiException(AuthErrorCode::REFRESH_TOKEN_HAS_EXPIRED());
-                    }
-                }
-            }
-        } else {
-            if ($withExceptions) {
-                throw new ApiException(AuthErrorCode::REFRESH_TOKEN_HAS_EXPIRED());
+                self::deleteCookie('REFRESH-TOKEN');
             }
         }
 
@@ -205,24 +186,28 @@ class JsonResponse
     /**
      * Sprawdzenie czy użytkownik może korzystać z serwisu
      * 
-     * @param bool $refreshToken parametr określający czy funkcja została wywołana w ramach odświeżenia tokenu autoryzacyjnego
+     * @param Illuminate\Http\Request $request
      * 
      * @return void
      */
-    public static function checkUserAccess(bool $refreshToken = false): void {
+    public static function checkUserAccess(Request $request = null): void {
 
         /** @var User $user */
         $user = Auth::user();
 
-        if (($user->account_blocked_at || $user->account_deleted_at) && $refreshToken) {
+        if (($user->account_blocked_at || $user->account_deleted_at)) {
 
-            self::deleteCookie('REFRESH-TOKEN');
+            self::deleteCookie('JWT');
+
+            if ($request && $request->cookie('REFRESH-TOKEN')) {
+                self::deleteCookie('REFRESH-TOKEN');
+            }
 
             if ($user->account_blocked_at) {
                 $user->tokens()->delete();
                 throw new ApiException(AuthErrorCode::ACOUNT_BLOCKED());
             }
-    
+
             if ($user->account_deleted_at) {
                 $user->tokens()->delete();
                 throw new ApiException(AuthErrorCode::ACOUNT_DELETED());

@@ -80,4 +80,8 @@ class AuthErrorCode
     public static function WAIT_BEFORE_RETRYING(): ErrorCode {
         return new ErrorCode('ATH18', 'WAIT BEFORE RETRYING', Response::HTTP_NOT_ACCEPTABLE);
     }
+
+    public static function WAIT_BEFORE_CHANGING_NAME(): ErrorCode {
+        return new ErrorCode('ATH19', 'WAIT BEFORE CHANGING NAME', Response::HTTP_NOT_ACCEPTABLE);
+    }
 }

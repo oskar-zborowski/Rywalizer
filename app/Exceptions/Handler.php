@@ -4,7 +4,7 @@ namespace App\Exceptions;
 
 use App\Http\ErrorCodes\AuthErrorCode;
 use App\Http\ErrorCodes\BaseErrorCode;
-use App\Http\Libraries\FieldsConversion\FieldConversion;
+use App\Http\Libraries\FieldConversion\FieldConversion;
 use App\Http\Responses\JsonResponse;
 use BadMethodCallException;
 use Error;

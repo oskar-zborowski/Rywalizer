@@ -19,15 +19,20 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'avatar',
-        'gender_type_id',
         'birth_date',
-        'last_logged_in'
+        'address_coordinates',
+        'telephone',
+        'facebook_profile',
+        'gender_type_id',
+        'email_verified_at',
+        'last_logged_in',
+        'last_time_name_changed',
+        'last_time_password_changed'
     ];
 
     protected $guarded = [
         'id',
         'role_type_id',
-        'email_verified_at',
         'account_deleted_at',
         'account_blocked_at',
         'created_at',
@@ -46,20 +51,26 @@ class User extends Authenticatable implements MustVerifyEmail
         'updated_at'
     ];
 
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'account_deleted_at' => 'datetime',
-        'account_blocked_at' => 'datetime',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime'
-    ];
+    // protected $casts = [
+    //     'email_verified_at' => 'datetime',
+    //     'account_deleted_at' => 'datetime',
+    //     'account_blocked_at' => 'datetime',
+    //     'last_logged_in' => 'datetime',
+    //     'last_time_name_changed' => 'datetime',
+    //     'last_time_password_changed' => 'datetime',
+    //     'created_at' => 'datetime',
+    //     'updated_at' => 'datetime'
+    // ];
 
     protected $encryptable = [
         'first_name',
         'last_name',
         'email',
         'avatar',
-        'birth_date'
+        'birth_date',
+        'address_coordinates',
+        'telephone',
+        'facebook_profile'
     ];
 
     protected $maxSize = [
@@ -67,7 +78,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'last_name' => 30,
         'email' => 254,
         'avatar' => 48,
-        'birth_date' => 10
+        'birth_date' => 10,
+        'address_coordinates' => 15,
+        'telephone' => 24,
+        'facebook_profile' => 254
     ];
 
     protected $with = [
@@ -84,7 +98,7 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function personalAccessToken() {
-        return $this->hasMany(PersonalAccessToken::class);
+        return $this->hasMany(PersonalAccessToken::class, 'tokenable_id');
     }
 
     public function externalAuthentication() {
