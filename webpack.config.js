@@ -4,16 +4,17 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const path = require('path');
 const { ProvidePlugin } = require('webpack');
 
+const isProduction = false;
+
 module.exports = {
-    mode: 'development',
+    mode: isProduction ? 'production' : 'development',
     stats: 'minimal',
     entry: {
         app: path.resolve(__dirname, 'resources/assets/main.ts')
     },
     output: {
         path: path.resolve(__dirname, 'public/assets'),
-        filename: '[name].js',
-        //filename: '[name].[hash].js', // Produkcja
+        filename: isProduction ? '[name].[contenthash].js' : '[name].js',
         publicPath: '/assets/'
     },
     optimization: {
@@ -33,7 +34,7 @@ module.exports = {
                         loader: 'css-loader',
                         options: {
                             modules: {
-                                localIdentName: '[name]_[local]__[hash:base64:5]'
+                                localIdentName: isProduction ? '[hash:base64:6]' : '[name]_[local]__[hash:base64:5]'
                             }
                         }
                     },
@@ -80,8 +81,7 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin(),
         new MiniCssExtractPlugin({
-            filename: 'app.css',
-            //filename: 'app.[hash].css' //Produkcja
+            filename: isProduction ? 'app.[contenthash].css' : 'app.css'
         }),
         new WebpackManifestPlugin({
             basePath: '/assets/',

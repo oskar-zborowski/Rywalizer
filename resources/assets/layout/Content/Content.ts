@@ -6,7 +6,7 @@ import scrollbar from './Scrollbar/Scrollbar';
 
 export default class Content extends Component {
 
-    public render(): JQuery<HTMLElement> {
+    public render(): JQuery {
         const container = el(`main.${styles.mainContainer}`,
             el(`div.${styles.authButtons}`,
                 new OrangeButton('Zaloguj się').node,

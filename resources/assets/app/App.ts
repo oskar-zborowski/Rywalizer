@@ -1,20 +1,17 @@
 import Content from '@/layout/Content/Content';
-import scrollbar from '@/layout/Content/Scrollbar/Scrollbar';
 import Footer from '@/layout/Footer/Footer';
 import Topbar from '@/layout/Topbar/Topbar';
 import './App.scss';
+import Component, { el } from './Component';
 
-export default class App {
+export default class App extends Component {
 
-    public constructor() {
-        const appContainer = $('#app');
-        appContainer.append(
-            new Topbar().node, 
-            new Content().node, 
-            new Footer().node
+    protected render(): JQuery<HTMLElement> {
+        return el(
+            new Topbar(),
+            new Content(),
+            new Footer()
         );
-
-        scrollbar.updateThumb();
     }
 
 }

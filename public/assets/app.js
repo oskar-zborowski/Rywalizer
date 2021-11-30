@@ -11017,21 +11017,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ App)
 /* harmony export */ });
 /* harmony import */ var _layout_Content_Content__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @/layout/Content/Content */ "./resources/assets/layout/Content/Content.ts");
-/* harmony import */ var _layout_Content_Scrollbar_Scrollbar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @/layout/Content/Scrollbar/Scrollbar */ "./resources/assets/layout/Content/Scrollbar/Scrollbar.ts");
-/* harmony import */ var _layout_Footer_Footer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @/layout/Footer/Footer */ "./resources/assets/layout/Footer/Footer.ts");
-/* harmony import */ var _layout_Topbar_Topbar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @/layout/Topbar/Topbar */ "./resources/assets/layout/Topbar/Topbar.ts");
-/* harmony import */ var _App_scss__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./App.scss */ "./resources/assets/app/App.scss");
-/* provided dependency */ var $ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+/* harmony import */ var _layout_Footer_Footer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @/layout/Footer/Footer */ "./resources/assets/layout/Footer/Footer.ts");
+/* harmony import */ var _layout_Topbar_Topbar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @/layout/Topbar/Topbar */ "./resources/assets/layout/Topbar/Topbar.ts");
+/* harmony import */ var _App_scss__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./App.scss */ "./resources/assets/app/App.scss");
+/* harmony import */ var _Component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Component */ "./resources/assets/app/Component.ts");
 
 
 
 
 
-class App {
-    constructor() {
-        const appContainer = $('#app');
-        appContainer.append(new _layout_Topbar_Topbar__WEBPACK_IMPORTED_MODULE_3__["default"]().node, new _layout_Content_Content__WEBPACK_IMPORTED_MODULE_0__["default"]().node, new _layout_Footer_Footer__WEBPACK_IMPORTED_MODULE_2__["default"]().node);
-        _layout_Content_Scrollbar_Scrollbar__WEBPACK_IMPORTED_MODULE_1__["default"].updateThumb();
+class App extends _Component__WEBPACK_IMPORTED_MODULE_4__["default"] {
+    render() {
+        return (0,_Component__WEBPACK_IMPORTED_MODULE_4__.el)(new _layout_Topbar_Topbar__WEBPACK_IMPORTED_MODULE_2__["default"](), new _layout_Content_Content__WEBPACK_IMPORTED_MODULE_0__["default"](), new _layout_Footer_Footer__WEBPACK_IMPORTED_MODULE_1__["default"]());
     }
 }
 
@@ -11060,11 +11057,44 @@ class Component {
     }
 }
 const el = (def, ...children) => {
-    const [tag, cssClass] = def.split('.');
-    const element = $(`<${tag}/>`);
-    cssClass && element.addClass(cssClass);
-    element.append(...children);
-    return element;
+    if (typeof def === 'string') {
+        const [tag, cssClass] = def.split('.');
+        const element = $(`<${tag}/>`);
+        cssClass && element.addClass(cssClass);
+        children.forEach(child => {
+            if (child instanceof Component) {
+                element.append(child.node);
+            }
+            else if (typeof child === 'object') {
+                element.append(child);
+            }
+            else {
+                element.append(child + '');
+            }
+        });
+        return element;
+    }
+    else {
+        let element;
+        if (def instanceof Component) {
+            element = $(def.node);
+        }
+        else {
+            element = $(def);
+        }
+        children.forEach(child => {
+            if (child instanceof Component) {
+                element = element.add(child.node);
+            }
+            else if (typeof child === 'object') {
+                element = element.add(child);
+            }
+            else {
+                element = element.add(child + '');
+            }
+        });
+        return element;
+    }
 };
 
 
@@ -11332,8 +11362,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "app": () => (/* binding */ app)
 /* harmony export */ });
 /* harmony import */ var _app_App__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./app/App */ "./resources/assets/app/App.ts");
+/* harmony import */ var _layout_Content_Scrollbar_Scrollbar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./layout/Content/Scrollbar/Scrollbar */ "./resources/assets/layout/Content/Scrollbar/Scrollbar.ts");
+/* provided dependency */ var $ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+
 
 const app = new _app_App__WEBPACK_IMPORTED_MODULE_0__["default"]();
+$('#app').append(app.node);
+_layout_Content_Scrollbar_Scrollbar__WEBPACK_IMPORTED_MODULE_1__["default"].updateThumb();
 
 })();
 

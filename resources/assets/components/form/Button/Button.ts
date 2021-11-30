@@ -15,7 +15,7 @@ export class Button extends Component {
         this.config = config;
     }
 
-    protected render(): JQuery<HTMLElement> {
+    protected render(): JQuery {
         const button = el('button');
 
         if (typeof this.config === 'string') {
@@ -31,7 +31,7 @@ export class Button extends Component {
 
 export class OrangeButton extends Button {
 
-    public render(): JQuery<HTMLElement> {
+    public render(): JQuery {
         return super.render().addClass(styles.orangeButton);
     }
 
@@ -39,7 +39,7 @@ export class OrangeButton extends Button {
 
 export class GrayButton extends Button {
 
-    public render(): JQuery<HTMLElement> {
+    public render(): JQuery {
         return super.render().addClass(styles.grayButton);
     }
 

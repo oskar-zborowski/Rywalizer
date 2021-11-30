@@ -7,7 +7,6 @@
     "devDependencies": {
         "@types/faker": "^5.5.9",
         "@types/jquery": "^3.5.9",
-        "@types/mithril": "^2.0.8",
         "@typescript-eslint/eslint-plugin": "^5.3.1",
         "@typescript-eslint/parser": "^5.3.1",
         "axios": "^0.21",
@@ -28,8 +27,6 @@
         "webpack-manifest-plugin": "^4.0.2"
     },
     "dependencies": {
-        "cash-dom": "^8.1.0",
-        "jquery": "^3.6.0",
-        "mithril": "^2.0.4"
+        "jquery": "^3.6.0"
     }
 }

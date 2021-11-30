@@ -8,7 +8,7 @@ export class Scrollbar extends Component {
     private thumb: JQuery;
     private targetContainer: JQuery;
 
-    public render(): JQuery<HTMLElement> {
+    public render(): JQuery {
         this.scrollbar = el(`div.${styles.scrollbar}`,
             this.thumb = el(`div.${styles.thumb}`)
         );

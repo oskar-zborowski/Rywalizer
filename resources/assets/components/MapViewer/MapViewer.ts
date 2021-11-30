@@ -3,7 +3,7 @@ import styles from './MapViewer.scss';
 
 export class MapViewer extends Component {
 
-    protected render(): JQuery<HTMLElement> {
+    protected render(): JQuery {
         return el(`div.${styles.mapViewer}`);
     }
 
