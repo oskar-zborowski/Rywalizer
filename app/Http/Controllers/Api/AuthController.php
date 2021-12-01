@@ -442,14 +442,20 @@ class AuthController extends Controller
 
         $updateUserInformation = null;
 
-        $plainEmail = $encrypter->decrypt($request->email);
-        $request->merge(['email' => $plainEmail]);
+        if ($request->email) {
+            $plainEmail = $encrypter->decrypt($request->email);
+            $request->merge(['email' => $plainEmail]);
+        }
 
-        $plainTelephone = $encrypter->decrypt($request->telephone);
-        $request->merge(['telephone' => $plainTelephone]);
+        if ($request->telephone) {
+            $plainTelephone = $encrypter->decrypt($request->telephone);
+            $request->merge(['telephone' => $plainTelephone]);
+        }
 
-        $plainFacebookProfile = $encrypter->decrypt($request->facebook_profile);
-        $request->merge(['facebook_profile' => $plainFacebookProfile]);
+        if ($request->facebook_profile) {
+            $plainFacebookProfile = $encrypter->decrypt($request->facebook_profile);
+            $request->merge(['facebook_profile' => $plainFacebookProfile]);
+        }
 
         $userFirstName = $request->first_name && $request->first_name != $user->first_name ? true : false;
         $userLastName = $request->last_name && $request->last_name != $user->last_name ? true : false;
@@ -492,7 +498,11 @@ class AuthController extends Controller
         }
 
         if ($request->avatar) {
-            // TODO Zrobić wgrywanie i zapisywanie zdjęć przez formularz (wykorzystać metodę saveAvatar)
+            $updateUserInformation['avatar'] = $this->saveAvatar('form', null, $request);
+
+            if ($user->avatar) {
+                Storage::delete('avatars/' . $user->avatar);
+            }
         }
 
         if ($userBirthDate) {
@@ -643,7 +653,8 @@ class AuthController extends Controller
                 break;
 
             default:
-                // TODO Uzupełnić zapisywanie zdjęcia z formularza
+                $avatarUrlLocation = $request->avatar;
+                $avatarFileExtension = '.' . $request->avatar->extension();
                 break;
         }
 
@@ -652,7 +663,7 @@ class AuthController extends Controller
         do {
             $avatarFilename = $encrypter->generatePlainToken(64, $avatarFileExtension);
             $avatarFilenameEncrypted = $encrypter->encryptToken($avatarFilename);
-        } while (!$this->checkUniqueness('avatar', $avatarFilenameEncrypted));
+        } while (!Validation::checkUserUniqueness('avatar', $avatarFilenameEncrypted));
 
         $avatarContents = file_get_contents($avatarUrlLocation);
         Storage::put('avatars/' . $avatarFilename, $avatarContents);

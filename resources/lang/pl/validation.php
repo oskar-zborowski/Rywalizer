@@ -83,7 +83,7 @@ return [
     ],
     'max'                  => [
         'array'   => 'Pole :attribute nie może mieć więcej niż :max elementów.',
-        'file'    => 'Pole :attribute nie może być większe niż :max kilobajtów.',
+        'file'    => 'To pole nie może być większe niż :max kilobajtów.', // Zmieniłem z 'Pole :attribute nie może być większe niż :max kilobajtów.'
         'numeric' => 'Pole :attribute nie może być większe niż :max.',
         'string'  => 'To pole nie może być dłuższe niż :max znaków.' // Zmieniłem z 'Pole :attribute nie może być dłuższe niż :max znaków.'
     ],

@@ -32,7 +32,7 @@ Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function
 
         Route::patch('/email/verify', [AuthController::class, 'verifyEmail']);
 
-        Route::patch('/user', [AuthController::class, 'updateUser']);
+        Route::post('/user', [AuthController::class, 'updateUser']);
     });
 
     /*

@@ -33,7 +33,7 @@ class BeforeAuthenticate
             $request->url() == $updateUserURL)
         {
             $request->validate([
-                'email' => 'string|email|max:254|nullable'
+                'email' => 'string|email|max:254'
             ]);
 
             if ($request->url() != $updateUserURL) {
@@ -41,9 +41,11 @@ class BeforeAuthenticate
                     'email' => 'required'
                 ]);
             }
-            
-            $encryptedEmail = $encrypter->encrypt($request->email, 254);
-            $request->merge(['email' => $encryptedEmail]);
+
+            if ($request->email) {
+                $encryptedEmail = $encrypter->encrypt($request->email, 254);
+                $request->merge(['email' => $encryptedEmail]);
+            }
 
             if ($request->url() == $forgotPasswordURL) {
                 $request->validate([
@@ -58,7 +60,7 @@ class BeforeAuthenticate
             $request->url() == $updateUserURL)
         {
             $request->validate([
-                'password' => 'string|between:8,20|nullable'
+                'password' => 'nullable|string|between:8,20'
             ]);
 
             if ($request->url() != $updateUserURL) {
@@ -68,12 +70,15 @@ class BeforeAuthenticate
             }
 
             if ($request->url() != $loginURL) {
+                
                 $request->validate([
                     'password' => ['confirmed', RulesPassword::defaults()]
                 ]);
 
-                $encryptedPassword = $encrypter->hash($request->password);
-                $request->merge(['password' => $encryptedPassword]);
+                if ($request->password) {
+                    $encryptedPassword = $encrypter->hash($request->password);
+                    $request->merge(['password' => $encryptedPassword]);
+                }
             }
         }
         
@@ -84,13 +89,15 @@ class BeforeAuthenticate
                 'token' => 'required|string|alpha_num|size:48'
             ]);
 
-            $encryptedToken = $encrypter->encryptToken($request->token);
-            $request->merge(['token' => $encryptedToken]);
+            if ($request->token) {
+                $encryptedToken = $encrypter->encryptToken($request->token);
+                $request->merge(['token' => $encryptedToken]);
+            }
 
             if ($request->url() == $resetPasswordURL) {
                 $request->validate([
                     'token' => 'exists:password_resets',
-                    'do_not_logout' => 'boolean|nullable'
+                    'do_not_logout' => 'nullable|boolean'
                 ]);
             } else {
                 $request->validate([
@@ -99,17 +106,22 @@ class BeforeAuthenticate
             }
         }
 
-        if ($request->url() == $updateUserURL){
+        if ($request->url() == $updateUserURL) {
+
             $request->validate([
-                'telephone' => 'string|max:24|nullable',
-                'facebook_profile' => 'string|url|max:254|nullable'
+                'telephone' => 'string|max:24',
+                'facebook_profile' => 'string|url|max:254'
             ]);
 
-            $encryptedTelephone = $encrypter->encrypt($request->telephone, 24);
-            $encryptedFacebookProfile = $encrypter->encrypt($request->facebook_profile, 254);
+            if ($request->telephone) {
+                $encryptedTelephone = $encrypter->encrypt($request->telephone, 24);
+                $request->merge(['telephone' => $encryptedTelephone]);
+            }
 
-            $request->merge(['telephone' => $encryptedTelephone]);
-            $request->merge(['facebook_profile' => $encryptedFacebookProfile]);
+            if ($request->facebook_profile) {
+                $encryptedFacebookProfile = $encrypter->encrypt($request->facebook_profile, 254);
+                $request->merge(['facebook_profile' => $encryptedFacebookProfile]);
+            }
         }
 
         return $next($request);

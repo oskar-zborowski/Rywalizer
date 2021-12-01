@@ -21,15 +21,15 @@ class UpdateUserRequest extends FormRequest
         $user = Auth::user();
 
         return [
-            'first_name' => 'string|alpha|max:30|nullable',
-            'last_name' => 'string|alpha|max:30|nullable',
-            'email' => 'unique:users,email,' . $user->id,
-            'avatar' => 'image|size:2048|nullable',
-            'birth_date' => 'string|date|size:10|nullable',
-            'address_coordinates' => 'string|size:15|nullable',
-            'telephone' => 'unique:users,telephone,' . $user->id,
-            'facebook_profile' => 'unique:users,facebook_profile,' . $user->id,
-            'gender_type_id' => 'integer|exists:gender_types,id|nullable'
+            'first_name' => 'nullable|string|alpha|max:30',
+            'last_name' => 'nullable|string|alpha|max:30',
+            'email' => 'nullable|unique:users,email,' . $user->id,
+            'avatar' => 'nullable|image|max:2048',
+            'birth_date' => 'nullable|string|date|size:10',
+            'address_coordinates' => 'nullable|string|size:15',
+            'telephone' => 'nullable|unique:users,telephone,' . $user->id,
+            'facebook_profile' => 'nullable|unique:users,facebook_profile,' . $user->id,
+            'gender_type_id' => 'nullable|integer|exists:gender_types,id'
         ];
     }
 }
