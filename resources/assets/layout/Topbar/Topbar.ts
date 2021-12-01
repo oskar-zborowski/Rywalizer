@@ -8,8 +8,8 @@ export default class Topbar extends Component {
             el(`div.${styles.logo}`, 'LOGO'),
             el(`nav.${styles.links}`,
                 el('span', 'Rezerwacje'),
-                el('span', 'Rezerwacje'),
-                el('span', 'Rezerwacje')
+                el('span', 'Wydarzenia'),
+                el('span', 'Współpraca')
             )
         );
     }

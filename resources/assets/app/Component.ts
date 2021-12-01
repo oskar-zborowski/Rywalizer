@@ -1,15 +1,15 @@
 export default abstract class Component {
 
-    protected _node: JQuery;
+    protected dom: JQuery;
 
     protected abstract render(): JQuery;
 
-    public get node(): JQuery {
-        if (!this._node) {
-            this._node = this.render();
+    public getDom(): JQuery {
+        if (!this.dom) {
+            this.dom = this.render();
         }
 
-        return this._node;
+        return this.dom;
     }
 
 }
@@ -26,7 +26,7 @@ export const el = (def: ElementDef, ...children: ElementChild[]): JQuery => {
 
         children.forEach(child => {
             if (child instanceof Component) {
-                element.append(child.node);
+                element.append(child.getDom());
             } else if (typeof child === 'object') {
                 element.append(child);
             } else {
@@ -39,14 +39,14 @@ export const el = (def: ElementDef, ...children: ElementChild[]): JQuery => {
         let element: JQuery;
 
         if (def instanceof Component) {
-            element = $(def.node);
+            element = $(def.getDom());
         } else {
             element = $(def);
         }
 
         children.forEach(child => {
             if (child instanceof Component) {
-                element = element.add(child.node);
+                element = element.add(child.getDom());
             } else if (typeof child === 'object') {
                 element = element.add(child);
             } else {

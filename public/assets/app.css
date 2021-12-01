@@ -45,6 +45,162 @@
     display: none;
   }
 }
+/*!**************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/Events/EventsView.scss ***!
+  \**************************************************************************************************************************************************************************************************************************/
+.EventsView_eventsView__xZBdE {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.EventsView_filters__sQnRI {
+  height: 60px;
+  width: 100%;
+  flex: none;
+}
+
+.EventsView_containerWrapper__jZuPk {
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+}
+.EventsView_containerWrapper__jZuPk::-webkit-scrollbar {
+  display: none;
+}
+
+.EventsView_eventTilesContainer__t4uoR {
+  display: grid;
+  gap: 25px;
+  padding: 0 25px 25px 25px;
+  grid-template-columns: repeat(4, 1fr);
+  transition: padding 0.2s, gap 0.2s;
+}
+@media (max-width: 576px) {
+  .EventsView_eventTilesContainer__t4uoR {
+    grid-template-columns: 1fr;
+    padding: 0;
+    gap: 15px;
+  }
+}
+@media (min-width: 577px) and (max-width: 992px) {
+  .EventsView_eventTilesContainer__t4uoR {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 993px) and (max-width: 1200px) {
+  .EventsView_eventTilesContainer__t4uoR {
+    grid-template-columns: 1fr;
+  }
+}
+@media (min-width: 1201px) and (max-width: 1400px) {
+  .EventsView_eventTilesContainer__t4uoR {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1401px) and (max-width: 1600px) {
+  .EventsView_eventTilesContainer__t4uoR {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+/*!*************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/Events/EventTile.scss ***!
+  \*************************************************************************************************************************************************************************************************************************/
+@charset "UTF-8";
+.EventTile_eventTile__lIMZH {
+  background-color: #18181c;
+  border-radius: 8px;
+  border: 1px solid #29292e;
+  padding: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+  min-width: 0;
+  /* POD ŻADNYM POZOREM NIE USUWAĆ TEJ LINII !!! */
+}
+.EventTile_eventTile__lIMZH:hover {
+  background-color: #29292e;
+}
+.EventTile_eventTile__lIMZH:hover .EventTile_image__C_uhR {
+  opacity: 1;
+  filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.7));
+}
+.EventTile_eventTile__lIMZH .EventTile_image__C_uhR {
+  border-radius: 8px;
+  object-fit: cover;
+  height: 180px;
+  width: 100%;
+  transition: 0.2s;
+}
+.EventTile_eventTile__lIMZH .EventTile_detailsRow__OsKXy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  gap: 10px;
+}
+.EventTile_eventTile__lIMZH .EventTile_locationName__k5oB4 {
+  font-weight: 500;
+  font-size: 14px;
+}
+.EventTile_eventTile__lIMZH .EventTile_address__x8wPk {
+  color: gray;
+}
+.EventTile_eventTile__lIMZH .EventTile_locationName__k5oB4,
+.EventTile_eventTile__lIMZH .EventTile_address__x8wPk {
+  flex: 1;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.EventTile_eventTile__lIMZH .EventTile_price__g4GKz {
+  font-weight: 500;
+  font-size: 14px;
+}
+.EventTile_eventTile__lIMZH .EventTile_date__oiwCO {
+  color: gray;
+}
+.EventTile_eventTile__lIMZH .EventTile_divider__BLTA5 {
+  height: 1px;
+  background-color: #353538;
+  margin: 10px 0;
+}
+.EventTile_eventTile__lIMZH .EventTile_busyBar__YcRW1 {
+  height: 8px;
+  border-radius: 4px;
+  flex-grow: 1;
+  background-color: #353538;
+  max-width: 130px;
+  overflow: hidden;
+}
+.EventTile_eventTile__lIMZH .EventTile_busyBar__YcRW1 .EventTile_innerBar__EiWn0 {
+  border-radius: 4px;
+  height: 100%;
+  background-color: #7ab661;
+}
+/*!*************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/layout/Content/Scrollbar/Scrollbar.scss ***!
+  \*************************************************************************************************************************************************************************************************************************************/
+.Scrollbar_scrollbar__BNjtG {
+  margin: 0 40px;
+  border-radius: 4px;
+  border: 1px solid #29292e;
+  width: 12px;
+  background-color: #18181c;
+  flex: none;
+  position: relative;
+  overflow: hidden;
+}
+@media (max-width: 992px) {
+  .Scrollbar_scrollbar__BNjtG {
+    display: none;
+  }
+}
+.Scrollbar_scrollbar__BNjtG .Scrollbar_thumb__PYWQO {
+  background-color: #ce8f3e;
+  border-radius: 3px;
+  width: 100%;
+  position: absolute;
+}
 /*!*************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/layout/Content/Content.scss ***!
   \*************************************************************************************************************************************************************************************************************************/
@@ -85,30 +241,6 @@
     border-radius: 0;
     border: none;
   }
-}
-/*!*************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/layout/Content/Scrollbar/Scrollbar.scss ***!
-  \*************************************************************************************************************************************************************************************************************************************/
-.Scrollbar_scrollbar__BNjtG {
-  margin: 0 40px;
-  border-radius: 4px;
-  border: 1px solid #29292e;
-  width: 12px;
-  background-color: #18181c;
-  flex: none;
-  position: relative;
-  overflow: hidden;
-}
-@media (max-width: 992px) {
-  .Scrollbar_scrollbar__BNjtG {
-    display: none;
-  }
-}
-.Scrollbar_scrollbar__BNjtG .Scrollbar_thumb__PYWQO {
-  background-color: #ce8f3e;
-  border-radius: 3px;
-  width: 100%;
-  position: absolute;
 }
 /*!***********************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/layout/Footer/Footer.scss ***!
