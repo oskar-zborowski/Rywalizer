@@ -5,12 +5,12 @@ const useResize = (ref: React.RefObject<any>) => {
     const [height, setHeight] = useState<number>(0);
 
     useEffect(() => {
-        setWidth(ref.current.offsetWidth);
-        setHeight(ref.current.offsetHeight);
+        setWidth(ref.current?.offsetWidth);
+        setHeight(ref.current?.offsetHeight);
 
         const handleResize = () => {
-            setWidth(ref.current.offsetWidth);
-            setHeight(ref.current.offsetHeight);
+            setWidth(ref.current?.offsetWidth);
+            setHeight(ref.current?.offsetHeight);
         };
 
         window.addEventListener('resize', handleResize);

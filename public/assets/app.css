@@ -65,7 +65,7 @@
 /*!********************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/form/Button/Button.scss ***!
   \********************************************************************************************************************************************************************************************************************************/
-.Button_grayButton__nvljN, .Button_orangeButton__EJ5Hq {
+.Button_blackButton__yyGc0, .Button_grayButton__nvljN, .Button_orangeButton__EJ5Hq {
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -84,6 +84,11 @@
 .Button_grayButton__nvljN {
   color: #fff;
   background-color: #29292e;
+}
+
+.Button_blackButton__yyGc0 {
+  color: #fff;
+  background-color: #141417;
 }
 /*!***********************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/MainContainer/Scrollbar/Scrollbar.scss ***!
@@ -129,11 +134,13 @@
   right: 0;
   top: -30px;
   transform: translateY(-50%);
+  display: flex;
+  gap: 10px;
 }
 .MainContainer_mainContainer__PXJXG .MainContainer_authButtons__YbWmJ * {
   width: 120px;
-  margin-left: 8px;
   float: left;
+  display: block;
 }
 @media (max-width: 576px) {
   .MainContainer_mainContainer__PXJXG {
@@ -141,6 +148,218 @@
     border-radius: 0;
     border: none;
   }
+}
+/*!**************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/Events/EventsView.scss ***!
+  \**************************************************************************************************************************************************************************************************************************/
+.EventsView_eventsView__xZBdE {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.EventsView_filters__sQnRI {
+  height: 60px;
+  width: 100%;
+  flex: none;
+}
+
+.EventsView_containerWrapper__jZuPk {
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+}
+.EventsView_containerWrapper__jZuPk::-webkit-scrollbar {
+  display: none;
+}
+
+.EventsView_eventTilesContainer__t4uoR {
+  display: grid;
+  gap: 20px;
+  padding: 0 20px 20px 20px;
+  grid-template-columns: repeat(4, 1fr);
+  transition: padding 0.2s, gap 0.2s;
+}
+@media (max-width: 576px) {
+  .EventsView_eventTilesContainer__t4uoR {
+    grid-template-columns: 1fr;
+    padding: 0;
+    gap: 15px;
+  }
+}
+@media (min-width: 577px) and (max-width: 992px) {
+  .EventsView_eventTilesContainer__t4uoR {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 993px) and (max-width: 1200px) {
+  .EventsView_eventTilesContainer__t4uoR {
+    grid-template-columns: 1fr;
+  }
+}
+@media (min-width: 1201px) and (max-width: 1400px) {
+  .EventsView_eventTilesContainer__t4uoR {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1401px) and (max-width: 1600px) {
+  .EventsView_eventTilesContainer__t4uoR {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+/*!*************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/Events/EventTile.scss ***!
+  \*************************************************************************************************************************************************************************************************************************/
+@charset "UTF-8";
+.EventTile_eventTile__lIMZH {
+  background-color: #18181c;
+  border-radius: 8px;
+  border: 1px solid #29292e;
+  padding: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+  min-width: 0;
+  /* POD ŻADNYM POZOREM NIE USUWAĆ TEJ LINII !!! */
+}
+.EventTile_eventTile__lIMZH:hover {
+  background-color: #29292e;
+}
+.EventTile_eventTile__lIMZH:hover .EventTile_image__C_uhR {
+  opacity: 1;
+  filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.7));
+}
+.EventTile_eventTile__lIMZH .EventTile_image__C_uhR {
+  border-radius: 8px;
+  object-fit: cover;
+  height: 180px;
+  width: 100%;
+  transition: 0.2s;
+}
+.EventTile_eventTile__lIMZH .EventTile_detailsRow__OsKXy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  gap: 10px;
+}
+.EventTile_eventTile__lIMZH .EventTile_locationName__k5oB4 {
+  font-weight: 500;
+  font-size: 14px;
+}
+.EventTile_eventTile__lIMZH .EventTile_address__x8wPk {
+  color: gray;
+}
+.EventTile_eventTile__lIMZH .EventTile_locationName__k5oB4,
+.EventTile_eventTile__lIMZH .EventTile_address__x8wPk {
+  flex: 1;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.EventTile_eventTile__lIMZH .EventTile_price__g4GKz {
+  font-weight: 500;
+  font-size: 14px;
+}
+.EventTile_eventTile__lIMZH .EventTile_date__oiwCO {
+  color: gray;
+}
+.EventTile_eventTile__lIMZH .EventTile_divider__BLTA5 {
+  height: 1px;
+  background-color: #353538;
+  margin: 10px 0;
+}
+.EventTile_eventTile__lIMZH .EventTile_busyBar__YcRW1 {
+  height: 8px;
+  border-radius: 4px;
+  flex-grow: 1;
+  background-color: #353538;
+  max-width: 130px;
+  overflow: hidden;
+}
+.EventTile_eventTile__lIMZH .EventTile_busyBar__YcRW1 .EventTile_innerBar__EiWn0 {
+  border-radius: 4px;
+  height: 100%;
+  background-color: #7ab661;
+}
+/*!**********************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/User/UserView.scss ***!
+  \**********************************************************************************************************************************************************************************************************************/
+.UserView_userView__wD4e5 {
+  margin: 15px;
+  width: calc(100% - 30px);
+  height: calc(100% - 30px);
+  background-color: #29292e;
+  border-radius: 8px;
+  border: 1px solid #141417;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  min-height: 0;
+  overflow-y: auto;
+}
+.UserView_userView__wD4e5::-webkit-scrollbar {
+  display: none;
+}
+@media (max-width: 576px) {
+  .UserView_userView__wD4e5 {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+.UserView_userView__wD4e5 .UserView_header___cw0_ {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #4c4c52;
+  height: 60px;
+}
+.UserView_userView__wD4e5 .UserView_header___cw0_ .UserView_title__jyLyU {
+  font-weight: bold;
+  font-size: 23px;
+}
+.UserView_userView__wD4e5 .UserView_userDataWrapper__CsjW1 {
+  flex: 1;
+  display: flex;
+  gap: 25px;
+}
+@media (max-width: 1200px) {
+  .UserView_userView__wD4e5 .UserView_userDataWrapper__CsjW1 {
+    flex-direction: column;
+  }
+}
+.UserView_userView__wD4e5 .UserView_leftColumn__ZUcfF {
+  flex: none;
+}
+.UserView_userView__wD4e5 .UserView_leftColumn__ZUcfF .UserView_image__vcd8y {
+  width: 150px;
+  height: 150px;
+  border: 1px solid #141417;
+  border-radius: 8px;
+  object-fit: cover;
+}
+.UserView_userView__wD4e5 .UserView_rightColumn__qh0H1 {
+  flex: 1;
+  display: grid;
+  grid-template-columns: min-content 1fr;
+  grid-auto-rows: min-content;
+}
+.UserView_userView__wD4e5 .UserView_rightColumn__qh0H1 .UserView_fieldName__oiVfp, .UserView_userView__wD4e5 .UserView_rightColumn__qh0H1 .UserView_fieldValue__UZNLw {
+  color: #a1a1a1;
+  border-bottom: 1px solid #4c4c52;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.UserView_userView__wD4e5 .UserView_rightColumn__qh0H1 .UserView_fieldName__oiVfp.UserView_withMargin__dIS_g, .UserView_userView__wD4e5 .UserView_rightColumn__qh0H1 .UserView_fieldValue__UZNLw.UserView_withMargin__dIS_g {
+  margin-top: 25px;
+}
+.UserView_userView__wD4e5 .UserView_rightColumn__qh0H1 .UserView_fieldValue__UZNLw {
+  font-weight: bold;
+  padding-left: 25px;
 }
 /*!*********************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/MapViewer/MapViewer.scss ***!
@@ -161,138 +380,6 @@
   .MapViewer_mapViewer__xi5kE {
     display: none;
   }
-}
-/*!*************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/view/Events/EventsView.scss ***!
-  \*************************************************************************************************************************************************************************************************************************/
-.EventsView_eventsView__RE8BB {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.EventsView_filters__vl007 {
-  height: 60px;
-  width: 100%;
-  flex: none;
-}
-
-.EventsView_containerWrapper__Ik_E1 {
-  min-height: 0;
-  flex: 1;
-  overflow: auto;
-}
-.EventsView_containerWrapper__Ik_E1::-webkit-scrollbar {
-  display: none;
-}
-
-.EventsView_eventTilesContainer__VYeOa {
-  display: grid;
-  gap: 25px;
-  padding: 0 25px 25px 25px;
-  grid-template-columns: repeat(4, 1fr);
-  transition: padding 0.2s, gap 0.2s;
-}
-@media (max-width: 576px) {
-  .EventsView_eventTilesContainer__VYeOa {
-    grid-template-columns: 1fr;
-    padding: 0;
-    gap: 15px;
-  }
-}
-@media (min-width: 577px) and (max-width: 992px) {
-  .EventsView_eventTilesContainer__VYeOa {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (min-width: 993px) and (max-width: 1200px) {
-  .EventsView_eventTilesContainer__VYeOa {
-    grid-template-columns: 1fr;
-  }
-}
-@media (min-width: 1201px) and (max-width: 1400px) {
-  .EventsView_eventTilesContainer__VYeOa {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (min-width: 1401px) and (max-width: 1600px) {
-  .EventsView_eventTilesContainer__VYeOa {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-/*!************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/view/Events/EventTile.scss ***!
-  \************************************************************************************************************************************************************************************************************************/
-@charset "UTF-8";
-.EventTile_eventTile__hs_H4 {
-  background-color: #18181c;
-  border-radius: 8px;
-  border: 1px solid #29292e;
-  padding: 10px;
-  cursor: pointer;
-  transition: 0.2s;
-  min-width: 0;
-  /* POD ŻADNYM POZOREM NIE USUWAĆ TEJ LINII !!! */
-}
-.EventTile_eventTile__hs_H4:hover {
-  background-color: #29292e;
-}
-.EventTile_eventTile__hs_H4:hover .EventTile_image__iPt7c {
-  opacity: 1;
-  filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.7));
-}
-.EventTile_eventTile__hs_H4 .EventTile_image__iPt7c {
-  border-radius: 8px;
-  object-fit: cover;
-  height: 180px;
-  width: 100%;
-  transition: 0.2s;
-}
-.EventTile_eventTile__hs_H4 .EventTile_detailsRow__Gf0XI {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-width: 0;
-  gap: 10px;
-}
-.EventTile_eventTile__hs_H4 .EventTile_locationName__P9MRG {
-  font-weight: 900;
-  font-size: 14px;
-}
-.EventTile_eventTile__hs_H4 .EventTile_address__puumU {
-  color: gray;
-}
-.EventTile_eventTile__hs_H4 .EventTile_locationName__P9MRG,
-.EventTile_eventTile__hs_H4 .EventTile_address__puumU {
-  flex: 1;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
-.EventTile_eventTile__hs_H4 .EventTile_price__r_kb_ {
-  font-weight: bold;
-  font-size: 14px;
-}
-.EventTile_eventTile__hs_H4 .EventTile_date__TU6pa {
-  color: gray;
-}
-.EventTile_eventTile__hs_H4 .EventTile_divider__gWnL2 {
-  height: 1px;
-  background-color: #353538;
-  margin: 10px 0;
-}
-.EventTile_eventTile__hs_H4 .EventTile_busyBar__raR9V {
-  height: 8px;
-  border-radius: 4px;
-  flex-grow: 1;
-  background-color: #353538;
-  max-width: 130px;
-  overflow: hidden;
-}
-.EventTile_eventTile__hs_H4 .EventTile_busyBar__raR9V .EventTile_innerBar__MEZ_I {
-  border-radius: 4px;
-  height: 100%;
-  background-color: #7ab661;
 }
 /*!***********************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/main.scss (1) ***!

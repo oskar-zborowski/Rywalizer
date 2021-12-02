@@ -22,5 +22,9 @@
         "paths": {
             "@/*": ["resources/assets/*"]
         }
-    }
+    },
+    "include": [
+        "resources/assets/**/*",
+        "assets.d.ts"
+    ]
 }

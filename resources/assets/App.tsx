@@ -4,20 +4,21 @@ import Topbar from '@/layout/Topbar/Topbar';
 import MainContainer from '@/components/MainContainer/MainContainer';
 import React, { Fragment } from 'react';
 import MapViewer from '@/components/MapViewer/MapViewer';
-import EventsView from '@/view/Events/EventsView';
+import EventsView from '@/views/Events/EventsView';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 const App: React.FC = () => {
     return (
-        <Fragment>
-            <Topbar />
-            <Content>
-                <MainContainer>
-                    <EventsView/>
-                </MainContainer>
-                <MapViewer/>
-            </Content>
-            <Footer />
-        </Fragment>
+        <Router>
+            <Fragment>
+                <Topbar />
+                <Content>
+                    <MainContainer />
+                    <MapViewer />
+                </Content>
+                <Footer />
+            </Fragment>
+        </Router>
     );
 };
 

@@ -1,4 +1,4 @@
-@import '@/scss/bootstrap.scss';
+@import "@/styles/bootstrap.scss";
 
 %button {
     border-radius: 10px;
@@ -21,4 +21,10 @@
     @extend %button;
     color: #fff;
     background-color: #29292e;
+}
+
+.blackButton {
+    @extend %button;
+    color: #fff;
+    background-color: #141417;
 }
