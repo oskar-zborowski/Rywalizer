@@ -18,7 +18,7 @@ Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function
 
     /*
     |-------------------------------------------------------------------------------------------------------
-    | Enpointy dostępne wyłącznie bez autoryzacji - w przypadku nowych pozycji należy uzupełnić middleware'y
+    | Endpointy dostępne wyłącznie bez autoryzacji - w przypadku nowych pozycji należy uzupełnić middleware'y
     |-------------------------------------------------------------------------------------------------------
     */
 
@@ -37,7 +37,7 @@ Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function
 
     /*
     |-------------------------------------------------------------------------------------------------------
-    | Enpointy do zewnętrznego uwierzytelnienia, dostępne wyłącznie bez autoryzacji - jw.
+    | Endpointy do zewnętrznego uwierzytelnienia, dostępne wyłącznie bez autoryzacji - jw.
     |-------------------------------------------------------------------------------------------------------
     */
 
@@ -46,7 +46,7 @@ Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function
 
     /*
     |-------------------------------------------------------------------------------------------------------
-    | Enpointy dostępne po autoryzacji
+    | Endpointy dostępne po autoryzacji
     |-------------------------------------------------------------------------------------------------------
     */
 
@@ -59,7 +59,7 @@ Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function
 
     /*
     |-------------------------------------------------------------------------------------------------------
-    | Enpointy dostępne po autoryzacji i zweryfikowaniu roli użytkownika
+    | Endpointy dostępne po zweryfikowaniu roli użytkownika
     |-------------------------------------------------------------------------------------------------------
     */
 
@@ -67,7 +67,7 @@ Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function
 
         /*
         |-------------------------------------------------------------------------------------------------------
-        | Enpointy dostępne po autoryzacji oraz ze zweryfikowanym mailem
+        | Endpointy dostępne dla użytkownika ze zweryfikowanym mailem
         |-------------------------------------------------------------------------------------------------------
         */
 
