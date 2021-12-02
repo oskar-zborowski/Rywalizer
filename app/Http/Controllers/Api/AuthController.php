@@ -639,24 +639,27 @@ class AuthController extends Controller
 
             case 'FACEBOOK':
             case 'GOOGLE':
-                $avatarUrlHeaders = get_headers($avatarUrl, 1);
-                $avatarUrlLocation = isset($avatarUrlHeaders['Location']) ? $avatarUrlHeaders['Location'] : $avatarUrl;
-                $avatarContentType = $avatarUrlHeaders['Content-Type'];
+                $avatarUrlLocation = $avatarUrl;
+                // $avatarUrlHeaders = get_headers($avatarUrl, 1);
+                // $avatarUrlLocation = isset($avatarUrlHeaders['Location']) ? $avatarUrlHeaders['Location'] : $avatarUrl;
+                // $avatarContentType = $avatarUrlHeaders['Content-Type'];
 
-                if (is_array($avatarContentType)) {
-                    $avatarContentType = $avatarContentType[0];
-                }
+                // if (is_array($avatarContentType)) {
+                //     $avatarContentType = $avatarContentType[0];
+                // }
 
-                $avatarFileExtensionSeparators = explode('/', $avatarContentType);
-                $avatarFileExtensionSeparatorsLength = count($avatarFileExtensionSeparators);
-                $avatarFileExtension = '.' . $avatarFileExtensionSeparators[$avatarFileExtensionSeparatorsLength-1];
+                // $avatarFileExtensionSeparators = explode('/', $avatarContentType);
+                // $avatarFileExtensionSeparatorsLength = count($avatarFileExtensionSeparators);
+                // $avatarFileExtension = '.' . $avatarFileExtensionSeparators[$avatarFileExtensionSeparatorsLength-1];
                 break;
 
             default:
                 $avatarUrlLocation = $request->avatar;
-                $avatarFileExtension = '.' . $request->avatar->extension();
+                // $avatarFileExtension = '.' . $request->avatar->extension();
                 break;
         }
+
+        $avatarFileExtension = '.jpeg';
 
         $encrypter = new Encrypter;
     
@@ -666,7 +669,14 @@ class AuthController extends Controller
         } while (!Validation::checkUserUniqueness('avatar', $avatarFilenameEncrypted));
 
         $avatarContents = file_get_contents($avatarUrlLocation);
-        Storage::put('avatars/' . $avatarFilename, $avatarContents);
+        $oldImage = imagecreatefromstring($avatarContents);
+        $imageWidth = imagesx($oldImage);
+        $imageHeight = imagesy($oldImage);
+        $newImage = imagecreatetruecolor($imageWidth, $imageHeight);
+        imagecopyresampled($newImage , $oldImage, 0, 0, 0, 0, $imageWidth, $imageHeight, $imageWidth, $imageHeight);
+        imagejpeg($newImage, 'storage/avatars/' .$avatarFilename, 100);
+
+        // Storage::put('avatars/' . $avatarFilename, $avatarContents);
 
         return $avatarFilename;
     }
