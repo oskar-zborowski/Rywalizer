@@ -59,11 +59,20 @@ Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function
 
     /*
     |-------------------------------------------------------------------------------------------------------
-    | Enpointy dostępne po autoryzacji oraz ze zweryfikowanym mailem
+    | Enpointy dostępne po autoryzacji i zweryfikowaniu roli użytkownika
     |-------------------------------------------------------------------------------------------------------
     */
 
-    Route::middleware('verified')->group(function () {
-        // TODO
+    Route::middleware('user.roles')->group(function () {
+
+        /*
+        |-------------------------------------------------------------------------------------------------------
+        | Enpointy dostępne po autoryzacji oraz ze zweryfikowanym mailem
+        |-------------------------------------------------------------------------------------------------------
+        */
+
+        Route::middleware('verified')->group(function () {
+            // TODO
+        });
     });
 });

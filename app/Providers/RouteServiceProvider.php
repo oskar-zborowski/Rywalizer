@@ -66,7 +66,7 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('loginLimit', function (Request $request) {
-            return Limit::perDay(2*env('DEFAULT_AUTH_RATE_LIMITER_PER_DAY'))->by($request->ip());
+            return Limit::perDay(3*env('DEFAULT_AUTH_RATE_LIMITER_PER_DAY'))->by($request->ip());
         });
 
         RateLimiter::for('registerLimit', function (Request $request) {

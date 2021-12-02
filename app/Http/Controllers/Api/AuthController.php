@@ -427,7 +427,7 @@ class AuthController extends Controller
     }
 
     /**
-     * #### `PATCH` `/api/user`
+     * #### `POST` `/api/user`
      * Uzupełnienie danych użytkownika, bądź też zaktualizowanie istniejących
      * 
      * @param App\Http\Requests\Auth\UpdateUserRequest $request

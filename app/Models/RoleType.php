@@ -20,9 +20,9 @@ class RoleType extends Model
         'id'
     ];
 
-    protected $casts = [
-        'access_level' => 'int'
-    ];
+    // protected $casts = [
+    //     'access_level' => 'int'
+    // ];
 
     protected $encryptable = [
         'name',

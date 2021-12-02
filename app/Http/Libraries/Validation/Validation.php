@@ -77,4 +77,33 @@ class Validation
 
         return $comparasion;
     }
+
+    /**
+     * Metoda pozwala wybrać ze stringa ciąg znaków pomiędzy innymi stringami
+     * 
+     * @param string $string cały ciąg znaków
+     * @param string $start rozpoczynający ciąg znaków
+     * @param string $end kończący ciąg znaków
+     * 
+     * @return string
+     */
+    public static function getStringBetweenOthers(string $string, string $start = '', string $end = ''): string {
+
+        $startCharCount = strpos($string, $start);
+        $endCharCount = strpos($string, $end);
+
+        if ($startCharCount !== false) {
+            $startCharCount += strlen($start);
+            $string = substr($string, $startCharCount, strlen($string));
+            $endCharCount = strpos($string, $end);
+        }
+
+        if ($endCharCount == 0) {
+            $endCharCount = strlen($string);
+        }
+
+        $result = substr($string, 0, $endCharCount);
+
+        return $result;
+    }
 }
