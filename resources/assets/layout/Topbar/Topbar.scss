@@ -1,5 +1,4 @@
-@import '@/layout/layout.scss';
-@import '@/scss/bootstrap.scss';
+@import "@/styles/bootstrap.scss";
 
 .topbar {
     width: 100%;
@@ -23,7 +22,7 @@
     justify-content: flex-end;
     gap: 20px;
 
-    @include respond-to(null, 'lg') {
+    @include respond-to(null, "lg") {
         display: none;
     }
 }

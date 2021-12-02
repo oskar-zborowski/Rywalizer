@@ -1,5 +1,4 @@
-@import "@/layout/layout.scss";
-@import "@/scss/bootstrap.scss";
+@import "@/styles/bootstrap.scss";
 
 .mainContainer {
     @extend %left-column;
@@ -15,11 +14,13 @@
         right: 0;
         top: -$topbar-height / 2;
         transform: translateY(-50%);
+        display: flex;
+        gap: 10px;
 
         * {
             width: 120px;
-            margin-left: 8px;
             float: left;
+            display: block;
         }
     }
 

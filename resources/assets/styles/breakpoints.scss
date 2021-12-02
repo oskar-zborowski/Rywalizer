@@ -1,0 +1,28 @@
+$breakpoints: (
+    "sm": 576px,
+    "md": 767px,
+    "lg": 992px,
+    "xl": 1200px,
+    "2xl": 1400px,
+    "3xl": 1600px,
+);
+
+@mixin respond-to($min, $max: null) {
+    @if $max == null {
+        $minWidth: map-get($breakpoints, $min);
+        @media (min-width: $minWidth) {
+            @content;
+        }
+    } @else if $min == null {
+        $maxWidth: map-get($breakpoints, $max);
+        @media (max-width: $maxWidth) {
+            @content;
+        }
+    } @else {
+        $minWidth: map-get($breakpoints, $min) + 1px;
+        $maxWidth: map-get($breakpoints, $max);
+        @media (min-width: $minWidth) and (max-width: $maxWidth) {
+            @content;
+        }
+    }
+}

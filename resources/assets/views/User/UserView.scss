@@ -1,0 +1,88 @@
+@import "@/styles/bootstrap.scss";
+
+.userView {
+    $margin: 15px;
+    margin: $margin;
+    width: calc(100% - #{2 * $margin});
+    height: calc(100% - #{2 * $margin});
+    background-color: #29292e;
+    border-radius: 8px;
+    border: 1px solid #141417;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    min-height: 0;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    @include respond-to(null, "sm") {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .header {
+        flex: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #4c4c52;
+        height: 60px;
+
+        .title {
+            font-weight: bold;
+            font-size: 23px;
+        }
+    }
+
+    .userDataWrapper {
+        flex: 1;
+        display: flex;
+        gap: 25px;
+
+        @include respond-to(null, "xl") {
+            flex-direction: column;
+        }
+    }
+
+    .leftColumn {
+        flex: none;
+
+        .image {
+            width: 150px;
+            height: 150px;
+            border: 1px solid #141417;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+    }
+
+    .rightColumn {
+        flex: 1;
+        display: grid;
+        grid-template-columns: min-content 1fr;
+        grid-auto-rows: min-content;
+
+        .fieldName, .fieldValue {
+            color: #a1a1a1;
+            border-bottom: 1px solid #4c4c52;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+
+            &.withMargin {
+                margin-top: 25px;
+            }
+        }
+
+        .fieldValue {
+            font-weight: bold;
+            padding-left: 25px;
+        }
+    }
+}

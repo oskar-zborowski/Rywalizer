@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
-@import './scss/bootstrap.scss';
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+@import "./styles/bootstrap.scss";
 
 *,
 *:before,
@@ -17,7 +17,7 @@ html {
 
 body {
     overflow-x: hidden;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
     background-color: $color-backgroud;
     color: #fff;
     font-size: 13px;
@@ -52,11 +52,10 @@ button:focus {
         display: flex;
         flex-direction: column;
         padding: 0 40px;
-        transition: padding .2s, padding-bottom 0s;
+        transition: padding 0.2s, padding-bottom 0s;
 
-        @include respond-to(null, 'sm') {
+        @include respond-to(null, "sm") {
             padding: 0 15px 15px 15px;
         }
-
     }
 }
