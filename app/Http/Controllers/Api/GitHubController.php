@@ -13,7 +13,8 @@ class GitHubController extends Controller
      * @return void
      */
     public function pull(): void {
-        shell_exec('sudo git pull origin master');
-        echo 'TEST';
+        $path = app_path();
+        shell_exec($path . '/Console/GitHub/pull.sh');
+        // echo 'TEST';
     }
 }
