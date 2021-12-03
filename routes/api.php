@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\GitHubController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,14 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+/*
+|-------------------------------------------------------------------------------------------------------
+| Endpointy do odbierania informacji z GitHuba
+|-------------------------------------------------------------------------------------------------------
+*/
+
+Route::get('/github/pull', [GitHubController::class, 'pull'])->middleware(['throttle:githubPullLimit']);
 
 Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function () {
 
