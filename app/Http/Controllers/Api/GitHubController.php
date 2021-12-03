@@ -14,6 +14,6 @@ class GitHubController extends Controller
      */
     public function pull(): void {
         shell_exec('sudo git pull origin master');
-        // echo 'TEST';
+        echo 'TEST';
     }
 }
