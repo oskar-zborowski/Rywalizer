@@ -7,15 +7,12 @@ use App\Http\Controllers\Controller;
 class GitHubController extends Controller
 {
     /**
-     * #### `GET` `/api/github/pull`
+     * #### `POST` `/api/github/pull`
      * Zaciągnięcie nowych zmian ze zdalnego repozytorium
      * 
      * @return void
      */
     public function pull(): void {
-        $path = app_path();
-        echo shell_exec($path . '/Console/GitHub/pull.sh 2>&1');
-        // echo 'TEST';
-        echo 'xdddddddd';
+        echo shell_exec('git pull https://BolleyVall7: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@github.com/BolleyVall7/Rywalizer.git master 2>&1');
     }
 }
