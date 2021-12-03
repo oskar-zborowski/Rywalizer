@@ -6,5 +6,5 @@ cd ../../../
 echo "Fetching"
 git fetch
 echo "Pulling"
-git pull origin master
+sudo git pull origin master
 echo "Done at `date`"
