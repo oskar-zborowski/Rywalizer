@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 |-------------------------------------------------------------------------------------------------------
 */
 
-Route::get('/github/pull', [GitHubController::class, 'pull'])->middleware(['throttle:githubPullLimit']);
+Route::post('/github/pull', [GitHubController::class, 'pull'])->middleware(['throttle:githubPullLimit']);
 
 Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function () {
 
