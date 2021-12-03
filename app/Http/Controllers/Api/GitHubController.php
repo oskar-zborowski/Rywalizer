@@ -16,5 +16,6 @@ class GitHubController extends Controller
         $path = app_path();
         echo shell_exec($path . '/Console/GitHub/pull.sh 2>&1');
         // echo 'TEST';
+        echo 'xdddddddd';
     }
 }
