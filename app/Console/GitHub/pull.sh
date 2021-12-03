@@ -2,7 +2,7 @@
 
 # sudo git pull origin master
 
-cd ../../../ 
+cd ../../../
 echo "Fetching"
 git fetch
 echo "Pulling"
