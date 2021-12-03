@@ -15,6 +15,6 @@ class GitHubController extends Controller
     public function pull(): void {
         $path = app_path();
         echo shell_exec($path . '/Console/GitHub/pull.sh');
-        // echo 'TEST';
+        echo 'TEST';
     }
 }
