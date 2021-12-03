@@ -93,7 +93,7 @@ class Handler extends ExceptionHandler
                 /** @var BindingResolutionException $throwable */
 
                 JsonResponse::sendError(
-                    AuthErrorCode::INVALID_CREDENTIALS_PROVIDED(),
+                    BaseErrorCode::INTERNAL_SERVER_ERROR(),
                     env('APP_DEBUG') ? FieldConversion::convertToCamelCase($throwable->getMessage()) : null
                 );
                 break;
