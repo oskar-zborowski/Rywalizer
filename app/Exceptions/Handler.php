@@ -11,6 +11,7 @@ use Error;
 use ErrorException;
 use Exception;
 use GuzzleHttp\Exception\ClientException;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
@@ -84,6 +85,15 @@ class Handler extends ExceptionHandler
 
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase($throwable->getMessage()) : null
+                );
+                break;
+
+            case BindingResolutionException::class:
+                /** @var BindingResolutionException $throwable */
+
+                JsonResponse::sendError(
+                    AuthErrorCode::INVALID_CREDENTIALS_PROVIDED(),
                     env('APP_DEBUG') ? FieldConversion::convertToCamelCase($throwable->getMessage()) : null
                 );
                 break;
