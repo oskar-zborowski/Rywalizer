@@ -124,7 +124,7 @@ return [
     'starts_with'          => 'Pole :attribute musi zaczynać się jedną z następujących wartości: :values.',
     'string'               => 'To pole musi być ciągiem znaków.', // Zmieniłem z 'Pole :attribute musi być ciągiem znaków.'
     'timezone'             => 'Pole :attribute musi być prawidłową strefą czasową.',
-    'unique'               => 'Taki :attribute już istnieje.',
+    'unique'               => 'Taka nazwa jest już w użyciu.', // Zmieniłem z 'Taki :attribute już istnieje.'
     'uploaded'             => 'Nie udało się wgrać pliku :attribute.',
     'url'                  => 'To pole nie jest poprawnym adresem URL.', // Zmieniłem z 'Format pola :attribute jest nieprawidłowy.'
     'uuid'                 => 'Pole :attribute musi być poprawnym identyfikatorem UUID.',
