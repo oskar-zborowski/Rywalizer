@@ -15,10 +15,6 @@ class GenderType extends Model
         'name'
     ];
 
-    protected $hidden = [
-        'id'
-    ];
-
     protected $encryptable = [
         'name'
     ];

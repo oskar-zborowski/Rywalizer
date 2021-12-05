@@ -21,54 +21,55 @@ use Illuminate\Support\Facades\Route;
 |-------------------------------------------------------------------------------------------------------
 */
 
-Route::post('/github/pull', [GitHubController::class, 'pull'])->middleware(['throttle:githubPullLimit']);
+Route::post('/github/pull', [GitHubController::class, 'pull'])->name('github-pull')->middleware(['throttle:githubPullLimit']);
 
-Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function () {
+Route::middleware(['throttle:defaultLimit', 'auth:sanctum'])->group(function () {
 
     /*
     |-------------------------------------------------------------------------------------------------------
-    | Endpointy dostępne wyłącznie bez autoryzacji - w przypadku nowych pozycji należy uzupełnić middleware'y
+    | Endpointy dostępne wyłącznie bez uwierzytelnienia -
+    | w przypadku nowych pozycji należy uzupełnić middleware Authenticate.php
     |-------------------------------------------------------------------------------------------------------
     */
 
     Route::middleware('before.auth')->group(function () {
         
-        Route::post('/login', [AuthController::class, 'login'])->middleware(['throttle:loginLimit']);
-        Route::post('/register', [AuthController::class, 'register'])->middleware(['throttle:registerLimit']);
+        Route::post('/login', [AuthController::class, 'login'])->name('auth-login')->middleware(['throttle:loginLimit']);
+        Route::post('/register', [AuthController::class, 'register'])->name('auth-register')->middleware(['throttle:registerLimit']);
 
-        Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-        Route::patch('/reset-password', [AuthController::class, 'resetPassword']);
+        Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('auth-forgotPassword');
+        Route::patch('/reset-password', [AuthController::class, 'resetPassword'])->name('auth-resetPassword');
 
-        Route::patch('/email/verify', [AuthController::class, 'verifyEmail']);
+        Route::patch('/email/verify', [AuthController::class, 'verifyEmail'])->name('auth-verifyEmail');
 
-        Route::post('/user', [AuthController::class, 'updateUser']);
+        Route::post('/user', [AuthController::class, 'updateUser'])->name('auth-updateUser');
     });
 
     /*
     |-------------------------------------------------------------------------------------------------------
-    | Endpointy do zewnętrznego uwierzytelnienia, dostępne wyłącznie bez autoryzacji - jw.
+    | Endpointy do zewnętrznego uwierzytelnienia - jw.
     |-------------------------------------------------------------------------------------------------------
     */
 
-    Route::get('auth/{provider}/redirect', [AuthController::class, 'redirectToProvider'])->middleware(['throttle:loginLimit']);
-    Route::get('auth/{provider}/callback', [AuthController::class, 'handleProviderCallback'])->withoutMiddleware('throttle:defaultAuthLimit');
+    Route::get('/auth/{provider}/redirect', [AuthController::class, 'redirectToProvider'])->name('auth-redirectToProvider')->middleware(['throttle:loginLimit']);
+    Route::get('/auth/{provider}/callback', [AuthController::class, 'handleProviderCallback'])->name('auth-handleProviderCallback')->withoutMiddleware('throttle:defaultLimit');
 
     /*
     |-------------------------------------------------------------------------------------------------------
-    | Endpointy dostępne po autoryzacji
+    | Endpointy dostępne po uwierzytelnieniu użytkownika
     |-------------------------------------------------------------------------------------------------------
     */
 
-    Route::post('/email/verification-notification', [AuthController::class, 'sendVerificationEmail']);
+    Route::post('/email/verification-notification', [AuthController::class, 'sendVerificationEmail'])->name('auth-sendVerificationEmail');
 
-    Route::delete('/logout', [AuthController::class, 'logout'])->withoutMiddleware('throttle:defaultAuthLimit');
-    Route::delete('/logout-other-devices', [AuthController::class, 'logoutOtherDevices'])->middleware(['throttle:logoutOtherDevicesLimit']);
+    Route::delete('/logout', [AuthController::class, 'logout'])->name('auth-logout')->withoutMiddleware('throttle:defaultLimit');
+    Route::delete('/logout-other-devices', [AuthController::class, 'logoutOtherDevices'])->name('auth-logoutOtherDevices')->middleware(['throttle:logoutOtherDevicesLimit']);
 
-    Route::get('/user', [AuthController::class, 'getUser']);
+    Route::get('/user', [AuthController::class, 'getUser'])->name('auth-getUser');
 
     /*
     |-------------------------------------------------------------------------------------------------------
-    | Endpointy dostępne po zweryfikowaniu roli użytkownika
+    | Endpointy dostępne po poprawnej autoryzacji użytkownika
     |-------------------------------------------------------------------------------------------------------
     */
 
@@ -76,7 +77,7 @@ Route::middleware(['throttle:defaultAuthLimit', 'auth:sanctum'])->group(function
 
         /*
         |-------------------------------------------------------------------------------------------------------
-        | Endpointy dostępne dla użytkownika ze zweryfikowanym mailem
+        | Endpointy dostępne wyłącznie ze zweryfikowanym mailem użytkownika
         |-------------------------------------------------------------------------------------------------------
         */
 

@@ -31,11 +31,12 @@ class JsonResponse
         header('Content-Type: application/json');
         http_response_code(Response::HTTP_OK);
 
-        echo json_encode([
-            'data' => FieldConversion::convertToCamelCase($data),
-            'metadata' => FieldConversion::convertToCamelCase($metadata)
+        $response = FieldConversion::convertToCamelCase([
+            'data' => $data,
+            'metadata' => $metadata
         ]);
 
+        echo json_encode($response);
         die;
     }
 
@@ -53,19 +54,21 @@ class JsonResponse
         header('Content-Type: application/json');
         http_response_code($errorCode->getHttpStatus());
 
-        $dataToSend = [];
+        $response = [];
 
         if (env('APP_DEBUG')) {
-            $dataToSend['errorMessage'] = $errorCode->getMessage();
+            $response['error_message'] = $errorCode->getMessage();
         }
 
-        $dataToSend += [
-            'errorCode' => $errorCode->getCode(),
+        $response += [
+            'error_code' => $errorCode->getCode(),
             'data' => $data,
             'metadata' => $metadata
         ];
 
-        echo json_encode($dataToSend);
+        $response = FieldConversion::convertToCamelCase($response);
+
+        echo json_encode($response);
         die;
     }
 
@@ -80,25 +83,25 @@ class JsonResponse
         $user = Auth::user();
 
         $encrypter = new Encrypter;
-        $plainRefreshToken = $encrypter->generatePlainToken(64);
-        $refreshToken = $encrypter->encryptToken($plainRefreshToken);
+        $refreshToken = $encrypter->generateToken(64);
+        $encryptedRefreshToken = $encrypter->encrypt($refreshToken);
 
         $jwtEncryptedName = $encrypter->encrypt('JWT', 3);
         $jwt = $user->createToken($jwtEncryptedName);
-        $plainJWT = $jwt->plainTextToken;
+        $jwtToken = $jwt->plainTextToken;
         $jwtId = $jwt->accessToken->getKey();
 
-        $user->personalAccessToken()->where('id', $jwtId)->update(['refresh_token' => $refreshToken]);
+        $user->personalAccessToken()->where('id', $jwtId)->update(['refresh_token' => $encryptedRefreshToken]);
         $user->update(['last_logged_in' => now()]);
 
-        self::setCookie($plainJWT, 'JWT');
-        self::setCookie($plainRefreshToken, 'REFRESH-TOKEN');
+        self::setCookie($jwtToken, 'JWT');
+        self::setCookie($refreshToken, 'REFRESH-TOKEN');
     }
 
     /**
-     * Odświeżenie tokenu autoryzacyjnego
+     * Odświeżenie tokenów uwierzytelniających
      * 
-     * @param App\Models\PersonalAccessToken $personalAccessToken obiekt tokenu autoryzacyjnego
+     * @param App\Models\PersonalAccessToken $personalAccessToken obiekt tokenu uwierzytelniającego
      * 
      * @return void
      */
@@ -107,7 +110,7 @@ class JsonResponse
         Auth::loginUsingId($personalAccessToken->tokenable_id);
 
         $personalAccessToken->delete();
-        
+
         self::prepareCookies();
     }
 
@@ -161,19 +164,19 @@ class JsonResponse
 
         $personalAccessToken = null;
 
-        if ($plainRefreshToken = $request->cookie('REFRESH-TOKEN')) {
+        if ($refreshToken = $request->cookie('REFRESH-TOKEN')) {
 
             $encrypter = new Encrypter;
-            $refreshToken = $encrypter->encryptToken($plainRefreshToken);
+            $encryptedRefreshToken = $encrypter->encrypt($refreshToken);
 
             /** @var PersonalAccessToken $personalAccessToken */
-            $personalAccessToken = PersonalAccessToken::where('refresh_token', $refreshToken)->first();
+            $personalAccessToken = PersonalAccessToken::where('refresh_token', $encryptedRefreshToken)->first();
     
             if ($personalAccessToken) {
                 if (Validation::timeComparison($personalAccessToken->created_at, env('REFRESH_TOKEN_LIFETIME'), '>')) {
                     $personalAccessToken->delete();
-                    self::deleteCookie('REFRESH-TOKEN');
                     $personalAccessToken = null;
+                    self::deleteCookie('REFRESH-TOKEN');
                 }
             } else {
                 self::deleteCookie('REFRESH-TOKEN');

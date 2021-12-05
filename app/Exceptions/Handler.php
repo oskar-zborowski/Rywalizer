@@ -4,7 +4,6 @@ namespace App\Exceptions;
 
 use App\Http\ErrorCodes\AuthErrorCode;
 use App\Http\ErrorCodes\BaseErrorCode;
-use App\Http\Libraries\FieldConversion\FieldConversion;
 use App\Http\Responses\JsonResponse;
 use BadMethodCallException;
 use Error;
@@ -75,8 +74,8 @@ class Handler extends ExceptionHandler
 
                 JsonResponse::sendError(
                     $throwable->getErrorCode(),
-                    FieldConversion::convertToCamelCase($throwable->getData()),
-                    FieldConversion::convertToCamelCase($throwable->getMetadata()),
+                    $throwable->getData(),
+                    $throwable->getMetadata(),
                 );
                 break;
 
@@ -85,7 +84,7 @@ class Handler extends ExceptionHandler
 
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase($throwable->getMessage()) : null
+                    env('APP_DEBUG') ? [$throwable->getMessage(), $throwable->getFile(), $throwable->getLine()] : null
                 );
                 break;
 
@@ -94,7 +93,7 @@ class Handler extends ExceptionHandler
 
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase($throwable->getMessage()) : null
+                    env('APP_DEBUG') ? [$throwable->getMessage(), $throwable->getFile(), $throwable->getLine()] : null
                 );
                 break;
 
@@ -103,7 +102,7 @@ class Handler extends ExceptionHandler
 
                 JsonResponse::sendError(
                     AuthErrorCode::INVALID_CREDENTIALS_PROVIDED(),
-                    FieldConversion::convertToCamelCase($throwable->getMessage())
+                    $throwable->getMessage()
                 );
                 break;
 
@@ -112,7 +111,7 @@ class Handler extends ExceptionHandler
 
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase($throwable->getMessage()) : null
+                    env('APP_DEBUG') ? [$throwable->getMessage(), $throwable->getFile(), $throwable->getLine()] : null
                 );
                 break;
 
@@ -121,7 +120,7 @@ class Handler extends ExceptionHandler
 
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase($throwable->getMessage()) : null
+                    env('APP_DEBUG') ? [$throwable->getMessage(), $throwable->getFile(), $throwable->getLine()] : null
                 );
                 break;
 
@@ -130,7 +129,7 @@ class Handler extends ExceptionHandler
 
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase($throwable->getMessage()) : null
+                    env('APP_DEBUG') ? [$throwable->getMessage(), $throwable->getFile(), $throwable->getLine()] : null
                 );
                 break;
 
@@ -139,7 +138,7 @@ class Handler extends ExceptionHandler
 
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase($throwable->getMessage()) : null
+                    env('APP_DEBUG') ? [$throwable->getMessage(), $throwable->getFile(), $throwable->getLine()] : null
                 );
                 break;
 
@@ -148,7 +147,7 @@ class Handler extends ExceptionHandler
 
                 JsonResponse::sendError(
                     BaseErrorCode::PERMISSION_DENIED(),
-                    FieldConversion::convertToCamelCase($throwable->getMessage())
+                    $throwable->getMessage()
                 );
                 break;
 
@@ -157,7 +156,7 @@ class Handler extends ExceptionHandler
 
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase($throwable->getMessage()) : null
+                    env('APP_DEBUG') ? [$throwable->getMessage(), $throwable->getFile(), $throwable->getLine()] : null
                 );
                 break;
 
@@ -166,7 +165,7 @@ class Handler extends ExceptionHandler
 
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase($throwable->getMessage()) : null
+                    env('APP_DEBUG') ? [$throwable->getMessage(), $throwable->getFile(), $throwable->getLine()] : null
                 );
                 break;
 
@@ -175,7 +174,7 @@ class Handler extends ExceptionHandler
 
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase($throwable->errorInfo) : null
+                    env('APP_DEBUG') ? [$throwable->errorInfo, $throwable->getFile(), $throwable->getLine()] : null
                 );
                 break;
 
@@ -184,7 +183,7 @@ class Handler extends ExceptionHandler
 
                 JsonResponse::sendError(
                     BaseErrorCode::LIMIT_EXCEEDED(),
-                    FieldConversion::convertToCamelCase($throwable->getMessage())
+                    $throwable->getMessage()
                 );
                 break;
 
@@ -193,7 +192,7 @@ class Handler extends ExceptionHandler
 
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase($throwable->getMessage()) : null
+                    env('APP_DEBUG') ? [$throwable->getMessage(), $throwable->getFile(), $throwable->getLine()] : null
                 );
                 break;
 
@@ -202,14 +201,14 @@ class Handler extends ExceptionHandler
 
                 JsonResponse::sendError(
                     BaseErrorCode::FAILED_VALIDATION(),
-                    FieldConversion::convertToCamelCase($throwable->errors())
+                    $throwable->errors()
                 );
                 break;
 
             default:
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? FieldConversion::convertToCamelCase($class) : null
+                    env('APP_DEBUG') ? $class : null
                 );
                 break;
         }

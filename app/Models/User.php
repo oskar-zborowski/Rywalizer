@@ -23,8 +23,12 @@ class User extends Authenticatable implements MustVerifyEmail
         'address_coordinates',
         'telephone',
         'facebook_profile',
+        'instagram_profile',
         'gender_type_id',
+        'role_type_id',
         'email_verified_at',
+        'account_deleted_at',
+        'account_blocked_at',
         'last_logged_in',
         'last_time_name_changed',
         'last_time_password_changed'
@@ -32,15 +36,11 @@ class User extends Authenticatable implements MustVerifyEmail
 
     protected $guarded = [
         'id',
-        'role_type_id',
-        'account_deleted_at',
-        'account_blocked_at',
         'created_at',
         'updated_at'
     ];
 
     protected $hidden = [
-        'id',
         'password',
         'gender_type_id',
         'role_type_id',
@@ -70,7 +70,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'birth_date',
         'address_coordinates',
         'telephone',
-        'facebook_profile'
+        'facebook_profile',
+        'instagram_profile'
     ];
 
     protected $maxSize = [
@@ -81,7 +82,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'birth_date' => 10,
         'address_coordinates' => 15,
         'telephone' => 24,
-        'facebook_profile' => 254
+        'facebook_profile' => 255,
+        'instagram_profile' => 255
     ];
 
     protected $with = [

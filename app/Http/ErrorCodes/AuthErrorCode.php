@@ -5,7 +5,7 @@ namespace App\Http\ErrorCodes;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Kody odpowiedzi do procesów uwierzytelniania, autoryzacji i ich pochodnych
+ * Kody odpowiedzi do procesu uwierzytelniania i jego pochodnych
  */
 class AuthErrorCode
 {
@@ -42,7 +42,7 @@ class AuthErrorCode
     }
 
     public static function EMAIL_VERIFIFICATION_TOKEN_HAS_EXPIRED(): ErrorCode {
-        return new ErrorCode('ATH9', 'EMAIL VERIFIFICATION TOKEN HAS EXPIRED', Response::HTTP_BAD_REQUEST);
+        return new ErrorCode('ATH9', 'EMAIL VERIFIFICATION TOKEN HAS EXPIRED', Response::HTTP_NOT_ACCEPTABLE);
     }
 
     public static function INVALID_PASSWORD_RESET_TOKEN(): ErrorCode {
@@ -50,7 +50,7 @@ class AuthErrorCode
     }
 
     public static function PASSWORD_RESET_TOKEN_HAS_EXPIRED(): ErrorCode {
-        return new ErrorCode('ATH11', 'PASSWORD RESET TOKEN HAS EXPIRED', Response::HTTP_BAD_REQUEST);
+        return new ErrorCode('ATH11', 'PASSWORD RESET TOKEN HAS EXPIRED', Response::HTTP_NOT_ACCEPTABLE);
     }
 
     public static function INVALID_REFRESH_TOKEN(): ErrorCode {

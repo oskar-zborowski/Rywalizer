@@ -135,7 +135,7 @@ class Encrypter
      * 
      * @return string|null
      */
-    public function generatePlainToken(int $maxSize = 64, string $addition = ''): ?string {
+    public function generateToken(int $maxSize = 64, string $addition = ''): ?string {
 
         $additionLength = strlen($addition);
 
@@ -144,29 +144,11 @@ class Encrypter
         $maxSize -= $modulo + $additionLength;
 
         if ($maxSize > 0) {
-            $plainToken = $this->fillWithRandomCharacters('', $maxSize, true) . $addition;
+            $token = $this->fillWithRandomCharacters('', $maxSize, true) . $addition;
         } else {
-            $plainToken = null;
+            $token = null;
         }
 
-        return $plainToken;
-    }
-
-    /**
-     * Szyfrowanie tokenu do przechowywania w bazie danych
-     * 
-     * @param string|null $plainToken token do zaszyfrowania
-     * 
-     * @return string|null
-     */
-    public function encryptToken(?string $plainToken): ?string {
-
-        if (is_string($plainToken) && strlen($plainToken) > 0) {
-            $encryptedToken = $this->encrypt($plainToken);
-        } else {
-            $encryptedToken = null;
-        }
-
-        return $encryptedToken;
+        return $token;
     }
 }

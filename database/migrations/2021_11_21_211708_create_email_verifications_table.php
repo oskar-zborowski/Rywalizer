@@ -12,7 +12,6 @@ class CreateEmailVerificationsTable extends Migration
      * @return void
      */
     public function up(): void {
-        
         Schema::create('email_verifications', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->mediumInteger('user_id')->unsigned();

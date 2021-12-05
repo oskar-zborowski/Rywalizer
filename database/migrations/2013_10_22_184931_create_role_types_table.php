@@ -12,7 +12,6 @@ class CreateRoleTypesTable extends Migration
      * @return void
      */
     public function up(): void {
-        
         Schema::create('role_types', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->string('name', 20)->unique();

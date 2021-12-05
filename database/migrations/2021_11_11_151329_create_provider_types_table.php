@@ -12,7 +12,6 @@ class CreateProviderTypesTable extends Migration
      * @return void
      */
     public function up(): void {
-        
         Schema::create('provider_types', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->string('name', 12)->unique();

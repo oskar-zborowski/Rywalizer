@@ -9,7 +9,7 @@ class RolePermission
         return [
 
             '1' => [
-                '/api/test'
+
             ],
 
             '2' => [
@@ -21,12 +21,12 @@ class RolePermission
             ],
 
             '4' => [
-                
+                'auth-test'
             ],
 
             'exceptions' => [
-                '1A' => [
-                    '/api/test'
+                '4A' => [
+                    'auth-test'
                 ]
             ]
         ];

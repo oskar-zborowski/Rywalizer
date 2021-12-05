@@ -8,8 +8,8 @@ use App\Http\Libraries\Validation\Validation;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Permissions;
 use App\Http\Permissions\RolePermission;
+use Illuminate\Support\Facades\Route;
 
 /**
  * Klasa wywoływana w celu sprawdzenia roli użytkownika i przyznania dostępu
@@ -28,8 +28,10 @@ class UserRole
         $roleType = explode(',', $user->roleType);
         $roleTypeAccessLevel = explode(':', $roleType[1]);
         $detailedUserAccessLevel = Validation::getStringBetweenOthers($roleTypeAccessLevel[1], '"', '"');
+
+        $routeName = Route::currentRouteName();
         
-        if (!$this->checkUserAccess($request->url(), $detailedUserAccessLevel)) {
+        if (!$this->checkUserAccess($routeName, $detailedUserAccessLevel)) {
             throw new ApiException(BaseErrorCode::PERMISSION_DENIED());
         }
 
@@ -37,14 +39,14 @@ class UserRole
     }
 
     /**
-     * Metoda wskazuje minimalny poziom dostępu dla podanego endpointu
+     * Metoda sprawdza czy użytkownik ma dostęp do wybranego endpointu
      * 
-     * @param string $endpoint
-     * @param string $detailedUserAccessLevel dla specyficznych przypadków cyfra + litera
+     * @param string $routeName nazwa endpointu
+     * @param string $detailedUserAccessLevel dla specyficznych przypadków [cyfra + litera]
      * 
      * @return bool
      */
-    private function checkUserAccess(string $endpoint, string $detailedUserAccessLevel): bool {
+    private function checkUserAccess(string $routeName, string $detailedUserAccessLevel): bool {
 
         $userAccessLevel = 0;
         $detailedUserAccessLevelLength = strlen($detailedUserAccessLevel);
@@ -59,9 +61,6 @@ class UserRole
             $userAccessLevel += (int) $detailedUserAccessLevel[$i];
         }
 
-        $endpointRootPos = strpos($endpoint, env('APP_URL')) + strlen(env('APP_URL'));
-        $endpoint = substr($endpoint, $endpointRootPos);
-
         $rolePermissions = RolePermission::getMinimumAccessLevel();
         $access = false;
 
@@ -70,17 +69,17 @@ class UserRole
             if (isset($rolePermissions[$i])) {
 
                 foreach ($rolePermissions[$i] as $rP) {
-                    if ($rP == $endpoint) {
+                    if ($rP == $routeName) {
                         $access = true;
                         break;
                     }
                 }
 
                 if ($access) {
-                
+
                     if (isset($rolePermissions['exceptions'][$detailedUserAccessLevel])) {
                         foreach ($rolePermissions['exceptions'][$detailedUserAccessLevel] as $rP) {
-                            if ($rP == $endpoint) {
+                            if ($rP == $routeName) {
                                 $access = false;
                                 break;
                             }

@@ -41,7 +41,7 @@ class ExternalAuthentication extends Model
     ];
 
     protected $maxSize = [
-        'authentication_id' => 254
+        'authentication_id' => 255
     ];
 
     public function user() {

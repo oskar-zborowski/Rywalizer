@@ -12,7 +12,6 @@ class CreateUsersTable extends Migration
      * @return void
      */
     public function up(): void {
-
         Schema::create('users', function (Blueprint $table) {
             $table->mediumIncrements('id');
             $table->string('first_name', 40);
@@ -24,6 +23,7 @@ class CreateUsersTable extends Migration
             $table->string('address_coordinates', 20)->nullable();
             $table->string('telephone', 32)->unique()->nullable();
             $table->string('facebook_profile', 340)->unique()->nullable();
+            $table->string('instagram_profile', 340)->unique()->nullable();
             $table->tinyInteger('gender_type_id')->unsigned()->nullable();
             $table->tinyInteger('role_type_id')->unsigned()->default(1);
             $table->timestamp('email_verified_at')->nullable();

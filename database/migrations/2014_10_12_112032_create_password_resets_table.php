@@ -12,7 +12,6 @@ class CreatePasswordResetsTable extends Migration
      * @return void
      */
     public function up(): void {
-
         Schema::create('password_resets', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->mediumInteger('user_id')->unsigned();

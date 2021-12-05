@@ -27,13 +27,13 @@ use Illuminate\Support\Facades\Storage;
 use Laravel\Socialite\Facades\Socialite;
 
 /**
- * Klasa odpowiedzialna za wszelkie kwestie związane z uwierzytelnianiem i jego pochodnymi
+ * Klasa odpowiedzialna za wszelkie kwestie związane z uwierzytelnianiem i jego pochodnymi, a także instancją użytkownika
  */
 class AuthController extends Controller
 {
     /**
      * #### `POST` `/api/login`
-     * Logowanie użytkownika
+     * Proces logowania użytkownika
      * 
      * @param Illuminate\Http\Request $request
      * 
@@ -41,31 +41,33 @@ class AuthController extends Controller
      */
     public function login(Request $request): void {
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        $auth = [
+            'email' => $request->encrypted_email,
+            'password' => $request->password
+        ];
+
+        if (!Auth::attempt($auth)) {
             throw new ApiException(AuthErrorCode::INVALID_CREDENTIALS());
         }
     
-        JsonResponse::checkUserAccess($request);
+        JsonResponse::checkUserAccess();
 
         $this->checkMissingUserInformation(true);
     }
 
     /**
      * #### `POST` `/api/register`
-     * Rejestracja użytkownika
+     * Proces rejestracji nowego użytkownika
      * 
      * @param App\Http\Requests\Auth\RegisterRequest $request
-     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
      * 
      * @return void
      */
-    public function register(RegisterRequest $request, Encrypter $encrypter): void {
+    public function register(RegisterRequest $request): void {
 
-        $plainEmail = $encrypter->decrypt($request->email);
-        $request->merge(['email' => $plainEmail]);
-
+        /** @var User $user */
         $user = User::create($request->only('first_name', 'last_name', 'email', 'password', 'birth_date', 'gender_type_id'));
-
+    
         Auth::loginUsingId($user->id);
 
         $this->sendVerificationEmail(true);
@@ -74,7 +76,7 @@ class AuthController extends Controller
 
     /**
      * #### `POST` `/api/forgot-password`
-     * Wysyłka linku na maila do resetu hasła
+     * Wysłanie maila z linkiem do resetu hasła
      * 
      * @param Illuminate\Http\Request $request
      * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
@@ -84,7 +86,7 @@ class AuthController extends Controller
     public function forgotPassword(Request $request, Encrypter $encrypter): void {
 
         /** @var User $user */
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->encrypted_email)->first();
 
         /** @var PasswordReset $passwordReset */
         $passwordReset = $user->passwordReset()->first();
@@ -101,20 +103,18 @@ class AuthController extends Controller
 
             if ($emailSendingCounter > 255) {
                 $emailSendingCounter = 1;
-                $passwordReset->delete();
             }
         }
 
-        $plainToken = $encrypter->generatePlainToken(64);
+        $token = $encrypter->generateToken(64);
 
         $user->passwordReset()->updateOrCreate([],
         [
-            'token' => $plainToken,
+            'token' => $token,
             'email_sending_counter' => $emailSendingCounter
         ]);
 
-        $url = env('APP_URL') . '/reset-password?token=' . $plainToken; // TODO Poprawić na prawidłowy URL
-
+        $url = env('APP_URL') . '/reset-password?token=' . $token; // TODO Poprawić na prawidłowy URL
         Mail::to($user)->send(new MailPasswordReset($url));
 
         JsonResponse::sendSuccess();
@@ -122,7 +122,7 @@ class AuthController extends Controller
 
     /**
      * #### `PATCH` `/api/reset-password`
-     * Reset hasła
+     * Proces resetu hasła
      * 
      * @param Illuminate\Http\Request $request
      * 
@@ -138,11 +138,11 @@ class AuthController extends Controller
         }
 
         $passwordReset->user()->first()->update([
-            'password' => $request->password,
+            'password' => $request->encrypted_password,
             'last_time_password_changed' => now()
         ]);
 
-        if ($request->do_not_logout === false) {
+        if (!$request->do_not_logout) {
             PersonalAccessToken::where('tokenable_id', $passwordReset->user_id)->delete();
         }
 
@@ -153,9 +153,9 @@ class AuthController extends Controller
 
     /**
      * #### `POST` `/api/email/verification-notification`
-     * Wysyłka linku aktywacyjnego na maila
+     * Wysłanie maila z linkiem aktywacyjnym
      * 
-     * @param bool $afterRegistartion flaga z informacją czy wywołanie metody jest pochodną procesu rejestracji
+     * @param bool $afterRegistartion flaga z informacją czy wywołanie metody jest pochodną procesu rejestracji nowego użytkownika
      * 
      * @return void
      */
@@ -169,57 +169,49 @@ class AuthController extends Controller
             $emailSendingCounter = 1;
 
             if (!$afterRegistartion) {
-    
+
                 if ($user->hasVerifiedEmail()) {
                     throw new ApiException(AuthErrorCode::EMAIL_ALREADY_VERIFIED());
                 }
-    
+
                 /** @var EmailVerification $emailVerification */
                 $emailVerification = $user->emailVerification()->first();
-    
+
                 if ($emailVerification) {
-    
+
                     $emailSendingCounter += $emailVerification->email_sending_counter;
-            
+
                     if (Validation::timeComparison($emailVerification->updated_at, env('PAUSE_BEFORE_RETRYING')*60, '<=', 'seconds')) {
                         throw new ApiException(AuthErrorCode::WAIT_BEFORE_RETRYING());
                     }
-    
+
                     if ($emailSendingCounter > 255) {
                         $emailSendingCounter = 1;
-                        $emailVerification->delete();
                     }
                 }
             }
-    
+
             $encrypter = new Encrypter;
-            $plainToken = $encrypter->generatePlainToken(64);
-    
+            $token = $encrypter->generateToken(64);
+
             $user->emailVerification()->updateOrCreate([],
             [
-                'token' => $plainToken,
+                'token' => $token,
                 'email_sending_counter' => $emailSendingCounter
             ]);
-    
-            $url = env('APP_URL') . '/email/verify?token=' . $plainToken; // TODO Poprawić na prawidłowy URL
-    
+
+            $url = env('APP_URL') . '/email/verify?token=' . $token; // TODO Poprawić na prawidłowy URL
             Mail::to($user)->send(new VerificationEmail($url));
-    
+
             if (!$afterRegistartion) {
                 JsonResponse::sendSuccess();
             }
-
-        } else {
-            throw new ApiException(
-                AuthErrorCode::INVALID_CREDENTIALS_PROVIDED(),
-                ['email' => [__('validation.custom.is-missing', ['attribute' => 'adres email'])]]
-            );
         }
     }
 
     /**
      * #### `PATCH` `/api/email/verify`
-     * Weryfikacja maila
+     * Proces weryfikacji maila
      * 
      * @param Illuminate\Http\Request $request
      * 
@@ -249,7 +241,7 @@ class AuthController extends Controller
 
     /**
      * #### `DELETE` `/api/logout`
-     * Wylogowanie użytkownika
+     * Proces wylogowania użytkownika
      * 
      * @param Illuminate\Http\Request $request
      * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
@@ -263,12 +255,12 @@ class AuthController extends Controller
             JsonResponse::deleteCookie('JWT');
         }
 
-        if ($plainRefreshToken = $request->cookie('REFRESH-TOKEN')) {
+        if ($refreshToken = $request->cookie('REFRESH-TOKEN')) {
 
-            $refreshToken = $encrypter->encryptToken($plainRefreshToken);
+            $encryptedRefreshToken = $encrypter->encrypt($refreshToken);
 
             /** @var PersonalAccessToken $personalAccessToken */
-            $personalAccessToken = PersonalAccessToken::where('refresh_token', $refreshToken)->first();
+            $personalAccessToken = PersonalAccessToken::where('refresh_token', $encryptedRefreshToken)->first();
 
             if ($personalAccessToken) {
                 $personalAccessToken->delete();
@@ -282,7 +274,7 @@ class AuthController extends Controller
 
     /**
      * #### `DELETE` `/api/logout-other-devices`
-     * Wylogowanie użytkownika ze wszystkich urządzeń poza obecnym
+     * Proces wylogowania użytkownika ze wszystkich urządzeń poza obecnym
      * 
      * @return void
      */
@@ -301,11 +293,13 @@ class AuthController extends Controller
      * #### `GET` `/api/auth/{provider}/redirect`
      * Przekierowanie użytkownika do zewnętrznego serwisu uwierzytelniającego (FACEBOOK, GOOGLE)
      *
-     * @param string $provider nazwa zewnętrznego serwisu
+     * @param string $provider nazwa zewnętrznego serwisu uwierzytelniającego
      * 
      * @return Illuminate\Http\RedirectResponse
      */
     public function redirectToProvider(string $provider): RedirectResponse {
+
+        $provider = strtolower($provider);
 
         $this->validateProvider($provider);
 
@@ -319,12 +313,14 @@ class AuthController extends Controller
      * #### `GET` `/api/auth/{provider}/callback`
      * Odebranie informacji o użytkowniku od zewnętrznego serwisu uwierzytelniającego
      *
-     * @param string $provider nazwa zewnętrznego serwisu
+     * @param string $provider nazwa zewnętrznego serwisu uwierzytelniającego
      * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
      * 
      * @return void
      */
     public function handleProviderCallback(string $provider, Encrypter $encrypter): void {
+
+        $provider = strtolower($provider);
 
         /** @var ProviderType $providerType */
         $providerType = $this->validateProvider($provider);
@@ -334,8 +330,8 @@ class AuthController extends Controller
 
         $user = $driver->stateless()->user();
 
-        $authenticationId = (strlen($user->getId()) > 0 && strlen($user->getId()) < 255) ? $user->getId() : null;
-        $encryptedAuthenticationId = $encrypter->encrypt($authenticationId, 254);
+        $authenticationId = (strlen($user->getId()) > 0 && strlen($user->getId()) < 256) ? $user->getId() : null;
+        $encryptedAuthenticationId = $encrypter->encrypt($authenticationId, 255);
 
         if (!$authenticationId) {
             throw new ApiException(
@@ -386,8 +382,8 @@ class AuthController extends Controller
             }
 
             if (strlen($user->getAvatar())) {
-                //TODO Sprawdzić wariant co jest zwracane kiedy użytkownik nie ma ustawionego zdjęcia profilowego
-                $avatarFilename = $this->saveAvatar($provider, $user->getAvatar());
+                // TODO Sprawdzić wariant co jest zwracane kiedy użytkownik nie ma ustawionego zdjęcia profilowego
+                $avatarFilename = $this->saveAvatar($user->getAvatar());
             }
 
             $newUser = [
@@ -428,34 +424,18 @@ class AuthController extends Controller
 
     /**
      * #### `POST` `/api/user`
-     * Uzupełnienie danych użytkownika, bądź też zaktualizowanie istniejących
+     * Proces uzupełnienia danych użytkownika, bądź też zaktualizowania już istniejących
      * 
      * @param App\Http\Requests\Auth\UpdateUserRequest $request
-     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
      * 
      * @return void
      */
-    public function updateUser(UpdateUserRequest $request, Encrypter $encrypter): void {
+    public function updateUser(UpdateUserRequest $request): void {
 
         /** @var User $user */
         $user = Auth::user();
 
         $updateUserInformation = null;
-
-        if ($request->email) {
-            $plainEmail = $encrypter->decrypt($request->email);
-            $request->merge(['email' => $plainEmail]);
-        }
-
-        if ($request->telephone) {
-            $plainTelephone = $encrypter->decrypt($request->telephone);
-            $request->merge(['telephone' => $plainTelephone]);
-        }
-
-        if ($request->facebook_profile) {
-            $plainFacebookProfile = $encrypter->decrypt($request->facebook_profile);
-            $request->merge(['facebook_profile' => $plainFacebookProfile]);
-        }
 
         $userFirstName = $request->first_name && $request->first_name != $user->first_name ? true : false;
         $userLastName = $request->last_name && $request->last_name != $user->last_name ? true : false;
@@ -464,6 +444,7 @@ class AuthController extends Controller
         $userAddressCoordinates = $request->address_coordinates && $request->address_coordinates != $user->address_coordinates ? true : false;
         $userTelephone = $request->telephone && $request->telephone != $user->telephone ? true : false;
         $userFacebookProfile = $request->facebook_profile && $request->facebook_profile != $user->facebook_profile ? true : false;
+        $userInstagramProfile = $request->instagram_profile && $request->instagram_profile != $user->instagram_profile ? true : false;
         $userGenderTypeId = $request->gender_type_id && $request->gender_type_id != $user->gender_type_id ? true : false;
 
         if ($userFirstName || $userLastName) {
@@ -488,20 +469,21 @@ class AuthController extends Controller
         }
 
         if ($userEmail) {
-            $updateUserInformation['email'] = $plainEmail;
+            $updateUserInformation['email'] = $request->email;
             $updateUserInformation['email_verified_at'] = null;
         }
 
         if ($request->password) {
-            $updateUserInformation['password'] = $request->password;
+            $updateUserInformation['password'] = $request->encrypted_password;
             $updateUserInformation['last_time_password_changed'] = now();
         }
 
         if ($request->avatar) {
-            $updateUserInformation['avatar'] = $this->saveAvatar('form', null, $request);
+            $updateUserInformation['avatar'] = $this->saveAvatar($request->avatar);
 
             if ($user->avatar) {
-                Storage::delete('avatars/' . $user->avatar);
+                $oldAvatarPath = 'avatars/' . $user->avatar;
+                Storage::delete($oldAvatarPath);
             }
         }
 
@@ -511,37 +493,37 @@ class AuthController extends Controller
 
         if ($userAddressCoordinates) {
 
-            $addressCoordinatesSeparators = explode(';', $request->address_coordinates);
+            $userAddressCoordinatesSeparators = explode(';', $request->address_coordinates);
 
-            if (count($addressCoordinatesSeparators) != 2) {
+            if (count($userAddressCoordinatesSeparators) != 2) {
                 throw new ApiException(
                     BaseErrorCode::FAILED_VALIDATION(),
-                    ['address_coordinates' => [__('validation.regex', ['attribute' => 'addressCoordinates'])]]
+                    ['address_coordinates' => [__('validation.regex')]]
                 );
             }
 
-            $latitudeLength = strlen($addressCoordinatesSeparators[0]);
-            $longitudeLength = strlen($addressCoordinatesSeparators[1]);
+            $latitudeLength = strlen($userAddressCoordinatesSeparators[0]);
+            $longitudeLength = strlen($userAddressCoordinatesSeparators[1]);
 
             if ($latitudeLength != 7 ||
                 $longitudeLength != 7 ||
-                $addressCoordinatesSeparators[0][2] != '.' ||
-                $addressCoordinatesSeparators[1][2] != '.')
+                $userAddressCoordinatesSeparators[0][2] != '.' ||
+                $userAddressCoordinatesSeparators[1][2] != '.')
             {
                 throw new ApiException(
                     BaseErrorCode::FAILED_VALIDATION(),
-                    ['address_coordinates' => [__('validation.regex', ['attribute' => 'addressCoordinates'])]]
+                    ['address_coordinates' => [__('validation.regex')]]
                 );
             }
 
             for ($i=0; $i<$latitudeLength; $i++) {
-
-                if (!is_numeric($addressCoordinatesSeparators[0][$i]) && $addressCoordinatesSeparators[0][$i] != '.' ||
-                    !is_numeric($addressCoordinatesSeparators[1][$i]) && $addressCoordinatesSeparators[1][$i] != '.')
+                if ((!is_numeric($userAddressCoordinatesSeparators[0][$i]) ||
+                    !is_numeric($userAddressCoordinatesSeparators[1][$i])) &&
+                    $i != 2)
                 {
                     throw new ApiException(
                         BaseErrorCode::FAILED_VALIDATION(),
-                        ['address_coordinates' => [__('validation.regex', ['attribute' => 'addressCoordinates'])]]
+                        ['address_coordinates' => [__('validation.regex')]]
                     );
                 }
             }
@@ -557,7 +539,7 @@ class AuthController extends Controller
                 if (!is_numeric($request->telephone[$i])) {
                     throw new ApiException(
                         BaseErrorCode::FAILED_VALIDATION(),
-                        ['telephone' => [__('validation.regex', ['attribute' => 'numeru telefonu'])]]
+                        ['telephone' => [__('validation.regex')]]
                     );
                 }
             }
@@ -567,6 +549,10 @@ class AuthController extends Controller
 
         if ($userFacebookProfile) {
             $updateUserInformation['facebook_profile'] = $request->facebook_profile;
+        }
+
+        if ($userInstagramProfile) {
+            $updateUserInformation['instagram_profile'] = $request->instagram_profile;
         }
 
         if ($userGenderTypeId) {
@@ -605,8 +591,8 @@ class AuthController extends Controller
      */
     private function validateProvider(string $provider): ProviderType {
 
-        $encrypter = new Encrypter;
         $provider = strtoupper($provider);
+        $encrypter = new Encrypter;
         $encryptedProviderName = $encrypter->encrypt($provider, 9);
 
         /** @var ProviderType $providerTypes */
@@ -625,58 +611,29 @@ class AuthController extends Controller
     /**
      * Zapisanie na serwerze zdjęcia profilowego użytkownika
      * 
-     * @param string $provider nazwa serwisu uwierzytelniającego bądź "form" dla opcji wgrywania przez formularz
-     * @param string|null $avatarUrl adres URL do zdjecia profilowego z serwisu uwierzytelniającego
-     * @param Illuminate\Http\Request $request
+     * @param string $avatarPath ścieżka do zdjęcia profilowego
      * 
      * @return string
      */
-    private function saveAvatar(string $provider, ?string $avatarUrl = null, Request $request = null): string {
+    private function saveAvatar(string $avatarPath): string {
 
-        $provider = strtoupper($provider);
-
-        switch ($provider) {
-
-            case 'FACEBOOK':
-            case 'GOOGLE':
-                $avatarUrlLocation = $avatarUrl;
-                // $avatarUrlHeaders = get_headers($avatarUrl, 1);
-                // $avatarUrlLocation = isset($avatarUrlHeaders['Location']) ? $avatarUrlHeaders['Location'] : $avatarUrl;
-                // $avatarContentType = $avatarUrlHeaders['Content-Type'];
-
-                // if (is_array($avatarContentType)) {
-                //     $avatarContentType = $avatarContentType[0];
-                // }
-
-                // $avatarFileExtensionSeparators = explode('/', $avatarContentType);
-                // $avatarFileExtensionSeparatorsLength = count($avatarFileExtensionSeparators);
-                // $avatarFileExtension = '.' . $avatarFileExtensionSeparators[$avatarFileExtensionSeparatorsLength-1];
-                break;
-
-            default:
-                $avatarUrlLocation = $request->avatar;
-                // $avatarFileExtension = '.' . $request->avatar->extension();
-                break;
-        }
-
-        $avatarFileExtension = '.jpeg';
+        $avatarFileExtension = '.' . env('AVATAR_FILE_EXTENSION');
 
         $encrypter = new Encrypter;
     
         do {
-            $avatarFilename = $encrypter->generatePlainToken(64, $avatarFileExtension);
-            $avatarFilenameEncrypted = $encrypter->encryptToken($avatarFilename);
+            $avatarFilename = $encrypter->generateToken(64, $avatarFileExtension);
+            $avatarFilenameEncrypted = $encrypter->encrypt($avatarFilename);
         } while (!Validation::checkUserUniqueness('avatar', $avatarFilenameEncrypted));
 
-        $avatarContents = file_get_contents($avatarUrlLocation);
+        $avatarDestination = 'storage/avatars/' . $avatarFilename;
+        $avatarContents = file_get_contents($avatarPath);
         $oldImage = imagecreatefromstring($avatarContents);
         $imageWidth = imagesx($oldImage);
         $imageHeight = imagesy($oldImage);
         $newImage = imagecreatetruecolor($imageWidth, $imageHeight);
         imagecopyresampled($newImage , $oldImage, 0, 0, 0, 0, $imageWidth, $imageHeight, $imageWidth, $imageHeight);
-        imagejpeg($newImage, 'storage/avatars/' .$avatarFilename, 100);
-
-        // Storage::put('avatars/' . $avatarFilename, $avatarContents);
+        imagejpeg($newImage, $avatarDestination, 100); // TODO Potestować ile maksymalnie można zmniejszyć jakość obrazu, żeby nadal był akceptowalny
 
         return $avatarFilename;
     }
@@ -717,6 +674,10 @@ class AuthController extends Controller
 
         if (!$user->facebook_profile) {
             $missingUserInformation['optional']['facebook_profile'] = [__('validation.custom.is-missing', ['attribute' => 'adres profilu na Facebooku'])];
+        }
+
+        if (!$user->instagram_profile) {
+            $missingUserInformation['optional']['instagram_profile'] = [__('validation.custom.is-missing', ['attribute' => 'adres profilu na Instagramie'])];
         }
 
         if (!$user->gender_type_id) {

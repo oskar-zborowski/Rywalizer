@@ -21,9 +21,9 @@ trait Encryptable
     }
 
     /**
-     * Deszyfrowanie pola, jeżeli jest deszyfrowalne
+     * Odszyfrowanie pola, jeżeli jest taka możliwość
      * 
-     * @param string $key nazwa pola do zaszyfrowania
+     * @param string $key nazwa pola do odszyfrowania
      * 
      * @return string|null
      */
@@ -40,10 +40,10 @@ trait Encryptable
     }
 
     /**
-     * Szyfrowanie pola, jeżeli jest szyfrowalne
+     * Zaszyfrowanie pola, jeżeli jest taka możliwość
      * 
-     * @param string $key nazwa pola do odszyfrowania
-     * @param string $value wartość do odszyfrowania
+     * @param string $key nazwa pola do zaszyfrowania
+     * @param string $value wartość do zaszyfrowania
      * 
      * @return string|null
      */
@@ -58,11 +58,11 @@ trait Encryptable
     }
 
     /**
-     * Deszyfrowanie całej grupy pól
+     * Odszyfrowanie całej grupy pól
      * 
-     * @return array
+     * @return array|null
      */
-    public function getArrayableAttributes(): array {
+    public function getArrayableAttributes(): ?array {
 
         $attributes = parent::getArrayableAttributes();
 

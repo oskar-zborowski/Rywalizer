@@ -4,25 +4,28 @@ namespace App\Http\Libraries\FieldConversion;
 
 use Illuminate\Support\Str;
 
+/**
+ * Klasa umożliwiająca konwersję pomiędzy formatami CamelCase, a snake_case
+ */
 class FieldConversion
 {
     /**
      * Konwersja nazw pól na formę camelCase
      * 
-     * @param $data tablica z informacjami kierowanymi do wysłania odpowiedzi
+     * @param array $data dane wychodzące
      * @param int $from rząd wielkości od którego pola mają być przetwarzane dane
      * @param int $to rząd wielkości do którego pola mają być przetwarzane dane
      * 
-     * @return array|string|null
+     * @return array
      */
-    public static function convertToCamelCase($data, int $from = 0, int $to = null) {
+    public static function convertToCamelCase(array $data, int $from = 0, int $to = null): array {
         return self::convertByDefault('camel', $data, $from, $to, 0);
     }
 
     /**
      * Konwersja nazw pól na formę snake_Case
      * 
-     * @param $data tablica z informacjami kierowanymi do wysłania odpowiedzi
+     * @param $data dane przychodzące
      * @param int $from rząd wielkości od którego pola mają być przetwarzane dane
      * @param int $to rząd wielkości do którego pola mają być przetwarzane dane
      * 
@@ -36,7 +39,7 @@ class FieldConversion
      * Uniwersalna konwersja nazw pól
      * 
      * @param string $conversionType informacja o typie konwersji (camel, snake)
-     * @param $data tablica z informacjami kierowanymi do wysłania odpowiedzi
+     * @param $data dane podlegające konwersji
      * @param int $from rząd wielkości od którego pola mają być przetwarzane dane
      * @param int $to rząd wielkości do którego pola mają być przetwarzane dane
      * @param int $current bieżący rząd wielkości

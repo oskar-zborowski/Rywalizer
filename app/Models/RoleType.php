@@ -16,14 +16,6 @@ class RoleType extends Model
         'access_level'
     ];
 
-    protected $hidden = [
-        'id'
-    ];
-
-    // protected $casts = [
-    //     'access_level' => 'int'
-    // ];
-
     protected $encryptable = [
         'name',
         'access_level'

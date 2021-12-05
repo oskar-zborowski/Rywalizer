@@ -9,6 +9,7 @@ use Closure;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /**
  * Klasa wywoływana przed autoryzacją
@@ -33,13 +34,18 @@ class Authenticate extends Middleware
 
         /** @var Request $request */
 
-        $exceptionalURLs['login'] = env('APP_URL') . '/api/login';
-        $exceptionalURLs['register'] = env('APP_URL') . '/api/register';
-        $exceptionalURLs['forgotPassword'] = env('APP_URL') . '/api/forgot-password';
-        $exceptionalURLs['resetPassword'] = env('APP_URL') . '/api/reset-password';
+        $currentRootName = Route::currentRouteName();
 
-        $externalAuthenticationURL = env('APP_URL') . '/api/auth';
-        $logoutURL = env('APP_URL') . '/api/logout';
+        $exceptionalRouteNames = [
+            'auth-login',
+            'auth-register',
+            'auth-forgotPassword',
+            'auth-resetPassword',
+            'auth-redirectToProvider',
+            'auth-handleProviderCallback'
+        ];
+
+        $logout = 'auth-logout';
 
         if ($jwt = $request->cookie('JWT')) {
 
@@ -56,27 +62,23 @@ class Authenticate extends Middleware
 
                 if ($personalAccessToken) {
 
-                    if (in_array($request->url(), $exceptionalURLs) ||
-                        strpos($request->url(), $externalAuthenticationURL) !== false)
-                    {
+                    if (in_array($currentRootName, $exceptionalRouteNames)) {
                         throw new ApiException(AuthErrorCode::REFRESH_TOKEN_IS_STILL_ACTIVE());
                     }
 
-                    if ($request->url() == $logoutURL) {
-                        JsonResponse::deleteCookie('REFRESH-TOKEN');
-                    } else {
+                    if ($currentRootName != $logout) {
                         JsonResponse::refreshToken($personalAccessToken);
+                    } else {
+                        $authenticated = false;
                     }
 
                 } else {
 
-                    if ($request->url() == $logoutURL) {
+                    if ($currentRootName == $logout) {
                         JsonResponse::sendSuccess();
                     }
 
-                    if (!in_array($request->url(), $exceptionalURLs) &&
-                        strpos($request->url(), $externalAuthenticationURL) === false)
-                    {
+                    if (!in_array($currentRootName, $exceptionalRouteNames)) {
                         throw new ApiException(AuthErrorCode::UNAUTHORIZED());
                     }
 
@@ -88,9 +90,7 @@ class Authenticate extends Middleware
 
                 JsonResponse::checkUserAccess($request);
 
-                if (in_array($request->url(), $exceptionalURLs) ||
-                    strpos($request->url(), $externalAuthenticationURL) !== false)
-                {
+                if (in_array($currentRootName, $exceptionalRouteNames)) {
                     throw new ApiException(AuthErrorCode::ALREADY_LOGGED_IN());
                 }
             }
@@ -101,28 +101,22 @@ class Authenticate extends Middleware
 
             if ($personalAccessToken) {
 
-                if (in_array($request->url(), $exceptionalURLs) ||
-                    strpos($request->url(), $externalAuthenticationURL) !== false)
-                {
+                if (in_array($currentRootName, $exceptionalRouteNames)) {
                     throw new ApiException(AuthErrorCode::REFRESH_TOKEN_IS_STILL_ACTIVE());
                 }
 
-                if ($request->url() == $logoutURL) {
-                    JsonResponse::deleteCookie('REFRESH-TOKEN');
-                } else {
+                if ($currentRootName != $logout) {
                     JsonResponse::refreshToken($personalAccessToken);
                     JsonResponse::checkUserAccess($request);
                 }
 
             } else {
 
-                if ($request->url() == $logoutURL) {
+                if ($currentRootName == $logout) {
                     JsonResponse::sendSuccess();
                 }
 
-                if (!in_array($request->url(), $exceptionalURLs) &&
-                    strpos($request->url(), $externalAuthenticationURL) === false)
-                {
+                if (!in_array($currentRootName, $exceptionalRouteNames)) {
                     throw new ApiException(AuthErrorCode::UNAUTHORIZED());
                 }
             }
