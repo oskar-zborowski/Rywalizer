@@ -16,6 +16,6 @@ class GitHubController extends Controller
      * @return void
      */
     public function pull(): void {
-        echo shell_exec('git pull https://BolleyVall7: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@github.com/BolleyVall7/Rywalizer.git master 2>&1');
+        echo shell_exec('sudo git pull https://BolleyVall7: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@github.com/BolleyVall7/Rywalizer.git master 2>&1');
     }
 }
