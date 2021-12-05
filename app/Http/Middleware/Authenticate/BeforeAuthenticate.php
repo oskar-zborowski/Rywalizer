@@ -47,12 +47,12 @@ class BeforeAuthenticate
 
             if ($request->email) {
                 $encryptedEmail = $encrypter->encrypt($request->email, 254);
-                $request->merge(['encrypted_email' => $encryptedEmail]);
+                $request->merge(['email' => $encryptedEmail]);
             }
 
             if ($routeName == $forgotPassword) {
                 $request->validate([
-                    'encrypted_email' => 'exists:users,email'
+                    'email' => 'exists:users'
                 ]);
             }
         }
@@ -80,7 +80,7 @@ class BeforeAuthenticate
 
                 if ($request->password) {
                     $encryptedPassword = $encrypter->hash($request->password);
-                    $request->merge(['encrypted_password' => $encryptedPassword]);
+                    $request->merge(['password' => $encryptedPassword]);
                 }
             }
         }
@@ -119,17 +119,17 @@ class BeforeAuthenticate
 
             if ($request->telephone) {
                 $encryptedTelephone = $encrypter->encrypt($request->telephone, 24);
-                $request->merge(['encrypted_telephone' => $encryptedTelephone]);
+                $request->merge(['telephone' => $encryptedTelephone]);
             }
 
             if ($request->facebook_profile) {
                 $encryptedFacebookProfile = $encrypter->encrypt($request->facebook_profile, 255);
-                $request->merge(['encrypted_facebook_profile' => $encryptedFacebookProfile]);
+                $request->merge(['facebook_profile' => $encryptedFacebookProfile]);
             }
 
             if ($request->instagram_profile) {
                 $encryptedInstagramProfile = $encrypter->encrypt($request->instagram_profile, 255);
-                $request->merge(['encrypted_instagram_profile' => $encryptedInstagramProfile]);
+                $request->merge(['instagram_profile' => $encryptedInstagramProfile]);
             }
         }
 

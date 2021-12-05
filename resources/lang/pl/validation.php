@@ -46,7 +46,7 @@ return [
     'distinct'             => 'Pole :attribute ma zduplikowane wartości.',
     'email'                => 'To pole nie jest poprawnym adresem e-mail.', // Zmieniłem z 'Pole :attribute nie jest poprawnym adresem e-mail.'
     'ends_with'            => 'Pole :attribute musi kończyć się jedną z następujących wartości: :values.',
-    'exists'               => 'To pole jest nieprawidłowe.', // Zmieniłem z 'Zaznaczone pole :attribute jest nieprawidłowe.'
+    'exists'               => 'Podany :attribute nie istnieje.', // Zmieniłem z 'Zaznaczone pole :attribute jest nieprawidłowe.'
     'file'                 => 'Pole :attribute musi być plikiem.',
     'filled'               => 'Pole :attribute nie może być puste.',
     'gt'                   => [
@@ -124,7 +124,7 @@ return [
     'starts_with'          => 'Pole :attribute musi zaczynać się jedną z następujących wartości: :values.',
     'string'               => 'To pole musi być ciągiem znaków.', // Zmieniłem z 'Pole :attribute musi być ciągiem znaków.'
     'timezone'             => 'Pole :attribute musi być prawidłową strefą czasową.',
-    'unique'               => 'Taka nazwa jest już w użyciu.', // Zmieniłem z 'Taki :attribute już istnieje.'
+    'unique'               => 'Taki :attribute jest już w użyciu.', // Zmieniłem z 'Taki :attribute już istnieje.'
     'uploaded'             => 'Nie udało się wgrać pliku :attribute.',
     'url'                  => 'To pole nie jest poprawnym adresem URL.', // Zmieniłem z 'Format pola :attribute jest nieprawidłowy.'
     'uuid'                 => 'Pole :attribute musi być poprawnym identyfikatorem UUID.',

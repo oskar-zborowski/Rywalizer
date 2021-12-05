@@ -36,17 +36,13 @@ class AuthController extends Controller
      * Proces logowania użytkownika
      * 
      * @param Illuminate\Http\Request $request
+     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
      * 
      * @return void
      */
-    public function login(Request $request): void {
+    public function login(Request $request, Encrypter $encrypter): void {
 
-        $auth = [
-            'email' => $request->encrypted_email,
-            'password' => $request->password
-        ];
-
-        if (!Auth::attempt($auth)) {
+        if (!Auth::attempt($request->only('email', 'password'))) {
             throw new ApiException(AuthErrorCode::INVALID_CREDENTIALS());
         }
     
@@ -60,10 +56,14 @@ class AuthController extends Controller
      * Proces rejestracji nowego użytkownika
      * 
      * @param App\Http\Requests\Auth\RegisterRequest $request
+     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
      * 
      * @return void
      */
-    public function register(RegisterRequest $request): void {
+    public function register(RegisterRequest $request, Encrypter $encrypter): void {
+
+        $email = $encrypter->decrypt($request->email);
+        $request->merge(['email' => $email]);
 
         /** @var User $user */
         $user = User::create($request->only('first_name', 'last_name', 'email', 'password', 'birth_date', 'gender_type_id'));
@@ -86,7 +86,7 @@ class AuthController extends Controller
     public function forgotPassword(Request $request, Encrypter $encrypter): void {
 
         /** @var User $user */
-        $user = User::where('email', $request->encrypted_email)->first();
+        $user = User::where('email', $request->email)->first();
 
         /** @var PasswordReset $passwordReset */
         $passwordReset = $user->passwordReset()->first();
@@ -138,7 +138,7 @@ class AuthController extends Controller
         }
 
         $passwordReset->user()->first()->update([
-            'password' => $request->encrypted_password,
+            'password' => $request->password,
             'last_time_password_changed' => now()
         ]);
 
@@ -427,10 +427,23 @@ class AuthController extends Controller
      * Proces uzupełnienia danych użytkownika, bądź też zaktualizowania już istniejących
      * 
      * @param App\Http\Requests\Auth\UpdateUserRequest $request
+     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
      * 
      * @return void
      */
-    public function updateUser(UpdateUserRequest $request): void {
+    public function updateUser(UpdateUserRequest $request, Encrypter $encrypter): void {
+
+        $email = $encrypter->decrypt($request->email);
+        $request->merge(['email' => $email]);
+
+        $telephone = $encrypter->decrypt($request->telephone);
+        $request->merge(['telephone' => $telephone]);
+
+        $facebookProfile = $encrypter->decrypt($request->facebook_profile);
+        $request->merge(['facebook_profile' => $facebookProfile]);
+
+        $instagramProfile = $encrypter->decrypt($request->instagram_profile);
+        $request->merge(['instagram_profile' => $instagramProfile]);
 
         /** @var User $user */
         $user = Auth::user();
@@ -474,7 +487,7 @@ class AuthController extends Controller
         }
 
         if ($request->password) {
-            $updateUserInformation['password'] = $request->encrypted_password;
+            $updateUserInformation['password'] = $request->password;
             $updateUserInformation['last_time_password_changed'] = now();
         }
 
