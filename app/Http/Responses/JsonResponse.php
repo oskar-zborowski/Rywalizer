@@ -127,10 +127,12 @@ class JsonResponse
         switch ($name) {
 
             case 'JWT':
+                $name = env('JWT_COOKIE_NAME');
                 $expires = time()+env('JWT_LIFETIME')*60;
                 break;
 
             case 'REFRESH-TOKEN':
+                $name = env('REFRESH_TOKEN_COOKIE_NAME');
                 $expires = time()+env('REFRESH_TOKEN_LIFETIME')*60;
                 break;
 
@@ -150,6 +152,13 @@ class JsonResponse
      * @return void
      */
     public static function deleteCookie(string $name): void {
+
+        if ($name == 'JWT') {
+            $name = env('JWT_COOKIE_NAME');
+        } else if ($name == 'REFRESH-TOKEN') {
+            $name = env('REFRESH_TOKEN_COOKIE_NAME');
+        }
+        
         setcookie($name, null, -1, '/', env('APP_DOMAIN'), true, true);
     }
 
@@ -164,7 +173,7 @@ class JsonResponse
 
         $personalAccessToken = null;
 
-        if ($refreshToken = $request->cookie('REFRESH-TOKEN')) {
+        if ($refreshToken = $request->cookie(env('REFRESH_TOKEN_COOKIE_NAME'))) {
 
             $encrypter = new Encrypter;
             $encryptedRefreshToken = $encrypter->encrypt($refreshToken);
@@ -202,7 +211,7 @@ class JsonResponse
 
             self::deleteCookie('JWT');
 
-            if ($request && $request->cookie('REFRESH-TOKEN')) {
+            if ($request && $request->cookie(env('REFRESH_TOKEN_COOKIE_NAME'))) {
                 self::deleteCookie('REFRESH-TOKEN');
             }
 

@@ -255,7 +255,7 @@ class AuthController extends Controller
             JsonResponse::deleteCookie('JWT');
         }
 
-        if ($refreshToken = $request->cookie('REFRESH-TOKEN')) {
+        if ($refreshToken = $request->cookie(env('REFRESH_TOKEN_COOKIE_NAME'))) {
 
             $encryptedRefreshToken = $encrypter->encrypt($refreshToken);
 

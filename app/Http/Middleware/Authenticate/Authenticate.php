@@ -47,7 +47,7 @@ class Authenticate extends Middleware
 
         $logout = 'auth-logout';
 
-        if ($jwt = $request->cookie('JWT')) {
+        if ($jwt = $request->cookie(env('JWT_COOKIE_NAME'))) {
 
             $request->headers->set('Authorization', 'Bearer ' . $jwt);
             $authenticated = true;
