@@ -31,7 +31,7 @@ return [
         'numeric' => 'Pole :attribute musi zawierać się w granicach :min - :max.',
         'string'  => 'To pole musi zawierać od :min do :max znaków.' // Zmieniłem z 'Pole :attribute musi zawierać się w granicach :min - :max znaków.'
     ],
-    'boolean'              => 'Pole :attribute musi mieć wartość logiczną prawda albo fałsz.',
+    'boolean'              => 'To pole musi mieć wartość logiczną prawda albo fałsz.', // Zmieniłem z 'Pole :attribute musi mieć wartość logiczną prawda albo fałsz.'
     'confirmed'            => 'Hasła nie są identyczne.', // Zmieniłem z 'Potwierdzenie pola :attribute nie zgadza się.'
     'current_password'     => 'Hasło jest nieprawidłowe.',
     'date'                 => 'To pole nie jest prawidłową datą.', // Zmieniłem z 'Pole :attribute nie jest prawidłową datą.'
@@ -46,7 +46,7 @@ return [
     'distinct'             => 'Pole :attribute ma zduplikowane wartości.',
     'email'                => 'To pole nie jest poprawnym adresem e-mail.', // Zmieniłem z 'Pole :attribute nie jest poprawnym adresem e-mail.'
     'ends_with'            => 'Pole :attribute musi kończyć się jedną z następujących wartości: :values.',
-    'exists'               => 'Podany :attribute jest nieprawidłowy.', // Zmieniłem z 'Zaznaczone pole :attribute jest nieprawidłowe.'
+    'exists'               => 'To pole jest nieprawidłowe.', // Zmieniłem z 'Zaznaczone pole :attribute jest nieprawidłowe.'
     'file'                 => 'Pole :attribute musi być plikiem.',
     'filled'               => 'Pole :attribute nie może być puste.',
     'gt'                   => [
