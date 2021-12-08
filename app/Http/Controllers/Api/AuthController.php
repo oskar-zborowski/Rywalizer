@@ -201,7 +201,7 @@ class AuthController extends Controller
             ]);
 
             $url = env('APP_URL') . '/email/verify?token=' . $token; // TODO Poprawić na prawidłowy URL
-            Mail::to($user)->send(new VerificationEmail($url));
+            Mail::to($user)->send(new VerificationEmail($url, $afterRegistartion));
 
             if (!$afterRegistartion) {
                 JsonResponse::sendSuccess();
@@ -228,6 +228,10 @@ class AuthController extends Controller
 
         /** @var EmailVerification $emailVerification */
         $emailVerification = $user->emailVerification()->where('token', $request->token)->first();
+
+        if (!$emailVerification) {
+            throw new ApiException(AuthErrorCode::INVALID_EMAIL_VERIFIFICATION_TOKEN());
+        }
 
         if (Validation::timeComparison($emailVerification->updated_at, env('EMAIL_TOKEN_LIFETIME'), '>')) {
             throw new ApiException(AuthErrorCode::EMAIL_VERIFIFICATION_TOKEN_HAS_EXPIRED());
@@ -413,6 +417,10 @@ class AuthController extends Controller
             ]);
 
             Auth::loginUsingId($createUser->id);
+
+            if ($createUser->email) {
+                Mail::to($createUser)->send(new VerificationEmail());
+            }
 
         } else {
             Auth::loginUsingId($externalAuthentication->user_id);

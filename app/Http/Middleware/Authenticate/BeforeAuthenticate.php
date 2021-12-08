@@ -102,10 +102,6 @@ class BeforeAuthenticate
                     'token' => 'exists:password_resets',
                     'do_not_logout' => 'nullable|boolean'
                 ]);
-            } else {
-                $request->validate([
-                    'token' => 'exists:email_verifications'
-                ]);
             }
         }
 
