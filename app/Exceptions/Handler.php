@@ -66,7 +66,6 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $throwable): void {
 
         $class = get_class($throwable);
-        echo json_encode($throwable->getMessage());
 
         switch ($class) {
 

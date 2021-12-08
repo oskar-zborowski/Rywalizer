@@ -19,6 +19,7 @@
         }
     },
     "include": [
-        "resources/assets/**/*"
+        "resources/assets/**/*",
+        "types.d.ts"
     ]
 }

@@ -1,6 +1,7 @@
 import { GrayButton, OrangeButton } from '@/components/form/Button/Button';
 import userStore, { UserStore } from '@/store/UserStore';
 import EventsView from '@/views/Events/EventsView';
+import SportFacilityDetails from '@/views/SportFacilities/SportFacilityDetails/SportFacilityDetails';
 import UserView from '@/views/User/UserView';
 import { observer } from 'mobx-react';
 import React from 'react';
@@ -27,6 +28,7 @@ const MainContainer: React.FC<{ store: UserStore }> = (props) => {
                 <Routes>
                     <Route path="/" element={<EventsView />} />
                     <Route path="/konto" element={<UserView store={props.store} />} />
+                    <Route path="/obiekty/1" element={<SportFacilityDetails />} />
                 </Routes>
             </main>
             <Scrollbar />

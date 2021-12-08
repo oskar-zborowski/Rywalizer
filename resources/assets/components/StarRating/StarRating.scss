@@ -1,0 +1,25 @@
+.starRating {
+    unicode-bidi: bidi-override;
+    color: #545455;
+    position: relative;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    height: 20px;
+    user-select: none;
+}
+
+.ratingUpper {
+    position: absolute;
+    z-index: 1;
+    display: flex;
+    overflow: hidden;
+    color: #ce8f3e;
+}
+
+.ratingLower {
+    padding: 0;
+    display: flex;
+    z-index: 0;
+}
