@@ -1,0 +1,81 @@
+.sportFacilityDetails {
+    padding: 20px 20px 0px 20px;
+}
+
+.header {
+    border: 1px solid #141417;
+    border-radius: 8px;
+    background-color: #29292e;
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+
+    .logo {
+        height: 85px;
+        width: 240px;
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: #fff;
+        padding: 15px;
+        opacity: 0.5;
+        transition: opacity 0.2s;
+
+        &:hover {
+            opacity: 1;
+        }
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    }
+
+    .details {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        .stars {
+            color: #ce8f3e;
+        }
+
+        .name {
+            color: #ce8f3e;
+            font-weight: bold;
+            font-size: 19px;
+        }
+
+        .location {
+            color: #a1a1a1;
+        }
+    }
+
+    .buttons {
+        margin-left: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+}
+
+.sectionName {
+    font-weight: bold;
+    font-size: 19px;
+    color: #fff;
+}
+
+.contactSection {
+    display: flex;
+    align-items: center;
+    padding: 20px 0;
+    margin-bottom: 20px;
+    border-bottom: 2px solid#141417;
+
+    .contactItem {
+        display: flex;
+        align-items: center;
+    }
+}
