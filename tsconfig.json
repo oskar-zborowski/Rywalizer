@@ -1,30 +1,24 @@
 {
     "compilerOptions": {
-        "target": "es6",
-        "lib": [
-            "dom",
-            "dom.iterable",
-        ],
-        "skipLibCheck": false,
-        "allowSyntheticDefaultImports": true,
-        "strict": true,
-        "alwaysStrict": true,
-        "forceConsistentCasingInFileNames": true,
-        "noFallthroughCasesInSwitch": true,
-        "module": "esnext",
+        "allowJs": true,
+        "esModuleInterop": true,
+        "noImplicitAny": false,
+        "sourceMap": true,
+        "baseUrl": ".",
+        "outDir": "electron",
         "moduleResolution": "node",
         "resolveJsonModule": true,
-        "isolatedModules": true,
-        "jsx": "react",
-        "sourceMap": true,
         "experimentalDecorators": true,
-        "baseUrl": ".",
+        "useDefineForClassFields": true,
+        "jsx": "react",
+        "target": "es2018",
         "paths": {
-            "@/*": ["resources/assets/*"]
+            "@/*": [
+                "resources/assets/*"
+            ]
         }
     },
     "include": [
-        "resources/assets/**/*",
-        "assets.d.ts"
+        "resources/assets/**/*"
     ]
 }

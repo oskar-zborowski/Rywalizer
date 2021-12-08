@@ -6,6 +6,7 @@ import React, { Fragment } from 'react';
 import MapViewer from '@/components/MapViewer/MapViewer';
 import EventsView from '@/views/Events/EventsView';
 import { BrowserRouter as Router } from 'react-router-dom';
+import userStore from './store/UserStore';
 
 const App: React.FC = () => {
     return (
@@ -13,7 +14,7 @@ const App: React.FC = () => {
             <Fragment>
                 <Topbar />
                 <Content>
-                    <MainContainer />
+                    <MainContainer store={userStore}/>
                     <MapViewer />
                 </Content>
                 <Footer />

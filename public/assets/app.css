@@ -114,41 +114,6 @@
   width: 100%;
   position: absolute;
 }
-/*!*****************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/MainContainer/MainContainer.scss ***!
-  \*****************************************************************************************************************************************************************************************************************************************/
-.MainContainer_mainContainer__PXJXG {
-  flex: 50%;
-  max-width: 1050px;
-}
-
-.MainContainer_mainContainer__PXJXG {
-  position: relative;
-  border-radius: 15px;
-  height: 100%;
-  background-color: #18181c;
-  border: 1px solid #29292e;
-}
-.MainContainer_mainContainer__PXJXG .MainContainer_authButtons__YbWmJ {
-  position: absolute;
-  right: 0;
-  top: -30px;
-  transform: translateY(-50%);
-  display: flex;
-  gap: 10px;
-}
-.MainContainer_mainContainer__PXJXG .MainContainer_authButtons__YbWmJ * {
-  width: 120px;
-  float: left;
-  display: block;
-}
-@media (max-width: 576px) {
-  .MainContainer_mainContainer__PXJXG {
-    background-color: transparent;
-    border-radius: 0;
-    border: none;
-  }
-}
 /*!**************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/Events/EventsView.scss ***!
   \**************************************************************************************************************************************************************************************************************************/
@@ -360,6 +325,41 @@
 .UserView_userView__wD4e5 .UserView_rightColumn__qh0H1 .UserView_fieldValue__UZNLw {
   font-weight: bold;
   padding-left: 25px;
+}
+/*!*****************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/MainContainer/MainContainer.scss ***!
+  \*****************************************************************************************************************************************************************************************************************************************/
+.MainContainer_mainContainer__PXJXG {
+  flex: 50%;
+  max-width: 1050px;
+}
+
+.MainContainer_mainContainer__PXJXG {
+  position: relative;
+  border-radius: 15px;
+  height: 100%;
+  background-color: #18181c;
+  border: 1px solid #29292e;
+}
+.MainContainer_mainContainer__PXJXG .MainContainer_authButtons__YbWmJ {
+  position: absolute;
+  right: 0;
+  top: -30px;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 10px;
+}
+.MainContainer_mainContainer__PXJXG .MainContainer_authButtons__YbWmJ * {
+  width: 120px;
+  float: left;
+  display: block;
+}
+@media (max-width: 576px) {
+  .MainContainer_mainContainer__PXJXG {
+    background-color: transparent;
+    border-radius: 0;
+    border: none;
+  }
 }
 /*!*********************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/MapViewer/MapViewer.scss ***!

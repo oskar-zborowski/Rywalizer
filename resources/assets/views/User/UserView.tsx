@@ -1,42 +1,11 @@
 import { BlackButton } from '@/components/form/Button/Button';
-import useScrollbar from '@/components/MainContainer/Scrollbar/Scrollbar';
-import React, { useEffect, useState } from 'react';
+import { UserStore } from '@/store/UserStore';
+import { observer } from 'mobx-react';
+import React from 'react';
 import styles from './UserView.scss';
-import prof from '@/images/prof.png';
-import axios from 'axios';
 
-interface IUserData {
-    firstName: string,
-    lastName: string,
-    email: string,
-    avatar: string,
-    birthDate: string,
-    addressCoordinates: string,
-    telephone: string,
-    facebookProfile: string,
-    lastLoggedIn: string,
-    lastTimeNameChanged: string,
-    lastTimePasswordChanged: string,
-    genderType: {
-        name: 'MALE' | 'FEMALE'
-    },
-    roleType: {
-        name: 'ADMIN',
-        accessLevel: '4'
-    }
-}
-
-const UserView: React.FC = () => {
-    // const { containerRef } = useScrollbar();
-    const [data, setData] = useState<IUserData | null>(null);
-
-    useEffect(() => {
-        axios.get('/api/user').then(response => {
-            setData(response.data.data.user);
-        });
-    }, []);
-
-    console.log(data);
+const UserView: React.FC<{store: UserStore}> = (props) => {
+    const data = props.store.user;
 
     return (
         <div className={styles.userView}>
@@ -75,4 +44,4 @@ const UserView: React.FC = () => {
     );
 };
 
-export default UserView;
+export default observer(UserView);
