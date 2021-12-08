@@ -4,7 +4,7 @@ namespace App\Http\Middleware\Authenticate;
 
 use App\Exceptions\ApiException;
 use App\Http\ErrorCodes\BaseErrorCode;
-use App\Http\Libraries\Validation\Validation;
+use App\Http\Libraries\FieldConversion\FieldConversion;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +27,7 @@ class UserRole
 
         $roleType = explode(',', $user->roleType);
         $roleTypeAccessLevel = explode(':', $roleType[1]);
-        $detailedUserAccessLevel = Validation::getStringBetweenOthers($roleTypeAccessLevel[1], '"', '"');
+        $detailedUserAccessLevel = FieldConversion::getStringBetweenOthers($roleTypeAccessLevel[1], '"', '"');
 
         $routeName = Route::currentRouteName();
         

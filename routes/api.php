@@ -15,14 +15,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-/*
-|-------------------------------------------------------------------------------------------------------
-| Endpointy do odbierania informacji z GitHuba
-|-------------------------------------------------------------------------------------------------------
-*/
-
-Route::post('/github/pull', [GitHubController::class, 'pull'])->name('github-pull')->middleware(['throttle:githubPullLimit']);
-
 Route::middleware(['throttle:defaultLimit', 'auth:sanctum'])->group(function () {
 
     /*
@@ -34,11 +26,11 @@ Route::middleware(['throttle:defaultLimit', 'auth:sanctum'])->group(function () 
 
     Route::middleware('before.auth')->group(function () {
         
-        Route::post('/login', [AuthController::class, 'login'])->name('auth-login')->middleware(['throttle:loginLimit']);
-        Route::post('/register', [AuthController::class, 'register'])->name('auth-register')->middleware(['throttle:registerLimit']);
+        Route::post('/auth/login', [AuthController::class, 'login'])->name('auth-login')->middleware(['throttle:loginLimit']);
+        Route::post('/auth/register', [AuthController::class, 'register'])->name('auth-register')->middleware(['throttle:registerLimit']);
 
-        Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('auth-forgotPassword');
-        Route::patch('/reset-password', [AuthController::class, 'resetPassword'])->name('auth-resetPassword');
+        Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword'])->name('auth-forgotPassword');
+        Route::patch('/auth/reset-password', [AuthController::class, 'resetPassword'])->name('auth-resetPassword');
 
         Route::patch('/email/verify', [AuthController::class, 'verifyEmail'])->name('auth-verifyEmail');
 
@@ -62,8 +54,8 @@ Route::middleware(['throttle:defaultLimit', 'auth:sanctum'])->group(function () 
 
     Route::post('/email/verification-notification', [AuthController::class, 'sendVerificationEmail'])->name('auth-sendVerificationEmail');
 
-    Route::delete('/logout', [AuthController::class, 'logout'])->name('auth-logout')->withoutMiddleware('throttle:defaultLimit');
-    Route::delete('/logout-other-devices', [AuthController::class, 'logoutOtherDevices'])->name('auth-logoutOtherDevices')->middleware(['throttle:logoutOtherDevicesLimit']);
+    Route::delete('/auth/logout', [AuthController::class, 'logout'])->name('auth-logout')->withoutMiddleware('throttle:defaultLimit');
+    Route::delete('/auth/logout-other-devices', [AuthController::class, 'logoutOtherDevices'])->name('auth-logoutOtherDevices')->middleware(['throttle:logoutOtherDevicesLimit']);
 
     Route::get('/user', [AuthController::class, 'getUser'])->name('auth-getUser');
 
@@ -86,3 +78,11 @@ Route::middleware(['throttle:defaultLimit', 'auth:sanctum'])->group(function () 
         });
     });
 });
+
+/*
+|-------------------------------------------------------------------------------------------------------
+| Endpointy do odbierania informacji z GitHuba
+|-------------------------------------------------------------------------------------------------------
+*/
+
+Route::post('/github/pull', [GitHubController::class, 'pull'])->name('github-pull')->middleware(['throttle:githubPullLimit']);

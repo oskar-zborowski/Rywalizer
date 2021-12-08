@@ -32,15 +32,14 @@ use Laravel\Socialite\Facades\Socialite;
 class AuthController extends Controller
 {
     /**
-     * #### `POST` `/api/login`
+     * #### `POST` `/api/auth/login`
      * Proces logowania użytkownika
      * 
      * @param Illuminate\Http\Request $request
-     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
      * 
      * @return void
      */
-    public function login(Request $request, Encrypter $encrypter): void {
+    public function login(Request $request): void {
 
         if (!Auth::attempt($request->only('email', 'password'))) {
             throw new ApiException(AuthErrorCode::INVALID_CREDENTIALS());
@@ -52,7 +51,7 @@ class AuthController extends Controller
     }
 
     /**
-     * #### `POST` `/api/register`
+     * #### `POST` `/api/auth/register`
      * Proces rejestracji nowego użytkownika
      * 
      * @param App\Http\Requests\Auth\RegisterRequest $request
@@ -75,7 +74,7 @@ class AuthController extends Controller
     }
 
     /**
-     * #### `POST` `/api/forgot-password`
+     * #### `POST` `/api/auth/forgot-password`
      * Wysłanie maila z linkiem do resetu hasła
      * 
      * @param Illuminate\Http\Request $request
@@ -121,7 +120,7 @@ class AuthController extends Controller
     }
 
     /**
-     * #### `PATCH` `/api/reset-password`
+     * #### `PATCH` `/api/auth/reset-password`
      * Proces resetu hasła
      * 
      * @param Illuminate\Http\Request $request
@@ -244,7 +243,7 @@ class AuthController extends Controller
     }
 
     /**
-     * #### `DELETE` `/api/logout`
+     * #### `DELETE` `/api/auth/logout`
      * Proces wylogowania użytkownika
      * 
      * @param Illuminate\Http\Request $request
@@ -277,7 +276,7 @@ class AuthController extends Controller
     }
 
     /**
-     * #### `DELETE` `/api/logout-other-devices`
+     * #### `DELETE` `/api/auth/logout-other-devices`
      * Proces wylogowania użytkownika ze wszystkich urządzeń poza obecnym
      * 
      * @return void
