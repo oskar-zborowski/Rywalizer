@@ -457,15 +457,15 @@ class AuthController extends Controller
 
         $updateUserInformation = null;
 
-        $userFirstName = $request->first_name && $request->first_name != $user->first_name ? true : false;
-        $userLastName = $request->last_name && $request->last_name != $user->last_name ? true : false;
-        $userEmail = $request->email && $request->email != $user->email ? true : false;
-        $userBirthDate = $request->birth_date && $request->birth_date != $user->birth_date ? true : false;
-        $userAddressCoordinates = $request->address_coordinates && $request->address_coordinates != $user->address_coordinates ? true : false;
-        $userTelephone = $request->telephone && $request->telephone != $user->telephone ? true : false;
-        $userFacebookProfile = $request->facebook_profile && $request->facebook_profile != $user->facebook_profile ? true : false;
-        $userInstagramProfile = $request->instagram_profile && $request->instagram_profile != $user->instagram_profile ? true : false;
-        $userGenderTypeId = $request->gender_type_id && $request->gender_type_id != $user->gender_type_id ? true : false;
+        $userFirstName = $request->first_name && $request->first_name != $user->first_name;
+        $userLastName = $request->last_name && $request->last_name != $user->last_name;
+        $userEmail = $request->email && $request->email != $user->email;
+        $userBirthDate = $request->birth_date && $request->birth_date != $user->birth_date;
+        $userAddressCoordinates = $request->address_coordinates && $request->address_coordinates != $user->address_coordinates;
+        $userTelephone = $request->telephone && $request->telephone != $user->telephone;
+        $userFacebookProfile = $request->facebook_profile && $request->facebook_profile != $user->facebook_profile;
+        $userInstagramProfile = $request->instagram_profile && $request->instagram_profile != $user->instagram_profile;
+        $userGenderTypeId = $request->gender_type_id && $request->gender_type_id != $user->gender_type_id;
 
         if ($userFirstName || $userLastName) {
 
@@ -711,13 +711,13 @@ class AuthController extends Controller
         if (isset($missingUserInformation['required']) || !$user->email_verified_at) {
             throw new ApiException(
                 $user->email_verified_at ? AuthErrorCode::MISSING_USER_INFORMATION() : AuthErrorCode::UNVERIFIED_EMAIL(),
-                ['user' => $user],
+                ['user' => $user->privateData()],
                 ['missing_user_information' => $missingUserInformation]
             );
         }
 
         JsonResponse::sendSuccess(
-            ['user' => $user],
+            ['user' => $user->privateData()],
             ['missing_user_information' => $missingUserInformation]
         );
     }
