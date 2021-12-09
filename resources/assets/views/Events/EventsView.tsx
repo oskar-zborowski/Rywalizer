@@ -1,4 +1,4 @@
-import useScrollbar from '@/components/MainContainer/Scrollbar/Scrollbar';
+import useScrollbar from '@/layout/Content/Scrollbar/Scrollbar';
 import faker from 'faker';
 import React from 'react';
 import styles from './EventsView.scss';

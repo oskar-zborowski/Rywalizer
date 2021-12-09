@@ -9,7 +9,10 @@ interface CssExports {
   'location': string;
   'logo': string;
   'name': string;
+  'navButtons': string;
+  'navButtonsWrapper': string;
   'sectionName': string;
+  'separator': string;
   'sportFacilityDetails': string;
   'stars': string;
 }

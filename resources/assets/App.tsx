@@ -1,11 +1,10 @@
 import Content from '@/layout/Content/Content';
+import MapViewer from '@/layout/Content/MapViewer/MapViewer';
 import Footer from '@/layout/Footer/Footer';
 import Topbar from '@/layout/Topbar/Topbar';
-import MainContainer from '@/components/MainContainer/MainContainer';
 import React, { Fragment } from 'react';
-import MapViewer from '@/components/MapViewer/MapViewer';
-import EventsView from '@/views/Events/EventsView';
 import { BrowserRouter as Router } from 'react-router-dom';
+import MainContainer from './layout/Content/MainContainer/MainContainer';
 import userStore from './store/UserStore';
 
 const App: React.FC = () => {

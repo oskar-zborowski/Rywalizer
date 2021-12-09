@@ -11,6 +11,26 @@
   flex-direction: row;
   min-height: 0;
 }
+/*!*************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/layout/Content/MapViewer/MapViewer.scss ***!
+  \*************************************************************************************************************************************************************************************************************************************/
+.MapViewer_mapViewer__PLqFb {
+  flex: 30%;
+  min-width: 450px;
+}
+
+.MapViewer_mapViewer__PLqFb {
+  border-radius: 15px;
+  overflow: hidden;
+  flex: auto;
+  border: 1px solid #29292e;
+  background-color: #29292e;
+}
+@media (max-width: 992px) {
+  .MapViewer_mapViewer__PLqFb {
+    display: none;
+  }
+}
 /*!***********************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/layout/Footer/Footer.scss ***!
   \***********************************************************************************************************************************************************************************************************************/
@@ -66,12 +86,13 @@
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/form/Button/Button.scss ***!
   \********************************************************************************************************************************************************************************************************************************/
 .Button_blackButton__yyGc0, .Button_grayButton__nvljN, .Button_orangeButton__EJ5Hq {
-  border-radius: 10px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 30px;
-  padding: 0 10px;
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid #141417;
   cursor: pointer;
 }
 
@@ -90,10 +111,10 @@
   color: #fff;
   background-color: #141417;
 }
-/*!***********************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/MainContainer/Scrollbar/Scrollbar.scss ***!
-  \***********************************************************************************************************************************************************************************************************************************************/
-.Scrollbar_scrollbar__AcmfO {
+/*!*************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/layout/Content/Scrollbar/Scrollbar.scss ***!
+  \*************************************************************************************************************************************************************************************************************************************/
+.Scrollbar_scrollbar__BNjtG {
   margin: 0 40px;
   border-radius: 4px;
   border: 1px solid #29292e;
@@ -104,11 +125,11 @@
   overflow: hidden;
 }
 @media (max-width: 992px) {
-  .Scrollbar_scrollbar__AcmfO {
+  .Scrollbar_scrollbar__BNjtG {
     display: none;
   }
 }
-.Scrollbar_scrollbar__AcmfO .Scrollbar_thumb__xrkTh {
+.Scrollbar_scrollbar__BNjtG .Scrollbar_thumb__PYWQO {
   background-color: #ce8f3e;
   border-radius: 3px;
   width: 100%;
@@ -254,11 +275,11 @@
   color: #545455;
   position: relative;
   padding: 0;
-  display: flex;
   align-items: center;
   font-size: 20px;
   height: 20px;
   user-select: none;
+  display: inline-flex;
 }
 
 .StarRating_ratingUpper__LZJEQ {
@@ -274,11 +295,132 @@
   display: flex;
   z-index: 0;
 }
+/*!*************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/ProgressBar/ProgressBar.scss ***!
+  \*************************************************************************************************************************************************************************************************************************************/
+.ProgressBar_progressBar__HoHA1 {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background-color: #353538;
+  overflow: hidden;
+}
+.ProgressBar_progressBar__HoHA1 .ProgressBar_innerBar__bG0RJ {
+  border-radius: 4px;
+  height: 100%;
+  background-color: #7ab661;
+}
+/*!***************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/SportFacilities/SportFacilityDetails/Calendar/Calendar.scss ***!
+  \***************************************************************************************************************************************************************************************************************************************************************/
+.Calendar_wrapper__HEOvC {
+  overflow-x: auto;
+}
+.Calendar_wrapper__HEOvC::-webkit-scrollbar {
+  display: none;
+}
+@media (max-width: 576px) {
+  .Calendar_wrapper__HEOvC {
+    margin: 0 -20px;
+  }
+}
+
+.Calendar_calendar__X5VCI {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.Calendar_calendar__X5VCI th,
+.Calendar_calendar__X5VCI td {
+  border-top: 1px solid #29292e;
+  border-left: 1px solid #29292e;
+  margin: 0;
+  padding: 0;
+}
+.Calendar_calendar__X5VCI th {
+  padding: 0 15px;
+}
+.Calendar_calendar__X5VCI tr td:last-child,
+.Calendar_calendar__X5VCI tr th:last-child {
+  color: #ce8f3e;
+}
+.Calendar_calendar__X5VCI tr:last-child td {
+  border-bottom: 1px solid #29292e;
+}
+.Calendar_calendar__X5VCI tr:last-child td:first-child {
+  border-bottom-left-radius: 8px;
+}
+.Calendar_calendar__X5VCI tr:last-child td:last-child {
+  border-bottom-right-radius: 8px;
+}
+.Calendar_calendar__X5VCI td:last-child,
+.Calendar_calendar__X5VCI th:last-child {
+  border-right: 1px solid #29292e;
+}
+.Calendar_calendar__X5VCI thead {
+  font-weight: bold;
+  text-align: left;
+}
+.Calendar_calendar__X5VCI thead tr {
+  height: 50px;
+}
+.Calendar_calendar__X5VCI thead tr th {
+  user-select: none;
+}
+.Calendar_calendar__X5VCI thead tr th:first-child {
+  border-top-left-radius: 8px;
+}
+.Calendar_calendar__X5VCI thead tr th:last-child {
+  border-top-right-radius: 8px;
+}
+.Calendar_calendar__X5VCI .Calendar_cell__XDehA {
+  user-select: none;
+  padding: 15px;
+  min-width: 100px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+.Calendar_calendar__X5VCI .Calendar_cell__XDehA:not(.Calendar_disabled__UNQkG):hover {
+  background-color: #29292e;
+}
+.Calendar_calendar__X5VCI .Calendar_cell__XDehA.Calendar_disabled__UNQkG {
+  cursor: default;
+  opacity: 0.2;
+}
+@media (max-width: 576px) {
+  .Calendar_calendar__X5VCI {
+    margin: 0 20px;
+  }
+  .Calendar_calendar__X5VCI th {
+    padding: 0 10px;
+  }
+  .Calendar_calendar__X5VCI thead tr {
+    height: 35px;
+  }
+  .Calendar_calendar__X5VCI .Calendar_cell__XDehA {
+    padding: 10px;
+    height: 80px;
+  }
+}
 /*!******************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/SportFacilities/SportFacilityDetails/SportFacilityDetails.scss ***!
   \******************************************************************************************************************************************************************************************************************************************************************/
 .SportFacilityDetails_sportFacilityDetails__oCz_1 {
   padding: 20px 20px 0px 20px;
+  height: 100%;
+  overflow-y: auto;
+}
+@media (max-width: 576px) {
+  .SportFacilityDetails_sportFacilityDetails__oCz_1 {
+    padding-top: 0;
+  }
+}
+.SportFacilityDetails_sportFacilityDetails__oCz_1::-webkit-scrollbar {
+  display: none;
 }
 
 .SportFacilityDetails_header__yPn4M {
@@ -289,16 +431,31 @@
   display: flex;
   gap: 20px;
   align-items: center;
+  min-width: 0;
+}
+@media (max-width: 576px) {
+  .SportFacilityDetails_header__yPn4M {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px;
+  }
 }
 .SportFacilityDetails_header__yPn4M .SportFacilityDetails_logo__A4I4R {
+  flex-shrink: 2;
   height: 85px;
   width: 240px;
+  min-width: 180px;
   border-radius: 8px;
   overflow: hidden;
   background-color: #fff;
   padding: 15px;
-  opacity: 0.5;
+  opacity: 0.7;
   transition: opacity 0.2s;
+}
+@media (max-width: 576px) {
+  .SportFacilityDetails_header__yPn4M .SportFacilityDetails_logo__A4I4R {
+    width: 100%;
+  }
 }
 .SportFacilityDetails_header__yPn4M .SportFacilityDetails_logo__A4I4R:hover {
   opacity: 1;
@@ -311,7 +468,9 @@
 .SportFacilityDetails_header__yPn4M .SportFacilityDetails_details__RQCGx {
   display: flex;
   flex-direction: column;
+  flex-shrink: 1;
   gap: 5px;
+  min-width: 0;
 }
 .SportFacilityDetails_header__yPn4M .SportFacilityDetails_details__RQCGx .SportFacilityDetails_stars__BDklD {
   color: #ce8f3e;
@@ -320,9 +479,15 @@
   color: #ce8f3e;
   font-weight: bold;
   font-size: 19px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .SportFacilityDetails_header__yPn4M .SportFacilityDetails_details__RQCGx .SportFacilityDetails_location__fBdaM {
   color: #a1a1a1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .SportFacilityDetails_header__yPn4M .SportFacilityDetails_buttons__sCUHA {
   margin-left: auto;
@@ -331,6 +496,49 @@
   align-items: stretch;
   gap: 8px;
 }
+@media (max-width: 1400px) {
+  .SportFacilityDetails_header__yPn4M .SportFacilityDetails_buttons__sCUHA {
+    display: none;
+  }
+}
+.SportFacilityDetails_header__yPn4M .SportFacilityDetails_buttons__sCUHA > * {
+  width: 140px;
+}
+
+.SportFacilityDetails_navButtonsWrapper__AhFtf {
+  overflow-x: auto;
+  min-width: 0;
+  padding: 20px 0;
+}
+.SportFacilityDetails_navButtonsWrapper__AhFtf::-webkit-scrollbar {
+  display: none;
+}
+@media (max-width: 576px) {
+  .SportFacilityDetails_navButtonsWrapper__AhFtf {
+    margin: 0 -20px;
+  }
+}
+.SportFacilityDetails_navButtonsWrapper__AhFtf .SportFacilityDetails_navButtons__dnpxL {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: 1fr;
+  min-width: 100%;
+}
+@media (max-width: 1400px) {
+  .SportFacilityDetails_navButtonsWrapper__AhFtf .SportFacilityDetails_navButtons__dnpxL {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 1fr 1fr;
+  }
+}
+@media (max-width: 576px) {
+  .SportFacilityDetails_navButtonsWrapper__AhFtf .SportFacilityDetails_navButtons__dnpxL {
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: 1fr;
+    margin: 0 20px;
+    gap: 10px;
+  }
+}
 
 .SportFacilityDetails_sectionName__tfsJu {
   font-weight: bold;
@@ -338,13 +546,14 @@
   color: #fff;
 }
 
-.SportFacilityDetails_contactSection__wljYf {
-  display: flex;
-  align-items: center;
-  padding: 20px 0;
+.SportFacilityDetails_separator___d6Rb {
+  width: 100%;
+  height: 1px;
+  background-color: #141417;
+  margin-top: 20px;
   margin-bottom: 20px;
-  border-bottom: 2px solid #141417;
 }
+
 .SportFacilityDetails_contactSection__wljYf .SportFacilityDetails_contactItem__LikTP {
   display: flex;
   align-items: center;
@@ -429,22 +638,24 @@
   font-weight: bold;
   padding-left: 25px;
 }
-/*!*****************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/MainContainer/MainContainer.scss ***!
-  \*****************************************************************************************************************************************************************************************************************************************/
-.MainContainer_mainContainer__PXJXG {
+/*!*********************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/layout/Content/MainContainer/MainContainer.scss ***!
+  \*********************************************************************************************************************************************************************************************************************************************/
+.MainContainer_mainContainer__RmFHB {
   flex: 50%;
   max-width: 1050px;
 }
 
-.MainContainer_mainContainer__PXJXG {
+.MainContainer_mainContainer__RmFHB {
   position: relative;
   border-radius: 15px;
   height: 100%;
-  background-color: #18181c;
+  background-color: #1c1c20;
   border: 1px solid #29292e;
+  min-width: 0;
+  min-height: 0;
 }
-.MainContainer_mainContainer__PXJXG .MainContainer_authButtons__YbWmJ {
+.MainContainer_mainContainer__RmFHB .MainContainer_authButtons__hNft8 {
   position: absolute;
   right: 0;
   top: -30px;
@@ -452,36 +663,20 @@
   display: flex;
   gap: 10px;
 }
-.MainContainer_mainContainer__PXJXG .MainContainer_authButtons__YbWmJ * {
+.MainContainer_mainContainer__RmFHB .MainContainer_authButtons__hNft8 * {
   width: 120px;
   float: left;
   display: block;
 }
 @media (max-width: 576px) {
-  .MainContainer_mainContainer__PXJXG {
+  .MainContainer_mainContainer__RmFHB {
     background-color: transparent;
     border-radius: 0;
     border: none;
+    margin: 0 -20px -20px -20px;
   }
-}
-/*!*********************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/MapViewer/MapViewer.scss ***!
-  \*********************************************************************************************************************************************************************************************************************************/
-.MapViewer_mapViewer__xi5kE {
-  flex: 30%;
-  min-width: 450px;
-}
-
-.MapViewer_mapViewer__xi5kE {
-  border-radius: 15px;
-  overflow: hidden;
-  flex: auto;
-  border: 1px solid #29292e;
-  background-color: #29292e;
-}
-@media (max-width: 992px) {
-  .MapViewer_mapViewer__xi5kE {
-    display: none;
+  .MainContainer_mainContainer__RmFHB .MainContainer_authButtons__hNft8 {
+    right: 20px;
   }
 }
 /*!***********************************************************************************************************************************************************************************************************!*\
@@ -507,6 +702,11 @@ body {
   background-color: #141417;
   color: #fff;
   font-size: 13px;
+}
+@media (max-width: 576px) {
+  body {
+    background-color: #1c1c20;
+  }
 }
 
 ul {
@@ -537,7 +737,7 @@ button:focus {
   display: flex;
   flex-direction: column;
   padding: 0 40px;
-  transition: padding 0.2s, padding-bottom 0s;
+  transition: padding 0.2s;
 }
 @media (max-width: 576px) {
   #app {

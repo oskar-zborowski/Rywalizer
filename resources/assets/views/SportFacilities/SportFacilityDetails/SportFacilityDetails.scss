@@ -1,5 +1,18 @@
+@import '@/styles/bootstrap.scss';
+
 .sportFacilityDetails {
     padding: 20px 20px 0px 20px;
+
+    @include respond-to(null, "sm") {
+        padding-top: 0;
+    }
+
+    height: 100%;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 .header {
@@ -10,16 +23,29 @@
     display: flex;
     gap: 20px;
     align-items: center;
+    min-width: 0;
+
+    @include respond-to(null, "sm") {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px; // TODO do zastanowienia czy nie zostawić 20
+    }
 
     .logo {
+        flex-shrink: 2;
         height: 85px;
         width: 240px;
+        min-width: 180px;
         border-radius: 8px;
         overflow: hidden;
         background-color: #fff;
         padding: 15px;
-        opacity: 0.5;
+        opacity: 0.7;
         transition: opacity 0.2s;
+
+        @include respond-to(null, "sm") {
+            width: 100%;
+        }
 
         &:hover {
             opacity: 1;
@@ -35,7 +61,9 @@
     .details {
         display: flex;
         flex-direction: column;
+        flex-shrink: 1;
         gap: 5px;
+        min-width: 0;
 
         .stars {
             color: #ce8f3e;
@@ -45,10 +73,16 @@
             color: #ce8f3e;
             font-weight: bold;
             font-size: 19px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .location {
             color: #a1a1a1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     }
 
@@ -58,6 +92,48 @@
         flex-direction: column;
         align-items: stretch;
         gap: 8px;
+
+        @include respond-to(null, "2xl") {
+            display: none;
+        }
+
+        & > * {
+            width: 140px;
+        }
+    }
+}
+
+.navButtonsWrapper {
+    overflow-x: auto;
+    min-width: 0;
+    padding: 20px 0;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    @include respond-to(null, "sm") {
+        margin: 0 -20px;
+    }
+
+    .navButtons {
+        display: grid;
+        gap: 20px;
+        grid-template-columns: repeat(6, 1fr);
+        grid-template-rows: 1fr;
+        min-width: 100%;
+
+        @include respond-to(null, "2xl") {
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: 1fr 1fr;
+        }
+
+        @include respond-to(null, "sm") {
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: 1fr;
+            margin: 0 20px; // FIXME margin-right nie działa!
+            gap: 10px; //TODO do zastanowniea czy nie wywalić
+        }
     }
 }
 
@@ -67,13 +143,15 @@
     color: #fff;
 }
 
-.contactSection {
-    display: flex;
-    align-items: center;
-    padding: 20px 0;
+.separator {
+    width: 100%;
+    height: 1px;
+    background-color: #141417;
+    margin-top: 20px;
     margin-bottom: 20px;
-    border-bottom: 2px solid#141417;
+}
 
+.contactSection {
     .contactItem {
         display: flex;
         align-items: center;

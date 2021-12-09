@@ -1,0 +1,23 @@
+@import "@/styles/bootstrap.scss";
+
+.scrollbar {
+    @include respond-to(null, "lg") {
+        display: none;
+    }
+
+    margin: 0 40px;
+    border-radius: 4px;
+    border: 1px solid #29292e;
+    width: 12px;
+    background-color: #18181c;
+    flex: none;
+    position: relative;
+    overflow: hidden;
+
+    .thumb {
+        background-color: $color-primary;
+        border-radius: 3px;
+        width: 100%;
+        position: absolute;
+    }
+}
