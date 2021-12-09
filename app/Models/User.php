@@ -41,12 +41,21 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     protected $hidden = [
+        'email',
         'password',
+        'birth_date',
+        'address_coordinates',
+        'telephone',
+        'facebook_profile',
+        'instagram_profile',
         'gender_type_id',
         'role_type_id',
         'email_verified_at',
         'account_deleted_at',
         'account_blocked_at',
+        'last_logged_in',
+        'last_time_name_changed',
+        'last_time_password_changed',
         'created_at',
         'updated_at'
     ];
@@ -87,8 +96,7 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     protected $with = [
-        'GenderType',
-        'RoleType'
+        'genderType'
     ];
 
     public function genderType() {
@@ -113,5 +121,50 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function emailVerification() {
         return $this->hasOne(EmailVerification::class);
+    }
+
+    public function privateData() {
+        return [
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'email' => $this->email,
+            'avatar' => $this->avatar,
+            'birth_date' => $this->birth_date,
+            'address_coordinates' => $this->address_coordinates,
+            'telephone' => $this->telephone,
+            'facebook_profile' => $this->facebook_profile,
+            'instagram_profile' => $this->instagram_profile,
+            'gender_type' => $this->genderType()->get(['name'])[0]['name'],
+            'role_type' => $this->roleType()->get(['name', 'access_level'])[0],
+            'last_logged_in' => $this->last_logged_in,
+            'last_time_name_changed' => $this->last_time_name_changed,
+            'last_time_password_changed' => $this->last_time_password_changed,
+        ];
+    }
+
+    public function detailedData() {
+        return [
+            'id' => $this->id,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'login_form' => $this->externalAuthentication()->first() ? $this->externalAuthentication()->first()->providerType()->get('name')[0]['name'] : 'form',
+            'email' => $this->email,
+            'avatar' => $this->avatar,
+            'birth_date' => $this->birth_date,
+            'address_coordinates' => $this->address_coordinates,
+            'telephone' => $this->telephone,
+            'facebook_profile' => $this->facebook_profile,
+            'instagram_profile' => $this->instagram_profile,
+            'gender_type' => $this->genderType()->get(['name'])[0]['name'],
+            'role_type' => $this->roleType()->get(['name'])[0],
+            'email_verified_at' => $this->email_verified_at,
+            'account_deleted_at' => $this->account_deleted_at,
+            'account_deleted_at' => $this->account_deleted_at,
+            'last_logged_in' => $this->last_logged_in,
+            'last_time_name_changed' => $this->last_time_name_changed,
+            'last_time_password_changed' => $this->last_time_password_changed,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at
+        ];
     }
 }

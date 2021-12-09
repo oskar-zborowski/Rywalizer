@@ -16,12 +16,6 @@ class ProviderType extends Model
         'is_enabled'
     ];
 
-    protected $hidden = [
-        'id',
-        'name',
-        'is_enabled'
-    ];
-
     protected $encryptable = [
         'name'
     ];
