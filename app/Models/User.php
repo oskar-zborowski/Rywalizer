@@ -159,7 +159,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'role_type' => $this->roleType()->get(['name'])[0],
             'email_verified_at' => $this->email_verified_at,
             'account_deleted_at' => $this->account_deleted_at,
-            'account_deleted_at' => $this->account_deleted_at,
+            'account_blocked_at' => $this->account_blocked_at,
             'last_logged_in' => $this->last_logged_in,
             'last_time_name_changed' => $this->last_time_name_changed,
             'last_time_password_changed' => $this->last_time_password_changed,
