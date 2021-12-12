@@ -387,13 +387,16 @@ class AuthController extends Controller
 
                 if (isset($encryptedEmail)) {
                     $newUser['email'] = $user->getEmail();
-                }
-    
-                if (isset($encryptedTelephone)) {
+                } else if (isset($encryptedTelephone)) {
                     $newUser['telephone'] = $user->getEmail();
                 }
 
             } else if (!$foundUser->email_verified_at) {
+
+                if (isset($encryptedEmail)) {
+                    $foundUser->emailVerification()->delete();
+                }
+
                 $newUser['password'] = null;
             }
 
@@ -403,11 +406,7 @@ class AuthController extends Controller
 
             if (strlen($user->getAvatar()) && (!$foundUser || !$foundUser->avatar)) {
                 // TODO Sprawdzić wariant co jest zwracane kiedy użytkownik nie ma ustawionego zdjęcia profilowego
-                $avatarFilename = $this->saveAvatar($user->getAvatar());
-            }
-
-            if (isset($avatarFilename)) {
-                $newUser['avatar'] = $avatarFilename;
+                $newUser['avatar'] = $this->saveAvatar($user->getAvatar());
             }
 
             /** @var User $createUser */
@@ -421,7 +420,11 @@ class AuthController extends Controller
             Auth::loginUsingId($createUser->id);
 
             if ($createUser->email) {
-                Mail::to($createUser)->send(new VerificationEmail());
+                if (!$foundUser) {
+                    Mail::to($createUser)->send(new VerificationEmail());
+                } else {
+                    // TODO Jakiś inny mail, że dodano możliwość logowania się providerem
+                }
             }
 
         } else {
