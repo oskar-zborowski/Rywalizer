@@ -5,6 +5,7 @@ namespace App\Http\Middleware\Authenticate;
 use App\Exceptions\ApiException;
 use App\Http\ErrorCodes\AuthErrorCode;
 use App\Http\Responses\JsonResponse;
+use App\Models\PersonalAccessToken;
 use Closure;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
@@ -58,6 +59,7 @@ class Authenticate extends Middleware
 
                 JsonResponse::deleteCookie('JWT');
 
+                /** @var PersonalAccessToken $personalAccessToken */
                 $personalAccessToken = JsonResponse::isRefreshTokenValid($request);
 
                 if ($personalAccessToken) {
@@ -97,6 +99,7 @@ class Authenticate extends Middleware
 
         } else {
 
+            /** @var PersonalAccessToken $personalAccessToken */
             $personalAccessToken = JsonResponse::isRefreshTokenValid($request);
 
             if ($personalAccessToken) {

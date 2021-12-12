@@ -31,7 +31,7 @@ class UserRole
 
         $routeName = Route::currentRouteName();
         
-        if (!$this->checkUserAccess($routeName, $detailedUserAccessLevel)) {
+        if (!$this->checkUserPermissions($routeName, $detailedUserAccessLevel)) {
             throw new ApiException(BaseErrorCode::PERMISSION_DENIED());
         }
 
@@ -46,7 +46,7 @@ class UserRole
      * 
      * @return bool
      */
-    private function checkUserAccess(string $routeName, string $detailedUserAccessLevel): bool {
+    private function checkUserPermissions(string $routeName, string $detailedUserAccessLevel): bool {
 
         $userAccessLevel = 0;
         $detailedUserAccessLevelLength = strlen($detailedUserAccessLevel);

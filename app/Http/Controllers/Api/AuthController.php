@@ -345,62 +345,59 @@ class AuthController extends Controller
 
         /** @var ExternalAuthentication $externalAuthentication */
         $externalAuthentication = $providerType->externalAuthentication()->where('authentication_id', $encryptedAuthenticationId)->first();
-
+        
         if (!$externalAuthentication) {
+
+            $foundUser = null;
 
             if (filter_var($user->getEmail(), FILTER_VALIDATE_EMAIL)) {
 
                 $encryptedEmail = $encrypter->encrypt($user->getEmail(), 254);
 
-                if (!Validation::checkUserUniqueness('email', $encryptedEmail)) {
-                    throw new ApiException(
-                        BaseErrorCode::FAILED_VALIDATION(),
-                        ['email' => [__('validation.unique', ['attribute' => 'email'])]]
-                    );
-                }
+                /** @var User $foundUser */
+                $foundUser = User::where('email', $encryptedEmail)->first();
 
             } else if (strlen($user->getEmail()) > 0 && strlen($user->getEmail()) < 25) {
                 
                 $encryptedTelephone = $encrypter->encrypt($user->getEmail(), 24);
 
-                if (!Validation::checkUserUniqueness('telephone', $encryptedTelephone)) {
-                    throw new ApiException(
-                        BaseErrorCode::FAILED_VALIDATION(),
-                        ['telephone' => [__('validation.unique', ['attribute' => 'numer telefonu'])]]
-                    );
+                /** @var User $foundUser */
+                $foundUser = User::where('telephone', $encryptedTelephone)->first();
+            }
+
+            if (!$foundUser) {
+
+                $names = explode(' ', $user->getName());
+                $namesLength = count($names);
+    
+                $firstName = $names[0];
+    
+                for ($i=1; $i<$namesLength; $i++) {
+                    if ($i == $namesLength-1) {
+                        $lastName = $names[$i];
+                    } else {
+                        $firstName .= ' ' . $names[$i];
+                    }
+                }
+
+                $newUser = [
+                    'first_name' => $firstName,
+                    'last_name' => $lastName
+                ];
+
+                if (isset($encryptedEmail)) {
+                    $newUser['email'] = $user->getEmail();
+                    $newUser['email_verified_at'] = now();
+                }
+    
+                if (isset($encryptedTelephone)) {
+                    $newUser['telephone'] = $user->getEmail();
                 }
             }
 
-            $names = explode(' ', $user->getName());
-            $namesLength = count($names);
-
-            $firstName = $names[0];
-
-            for ($i=1; $i<$namesLength; $i++) {
-                if ($i == $namesLength-1) {
-                    $lastName = $names[$i];
-                } else {
-                    $firstName .= ' ' . $names[$i];
-                }
-            }
-
-            if (strlen($user->getAvatar())) {
+            if (strlen($user->getAvatar()) && (!$foundUser || !$foundUser->avatar)) {
                 // TODO Sprawdzić wariant co jest zwracane kiedy użytkownik nie ma ustawionego zdjęcia profilowego
                 $avatarFilename = $this->saveAvatar($user->getAvatar());
-            }
-
-            $newUser = [
-                'first_name' => $firstName,
-                'last_name' => $lastName
-            ];
-
-            if (isset($encryptedEmail)) {
-                $newUser['email'] = $user->getEmail();
-                $newUser['email_verified_at'] = now();
-            }
-
-            if (isset($encryptedTelephone)) {
-                $newUser['telephone'] = $user->getEmail();
             }
 
             if (isset($avatarFilename)) {
@@ -408,7 +405,7 @@ class AuthController extends Controller
             }
 
             /** @var User $createUser */
-            $createUser = User::create($newUser);
+            $createUser = User::updateOrCreate([], $newUser);
 
             $createUser->externalAuthentication()->create([
                 'authentication_id' => $authenticationId,
