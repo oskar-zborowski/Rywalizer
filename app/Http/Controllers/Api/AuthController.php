@@ -365,6 +365,8 @@ class AuthController extends Controller
                 $foundUser = User::where('telephone', $encryptedTelephone)->first();
             }
 
+            $newUser = null;
+
             if (!$foundUser) {
 
                 $names = explode(' ', $user->getName());
@@ -380,19 +382,23 @@ class AuthController extends Controller
                     }
                 }
 
-                $newUser = [
-                    'first_name' => $firstName,
-                    'last_name' => $lastName
-                ];
+                $newUser['first_name'] = $firstName;
+                $newUser['last_name'] = $lastName;
 
                 if (isset($encryptedEmail)) {
                     $newUser['email'] = $user->getEmail();
-                    $newUser['email_verified_at'] = now();
                 }
     
                 if (isset($encryptedTelephone)) {
                     $newUser['telephone'] = $user->getEmail();
                 }
+
+            } else if (!$foundUser->email_verified_at) {
+                $newUser['password'] = null;
+            }
+
+            if (isset($encryptedEmail)) {
+                $newUser['email_verified_at'] = now();
             }
 
             if (strlen($user->getAvatar()) && (!$foundUser || !$foundUser->avatar)) {
