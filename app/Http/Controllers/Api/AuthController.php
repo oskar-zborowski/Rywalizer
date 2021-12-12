@@ -429,8 +429,9 @@ class AuthController extends Controller
 
         } else {
             Auth::loginUsingId($externalAuthentication->user_id);
-            JsonResponse::checkUserAccess();
         }
+
+        JsonResponse::checkUserAccess();
 
         $this->checkMissingUserInformation(true);
     }
