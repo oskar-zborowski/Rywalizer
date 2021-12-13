@@ -52,6 +52,7 @@ class Authenticate extends Middleware
 
             $request->headers->set('Authorization', 'Bearer ' . $jwt);
             $authenticated = true;
+            $activity = null;
 
             try {
                 $this->authenticate($request, $guards);
@@ -70,6 +71,7 @@ class Authenticate extends Middleware
 
                     if ($currentRootName != $logout) {
                         JsonResponse::refreshToken($personalAccessToken);
+                        $activity = 'REFRESH_TOKEN';
                     } else {
                         $authenticated = false;
                     }
@@ -90,7 +92,7 @@ class Authenticate extends Middleware
 
             if ($authenticated) {
 
-                JsonResponse::checkUserAccess($request);
+                JsonResponse::checkUserAccess($request, $activity);
 
                 if (in_array($currentRootName, $exceptionalRouteNames)) {
                     throw new ApiException(AuthErrorCode::ALREADY_LOGGED_IN());
@@ -110,7 +112,7 @@ class Authenticate extends Middleware
 
                 if ($currentRootName != $logout) {
                     JsonResponse::refreshToken($personalAccessToken);
-                    JsonResponse::checkUserAccess($request);
+                    JsonResponse::checkUserAccess($request, 'REFRESH_TOKEN');
                 }
 
             } else {

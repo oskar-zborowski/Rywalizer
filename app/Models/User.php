@@ -29,7 +29,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at',
         'account_deleted_at',
         'account_blocked_at',
-        'last_logged_in',
         'last_time_name_changed',
         'last_time_password_changed'
     ];
@@ -53,7 +52,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at',
         'account_deleted_at',
         'account_blocked_at',
-        'last_logged_in',
         'last_time_name_changed',
         'last_time_password_changed',
         'created_at',
@@ -64,7 +62,6 @@ class User extends Authenticatable implements MustVerifyEmail
     //     'email_verified_at' => 'datetime',
     //     'account_deleted_at' => 'datetime',
     //     'account_blocked_at' => 'datetime',
-    //     'last_logged_in' => 'datetime',
     //     'last_time_name_changed' => 'datetime',
     //     'last_time_password_changed' => 'datetime',
     //     'created_at' => 'datetime',
@@ -123,6 +120,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(EmailVerification::class);
     }
 
+    public function userAuthentication() {
+        return $this->hasMany(UserAuthentication::class);
+    }
+
     public function privateData() {
         return [
             'first_name' => $this->first_name,
@@ -136,7 +137,6 @@ class User extends Authenticatable implements MustVerifyEmail
             'instagram_profile' => $this->instagram_profile,
             'gender_type' => $this->genderType()->get(['name'])[0]['name'] ?? null,
             'role_type' => $this->roleType()->get(['name', 'access_level'])[0],
-            'last_logged_in' => $this->last_logged_in,
             'last_time_name_changed' => $this->last_time_name_changed,
             'last_time_password_changed' => $this->last_time_password_changed,
         ];
@@ -160,7 +160,6 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => $this->email_verified_at,
             'account_deleted_at' => $this->account_deleted_at,
             'account_blocked_at' => $this->account_blocked_at,
-            'last_logged_in' => $this->last_logged_in,
             'last_time_name_changed' => $this->last_time_name_changed,
             'last_time_password_changed' => $this->last_time_password_changed,
             'created_at' => $this->created_at,

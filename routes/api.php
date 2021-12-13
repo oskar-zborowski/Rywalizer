@@ -35,6 +35,7 @@ Route::middleware(['throttle:defaultLimit', 'auth:sanctum'])->group(function () 
         Route::patch('/email/verify', [AuthController::class, 'verifyEmail'])->name('auth-verifyEmail');
 
         Route::post('/user', [AuthController::class, 'updateUser'])->name('auth-updateUser');
+        Route::post('/user/upload-avatar', [AuthController::class, 'uploadAvatar'])->name('auth-uploadAvatar');
     });
 
     /*

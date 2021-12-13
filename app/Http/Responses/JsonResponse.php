@@ -8,6 +8,8 @@ use App\Http\ErrorCodes\ErrorCode;
 use App\Http\Libraries\Encrypter\Encrypter;
 use App\Http\Libraries\FieldConversion\FieldConversion;
 use App\Http\Libraries\Validation\Validation;
+use App\Models\AuthenticationType;
+use App\Models\Device;
 use App\Models\PersonalAccessToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -92,10 +94,86 @@ class JsonResponse
         $jwtId = $jwt->accessToken->getKey();
 
         $user->personalAccessToken()->where('id', $jwtId)->update(['refresh_token' => $encryptedRefreshToken]);
-        $user->update(['last_logged_in' => now()]);
 
         self::setCookie($jwtToken, 'JWT');
         self::setCookie($refreshToken, 'REFRESH-TOKEN');
+    }
+
+    /**
+     * Zweryfikowanie urządzenia i stworzenie odpowiednich logów
+     * 
+     * @param Illuminate\Http\Request $request
+     * @param string $activity nazwa aktywności, która wywołała daną metodę np. LOGIN
+     * 
+     * @return void
+     */
+    public static function checkDevice($request, string $activity): void {
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        $updateDeviceInformation = null;
+
+        if ($request) {
+
+            $deviceOsName = $request->os_name;
+            $deviceOsVersion = $request->os_version;
+            $deviceBrowserName = $request->browser_name;
+            $deviceBrowserVersion = $request->browser_version;
+
+            if ($uuid = $request->cookie(env('UUID_COOKIE_NAME'))) {
+
+                $device = Device::where([
+                    'ip' => $request->ip(),
+                    'uuid' => $uuid
+                ])->first();
+
+                if ($device) {
+                    $deviceOsName &= $request->os_name != $device->os_name;
+                    $deviceOsVersion &= $request->os_version != $device->os_version;
+                    $deviceBrowserName &= $request->browser_name != $device->browser_name;
+                    $deviceBrowserVersion &= $request->browser_version != $device->browser_version;
+                }
+            }
+
+            $updateDeviceInformation['ip'] = $request->ip();
+        }
+
+        $encrypter = new Encrypter;
+
+        if (!isset($uuid)) {
+            $uuid = $encrypter->generateToken(64);
+        }
+
+        $updateDeviceInformation['uuid'] = $uuid;
+
+        if ($deviceOsName) {
+            $updateDeviceInformation['os_name'] = $request->os_name;
+        }
+
+        if ($deviceOsVersion) {
+            $updateDeviceInformation['os_version'] = $request->os_version;
+        }
+
+        if ($deviceBrowserName) {
+            $updateDeviceInformation['browser_name'] = $request->browser_name;
+        }
+
+        if ($deviceBrowserVersion) {
+            $updateDeviceInformation['browser_version'] = $request->browser_version;
+        }
+
+        $encryptedActivity = $encrypter->encrypt($activity, 15);
+        $authenticationType = AuthenticationType::where('name', $encryptedActivity)->first();
+
+        $newDevice = Device::updateOrCreate([], $updateDeviceInformation);
+
+        $user->userAuthentication()->create([
+            'device_id' => $newDevice->id,
+            'authentication_type_id' => $authenticationType->id
+        ]);
+
+        self::setCookie($uuid, 'UUID');
     }
 
     /**
@@ -134,6 +212,11 @@ class JsonResponse
             case 'REFRESH-TOKEN':
                 $name = env('REFRESH_TOKEN_COOKIE_NAME');
                 $expires = time()+env('REFRESH_TOKEN_LIFETIME')*60;
+                break;
+
+            case 'UUID':
+                $name = env('UUID_COOKIE_NAME');
+                $expires = time()+env('UUID_LIFETIME')*60;
                 break;
 
             default:
@@ -199,13 +282,18 @@ class JsonResponse
      * Sprawdzenie czy użytkownik może korzystać z serwisu
      * 
      * @param Illuminate\Http\Request $request
+     * string $activity nazwa aktywności, która wywołała daną metodę np. LOGIN
      * 
      * @return void
      */
-    public static function checkUserAccess(Request $request = null): void {
+    public static function checkUserAccess($request = null, ?string $activity): void {
 
         /** @var User $user */
         $user = Auth::user();
+
+        if ($activity) {
+            self::checkDevice($request, $activity);
+        }
 
         if (($user->account_blocked_at || $user->account_deleted_at)) {
 

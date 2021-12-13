@@ -45,7 +45,7 @@ class AuthController extends Controller
             throw new ApiException(AuthErrorCode::INVALID_CREDENTIALS());
         }
     
-        JsonResponse::checkUserAccess();
+        JsonResponse::checkUserAccess($request, 'LOGIN');
 
         $this->checkMissingUserInformation(true);
     }
@@ -68,6 +68,8 @@ class AuthController extends Controller
         $user = User::create($request->only('first_name', 'last_name', 'email', 'password', 'birth_date', 'gender_type_id'));
     
         Auth::loginUsingId($user->id);
+
+        JsonResponse::checkUserAccess($request, 'REGISTER');
 
         $this->sendVerificationEmail(true);
         $this->checkMissingUserInformation(true);
@@ -236,6 +238,7 @@ class AuthController extends Controller
             throw new ApiException(AuthErrorCode::EMAIL_VERIFIFICATION_TOKEN_HAS_EXPIRED());
         }
 
+        $user->timestamps = false;
         $user->markEmailAsVerified();
         $emailVerification->delete();
 
@@ -279,15 +282,18 @@ class AuthController extends Controller
      * #### `DELETE` `/api/auth/logout-other-devices`
      * Proces wylogowania użytkownika ze wszystkich urządzeń poza obecnym
      * 
+     * @param Illuminate\Http\Request $request
+     * 
      * @return void
      */
-    public function logoutOtherDevices(): void {
+    public function logoutOtherDevices(Request $request): void {
 
         /** @var User $user */
         $user = Auth::user();
 
         $user->tokens()->delete();
 
+        JsonResponse::checkDevice($request, 'REFRESH_TOKEN');
         JsonResponse::prepareCookies();
         JsonResponse::sendSuccess();
     }
@@ -418,6 +424,7 @@ class AuthController extends Controller
             ]);
 
             Auth::loginUsingId($createUser->id);
+            JsonResponse::checkUserAccess(null, 'REGISTER_OAUTH');
 
             if ($createUser->email) {
                 if (!$foundUser) {
@@ -429,9 +436,8 @@ class AuthController extends Controller
 
         } else {
             Auth::loginUsingId($externalAuthentication->user_id);
+            JsonResponse::checkUserAccess(null, 'LOGIN_OAUTH');
         }
-
-        JsonResponse::checkUserAccess();
 
         $this->checkMissingUserInformation(true);
     }
@@ -447,55 +453,48 @@ class AuthController extends Controller
      */
     public function updateUser(UpdateUserRequest $request, Encrypter $encrypter): void {
 
-        $email = $encrypter->decrypt($request->email);
-        $request->merge(['email' => $email]);
+        if ($request->email) {
+            $email = $encrypter->decrypt($request->email);
+            $request->merge(['email' => $email]);
+        }
 
-        $telephone = $encrypter->decrypt($request->telephone);
-        $request->merge(['telephone' => $telephone]);
+        if ($request->telephone) {
+            $telephone = $encrypter->decrypt($request->telephone);
+            $request->merge(['telephone' => $telephone]);
+        }
 
-        $facebookProfile = $encrypter->decrypt($request->facebook_profile);
-        $request->merge(['facebook_profile' => $facebookProfile]);
+        if ($request->facebook_profile) {
+            $facebookProfile = $encrypter->decrypt($request->facebook_profile);
+            $request->merge(['facebook_profile' => $facebookProfile]);
+        }
 
-        $instagramProfile = $encrypter->decrypt($request->instagram_profile);
-        $request->merge(['instagram_profile' => $instagramProfile]);
+        if ($request->instagram_profile) {
+            $instagramProfile = $encrypter->decrypt($request->instagram_profile);
+            $request->merge(['instagram_profile' => $instagramProfile]);
+        }
 
         /** @var User $user */
         $user = Auth::user();
 
         $updateUserInformation = null;
 
-        $userFirstName = $request->first_name && $request->first_name != $user->first_name;
-        $userLastName = $request->last_name && $request->last_name != $user->last_name;
-        $userEmail = $request->email && $request->email != $user->email;
-        $userBirthDate = $request->birth_date && $request->birth_date != $user->birth_date;
-        $userAddressCoordinates = $request->address_coordinates && $request->address_coordinates != $user->address_coordinates;
-        $userTelephone = $request->telephone && $request->telephone != $user->telephone;
-        $userFacebookProfile = $request->facebook_profile && $request->facebook_profile != $user->facebook_profile;
-        $userInstagramProfile = $request->instagram_profile && $request->instagram_profile != $user->instagram_profile;
-        $userGenderTypeId = $request->gender_type_id && $request->gender_type_id != $user->gender_type_id;
-
-        if ($userFirstName || $userLastName) {
-
-            if ($user->last_time_name_changed) {
-                if (Validation::timeComparison($user->last_time_name_changed, env('PAUSE_BEFORE_CHANGING_NAME'), '<=')) {
-                    throw new ApiException(
-                        AuthErrorCode::WAIT_BEFORE_CHANGING_NAME()
-                    );
-                }
-            }
-                
-            if ($userFirstName) {
-                $updateUserInformation['first_name'] = $request->first_name;
+        if (($request->first_name != $user->first_name ||
+            $request->last_name != $user->last_name))
+        {
+            if ($user->last_time_name_changed && 
+                Validation::timeComparison($user->last_time_name_changed, env('PAUSE_BEFORE_CHANGING_NAME'), '<='))
+            {
+                throw new ApiException(
+                    AuthErrorCode::WAIT_BEFORE_CHANGING_NAME()
+                );
             }
 
-            if ($userLastName) {
-                $updateUserInformation['last_name'] = $request->last_name;
-            }
-
+            $updateUserInformation['first_name'] = $request->first_name;
+            $updateUserInformation['last_name'] = $request->last_name;
             $updateUserInformation['last_time_name_changed'] = now();
         }
 
-        if ($userEmail) {
+        if ($request->email != $user->email) {
             $updateUserInformation['email'] = $request->email;
             $updateUserInformation['email_verified_at'] = null;
         }
@@ -505,20 +504,11 @@ class AuthController extends Controller
             $updateUserInformation['last_time_password_changed'] = now();
         }
 
-        if ($request->avatar) {
-            $updateUserInformation['avatar'] = $this->saveAvatar($request->avatar);
-
-            if ($user->avatar) {
-                $oldAvatarPath = 'avatars/' . $user->avatar;
-                Storage::delete($oldAvatarPath);
-            }
-        }
-
-        if ($userBirthDate) {
+        if ($request->birth_date && $request->birth_date != $user->birth_date) {
             $updateUserInformation['birth_date'] = $request->birth_date;
         }
 
-        if ($userAddressCoordinates) {
+        if ($request->address_coordinates != $user->address_coordinates) {
 
             $userAddressCoordinatesSeparators = explode(';', $request->address_coordinates);
 
@@ -558,31 +548,34 @@ class AuthController extends Controller
             $updateUserInformation['address_coordinates'] = $request->address_coordinates;
         }
 
-        if ($userTelephone) {
+        if ($request->telephone != $user->telephone) {
 
-            $telephoneLength = strlen($request->telephone);
+            if ($request->telephone) {
 
-            for ($i=0; $i<$telephoneLength; $i++) {
-                if (!is_numeric($request->telephone[$i])) {
-                    throw new ApiException(
-                        BaseErrorCode::FAILED_VALIDATION(),
-                        ['telephone' => [__('validation.regex')]]
-                    );
+                $telephoneLength = strlen($request->telephone);
+
+                for ($i=0; $i<$telephoneLength; $i++) {
+                    if (!is_numeric($request->telephone[$i])) {
+                        throw new ApiException(
+                            BaseErrorCode::FAILED_VALIDATION(),
+                            ['telephone' => [__('validation.regex')]]
+                        );
+                    }
                 }
             }
 
             $updateUserInformation['telephone'] = $request->telephone;
         }
 
-        if ($userFacebookProfile) {
+        if ($request->facebook_profile != $user->facebook_profile) {
             $updateUserInformation['facebook_profile'] = $request->facebook_profile;
         }
 
-        if ($userInstagramProfile) {
+        if ($request->instagram_profile != $user->instagram_profile) {
             $updateUserInformation['instagram_profile'] = $request->instagram_profile;
         }
 
-        if ($userGenderTypeId) {
+        if ($request->gender_type_id != $user->gender_type_id) {
             $updateUserInformation['gender_type_id'] = $request->gender_type_id;
         }
 
@@ -606,6 +599,34 @@ class AuthController extends Controller
      * @return void
      */
     public function getUser(): void {
+        $this->checkMissingUserInformation();
+    }
+
+    /**
+     * #### `POST` `/api/user/upload-avatar`
+     * Wgranie zdjęcia profilowego
+     * 
+     * @param Illuminate\Http\Request $request
+     * 
+     * @return void
+     */
+    public function uploadAvatar(Request $request): void {
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        if ($request->avatar) {
+
+            $updateUserInformation['avatar'] = $this->saveAvatar($request->avatar);
+
+            if ($user->avatar) {
+                $oldAvatarPath = 'avatars/' . $user->avatar;
+                Storage::delete($oldAvatarPath);
+            }
+
+            $user->update($updateUserInformation);
+        }
+
         $this->checkMissingUserInformation();
     }
 

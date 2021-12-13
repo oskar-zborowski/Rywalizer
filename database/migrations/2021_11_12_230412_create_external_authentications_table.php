@@ -17,7 +17,7 @@ class CreateExternalAuthenticationsTable extends Migration
             $table->string('authentication_id', 340);
             $table->mediumInteger('user_id')->unsigned();
             $table->tinyInteger('provider_type_id')->unsigned();
-            $table->timestamps();
+            $table->timestamp('created_at')->nullable();
         });
 
         Schema::table('external_authentications', function (Blueprint $table) {
@@ -32,6 +32,6 @@ class CreateExternalAuthenticationsTable extends Migration
      * @return void
      */
     public function down(): void {
-        Schema::dropIfExists('providers');
+        Schema::dropIfExists('external_authentications');
     }
 }

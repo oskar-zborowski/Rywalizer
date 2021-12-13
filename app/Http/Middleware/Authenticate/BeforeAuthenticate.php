@@ -27,6 +27,7 @@ class BeforeAuthenticate
         $resetPassword = 'auth-resetPassword';
         $verifyEmail = 'auth-verifyEmail';
         $updateUser = 'auth-updateUser';
+        $uploadAvatar = 'auth-uploadAvatar';
 
         $encrypter = new Encrypter;
 
@@ -36,14 +37,8 @@ class BeforeAuthenticate
             $routeName == $updateUser)
         {
             $request->validate([
-                'email' => 'nullable|string|email|max:254'
+                'email' => 'required|string|email|max:254'
             ]);
-
-            if ($routeName != $updateUser) {
-                $request->validate([
-                    'email' => 'required'
-                ]);
-            }
 
             if ($request->email) {
                 $encryptedEmail = $encrypter->encrypt($request->email, 254);
@@ -108,9 +103,9 @@ class BeforeAuthenticate
         if ($routeName == $updateUser) {
 
             $request->validate([
-                'telephone' => 'string|max:24',
-                'facebook_profile' => 'string|url|max:255',
-                'instagram_profile' => 'string|url|max:255'
+                'telephone' => 'nullable|string|max:24',
+                'facebook_profile' => 'nullable|string|url|max:255',
+                'instagram_profile' => 'nullable|string|url|max:255'
             ]);
 
             if ($request->telephone) {
@@ -127,6 +122,12 @@ class BeforeAuthenticate
                 $encryptedInstagramProfile = $encrypter->encrypt($request->instagram_profile, 255);
                 $request->merge(['instagram_profile' => $encryptedInstagramProfile]);
             }
+        }
+
+        if ($routeName == $uploadAvatar) {
+            $request->validate([
+                'avatar' => 'nullable|image|max:2048',
+            ]);
         }
 
         return $next($request);
