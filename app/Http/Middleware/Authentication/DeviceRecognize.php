@@ -72,10 +72,10 @@ class DeviceRecognize
             $updateDeviceInformation['browser_version'] = $request->browser_version;
         }
 
-        if (isset($device)) {
+        if (!isset($device)) {
+            $device = Device::create($updateDeviceInformation); 
+        } else if ($updateDeviceInformation) {
             $device->update($updateDeviceInformation);
-        } else {
-            $device = Device::create($updateDeviceInformation);
         }
 
         $request->merge(['device_id' => $device->id]);

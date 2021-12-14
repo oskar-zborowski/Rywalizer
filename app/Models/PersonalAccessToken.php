@@ -39,11 +39,11 @@ class PersonalAccessToken extends Model
         'updated_at'
     ];
 
-    // protected $casts = [
-    //     'last_used_at' => 'datetime',
-    //     'created_at' => 'datetime',
-    //     'updated_at' => 'datetime'
-    // ];
+    protected $casts = [
+        'last_used_at' => 'string',
+        'created_at' => 'string',
+        'updated_at' => 'string'
+    ];
 
     protected $encryptable = [
         'refresh_token'

@@ -14,7 +14,7 @@ class CreateAuthenticationTypesTable extends Migration
     public function up() {
         Schema::create('authentication_types', function (Blueprint $table) {
             $table->tinyIncrements('id');
-            $table->string('name', 20)->unique();
+            $table->string('name', 24)->unique();
         });
     }
 

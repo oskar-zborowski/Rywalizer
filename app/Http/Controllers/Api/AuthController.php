@@ -431,7 +431,7 @@ class AuthController extends Controller
             ]);
 
             Auth::loginUsingId($createUser->id);
-            JsonResponse::checkUserAccess(null, 'REGISTER_OAUTH');
+            JsonResponse::checkUserAccess(null, 'REGISTER_' . strtoupper($provider));
 
             if ($createUser->email) {
                 if (!$foundUser) {
@@ -443,7 +443,7 @@ class AuthController extends Controller
 
         } else {
             Auth::loginUsingId($externalAuthentication->user_id);
-            JsonResponse::checkUserAccess(null, 'LOGIN_OAUTH');
+            JsonResponse::checkUserAccess(null, 'LOGIN_' . strtoupper($provider));
         }
 
         $this->checkMissingUserInformation(true);

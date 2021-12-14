@@ -30,10 +30,10 @@ class UserAuthentication extends Model
         'updated_at'
     ];
 
-    // protected $casts = [
-    //     'created_at' => 'datetime',
-    //     'updated_at' => 'datetime'
-    // ];
+    protected $casts = [
+        'created_at' => 'string',
+        'updated_at' => 'string'
+    ];
 
     public function user() {
         return $this->belongsTo(User::class);

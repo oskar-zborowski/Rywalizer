@@ -119,7 +119,7 @@ class JsonResponse
 
         $encrypter = new Encrypter;
 
-        $encryptedActivity = $encrypter->encrypt($activity, 15);
+        $encryptedActivity = $encrypter->encrypt($activity, 18);
         $authenticationType = AuthenticationType::where('name', $encryptedActivity)->first();
 
         $user->userAuthentication()->create([

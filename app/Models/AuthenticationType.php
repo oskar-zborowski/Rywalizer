@@ -24,7 +24,7 @@ class AuthenticationType extends Model
     ];
 
     protected $maxSize = [
-        'name' => 15
+        'name' => 18
     ];
 
     public function userAuthentication() {

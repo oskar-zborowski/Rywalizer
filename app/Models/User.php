@@ -58,15 +58,15 @@ class User extends Authenticatable implements MustVerifyEmail
         'updated_at'
     ];
 
-    // protected $casts = [
-    //     'email_verified_at' => 'datetime',
-    //     'account_deleted_at' => 'datetime',
-    //     'account_blocked_at' => 'datetime',
-    //     'last_time_name_changed' => 'datetime',
-    //     'last_time_password_changed' => 'datetime',
-    //     'created_at' => 'datetime',
-    //     'updated_at' => 'datetime'
-    // ];
+    protected $casts = [
+        'email_verified_at' => 'string',
+        'account_deleted_at' => 'string',
+        'account_blocked_at' => 'string',
+        'last_time_name_changed' => 'string',
+        'last_time_password_changed' => 'string',
+        'created_at' => 'string',
+        'updated_at' => 'string'
+    ];
 
     protected $encryptable = [
         'first_name',
@@ -124,7 +124,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(UserAuthentication::class);
     }
 
-    public function privateData() {
+    public function privateData(): array {
         return [
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
@@ -135,19 +135,31 @@ class User extends Authenticatable implements MustVerifyEmail
             'telephone' => $this->telephone,
             'facebook_profile' => $this->facebook_profile,
             'instagram_profile' => $this->instagram_profile,
-            'gender_type' => $this->genderType()->get(['name'])[0]['name'] ?? null,
-            'role_type' => $this->roleType()->get(['name', 'access_level'])[0],
+            'gender' => $this->genderType()->get('name')[0] ?? null,
+            'role' => $this->roleType()->get(['name', 'access_level'])[0],
             'last_time_name_changed' => $this->last_time_name_changed,
-            'last_time_password_changed' => $this->last_time_password_changed,
+            'last_time_password_changed' => $this->last_time_password_changed
         ];
     }
 
-    public function detailedData() {
+    public function detailedData(): array {
+
+        $loginForm = null;
+        $externalAuthentication = $this->externalAuthentication()->get();
+
+        if ($this->password) {
+            $loginForm[] = 'FORM';
+        }
+
+        foreach ($externalAuthentication as $eA) {
+            $loginForm[] = $eA->providerType()->get('name')[0]['name'];
+        }
+
         return [
             'id' => $this->id,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
-            'login_form' => $this->externalAuthentication()->first() ? $this->externalAuthentication()->first()->providerType()->get('name')[0]['name'] : 'form',
+            'login_form' => $loginForm,
             'email' => $this->email,
             'avatar' => $this->avatar,
             'birth_date' => $this->birth_date,
@@ -155,15 +167,42 @@ class User extends Authenticatable implements MustVerifyEmail
             'telephone' => $this->telephone,
             'facebook_profile' => $this->facebook_profile,
             'instagram_profile' => $this->instagram_profile,
-            'gender_type' => $this->genderType()->get(['name'])[0]['name'] ?? null,
-            'role_type' => $this->roleType()->get(['name'])[0],
+            'gender' => $this->genderType()->get('name')[0] ?? null,
+            'role' => $this->roleType()->get(['name', 'access_level'])[0],
             'email_verified_at' => $this->email_verified_at,
             'account_deleted_at' => $this->account_deleted_at,
             'account_blocked_at' => $this->account_blocked_at,
             'last_time_name_changed' => $this->last_time_name_changed,
             'last_time_password_changed' => $this->last_time_password_changed,
             'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at
+            'updated_at' => $this->updated_at,
+            'authentication' => $this->authentication(['ip', 'uuid', 'os_name', 'os_version', 'browser_name', 'browser_version'], true)
         ];
+    }
+
+    public function authentication($deviceFields = '*', bool $withAuthenticationType = false): ?array {
+
+        $authentication = null;
+        $userAuthentication = $this->userAuthentication()->get();
+
+        $i = 0;
+
+        foreach ($userAuthentication as $uA) {
+
+            $device = $uA->device()->get($deviceFields);
+
+            $authentication[$i] = [
+                'device' => $device[0],
+                'date' => $uA['created_at']
+            ];
+
+            if ($withAuthenticationType) {
+                $authentication[$i]['type'] = $uA->authenticationType()->get('name')[0]['name'];
+            }
+
+            $i++;
+        }
+
+        return $authentication;
     }
 }

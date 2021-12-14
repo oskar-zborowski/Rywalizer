@@ -29,9 +29,9 @@ class ExternalAuthentication extends Model
         'created_at'
     ];
 
-    // protected $casts = [
-    //     'created_at' => 'datetime'
-    // ];
+    protected $casts = [
+        'created_at' => 'string'
+    ];
 
     protected $encryptable = [
         'authentication_id'
