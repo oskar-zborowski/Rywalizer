@@ -19,12 +19,12 @@ Route::middleware(['throttle:defaultLimit', 'auth:sanctum'])->group(function () 
 
     /*
     |-------------------------------------------------------------------------------------------------------
-    | Endpointy dostępne wyłącznie bez uwierzytelnienia -
-    | w przypadku nowych pozycji należy uzupełnić middleware Authenticate.php
+    | Endpointy wpływające na encję użytkownika i wymagające dodatkowego sprawdzenia poprawności danych -
+    | w przypadku nowych pozycji należy uzupełnić middleware'y Authenticate.php oraz BeforeUser.php
     |-------------------------------------------------------------------------------------------------------
     */
 
-    Route::middleware('before.auth')->group(function () {
+    Route::middleware('before.user')->group(function () {
         
         Route::post('/auth/login', [AuthController::class, 'login'])->name('auth-login')->middleware(['throttle:loginLimit']);
         Route::post('/auth/register', [AuthController::class, 'register'])->name('auth-register')->middleware(['throttle:registerLimit']);
@@ -34,13 +34,13 @@ Route::middleware(['throttle:defaultLimit', 'auth:sanctum'])->group(function () 
 
         Route::patch('/email/verify', [AuthController::class, 'verifyEmail'])->name('auth-verifyEmail');
 
-        Route::post('/user', [AuthController::class, 'updateUser'])->name('auth-updateUser');
-        Route::post('/user/upload-avatar', [AuthController::class, 'uploadAvatar'])->name('auth-uploadAvatar');
+        Route::patch('/user', [AuthController::class, 'updateUser'])->name('auth-updateUser');
+        Route::post('/user/avatar/upload', [AuthController::class, 'uploadAvatar'])->name('auth-uploadAvatar');
     });
 
     /*
     |-------------------------------------------------------------------------------------------------------
-    | Endpointy do zewnętrznego uwierzytelnienia - jw.
+    | Endpointy do zewnętrznego uwierzytelnienia
     |-------------------------------------------------------------------------------------------------------
     */
 
@@ -59,6 +59,7 @@ Route::middleware(['throttle:defaultLimit', 'auth:sanctum'])->group(function () 
     Route::delete('/auth/logout-other-devices', [AuthController::class, 'logoutOtherDevices'])->name('auth-logoutOtherDevices')->middleware(['throttle:logoutOtherDevicesLimit']);
 
     Route::get('/user', [AuthController::class, 'getUser'])->name('auth-getUser');
+    Route::delete('/user/avatar/delete', [AuthController::class, 'deleteAvatar'])->name('auth-deleteAvatar');
 
     /*
     |-------------------------------------------------------------------------------------------------------
@@ -69,9 +70,9 @@ Route::middleware(['throttle:defaultLimit', 'auth:sanctum'])->group(function () 
     Route::middleware('user.roles')->group(function () {
 
         /*
-        |-------------------------------------------------------------------------------------------------------
+        |---------------------------------------------------------------------------------------------------
         | Endpointy dostępne wyłącznie ze zweryfikowanym mailem użytkownika
-        |-------------------------------------------------------------------------------------------------------
+        |---------------------------------------------------------------------------------------------------
         */
 
         Route::middleware('verified')->group(function () {
@@ -81,9 +82,11 @@ Route::middleware(['throttle:defaultLimit', 'auth:sanctum'])->group(function () 
 });
 
 /*
-|-------------------------------------------------------------------------------------------------------
-| Endpointy do odbierania informacji z GitHuba
-|-------------------------------------------------------------------------------------------------------
+|-----------------------------------------------------------------------------------------------------------
+| Endpointy do odbierania informacji z serwisu GitHub
+|-----------------------------------------------------------------------------------------------------------
 */
 
-Route::post('/github/pull', [GitHubController::class, 'pull'])->name('github-pull')->middleware(['throttle:githubPullLimit']);
+Route::middleware('throttle:githubLimit')->group(function () {
+    Route::post('/github/pull', [GitHubController::class, 'pull'])->name('github-pull');
+});

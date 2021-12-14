@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware\Authenticate;
+namespace App\Http\Middleware\Authentication;
 
 use App\Exceptions\ApiException;
 use App\Http\ErrorCodes\AuthErrorCode;

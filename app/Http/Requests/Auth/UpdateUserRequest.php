@@ -21,11 +21,11 @@ class UpdateUserRequest extends FormRequest
         $user = Auth::user();
 
         return [
-            'first_name' => 'required|string|alpha|max:30',
-            'last_name' => 'required|string|alpha|max:30',
+            'first_name' => 'nullable|string|alpha|max:30',
+            'last_name' => 'nullable|string|alpha|max:30',
             'email' => 'unique:users,email,' . $user->id,
             'birth_date' => 'nullable|string|date|size:10',
-            'address_coordinates' => 'required|string|size:15',
+            'address_coordinates' => 'nullable|string|size:15',
             'telephone' => 'unique:users,telephone,' . $user->id,
             'facebook_profile' => 'unique:users,facebook_profile,' . $user->id,
             'instagram_profile' => 'unique:users,instagram_profile,' . $user->id,

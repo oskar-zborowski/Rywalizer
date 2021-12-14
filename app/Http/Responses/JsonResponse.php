@@ -85,7 +85,12 @@ class JsonResponse
         $user = Auth::user();
 
         $encrypter = new Encrypter;
-        $refreshToken = $encrypter->generateToken(64);
+
+        do {
+            $refreshToken = $encrypter->generateToken(64);
+            $encryptedRefreshToken = $encrypter->encrypt($refreshToken);
+        } while (!empty(PersonalAccessToken::where('refresh_token', $encryptedRefreshToken)->first()));
+
         $encryptedRefreshToken = $encrypter->encrypt($refreshToken);
 
         $jwtEncryptedName = $encrypter->encrypt('JWT', 3);
@@ -112,68 +117,15 @@ class JsonResponse
         /** @var User $user */
         $user = Auth::user();
 
-        $updateDeviceInformation = null;
-
-        if ($request) {
-
-            $deviceOsName = $request->os_name;
-            $deviceOsVersion = $request->os_version;
-            $deviceBrowserName = $request->browser_name;
-            $deviceBrowserVersion = $request->browser_version;
-
-            if ($uuid = $request->cookie(env('UUID_COOKIE_NAME'))) {
-
-                $device = Device::where([
-                    'ip' => $request->ip(),
-                    'uuid' => $uuid
-                ])->first();
-
-                if ($device) {
-                    $deviceOsName &= $request->os_name != $device->os_name;
-                    $deviceOsVersion &= $request->os_version != $device->os_version;
-                    $deviceBrowserName &= $request->browser_name != $device->browser_name;
-                    $deviceBrowserVersion &= $request->browser_version != $device->browser_version;
-                }
-            }
-
-            $updateDeviceInformation['ip'] = $request->ip();
-        }
-
         $encrypter = new Encrypter;
-
-        if (!isset($uuid)) {
-            $uuid = $encrypter->generateToken(64);
-        }
-
-        $updateDeviceInformation['uuid'] = $uuid;
-
-        if ($deviceOsName) {
-            $updateDeviceInformation['os_name'] = $request->os_name;
-        }
-
-        if ($deviceOsVersion) {
-            $updateDeviceInformation['os_version'] = $request->os_version;
-        }
-
-        if ($deviceBrowserName) {
-            $updateDeviceInformation['browser_name'] = $request->browser_name;
-        }
-
-        if ($deviceBrowserVersion) {
-            $updateDeviceInformation['browser_version'] = $request->browser_version;
-        }
 
         $encryptedActivity = $encrypter->encrypt($activity, 15);
         $authenticationType = AuthenticationType::where('name', $encryptedActivity)->first();
 
-        $newDevice = Device::updateOrCreate([], $updateDeviceInformation);
-
         $user->userAuthentication()->create([
-            'device_id' => $newDevice->id,
+            'device_id' => $request->device_id,
             'authentication_type_id' => $authenticationType->id
         ]);
-
-        self::setCookie($uuid, 'UUID');
     }
 
     /**

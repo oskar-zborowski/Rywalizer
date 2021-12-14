@@ -107,7 +107,10 @@ class AuthController extends Controller
             }
         }
 
-        $token = $encrypter->generateToken(64);
+        do {
+            $token = $encrypter->generateToken(64);
+            $encryptedToken = $encrypter->encrypt($token);
+        } while (!empty(PasswordReset::where('token', $encryptedToken)->first()));
 
         $user->passwordReset()->updateOrCreate([],
         [
@@ -193,7 +196,11 @@ class AuthController extends Controller
             }
 
             $encrypter = new Encrypter;
-            $token = $encrypter->generateToken(64);
+
+            do {
+                $token = $encrypter->generateToken(64);
+                $encryptedToken = $encrypter->encrypt($token);
+            } while (!empty(EmailVerification::where('token', $encryptedToken)->first()));
 
             $user->emailVerification()->updateOrCreate([],
             [
@@ -443,7 +450,7 @@ class AuthController extends Controller
     }
 
     /**
-     * #### `POST` `/api/user`
+     * #### `PATCH` `/api/user`
      * Proces uzupełnienia danych użytkownika, bądź też zaktualizowania już istniejących
      * 
      * @param App\Http\Requests\Auth\UpdateUserRequest $request
@@ -478,9 +485,13 @@ class AuthController extends Controller
 
         $updateUserInformation = null;
 
-        if (($request->first_name != $user->first_name ||
-            $request->last_name != $user->last_name))
-        {
+        $userFirstName = $request->first_name && $request->first_name != $user->first_name;
+        $userLastName = $request->last_name && $request->last_name != $user->last_name;
+        $userEmail = $request->email && $request->email != $user->email;
+        $userBirthDate = $request->birth_date && $request->birth_date != $user->birth_date;
+
+        if ($userFirstName || $userLastName) {
+
             if ($user->last_time_name_changed && 
                 Validation::timeComparison($user->last_time_name_changed, env('PAUSE_BEFORE_CHANGING_NAME'), '<='))
             {
@@ -489,12 +500,18 @@ class AuthController extends Controller
                 );
             }
 
-            $updateUserInformation['first_name'] = $request->first_name;
-            $updateUserInformation['last_name'] = $request->last_name;
+            if ($userFirstName) {
+                $updateUserInformation['first_name'] = $request->first_name;
+            }
+
+            if ($userLastName) {
+                $updateUserInformation['last_name'] = $request->last_name;
+            }
+
             $updateUserInformation['last_time_name_changed'] = now();
         }
 
-        if ($request->email != $user->email) {
+        if ($userEmail) {
             $updateUserInformation['email'] = $request->email;
             $updateUserInformation['email_verified_at'] = null;
         }
@@ -504,44 +521,47 @@ class AuthController extends Controller
             $updateUserInformation['last_time_password_changed'] = now();
         }
 
-        if ($request->birth_date && $request->birth_date != $user->birth_date) {
+        if ($userBirthDate) {
             $updateUserInformation['birth_date'] = $request->birth_date;
         }
 
         if ($request->address_coordinates != $user->address_coordinates) {
 
-            $userAddressCoordinatesSeparators = explode(';', $request->address_coordinates);
+            if ($request->address_coordinates) {
 
-            if (count($userAddressCoordinatesSeparators) != 2) {
-                throw new ApiException(
-                    BaseErrorCode::FAILED_VALIDATION(),
-                    ['address_coordinates' => [__('validation.regex')]]
-                );
-            }
+                $userAddressCoordinatesSeparators = explode(';', $request->address_coordinates);
 
-            $latitudeLength = strlen($userAddressCoordinatesSeparators[0]);
-            $longitudeLength = strlen($userAddressCoordinatesSeparators[1]);
+                if (count($userAddressCoordinatesSeparators) != 2) {
+                    throw new ApiException(
+                        BaseErrorCode::FAILED_VALIDATION(),
+                        ['address_coordinates' => [__('validation.regex')]]
+                    );
+                }
 
-            if ($latitudeLength != 7 ||
-                $longitudeLength != 7 ||
-                $userAddressCoordinatesSeparators[0][2] != '.' ||
-                $userAddressCoordinatesSeparators[1][2] != '.')
-            {
-                throw new ApiException(
-                    BaseErrorCode::FAILED_VALIDATION(),
-                    ['address_coordinates' => [__('validation.regex')]]
-                );
-            }
+                $latitudeLength = strlen($userAddressCoordinatesSeparators[0]);
+                $longitudeLength = strlen($userAddressCoordinatesSeparators[1]);
 
-            for ($i=0; $i<$latitudeLength; $i++) {
-                if ((!is_numeric($userAddressCoordinatesSeparators[0][$i]) ||
-                    !is_numeric($userAddressCoordinatesSeparators[1][$i])) &&
-                    $i != 2)
+                if ($latitudeLength != 7 ||
+                    $longitudeLength != 7 ||
+                    $userAddressCoordinatesSeparators[0][2] != '.' ||
+                    $userAddressCoordinatesSeparators[1][2] != '.')
                 {
                     throw new ApiException(
                         BaseErrorCode::FAILED_VALIDATION(),
                         ['address_coordinates' => [__('validation.regex')]]
                     );
+                }
+
+                for ($i=0; $i<$latitudeLength; $i++) {
+                    if ((!is_numeric($userAddressCoordinatesSeparators[0][$i]) ||
+                        !is_numeric($userAddressCoordinatesSeparators[1][$i])) &&
+                        $i != 2)
+                    {
+                        throw new ApiException(
+                            BaseErrorCode::FAILED_VALIDATION(),
+                            ['address_coordinates' => [__('validation.regex')]]
+                        );
+                    }
                 }
             }
 
@@ -603,7 +623,7 @@ class AuthController extends Controller
     }
 
     /**
-     * #### `POST` `/api/user/upload-avatar`
+     * #### `POST` `/api/user/avatar/upload`
      * Wgranie zdjęcia profilowego
      * 
      * @param Illuminate\Http\Request $request
@@ -625,6 +645,27 @@ class AuthController extends Controller
             }
 
             $user->update($updateUserInformation);
+        }
+
+        $this->checkMissingUserInformation();
+    }
+
+    /**
+     * #### `DELETE` `/api/user/avatar/delete`
+     * Usunięcie zdjęcia profilowego
+     * 
+     * @return void
+     */
+    public function deleteAvatar(): void {
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        if ($user->avatar) {
+            $avatarPath = 'avatars/' . $user->avatar;
+            Storage::delete($avatarPath);
+
+            $user->update(['avatar' => null]);
         }
 
         $this->checkMissingUserInformation();
@@ -671,8 +712,8 @@ class AuthController extends Controller
     
         do {
             $avatarFilename = $encrypter->generateToken(64, $avatarFileExtension);
-            $avatarFilenameEncrypted = $encrypter->encrypt($avatarFilename);
-        } while (!Validation::checkUserUniqueness('avatar', $avatarFilenameEncrypted));
+            $encryptedAvatarFilename = $encrypter->encrypt($avatarFilename);
+        } while (!Validation::checkUserUniqueness('avatar', $encryptedAvatarFilename));
 
         $avatarDestination = 'storage/avatars/' . $avatarFilename;
         $avatarContents = file_get_contents($avatarPath);

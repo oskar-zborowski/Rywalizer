@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware\Authenticate;
+namespace App\Http\Middleware\Authentication;
 
 use App\Http\Libraries\Encrypter\Encrypter;
 use Closure;
@@ -11,7 +11,7 @@ use Illuminate\Validation\Rules\Password as RulesPassword;
 /**
  * Klasa wywoływana przed uwierzytelnieniem
  */
-class BeforeAuthenticate
+class BeforeUser
 {
     /**
      * @param Illuminate\Http\Request $request
@@ -37,8 +37,14 @@ class BeforeAuthenticate
             $routeName == $updateUser)
         {
             $request->validate([
-                'email' => 'required|string|email|max:254'
+                'email' => 'nullable|string|email|max:254'
             ]);
+
+            if ($routeName != $updateUser) {
+                $request->validate([
+                    'email' => 'required'
+                ]);
+            }
 
             if ($request->email) {
                 $encryptedEmail = $encrypter->encrypt($request->email, 254);
