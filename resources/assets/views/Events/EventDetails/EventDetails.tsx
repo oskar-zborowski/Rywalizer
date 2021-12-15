@@ -2,7 +2,7 @@
 import StarRatings from '@/components/StarRating/StarRating';
 import React from 'react';
 import styles from './EventDetails.scss';
-import prof from '@/images/prof.png';
+import prof from '@/static/images/prof.png';
 
 const EventDetails: React.FC = (props) => {
     return (
