@@ -1,6 +1,6 @@
 .starRating {
     unicode-bidi: bidi-override;
-    color: #545455;
+    color: #545455 !important;
     position: relative;
     padding: 0;
     align-items: center;
@@ -15,7 +15,7 @@
     z-index: 1;
     display: flex;
     overflow: hidden;
-    color: #ce8f3e;
+    color: #ce8f3e !important;
 }
 
 .ratingLower {

@@ -1,5 +1,6 @@
 import { GrayButton, OrangeButton } from '@/components/form/Button/Button';
 import userStore, { UserStore } from '@/store/UserStore';
+import EventDetails from '@/views/Events/EventDetails/EventDetails';
 import EventsView from '@/views/Events/EventsView';
 import SportFacilityDetails from '@/views/SportFacilities/SportFacilityDetails/SportFacilityDetails';
 import UserView from '@/views/User/UserView';
@@ -29,6 +30,7 @@ const MainContainer: React.FC<{ store: UserStore }> = (props) => {
                     <Route path="/" element={<EventsView />} />
                     <Route path="/konto" element={<UserView store={props.store} />} />
                     <Route path="/obiekty/1" element={<SportFacilityDetails />} />
+                    <Route path="/wydarzenia/1" element={<EventDetails />} />
                 </Routes>
             </main>
             <Scrollbar />
