@@ -23,13 +23,12 @@ class UpdateUserRequest extends FormRequest
         return [
             'first_name' => 'nullable|string|alpha|max:30',
             'last_name' => 'nullable|string|alpha|max:30',
-            'email' => 'nullable|unique:users,email,' . $user->id,
-            'avatar' => 'nullable|image|max:2048',
+            'email' => 'unique:users,email,' . $user->id,
             'birth_date' => 'nullable|string|date|size:10',
             'address_coordinates' => 'nullable|string|size:15',
-            'telephone' => 'nullable|unique:users,telephone,' . $user->id,
-            'facebook_profile' => 'nullable|unique:users,facebook_profile,' . $user->id,
-            'instagram_profile' => 'nullable|unique:users,instagram_profile,' . $user->id,
+            'telephone' => 'unique:users,telephone,' . $user->id,
+            'facebook_profile' => 'unique:users,facebook_profile,' . $user->id,
+            'instagram_profile' => 'unique:users,instagram_profile,' . $user->id,
             'gender_type_id' => 'nullable|integer|exists:gender_types,id'
         ];
     }

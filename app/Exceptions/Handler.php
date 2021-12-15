@@ -80,17 +80,15 @@ class Handler extends ExceptionHandler
                 break;
 
             case BadMethodCallException::class:
-                /** @var BadMethodCallException $throwable */
-
-                JsonResponse::sendError(
-                    BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? [$throwable->getMessage(), $throwable->getFile(), $throwable->getLine()] : null
-                );
-                break;
-
             case BindingResolutionException::class:
-                /** @var BindingResolutionException $throwable */
-
+            case Error::class:
+            case ErrorException::class:
+            case Exception::class:
+            case FatalError::class:
+            case MethodNotAllowedHttpException::class:
+            case NotFoundHttpException::class:
+            case TypeError::class:
+                
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),
                     env('APP_DEBUG') ? [$throwable->getMessage(), $throwable->getFile(), $throwable->getLine()] : null
@@ -106,66 +104,12 @@ class Handler extends ExceptionHandler
                 );
                 break;
 
-            case Error::class:
-                /** @var Error $throwable */
-
-                JsonResponse::sendError(
-                    BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? [$throwable->getMessage(), $throwable->getFile(), $throwable->getLine()] : null
-                );
-                break;
-
-            case ErrorException::class:
-                /** @var ErrorException $throwable */
-
-                JsonResponse::sendError(
-                    BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? [$throwable->getMessage(), $throwable->getFile(), $throwable->getLine()] : null
-                );
-                break;
-
-            case Exception::class:
-                /** @var Exception $throwable */
-
-                JsonResponse::sendError(
-                    BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? [$throwable->getMessage(), $throwable->getFile(), $throwable->getLine()] : null
-                );
-                break;
-
-            case FatalError::class:
-                /** @var FatalError $throwable */
-
-                JsonResponse::sendError(
-                    BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? [$throwable->getMessage(), $throwable->getFile(), $throwable->getLine()] : null
-                );
-                break;
-
             case HttpException::class:
                 /** @var HttpException $throwable */
 
                 JsonResponse::sendError(
                     BaseErrorCode::PERMISSION_DENIED(),
                     $throwable->getMessage()
-                );
-                break;
-
-            case MethodNotAllowedHttpException::class:
-                /** @var MethodNotAllowedHttpException $throwable */
-
-                JsonResponse::sendError(
-                    BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? [$throwable->getMessage(), $throwable->getFile(), $throwable->getLine()] : null
-                );
-                break;
-
-            case NotFoundHttpException::class:
-                /** @var NotFoundHttpException $throwable */
-
-                JsonResponse::sendError(
-                    BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? [$throwable->getMessage(), $throwable->getFile(), $throwable->getLine()] : null
                 );
                 break;
 
@@ -184,15 +128,6 @@ class Handler extends ExceptionHandler
                 JsonResponse::sendError(
                     BaseErrorCode::LIMIT_EXCEEDED(),
                     $throwable->getMessage()
-                );
-                break;
-
-            case TypeError::class:
-                /** @var TypeError $throwable */
-
-                JsonResponse::sendError(
-                    BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    env('APP_DEBUG') ? [$throwable->getMessage(), $throwable->getFile(), $throwable->getLine()] : null
                 );
                 break;
 

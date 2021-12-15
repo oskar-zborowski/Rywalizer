@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Middleware\Authenticate;
+namespace App\Http\Middleware\Authentication;
 
 use App\Exceptions\ApiException;
 use App\Http\ErrorCodes\AuthErrorCode;
 use App\Http\Responses\JsonResponse;
+use App\Models\PersonalAccessToken;
 use Closure;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
@@ -51,6 +52,7 @@ class Authenticate extends Middleware
 
             $request->headers->set('Authorization', 'Bearer ' . $jwt);
             $authenticated = true;
+            $activity = null;
 
             try {
                 $this->authenticate($request, $guards);
@@ -58,6 +60,7 @@ class Authenticate extends Middleware
 
                 JsonResponse::deleteCookie('JWT');
 
+                /** @var PersonalAccessToken $personalAccessToken */
                 $personalAccessToken = JsonResponse::isRefreshTokenValid($request);
 
                 if ($personalAccessToken) {
@@ -68,6 +71,7 @@ class Authenticate extends Middleware
 
                     if ($currentRootName != $logout) {
                         JsonResponse::refreshToken($personalAccessToken);
+                        $activity = 'REFRESH_TOKEN';
                     } else {
                         $authenticated = false;
                     }
@@ -88,7 +92,7 @@ class Authenticate extends Middleware
 
             if ($authenticated) {
 
-                JsonResponse::checkUserAccess($request);
+                JsonResponse::checkUserAccess($request, $activity);
 
                 if (in_array($currentRootName, $exceptionalRouteNames)) {
                     throw new ApiException(AuthErrorCode::ALREADY_LOGGED_IN());
@@ -97,6 +101,7 @@ class Authenticate extends Middleware
 
         } else {
 
+            /** @var PersonalAccessToken $personalAccessToken */
             $personalAccessToken = JsonResponse::isRefreshTokenValid($request);
 
             if ($personalAccessToken) {
@@ -107,7 +112,7 @@ class Authenticate extends Middleware
 
                 if ($currentRootName != $logout) {
                     JsonResponse::refreshToken($personalAccessToken);
-                    JsonResponse::checkUserAccess($request);
+                    JsonResponse::checkUserAccess($request, 'REFRESH_TOKEN');
                 }
 
             } else {

@@ -18,8 +18,7 @@ class ExternalAuthentication extends Model
     protected $guarded = [
         'id',
         'user_id',
-        'created_at',
-        'updated_at'
+        'created_at'
     ];
 
     protected $hidden = [
@@ -27,14 +26,12 @@ class ExternalAuthentication extends Model
         'authentication_id',
         'user_id',
         'provider_type_id',
-        'created_at',
-        'updated_at'
+        'created_at'
     ];
 
-    // protected $casts = [
-    //     'created_at' => 'datetime',
-    //     'updated_at' => 'datetime'
-    // ];
+    protected $casts = [
+        'created_at' => 'string'
+    ];
 
     protected $encryptable = [
         'authentication_id'

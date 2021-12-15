@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware\Authenticate;
+namespace App\Http\Middleware\Authentication;
 
 use App\Http\Libraries\Encrypter\Encrypter;
 use Closure;
@@ -11,7 +11,7 @@ use Illuminate\Validation\Rules\Password as RulesPassword;
 /**
  * Klasa wywoływana przed uwierzytelnieniem
  */
-class BeforeAuthenticate
+class BeforeUser
 {
     /**
      * @param Illuminate\Http\Request $request
@@ -27,6 +27,7 @@ class BeforeAuthenticate
         $resetPassword = 'auth-resetPassword';
         $verifyEmail = 'auth-verifyEmail';
         $updateUser = 'auth-updateUser';
+        $uploadAvatar = 'auth-uploadAvatar';
 
         $encrypter = new Encrypter;
 
@@ -108,9 +109,9 @@ class BeforeAuthenticate
         if ($routeName == $updateUser) {
 
             $request->validate([
-                'telephone' => 'string|max:24',
-                'facebook_profile' => 'string|url|max:255',
-                'instagram_profile' => 'string|url|max:255'
+                'telephone' => 'nullable|string|max:24',
+                'facebook_profile' => 'nullable|string|url|max:255',
+                'instagram_profile' => 'nullable|string|url|max:255'
             ]);
 
             if ($request->telephone) {
@@ -127,6 +128,12 @@ class BeforeAuthenticate
                 $encryptedInstagramProfile = $encrypter->encrypt($request->instagram_profile, 255);
                 $request->merge(['instagram_profile' => $encryptedInstagramProfile]);
             }
+        }
+
+        if ($routeName == $uploadAvatar) {
+            $request->validate([
+                'avatar' => 'nullable|image|max:2048',
+            ]);
         }
 
         return $next($request);

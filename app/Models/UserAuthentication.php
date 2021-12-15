@@ -2,17 +2,16 @@
 
 namespace App\Models;
 
-use App\Http\Traits\Encryptable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PasswordReset extends Model
+class UserAuthentication extends Model
 {
-    use HasFactory, Encryptable;
+    use HasFactory;
 
     protected $fillable = [
-        'token',
-        'email_sending_counter'
+        'device_id',
+        'authentication_type_id'
     ];
 
     protected $guarded = [
@@ -25,8 +24,8 @@ class PasswordReset extends Model
     protected $hidden = [
         'id',
         'user_id',
-        'token',
-        'email_sending_counter',
+        'device_id',
+        'authentication_type_id',
         'created_at',
         'updated_at'
     ];
@@ -36,15 +35,15 @@ class PasswordReset extends Model
         'updated_at' => 'string'
     ];
 
-    protected $encryptable = [
-        'token'
-    ];
-
-    protected $maxSize = [
-        'token' => 48
-    ];
-
     public function user() {
         return $this->belongsTo(User::class);
+    }
+
+    public function device() {
+        return $this->belongsTo(Device::class);
+    }
+
+    public function authenticationType() {
+        return $this->belongsTo(AuthenticationType::class);
     }
 }

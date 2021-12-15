@@ -45,7 +45,7 @@ class AuthController extends Controller
             throw new ApiException(AuthErrorCode::INVALID_CREDENTIALS());
         }
     
-        JsonResponse::checkUserAccess();
+        JsonResponse::checkUserAccess($request, 'LOGIN');
 
         $this->checkMissingUserInformation(true);
     }
@@ -68,6 +68,8 @@ class AuthController extends Controller
         $user = User::create($request->only('first_name', 'last_name', 'email', 'password', 'birth_date', 'gender_type_id'));
     
         Auth::loginUsingId($user->id);
+
+        JsonResponse::checkUserAccess($request, 'REGISTER');
 
         $this->sendVerificationEmail(true);
         $this->checkMissingUserInformation(true);
@@ -105,7 +107,10 @@ class AuthController extends Controller
             }
         }
 
-        $token = $encrypter->generateToken(64);
+        do {
+            $token = $encrypter->generateToken(64);
+            $encryptedToken = $encrypter->encrypt($token);
+        } while (!empty(PasswordReset::where('token', $encryptedToken)->first()));
 
         $user->passwordReset()->updateOrCreate([],
         [
@@ -191,7 +196,11 @@ class AuthController extends Controller
             }
 
             $encrypter = new Encrypter;
-            $token = $encrypter->generateToken(64);
+
+            do {
+                $token = $encrypter->generateToken(64);
+                $encryptedToken = $encrypter->encrypt($token);
+            } while (!empty(EmailVerification::where('token', $encryptedToken)->first()));
 
             $user->emailVerification()->updateOrCreate([],
             [
@@ -236,6 +245,7 @@ class AuthController extends Controller
             throw new ApiException(AuthErrorCode::EMAIL_VERIFIFICATION_TOKEN_HAS_EXPIRED());
         }
 
+        $user->timestamps = false;
         $user->markEmailAsVerified();
         $emailVerification->delete();
 
@@ -279,15 +289,18 @@ class AuthController extends Controller
      * #### `DELETE` `/api/auth/logout-other-devices`
      * Proces wylogowania użytkownika ze wszystkich urządzeń poza obecnym
      * 
+     * @param Illuminate\Http\Request $request
+     * 
      * @return void
      */
-    public function logoutOtherDevices(): void {
+    public function logoutOtherDevices(Request $request): void {
 
         /** @var User $user */
         $user = Auth::user();
 
         $user->tokens()->delete();
 
+        JsonResponse::checkDevice($request, 'REFRESH_TOKEN');
         JsonResponse::prepareCookies();
         JsonResponse::sendSuccess();
     }
@@ -345,70 +358,72 @@ class AuthController extends Controller
 
         /** @var ExternalAuthentication $externalAuthentication */
         $externalAuthentication = $providerType->externalAuthentication()->where('authentication_id', $encryptedAuthenticationId)->first();
-
+        
         if (!$externalAuthentication) {
+
+            $foundUser = null;
 
             if (filter_var($user->getEmail(), FILTER_VALIDATE_EMAIL)) {
 
                 $encryptedEmail = $encrypter->encrypt($user->getEmail(), 254);
 
-                if (!Validation::checkUserUniqueness('email', $encryptedEmail)) {
-                    throw new ApiException(
-                        BaseErrorCode::FAILED_VALIDATION(),
-                        ['email' => [__('validation.unique', ['attribute' => 'email'])]]
-                    );
-                }
+                /** @var User $foundUser */
+                $foundUser = User::where('email', $encryptedEmail)->first();
 
             } else if (strlen($user->getEmail()) > 0 && strlen($user->getEmail()) < 25) {
                 
                 $encryptedTelephone = $encrypter->encrypt($user->getEmail(), 24);
 
-                if (!Validation::checkUserUniqueness('telephone', $encryptedTelephone)) {
-                    throw new ApiException(
-                        BaseErrorCode::FAILED_VALIDATION(),
-                        ['telephone' => [__('validation.unique', ['attribute' => 'numer telefonu'])]]
-                    );
+                /** @var User $foundUser */
+                $foundUser = User::where('telephone', $encryptedTelephone)->first();
+            }
+
+            $newUser = null;
+
+            if (!$foundUser) {
+
+                $names = explode(' ', $user->getName());
+                $namesLength = count($names);
+    
+                $firstName = $names[0];
+    
+                for ($i=1; $i<$namesLength; $i++) {
+                    if ($i == $namesLength-1) {
+                        $lastName = $names[$i];
+                    } else {
+                        $firstName .= ' ' . $names[$i];
+                    }
                 }
-            }
 
-            $names = explode(' ', $user->getName());
-            $namesLength = count($names);
+                $newUser['first_name'] = $firstName;
+                $newUser['last_name'] = $lastName;
 
-            $firstName = $names[0];
-
-            for ($i=1; $i<$namesLength; $i++) {
-                if ($i == $namesLength-1) {
-                    $lastName = $names[$i];
-                } else {
-                    $firstName .= ' ' . $names[$i];
+                if (isset($encryptedEmail)) {
+                    $newUser['email'] = $user->getEmail();
+                } else if (isset($encryptedTelephone)) {
+                    $newUser['telephone'] = $user->getEmail();
                 }
-            }
 
-            if (strlen($user->getAvatar())) {
-                // TODO Sprawdzić wariant co jest zwracane kiedy użytkownik nie ma ustawionego zdjęcia profilowego
-                $avatarFilename = $this->saveAvatar($user->getAvatar());
-            }
+            } else if (!$foundUser->email_verified_at) {
 
-            $newUser = [
-                'first_name' => $firstName,
-                'last_name' => $lastName
-            ];
+                if (isset($encryptedEmail)) {
+                    $foundUser->emailVerification()->delete();
+                }
+
+                $newUser['password'] = null;
+            }
 
             if (isset($encryptedEmail)) {
-                $newUser['email'] = $user->getEmail();
                 $newUser['email_verified_at'] = now();
             }
 
-            if (isset($encryptedTelephone)) {
-                $newUser['telephone'] = $user->getEmail();
-            }
-
-            if (isset($avatarFilename)) {
-                $newUser['avatar'] = $avatarFilename;
+            if (strlen($user->getAvatar()) && (!$foundUser || !$foundUser->avatar)) {
+                // TODO Sprawdzić wariant co jest zwracane kiedy użytkownik nie ma ustawionego zdjęcia profilowego
+                $newUser['avatar'] = $this->saveAvatar($user->getAvatar());
             }
 
             /** @var User $createUser */
-            $createUser = User::create($newUser);
+            $createUser = User::updateOrCreate([], $newUser);
 
             $createUser->externalAuthentication()->create([
                 'authentication_id' => $authenticationId,
@@ -416,21 +431,26 @@ class AuthController extends Controller
             ]);
 
             Auth::loginUsingId($createUser->id);
+            JsonResponse::checkUserAccess(null, 'REGISTER_' . strtoupper($provider));
 
             if ($createUser->email) {
-                Mail::to($createUser)->send(new VerificationEmail());
+                if (!$foundUser) {
+                    Mail::to($createUser)->send(new VerificationEmail());
+                } else {
+                    // TODO Jakiś inny mail, że dodano możliwość logowania się providerem
+                }
             }
 
         } else {
             Auth::loginUsingId($externalAuthentication->user_id);
-            JsonResponse::checkUserAccess();
+            JsonResponse::checkUserAccess(null, 'LOGIN_' . strtoupper($provider));
         }
 
         $this->checkMissingUserInformation(true);
     }
 
     /**
-     * #### `POST` `/api/user`
+     * #### `PATCH` `/api/user`
      * Proces uzupełnienia danych użytkownika, bądź też zaktualizowania już istniejących
      * 
      * @param App\Http\Requests\Auth\UpdateUserRequest $request
@@ -440,17 +460,25 @@ class AuthController extends Controller
      */
     public function updateUser(UpdateUserRequest $request, Encrypter $encrypter): void {
 
-        $email = $encrypter->decrypt($request->email);
-        $request->merge(['email' => $email]);
+        if ($request->email) {
+            $email = $encrypter->decrypt($request->email);
+            $request->merge(['email' => $email]);
+        }
 
-        $telephone = $encrypter->decrypt($request->telephone);
-        $request->merge(['telephone' => $telephone]);
+        if ($request->telephone) {
+            $telephone = $encrypter->decrypt($request->telephone);
+            $request->merge(['telephone' => $telephone]);
+        }
 
-        $facebookProfile = $encrypter->decrypt($request->facebook_profile);
-        $request->merge(['facebook_profile' => $facebookProfile]);
+        if ($request->facebook_profile) {
+            $facebookProfile = $encrypter->decrypt($request->facebook_profile);
+            $request->merge(['facebook_profile' => $facebookProfile]);
+        }
 
-        $instagramProfile = $encrypter->decrypt($request->instagram_profile);
-        $request->merge(['instagram_profile' => $instagramProfile]);
+        if ($request->instagram_profile) {
+            $instagramProfile = $encrypter->decrypt($request->instagram_profile);
+            $request->merge(['instagram_profile' => $instagramProfile]);
+        }
 
         /** @var User $user */
         $user = Auth::user();
@@ -461,22 +489,17 @@ class AuthController extends Controller
         $userLastName = $request->last_name && $request->last_name != $user->last_name;
         $userEmail = $request->email && $request->email != $user->email;
         $userBirthDate = $request->birth_date && $request->birth_date != $user->birth_date;
-        $userAddressCoordinates = $request->address_coordinates && $request->address_coordinates != $user->address_coordinates;
-        $userTelephone = $request->telephone && $request->telephone != $user->telephone;
-        $userFacebookProfile = $request->facebook_profile && $request->facebook_profile != $user->facebook_profile;
-        $userInstagramProfile = $request->instagram_profile && $request->instagram_profile != $user->instagram_profile;
-        $userGenderTypeId = $request->gender_type_id && $request->gender_type_id != $user->gender_type_id;
 
         if ($userFirstName || $userLastName) {
 
-            if ($user->last_time_name_changed) {
-                if (Validation::timeComparison($user->last_time_name_changed, env('PAUSE_BEFORE_CHANGING_NAME'), '<=')) {
-                    throw new ApiException(
-                        AuthErrorCode::WAIT_BEFORE_CHANGING_NAME()
-                    );
-                }
+            if ($user->last_time_name_changed && 
+                Validation::timeComparison($user->last_time_name_changed, env('PAUSE_BEFORE_CHANGING_NAME'), '<='))
+            {
+                throw new ApiException(
+                    AuthErrorCode::WAIT_BEFORE_CHANGING_NAME()
+                );
             }
-                
+
             if ($userFirstName) {
                 $updateUserInformation['first_name'] = $request->first_name;
             }
@@ -498,84 +521,81 @@ class AuthController extends Controller
             $updateUserInformation['last_time_password_changed'] = now();
         }
 
-        if ($request->avatar) {
-            $updateUserInformation['avatar'] = $this->saveAvatar($request->avatar);
-
-            if ($user->avatar) {
-                $oldAvatarPath = 'avatars/' . $user->avatar;
-                Storage::delete($oldAvatarPath);
-            }
-        }
-
         if ($userBirthDate) {
             $updateUserInformation['birth_date'] = $request->birth_date;
         }
 
-        if ($userAddressCoordinates) {
+        if ($request->address_coordinates != $user->address_coordinates) {
 
-            $userAddressCoordinatesSeparators = explode(';', $request->address_coordinates);
+            if ($request->address_coordinates) {
 
-            if (count($userAddressCoordinatesSeparators) != 2) {
-                throw new ApiException(
-                    BaseErrorCode::FAILED_VALIDATION(),
-                    ['address_coordinates' => [__('validation.regex')]]
-                );
-            }
+                $userAddressCoordinatesSeparators = explode(';', $request->address_coordinates);
 
-            $latitudeLength = strlen($userAddressCoordinatesSeparators[0]);
-            $longitudeLength = strlen($userAddressCoordinatesSeparators[1]);
+                if (count($userAddressCoordinatesSeparators) != 2) {
+                    throw new ApiException(
+                        BaseErrorCode::FAILED_VALIDATION(),
+                        ['address_coordinates' => [__('validation.regex')]]
+                    );
+                }
 
-            if ($latitudeLength != 7 ||
-                $longitudeLength != 7 ||
-                $userAddressCoordinatesSeparators[0][2] != '.' ||
-                $userAddressCoordinatesSeparators[1][2] != '.')
-            {
-                throw new ApiException(
-                    BaseErrorCode::FAILED_VALIDATION(),
-                    ['address_coordinates' => [__('validation.regex')]]
-                );
-            }
+                $latitudeLength = strlen($userAddressCoordinatesSeparators[0]);
+                $longitudeLength = strlen($userAddressCoordinatesSeparators[1]);
 
-            for ($i=0; $i<$latitudeLength; $i++) {
-                if ((!is_numeric($userAddressCoordinatesSeparators[0][$i]) ||
-                    !is_numeric($userAddressCoordinatesSeparators[1][$i])) &&
-                    $i != 2)
+                if ($latitudeLength != 7 ||
+                    $longitudeLength != 7 ||
+                    $userAddressCoordinatesSeparators[0][2] != '.' ||
+                    $userAddressCoordinatesSeparators[1][2] != '.')
                 {
                     throw new ApiException(
                         BaseErrorCode::FAILED_VALIDATION(),
                         ['address_coordinates' => [__('validation.regex')]]
                     );
                 }
+
+                for ($i=0; $i<$latitudeLength; $i++) {
+                    if ((!is_numeric($userAddressCoordinatesSeparators[0][$i]) ||
+                        !is_numeric($userAddressCoordinatesSeparators[1][$i])) &&
+                        $i != 2)
+                    {
+                        throw new ApiException(
+                            BaseErrorCode::FAILED_VALIDATION(),
+                            ['address_coordinates' => [__('validation.regex')]]
+                        );
+                    }
+                }
             }
 
             $updateUserInformation['address_coordinates'] = $request->address_coordinates;
         }
 
-        if ($userTelephone) {
+        if ($request->telephone != $user->telephone) {
 
-            $telephoneLength = strlen($request->telephone);
+            if ($request->telephone) {
 
-            for ($i=0; $i<$telephoneLength; $i++) {
-                if (!is_numeric($request->telephone[$i])) {
-                    throw new ApiException(
-                        BaseErrorCode::FAILED_VALIDATION(),
-                        ['telephone' => [__('validation.regex')]]
-                    );
+                $telephoneLength = strlen($request->telephone);
+
+                for ($i=0; $i<$telephoneLength; $i++) {
+                    if (!is_numeric($request->telephone[$i])) {
+                        throw new ApiException(
+                            BaseErrorCode::FAILED_VALIDATION(),
+                            ['telephone' => [__('validation.regex')]]
+                        );
+                    }
                 }
             }
 
             $updateUserInformation['telephone'] = $request->telephone;
         }
 
-        if ($userFacebookProfile) {
+        if ($request->facebook_profile != $user->facebook_profile) {
             $updateUserInformation['facebook_profile'] = $request->facebook_profile;
         }
 
-        if ($userInstagramProfile) {
+        if ($request->instagram_profile != $user->instagram_profile) {
             $updateUserInformation['instagram_profile'] = $request->instagram_profile;
         }
 
-        if ($userGenderTypeId) {
+        if ($request->gender_type_id != $user->gender_type_id) {
             $updateUserInformation['gender_type_id'] = $request->gender_type_id;
         }
 
@@ -599,6 +619,55 @@ class AuthController extends Controller
      * @return void
      */
     public function getUser(): void {
+        $this->checkMissingUserInformation();
+    }
+
+    /**
+     * #### `POST` `/api/user/avatar/upload`
+     * Wgranie zdjęcia profilowego
+     * 
+     * @param Illuminate\Http\Request $request
+     * 
+     * @return void
+     */
+    public function uploadAvatar(Request $request): void {
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        if ($request->avatar) {
+
+            $updateUserInformation['avatar'] = $this->saveAvatar($request->avatar);
+
+            if ($user->avatar) {
+                $oldAvatarPath = 'avatars/' . $user->avatar;
+                Storage::delete($oldAvatarPath);
+            }
+
+            $user->update($updateUserInformation);
+        }
+
+        $this->checkMissingUserInformation();
+    }
+
+    /**
+     * #### `DELETE` `/api/user/avatar/delete`
+     * Usunięcie zdjęcia profilowego
+     * 
+     * @return void
+     */
+    public function deleteAvatar(): void {
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        if ($user->avatar) {
+            $avatarPath = 'avatars/' . $user->avatar;
+            Storage::delete($avatarPath);
+
+            $user->update(['avatar' => null]);
+        }
+
         $this->checkMissingUserInformation();
     }
 
@@ -643,8 +712,8 @@ class AuthController extends Controller
     
         do {
             $avatarFilename = $encrypter->generateToken(64, $avatarFileExtension);
-            $avatarFilenameEncrypted = $encrypter->encrypt($avatarFilename);
-        } while (!Validation::checkUserUniqueness('avatar', $avatarFilenameEncrypted));
+            $encryptedAvatarFilename = $encrypter->encrypt($avatarFilename);
+        } while (!Validation::checkUserUniqueness('avatar', $encryptedAvatarFilename));
 
         $avatarDestination = 'storage/avatars/' . $avatarFilename;
         $avatarContents = file_get_contents($avatarPath);

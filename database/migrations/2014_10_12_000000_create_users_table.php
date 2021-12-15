@@ -29,7 +29,6 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('account_deleted_at')->nullable();
             $table->timestamp('account_blocked_at')->nullable();
-            $table->timestamp('last_logged_in')->nullable();
             $table->timestamp('last_time_name_changed')->nullable();
             $table->timestamp('last_time_password_changed')->nullable();
             $table->timestamps();

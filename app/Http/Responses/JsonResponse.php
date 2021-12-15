@@ -8,6 +8,8 @@ use App\Http\ErrorCodes\ErrorCode;
 use App\Http\Libraries\Encrypter\Encrypter;
 use App\Http\Libraries\FieldConversion\FieldConversion;
 use App\Http\Libraries\Validation\Validation;
+use App\Models\AuthenticationType;
+use App\Models\Device;
 use App\Models\PersonalAccessToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -83,7 +85,12 @@ class JsonResponse
         $user = Auth::user();
 
         $encrypter = new Encrypter;
-        $refreshToken = $encrypter->generateToken(64);
+
+        do {
+            $refreshToken = $encrypter->generateToken(64);
+            $encryptedRefreshToken = $encrypter->encrypt($refreshToken);
+        } while (!empty(PersonalAccessToken::where('refresh_token', $encryptedRefreshToken)->first()));
+
         $encryptedRefreshToken = $encrypter->encrypt($refreshToken);
 
         $jwtEncryptedName = $encrypter->encrypt('JWT', 3);
@@ -92,10 +99,33 @@ class JsonResponse
         $jwtId = $jwt->accessToken->getKey();
 
         $user->personalAccessToken()->where('id', $jwtId)->update(['refresh_token' => $encryptedRefreshToken]);
-        $user->update(['last_logged_in' => now()]);
 
         self::setCookie($jwtToken, 'JWT');
         self::setCookie($refreshToken, 'REFRESH-TOKEN');
+    }
+
+    /**
+     * Zweryfikowanie urządzenia i stworzenie odpowiednich logów
+     * 
+     * @param Illuminate\Http\Request $request
+     * @param string $activity nazwa aktywności, która wywołała daną metodę np. LOGIN
+     * 
+     * @return void
+     */
+    public static function checkDevice($request, string $activity): void {
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        $encrypter = new Encrypter;
+
+        $encryptedActivity = $encrypter->encrypt($activity, 18);
+        $authenticationType = AuthenticationType::where('name', $encryptedActivity)->first();
+
+        $user->userAuthentication()->create([
+            'device_id' => $request->device_id,
+            'authentication_type_id' => $authenticationType->id
+        ]);
     }
 
     /**
@@ -134,6 +164,11 @@ class JsonResponse
             case 'REFRESH-TOKEN':
                 $name = env('REFRESH_TOKEN_COOKIE_NAME');
                 $expires = time()+env('REFRESH_TOKEN_LIFETIME')*60;
+                break;
+
+            case 'UUID':
+                $name = env('UUID_COOKIE_NAME');
+                $expires = time()+env('UUID_LIFETIME')*60;
                 break;
 
             default:
@@ -199,13 +234,18 @@ class JsonResponse
      * Sprawdzenie czy użytkownik może korzystać z serwisu
      * 
      * @param Illuminate\Http\Request $request
+     * string $activity nazwa aktywności, która wywołała daną metodę np. LOGIN
      * 
      * @return void
      */
-    public static function checkUserAccess(Request $request = null): void {
+    public static function checkUserAccess($request = null, ?string $activity): void {
 
         /** @var User $user */
         $user = Auth::user();
+
+        if ($activity) {
+            self::checkDevice($request, $activity);
+        }
 
         if (($user->account_blocked_at || $user->account_deleted_at)) {
 

@@ -31,10 +31,10 @@ class EmailVerification extends Model
         'updated_at'
     ];
 
-    // protected $casts = [
-    //     'created_at' => 'datetime',
-    //     'updated_at' => 'datetime'
-    // ];
+    protected $casts = [
+        'created_at' => 'string',
+        'updated_at' => 'string'
+    ];
 
     protected $encryptable = [
         'token'

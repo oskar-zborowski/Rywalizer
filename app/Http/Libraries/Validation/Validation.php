@@ -22,7 +22,7 @@ class Validation
         /** @var User $userExist */
         $userExist = User::where($field, $value)->first();
 
-        return $userExist ? false : true;
+        return empty($userExist) ? true : false;
     }
 
     /**

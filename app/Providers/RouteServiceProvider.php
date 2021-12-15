@@ -79,7 +79,7 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perDay(50)->by($request->user()->id);
         });
 
-        RateLimiter::for('githubPullLimit', function (Request $request) {
+        RateLimiter::for('githubLimit', function (Request $request) {
             return Limit::perMinute(5)->by($request->ip());
         });
     }
