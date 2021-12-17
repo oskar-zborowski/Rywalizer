@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import styles from './UserView.scss';
 
-const UserView: React.FC<{store: UserStore}> = (props) => {
+const UserView: React.FC<{ store: UserStore }> = (props) => {
     const data = props.store.user;
 
     return (
@@ -18,6 +18,8 @@ const UserView: React.FC<{store: UserStore}> = (props) => {
                     <img src={`/storage/avatars/${data?.avatar}`} alt="" className={styles.image} />
                 </div>
                 <div className={styles.rightColumn}>
+                    {/* DANE PODSTAWOWE */}
+                    <div className={styles.groupHeader}>Dane podstawowe</div>
                     <div className={styles.fieldName}>Imię i Nazwisko:</div>
                     <div className={styles.fieldValue}>{data?.firstName + ' ' + data?.lastName}</div>
 
@@ -27,14 +29,29 @@ const UserView: React.FC<{store: UserStore}> = (props) => {
                     <div className={styles.fieldName}>Urodziny:</div>
                     <div className={styles.fieldValue}>{data?.birthDate}</div>
 
-                    <div className={styles.fieldName + ' ' + styles.withMargin}>E-mail:</div>
-                    <div className={styles.fieldValue + ' ' + styles.withMargin}>{data?.email}</div>
+                    <div className={styles.fieldName}>Lokalizacja:</div>
+                    <div className={styles.fieldValue}>52.3567, 18.2341</div>
+
+                    {/* KONTAKT */}
+                    <div className={styles.groupHeader}>Kontakt</div>
+                    <div className={styles.fieldName}>E-mail:</div>
+                    <div className={styles.fieldValue}>{data?.email}</div>
 
                     <div className={styles.fieldName}>Telefon:</div>
                     <div className={styles.fieldValue}>{data?.telephone}</div>
 
-                    <div className={styles.fieldName + ' ' + styles.withMargin}>Hasło:</div>
-                    <div className={styles.fieldValue + ' ' + styles.withMargin}></div>
+                    {/* SOCIAL MEDIA */}
+                    <div className={styles.groupHeader}>Social media</div>
+                    <div className={styles.fieldName}>Facebook:</div>
+                    <div className={styles.fieldValue}>fb.jakis.user.23</div>
+
+                    <div className={styles.fieldName}>Instagram:</div>
+                    <div className={styles.fieldValue}>@ig.siata.123</div>
+
+                    {/* KONTO */}
+                    <div className={styles.groupHeader}>Konto</div>
+                    <div className={styles.fieldName}>Hasło:</div>
+                    <div className={styles.fieldValue}></div>
 
                     <div className={styles.fieldName}>Usuń konto:</div>
                     <div className={styles.fieldValue}></div>

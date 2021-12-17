@@ -3,6 +3,7 @@
 interface CssExports {
   'fieldName': string;
   'fieldValue': string;
+  'groupHeader': string;
   'header': string;
   'image': string;
   'leftColumn': string;
@@ -10,7 +11,6 @@ interface CssExports {
   'title': string;
   'userDataWrapper': string;
   'userView': string;
-  'withMargin': string;
 }
 export const cssExports: CssExports;
 export default cssExports;
