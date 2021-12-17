@@ -12,15 +12,19 @@ class GenderType extends Model
 
     protected $guarded = [
         'id',
+        'name',
+        'description',
+        'icon'
+    ];
+
+    protected $hidden = [
         'name'
     ];
 
     protected $encryptable = [
-        'name'
-    ];
-
-    protected $maxSize = [
-        'name' => 6
+        'name' => 6,
+        'description' => 12,
+        'icon' => 15
     ];
 
     public function user() {

@@ -25,13 +25,11 @@ class UserRole
         /** @var User $user */
         $user = Auth::user();
 
-        $roleType = explode(',', $user->roleType);
-        $roleTypeAccessLevel = explode(':', $roleType[1]);
-        $detailedUserAccessLevel = FieldConversion::getStringBetweenOthers($roleTypeAccessLevel[1], '"', '"');
+        $roleType = json_decode($user->roleType);
 
         $routeName = Route::currentRouteName();
-        
-        if (!$this->checkUserPermissions($routeName, $detailedUserAccessLevel)) {
+
+        if (!$this->checkUserPermissions($routeName, $roleType->access_level)) {
             throw new ApiException(BaseErrorCode::PERMISSION_DENIED());
         }
 

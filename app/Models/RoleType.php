@@ -17,11 +17,6 @@ class RoleType extends Model
     ];
 
     protected $encryptable = [
-        'name',
-        'access_level'
-    ];
-
-    protected $maxSize = [
         'name' => 15,
         'access_level' => 3
     ];

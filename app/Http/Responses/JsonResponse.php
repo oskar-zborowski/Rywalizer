@@ -9,7 +9,6 @@ use App\Http\Libraries\Encrypter\Encrypter;
 use App\Http\Libraries\FieldConversion\FieldConversion;
 use App\Http\Libraries\Validation\Validation;
 use App\Models\AuthenticationType;
-use App\Models\Device;
 use App\Models\PersonalAccessToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,10 +32,18 @@ class JsonResponse
         header('Content-Type: application/json');
         http_response_code(Response::HTTP_OK);
 
-        $response = FieldConversion::convertToCamelCase([
-            'data' => $data,
-            'metadata' => $metadata
-        ]);
+        if ($data === null) {
+            $response = 'Success';
+        } else {
+
+            $response['data'] = $data;
+
+            if ($metadata !== null) {
+                $response['metadata'] = $metadata;
+            }
+
+            $response = FieldConversion::convertToCamelCase($response);
+        }
 
         echo json_encode($response);
         die;
@@ -56,17 +63,19 @@ class JsonResponse
         header('Content-Type: application/json');
         http_response_code($errorCode->getHttpStatus());
 
-        $response = [];
+        $response['error_code'] = $errorCode->getCode();
 
         if (env('APP_DEBUG')) {
             $response['error_message'] = $errorCode->getMessage();
         }
 
-        $response += [
-            'error_code' => $errorCode->getCode(),
-            'data' => $data,
-            'metadata' => $metadata
-        ];
+        if ($data !== null) {
+            $response['data'] = $data;
+        }
+
+        if ($metadata !== null) {
+            $response['metadata'] = $metadata;
+        }
 
         $response = FieldConversion::convertToCamelCase($response);
 
@@ -85,12 +94,7 @@ class JsonResponse
         $user = Auth::user();
 
         $encrypter = new Encrypter;
-
-        do {
-            $refreshToken = $encrypter->generateToken(64);
-            $encryptedRefreshToken = $encrypter->encrypt($refreshToken);
-        } while (!empty(PersonalAccessToken::where('refresh_token', $encryptedRefreshToken)->first()));
-
+        $refreshToken = $encrypter->generateToken(64, PersonalAccessToken::class, 'refresh_token');
         $encryptedRefreshToken = $encrypter->encrypt($refreshToken);
 
         $jwtEncryptedName = $encrypter->encrypt('JWT', 3);
@@ -118,11 +122,10 @@ class JsonResponse
         $user = Auth::user();
 
         $encrypter = new Encrypter;
-
         $encryptedActivity = $encrypter->encrypt($activity, 18);
         $authenticationType = AuthenticationType::where('name', $encryptedActivity)->first();
 
-        $user->userAuthentication()->create([
+        $user->authentication()->create([
             'device_id' => $request->device_id,
             'authentication_type_id' => $authenticationType->id
         ]);
@@ -193,7 +196,7 @@ class JsonResponse
         } else if ($name == 'REFRESH-TOKEN') {
             $name = env('REFRESH_TOKEN_COOKIE_NAME');
         }
-        
+
         setcookie($name, null, -1, '/', env('APP_DOMAIN'), true, true);
     }
 
@@ -234,7 +237,7 @@ class JsonResponse
      * Sprawdzenie czy użytkownik może korzystać z serwisu
      * 
      * @param Illuminate\Http\Request $request
-     * string $activity nazwa aktywności, która wywołała daną metodę np. LOGIN
+     * @param string $activity nazwa aktywności, która wywołała daną metodę np. LOGIN
      * 
      * @return void
      */

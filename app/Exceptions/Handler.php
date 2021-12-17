@@ -88,7 +88,7 @@ class Handler extends ExceptionHandler
             case MethodNotAllowedHttpException::class:
             case NotFoundHttpException::class:
             case TypeError::class:
-                
+
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),
                     env('APP_DEBUG') ? [$throwable->getMessage(), $throwable->getFile(), $throwable->getLine()] : null

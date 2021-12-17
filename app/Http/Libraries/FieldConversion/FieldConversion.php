@@ -23,7 +23,7 @@ class FieldConversion
     }
 
     /**
-     * Konwersja nazw pól na formę snake_Case
+     * Konwersja nazw pól na formę snake_case
      * 
      * @param $data dane przychodzące
      * @param int $from rząd wielkości od którego pola mają być przetwarzane dane
@@ -124,17 +124,17 @@ class FieldConversion
                     }
                 }
             }
-    
+
             if ($current == 0 && $fieldNames != null) {
-                
+
                 $fN = null;
-    
+
                 foreach ($fieldNames as $key => $value) {
                     if ($value !== chr(27)) {
                         $fN[$key] = $value;
                     }
                 }
-    
+
                 $fieldNames = $fN;
             }
 

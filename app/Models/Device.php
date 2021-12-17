@@ -35,15 +35,6 @@ class Device extends Model
     ];
 
     protected $encryptable = [
-        'ip',
-        'uuid',
-        'os_name',
-        'os_version',
-        'browser_name',
-        'browser_version'
-    ];
-
-    protected $maxSize = [
         'ip' => 15,
         'uuid' => 48,
         'os_name' => 15,
@@ -52,7 +43,7 @@ class Device extends Model
         'browser_version' => 24
     ];
 
-    public function userAuthentication() {
-        return $this->hasMany(UserAuthentication::class);
+    public function authentication() {
+        return $this->hasMany(Authentication::class);
     }
 }

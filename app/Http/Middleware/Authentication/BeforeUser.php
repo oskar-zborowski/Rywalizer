@@ -74,7 +74,7 @@ class BeforeUser
             }
 
             if ($routeName != $login) {
-                
+
                 $request->validate([
                     'password' => ['confirmed', RulesPassword::defaults()]
                 ]);
@@ -85,7 +85,7 @@ class BeforeUser
                 }
             }
         }
-        
+
         if ($routeName == $resetPassword ||
             $routeName == $verifyEmail)
         {
@@ -102,6 +102,10 @@ class BeforeUser
                 $request->validate([
                     'token' => 'exists:password_resets',
                     'do_not_logout' => 'nullable|boolean'
+                ]);
+            } else {
+                $request->validate([
+                    'token' => 'exists:email_verifications',
                 ]);
             }
         }

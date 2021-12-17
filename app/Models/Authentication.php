@@ -2,17 +2,16 @@
 
 namespace App\Models;
 
-use App\Http\Traits\Encryptable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ExternalAuthentication extends Model
+class Authentication extends Model
 {
-    use HasFactory, Encryptable;
+    use HasFactory;
 
     protected $fillable = [
-        'authentication_id',
-        'provider_type_id'
+        'device_id',
+        'authentication_type_id'
     ];
 
     protected $guarded = [
@@ -24,10 +23,9 @@ class ExternalAuthentication extends Model
 
     protected $hidden = [
         'id',
-        'authentication_id',
         'user_id',
-        'provider_type_id',
-        'created_at',
+        'device_id',
+        'authentication_type_id',
         'updated_at'
     ];
 
@@ -36,19 +34,20 @@ class ExternalAuthentication extends Model
         'updated_at' => 'string'
     ];
 
-    protected $encryptable = [
-        'authentication_id' => 255
-    ];
-
     protected $with = [
-        'providerType'
+        'device',
+        'authenticationType'
     ];
 
     public function user() {
         return $this->belongsTo(User::class);
     }
 
-    public function providerType() {
-        return $this->belongsTo(ProviderType::class);
+    public function device() {
+        return $this->belongsTo(Device::class);
+    }
+
+    public function authenticationType() {
+        return $this->belongsTo(AuthenticationType::class);
     }
 }

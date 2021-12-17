@@ -11,10 +11,11 @@ class CreateAuthenticationTypesTable extends Migration
      *
      * @return void
      */
-    public function up() {
+    public function up(): void {
         Schema::create('authentication_types', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->string('name', 24)->unique();
+            $table->string('description', 40);
         });
     }
 
@@ -23,7 +24,7 @@ class CreateAuthenticationTypesTable extends Migration
      *
      * @return void
      */
-    public function down() {
+    public function down(): void {
         Schema::dropIfExists('authentication_types');
     }
 }

@@ -19,7 +19,7 @@ class DeviceRecognize
      */
     public function handle(Request $request, Closure $next) {
 
-        $updateDeviceInformation = null;
+        $updatedInformation = null;
 
         $deviceOsName = (bool) $request->os_name;
         $deviceOsVersion = (bool) $request->os_version;
@@ -47,35 +47,32 @@ class DeviceRecognize
         }
 
         if (!isset($uuid)) {
-            do {
-                $uuid = $encrypter->generateToken(64);
-                $encryptedUuid = $encrypter->encrypt($uuid);
-            } while (!empty(Device::where('uuid', $encryptedUuid)->first()));
+            $uuid = $encrypter->generateToken(64, Device::class, 'uuid');
         }
 
-        $updateDeviceInformation['uuid'] = $uuid;
-        $updateDeviceInformation['ip'] = $request->ip();
+        $updatedInformation['uuid'] = $uuid;
+        $updatedInformation['ip'] = $request->ip();
 
         if ($deviceOsName) {
-            $updateDeviceInformation['os_name'] = $request->os_name;
+            $updatedInformation['os_name'] = $request->os_name;
         }
 
         if ($deviceOsVersion) {
-            $updateDeviceInformation['os_version'] = $request->os_version;
+            $updatedInformation['os_version'] = $request->os_version;
         }
 
         if ($deviceBrowserName) {
-            $updateDeviceInformation['browser_name'] = $request->browser_name;
+            $updatedInformation['browser_name'] = $request->browser_name;
         }
 
         if ($deviceBrowserVersion) {
-            $updateDeviceInformation['browser_version'] = $request->browser_version;
+            $updatedInformation['browser_version'] = $request->browser_version;
         }
 
         if (!isset($device)) {
-            $device = Device::create($updateDeviceInformation); 
-        } else if ($updateDeviceInformation) {
-            $device->update($updateDeviceInformation);
+            $device = Device::create($updatedInformation); 
+        } else if ($updatedInformation) {
+            $device->update($updatedInformation);
         }
 
         $request->merge(['device_id' => $device->id]);

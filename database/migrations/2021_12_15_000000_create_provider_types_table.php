@@ -15,6 +15,7 @@ class CreateProviderTypesTable extends Migration
         Schema::create('provider_types', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->string('name', 12)->unique();
+            $table->string('icon', 24)->unique();
             $table->boolean('is_enabled')->default(0);
         });
     }

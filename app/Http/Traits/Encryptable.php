@@ -17,7 +17,7 @@ trait Encryptable
      * @return bool
      */
     private function encryptable(string $key): bool {
-        return in_array($key, $this->encryptable);
+        return in_array($key, array_keys($this->encryptable));
     }
 
     /**
@@ -28,7 +28,7 @@ trait Encryptable
      * @return string|null
      */
     public function getAttribute($key): ?string {
-        
+
         $value = parent::getAttribute($key);
 
         if ($this->encryptable($key)) {
@@ -51,7 +51,7 @@ trait Encryptable
 
         if ($this->encryptable($key)) {
             $encrypter = new Encrypter;
-            $value = $encrypter->encrypt($value, $this->maxSize[$key]);
+            $value = $encrypter->encrypt($value, $this->encryptable[$key]);
         }
 
         return parent::setAttribute($key, $value);

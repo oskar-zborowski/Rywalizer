@@ -9,7 +9,12 @@ class RolePermission
         return [
 
             '1' => [
-
+                'auth-logoutMe',
+                'auth-logoutOtherDevices',
+                'auth-getUser',
+                'auth-sendVerificationEmail',
+                'auth-deleteAvatar',
+                'auth-getGenderTypes'
             ],
 
             '2' => [
@@ -21,7 +26,8 @@ class RolePermission
             ],
 
             '4' => [
-                'auth-test'
+                'auth-getRoleTypes',
+                'auth-getAccountActionTypes'
             ],
 
             'exceptions' => [

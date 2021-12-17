@@ -11,7 +11,7 @@ class CreateDevicesTable extends Migration
      *
      * @return void
      */
-    public function up() {
+    public function up(): void {
         Schema::create('devices', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('ip', 20)->nullable();
@@ -29,7 +29,7 @@ class CreateDevicesTable extends Migration
      *
      * @return void
      */
-    public function down() {
+    public function down(): void {
         Schema::dropIfExists('devices');
     }
 }

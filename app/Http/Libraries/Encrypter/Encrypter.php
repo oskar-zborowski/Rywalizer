@@ -112,13 +112,13 @@ class Encrypter
     /**
      * Zahashowanie tekstu
      * 
-     * @param string|null $text pole do zahashowania
+     * @param string $text pole do zahashowania
      * 
      * @return string|null
      */
-    public function hash(?string $text): ?string {
+    public function hash(string $text): ?string {
 
-        if (is_string($text) && strlen($text) > 0) {
+        if (strlen($text) > 0) {
             $text = Hash::make($text);
         } else {
             $text = null;
@@ -131,11 +131,13 @@ class Encrypter
      * Generowanie tokenu
      * 
      * @param int $maxSize maksymalny rozmiar pola w bazie danych
+     * @param $entity encja, w której będzie następowało przeszukiwanie pod kątem już występującego tokena
+     * @param string $field pole, po którym będzie następowało wyszukiwanie
      * @param string $addition dodatkowy tekst, który ma być uwzględniony przy generowaniu tokenu (dopisany na końcu)
      * 
      * @return string|null
      */
-    public function generateToken(int $maxSize = 64, string $addition = ''): ?string {
+    public function generateToken(int $maxSize = 64, $entity = null, $field = 'token', string $addition = ''): ?string {
 
         $additionLength = strlen($addition);
 
@@ -144,7 +146,10 @@ class Encrypter
         $maxSize -= $modulo + $additionLength;
 
         if ($maxSize > 0) {
-            $token = $this->fillWithRandomCharacters('', $maxSize, true) . $addition;
+            do {
+                $token = $this->fillWithRandomCharacters('', $maxSize, true) . $addition;
+                $encryptedToken = $this->encrypt($token);
+            } while ($entity && !empty($entity::where($field, $encryptedToken)->first()));
         } else {
             $token = null;
         }

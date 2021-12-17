@@ -68,7 +68,7 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('loginLimit', function (Request $request) {
-            return Limit::perDay(3*env('DEFAULT_AUTH_RATE_LIMIT_PER_DAY'))->by($request->ip());
+            return Limit::perDay(2*env('DEFAULT_AUTH_RATE_LIMIT_PER_DAY'))->by($request->ip());
         });
 
         RateLimiter::for('registerLimit', function (Request $request) {
@@ -76,11 +76,11 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('logoutOtherDevicesLimit', function (Request $request) {
-            return Limit::perDay(50)->by($request->user()->id);
+            return Limit::perDay(3)->by($request->user()->id);
         });
 
         RateLimiter::for('githubLimit', function (Request $request) {
-            return Limit::perMinute(5)->by($request->ip());
+            return Limit::perMinute(3)->by($request->ip());
         });
     }
 }

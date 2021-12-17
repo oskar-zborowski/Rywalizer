@@ -15,6 +15,8 @@ class CreateGenderTypesTable extends Migration
         Schema::create('gender_types', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->string('name', 8)->unique();
+            $table->string('description', 16);
+            $table->string('icon', 20)->unique();
         });
     }
 

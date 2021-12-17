@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Exceptions\ApiException;
+use App\Http\ErrorCodes\AuthErrorCode;
+use App\Http\Libraries\Validation\Validation;
 use App\Http\Traits\Encryptable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -37,14 +40,25 @@ class EmailVerification extends Model
     ];
 
     protected $encryptable = [
-        'token'
-    ];
-
-    protected $maxSize = [
         'token' => 48
     ];
 
     public function user() {
         return $this->belongsTo(User::class);
+    }
+
+    public function countMailing() {
+
+        if (Validation::timeComparison($this->updated_at, env('PAUSE_BEFORE_RETRYING')*60, '<=', 'seconds')) {
+            throw new ApiException(AuthErrorCode::WAIT_BEFORE_RETRYING());
+        }
+
+        $emailSendingCounter = $this->email_sending_counter;
+
+        if ($emailSendingCounter >= 255) {
+            $emailSendingCounter = 0;
+        }
+
+        return $emailSendingCounter;
     }
 }

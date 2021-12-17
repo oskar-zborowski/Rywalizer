@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use App\Http\Traits\Encryptable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PersonalAccessToken extends Model
 {
-    use HasFactory, Encryptable;
+    use HasFactory;
 
     protected $fillable = [
         'refresh_token'
@@ -43,14 +42,6 @@ class PersonalAccessToken extends Model
         'last_used_at' => 'string',
         'created_at' => 'string',
         'updated_at' => 'string'
-    ];
-
-    protected $encryptable = [
-        'refresh_token'
-    ];
-
-    protected $maxSize = [
-        'refresh_token' => 48
     ];
 
     public function user() {

@@ -22,6 +22,7 @@ class ApiException extends Exception
      * @param $metadata dodatkowe informacje
      */
     public function __construct(ErrorCode $errorCode, $data = null, $metadata = null) {
+
         parent::__construct();
 
         $this->errorCode = $errorCode;

@@ -6,27 +6,30 @@ use App\Http\Traits\Encryptable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AuthenticationType extends Model
+class AccountActionType extends Model
 {
     use HasFactory, Encryptable;
 
     protected $guarded = [
         'id',
         'name',
-        'description'
+        'description',
+        'description_admin',
+        'period'
     ];
 
     protected $hidden = [
-        'id',
-        'name'
+        'name',
+        'description'
     ];
 
     protected $encryptable = [
-        'name' => 18,
-        'description' => 30
+        'name' => 27,
+        'description' => 39,
+        'description_admin' => 27
     ];
 
-    public function authentication() {
-        return $this->hasMany(Authentication::class);
+    public function accountAction() {
+        return $this->hasMany(AccountAction::class);
     }
 }

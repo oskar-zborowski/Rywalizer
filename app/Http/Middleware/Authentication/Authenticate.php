@@ -46,7 +46,7 @@ class Authenticate extends Middleware
             'auth-handleProviderCallback'
         ];
 
-        $logout = 'auth-logout';
+        $logout = 'auth-logoutMe';
 
         if ($jwt = $request->cookie(env('JWT_COOKIE_NAME'))) {
 
@@ -79,7 +79,7 @@ class Authenticate extends Middleware
                 } else {
 
                     if ($currentRootName == $logout) {
-                        JsonResponse::sendSuccess();
+                        throw new ApiException(AuthErrorCode::ALREADY_LOGGED_OUT());
                     }
 
                     if (!in_array($currentRootName, $exceptionalRouteNames)) {
@@ -92,11 +92,11 @@ class Authenticate extends Middleware
 
             if ($authenticated) {
 
-                JsonResponse::checkUserAccess($request, $activity);
-
                 if (in_array($currentRootName, $exceptionalRouteNames)) {
                     throw new ApiException(AuthErrorCode::ALREADY_LOGGED_IN());
                 }
+
+                JsonResponse::checkUserAccess($request, $activity);
             }
 
         } else {
@@ -118,7 +118,7 @@ class Authenticate extends Middleware
             } else {
 
                 if ($currentRootName == $logout) {
-                    JsonResponse::sendSuccess();
+                    throw new ApiException(AuthErrorCode::ALREADY_LOGGED_OUT());
                 }
 
                 if (!in_array($currentRootName, $exceptionalRouteNames)) {

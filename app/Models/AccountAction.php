@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UserAuthentication extends Model
+class AccountAction extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'device_id',
-        'authentication_type_id'
+        'account_action_type_id',
+        'expires_at'
     ];
 
     protected $guarded = [
@@ -24,9 +24,7 @@ class UserAuthentication extends Model
     protected $hidden = [
         'id',
         'user_id',
-        'device_id',
-        'authentication_type_id',
-        'created_at',
+        'account_action_type_id',
         'updated_at'
     ];
 
@@ -35,15 +33,15 @@ class UserAuthentication extends Model
         'updated_at' => 'string'
     ];
 
+    protected $with = [
+        'accountActionType'
+    ];
+
     public function user() {
         return $this->belongsTo(User::class);
     }
 
-    public function device() {
-        return $this->belongsTo(Device::class);
-    }
-
-    public function authenticationType() {
-        return $this->belongsTo(AuthenticationType::class);
+    public function accountActionType() {
+        return $this->belongsTo(AccountActionType::class);
     }
 }

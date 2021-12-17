@@ -32,7 +32,7 @@ class VerificationEmail extends Mailable
     public function build() {
 
         $html = '';
-        
+
         if ($this->afterRegistration) {
             $html .= 'Dziękujemy za założenie konta w naszym serwisie';
         }

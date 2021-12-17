@@ -13,15 +13,17 @@ class ProviderType extends Model
     protected $guarded = [
         'id',
         'name',
+        'icon',
         'is_enabled'
     ];
 
-    protected $encryptable = [
-        'name'
+    protected $hidden = [
+        'id'
     ];
 
-    protected $maxSize = [
-        'name' => 9
+    protected $encryptable = [
+        'name' => 9,
+        'icon' => 18
     ];
 
     public function externalAuthentication() {
