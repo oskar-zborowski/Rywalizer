@@ -7,8 +7,13 @@
     justify-content: center;
     height: 34px;
     padding: 0 14px;
+    white-space: nowrap;
     border: 1px solid #141417;
     cursor: pointer;
+
+    &:active {
+        border: 1px solid #141417 !important;
+    }
 }
 
 .orangeButton {

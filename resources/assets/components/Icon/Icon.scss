@@ -1,0 +1,17 @@
+.icon {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    color: #fff;
+    gap: 6px;
+
+    .svgContainer {
+        min-width: 15px;
+        width: auto;
+        height: 15px;
+    }
+
+    .text {
+        color: #a1a1a1;
+    }
+}

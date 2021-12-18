@@ -152,8 +152,15 @@
 }
 
 .contactSection {
-    .contactItem {
-        display: flex;
-        align-items: center;
+    display: flex;
+    gap: 20px;
+
+    @include respond-to(null, "md") {
+        flex-direction: column;
+        gap: 8px;
     }
+}
+
+.descriptionSection {
+    display: block;
 }

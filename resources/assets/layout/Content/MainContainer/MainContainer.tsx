@@ -21,9 +21,7 @@ const MainContainer: React.FC<{ store: UserStore }> = (props) => {
                 {!user && <div className={styles.authButtons}>
                     <Link to="/konto"><OrangeButton>Zaloguj się</OrangeButton></Link>
                     <GrayButton>
-                        <span onClick={() => userStore.login('oskarzborowski@gmail.com', 'zaq12wsx')}>
-                            Zarejestruj się
-                        </span>
+                    Zarejestruj się
                     </GrayButton>
                 </div>}
                 <Routes>
