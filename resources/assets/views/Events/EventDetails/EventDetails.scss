@@ -65,16 +65,9 @@
         }
 
         .userDetails {
-            display: grid;
-            row-gap: 8px;
-            column-gap: 20px;
-            grid-template-columns: min-content min-content;
-            grid-template-rows: min-content min-content;
-        }
-
-        .detailsTitle {
-            font-size: 19px;
-            font-weight: bold;
+            display: flex;
+            gap: 8px;
+            flex-direction: column;
         }
 
         .userDetailsRow {
@@ -84,6 +77,13 @@
             & > * {
                 white-space: nowrap;
                 color: #a1a1a1;
+            }
+
+            .detailsTitle {
+                font-size: 19px;
+                font-weight: bold;
+                color: #fff;
+                margin-right: 20px;
             }
 
             .detailsSeparator {

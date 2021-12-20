@@ -55,11 +55,9 @@ module.exports = {
                 }
             },
             {
-                test: /\.svg$/,
-                use: [
-                    'babel-loader',
-                    { loader: 'svg-inline-loader' }
-                ]
+                test: /\.svg$/i,
+                issuer: /\.[jt]sx?$/,
+                use: [{ loader: '@svgr/webpack', options: { icon: true } }],
             },
             {
                 test: /\.tsx?$/,

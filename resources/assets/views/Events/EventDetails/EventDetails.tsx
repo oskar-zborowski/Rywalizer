@@ -3,6 +3,10 @@ import StarRatings from '@/components/StarRating/StarRating';
 import React from 'react';
 import styles from './EventDetails.scss';
 import prof from '@/static/images/prof.png';
+import Icon from '@/components/Icon/Icon';
+
+import UserSvg from '@/static/icons/ball.svg';
+import ContactSvg from '@/static/icons/food.svg';
 
 const EventDetails: React.FC = (props) => {
     return (
@@ -13,20 +17,20 @@ const EventDetails: React.FC = (props) => {
                 <div className={styles.userData}>
                     <img className={styles.userImage} src={prof} alt="" />
                     <div className={styles.userDetails}>
-                        <span className={styles.detailsTitle}>Organizator:</span>
                         <div className={styles.userDetailsRow}>
-                            <span>Krystian Borowicz</span>
+                            <span className={styles.detailsTitle}>Organizator:</span>
+                            <Icon icon={ContactSvg}>Krystian Borowicz</Icon>
                             <div className={styles.detailsSeparator}></div>
                             <StarRatings rating={96} />
                         </div>
 
-                        <span className={styles.detailsTitle}>Kontakt:</span>
                         <div className={styles.userDetailsRow}>
-                            <span>123 456 789</span>
+                            <span className={styles.detailsTitle}>Kontakt:</span>
+                            <Icon icon={UserSvg}>123 456 789</Icon>
                             <div className={styles.detailsSeparator}></div>
-                            <span>siatkowka@obiekt.pl</span>
+                            <Icon icon={ContactSvg}>siatkowka@obiekt.pl</Icon>
                             <div className={styles.detailsSeparator}></div>
-                            <span>fb.jakis.profil.23</span>
+                            <Icon icon={UserSvg}>fb.jakis.profil.23</Icon>
                         </div>
                     </div>
                 </div>

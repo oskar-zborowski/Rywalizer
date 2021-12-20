@@ -1,8 +1,12 @@
 import { BlackButton, GrayButton, OrangeButton } from '@/components/form/Button/Button';
+import Icon from '@/components/Icon/Icon';
 import StarRatings from '@/components/StarRating/StarRating';
 import React from 'react';
 import Calendar from './Calendar/Calendar';
 import styles from './SportFacilityDetails.scss';
+
+import UserSvg from '@/static/icons/ball.svg';
+import ContactSvg from '@/static/icons/food.svg';
 
 const SportFacilityDetails: React.FC = (props) => {
     return (
@@ -33,9 +37,13 @@ const SportFacilityDetails: React.FC = (props) => {
             </div>
             <div className={styles.contactSection}>
                 <span className={styles.sectionName}>Kontakt:</span>
+                <Icon icon={UserSvg}>Krystian Borowicz</Icon>
+                <Icon icon={ContactSvg}>123 456 789</Icon>
+                <Icon icon={UserSvg}>siatkowka@obiekt.pl</Icon>
+                <Icon icon={ContactSvg}>www.siata.org</Icon>
             </div>
             <div className={styles.separator}></div>
-            <div className={styles.contactSection}>
+            <div className={styles.descriptionSection}>
                 <span className={styles.sectionName}>Opis obiektu:</span>
                 <Calendar></Calendar>
             </div>

@@ -8,8 +8,8 @@ const Topbar = () => {
             <div className={styles.logo}><Link to="/">LOGO</Link></div>
             <nav className={styles.links}>
                 <span>Rezerwacje</span>
-                <span>Wydarzenia</span>
-                <span>Współpraca</span>
+                <Link to="/wydarzenia/1"><span>Wydarzenia</span></Link>
+                <Link to="/obiekty/1"><span>Współpraca</span></Link>
             </nav>
         </div>
     );

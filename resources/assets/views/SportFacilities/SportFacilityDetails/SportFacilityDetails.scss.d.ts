@@ -2,8 +2,8 @@
 // Please do not change this file!
 interface CssExports {
   'buttons': string;
-  'contactItem': string;
   'contactSection': string;
+  'descriptionSection': string;
   'details': string;
   'header': string;
   'location': string;
