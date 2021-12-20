@@ -17,8 +17,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('throttle:defaultLimit')->group(function () {
 
-    Route::get('/provider/types', [AuthController::class, 'getProviderTypes'])->name('auth-getProviderTypes');
-
     /*
     |-----------------------------------------------------------------------------------------------------------
     | Endpointy sprawdzane przez middleware'a Authenticate.php -
@@ -27,6 +25,8 @@ Route::middleware('throttle:defaultLimit')->group(function () {
     */
 
     Route::middleware('auth:sanctum')->group(function () {
+
+        Route::get('/provider/types', [AuthController::class, 'getProviderTypes'])->name('auth-getProviderTypes');
 
         /*
         |-------------------------------------------------------------------------------------------------------
@@ -42,6 +42,8 @@ Route::middleware('throttle:defaultLimit')->group(function () {
 
             Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword'])->name('auth-forgotPassword');
             Route::patch('/auth/reset-password', [AuthController::class, 'resetPassword'])->name('auth-resetPassword');
+
+            Route::delete('/auth/logout/other-devices', [AuthController::class, 'logoutOtherDevices'])->name('auth-logoutOtherDevices');
 
             Route::patch('/user', [AuthController::class, 'updateUser'])->name('auth-updateUser');
             Route::patch('/user/email/verify', [AuthController::class, 'verifyEmail'])->name('auth-verifyEmail');
@@ -63,14 +65,14 @@ Route::middleware('throttle:defaultLimit')->group(function () {
         |-------------------------------------------------------------------------------------------------------
         */
 
-        Route::middleware('user.roles')->group(function () {
+        Route::delete('/auth/logout/me', [AuthController::class, 'logoutMe'])->name('auth-logoutMe')->withoutMiddleware('throttle:defaultLimit');
 
-            Route::delete('/auth/logout/me', [AuthController::class, 'logoutMe'])->name('auth-logoutMe')->withoutMiddleware('throttle:defaultLimit');
-            Route::delete('/auth/logout/other-devices', [AuthController::class, 'logoutOtherDevices'])->name('auth-logoutOtherDevices')->middleware(['throttle:logoutOtherDevicesLimit']);
+        Route::middleware('user.roles')->group(function () {
 
             Route::get('/user', [AuthController::class, 'getUser'])->name('auth-getUser');
             Route::post('/user/email/verification-notification', [AuthController::class, 'sendVerificationEmail'])->name('auth-sendVerificationEmail');
             Route::delete('/user/avatar/delete', [AuthController::class, 'deleteAvatar'])->name('auth-deleteAvatar');
+            Route::get('/user/{id}/authentication', [AuthController::class, 'getUserAuthentication'])->name('auth-getUserAuthentication');
 
             Route::get('/gender/types', [AuthController::class, 'getGenderTypes'])->name('auth-getGenderTypes');
 
@@ -81,8 +83,11 @@ Route::middleware('throttle:defaultLimit')->group(function () {
             */
 
             Route::middleware('verified')->group(function () {
+
                 Route::get('/role/types', [AuthController::class, 'getRoleTypes'])->name('auth-getRoleTypes');
                 Route::get('/account-action/types', [AuthController::class, 'getAccountActionTypes'])->name('auth-getAccountActionTypes');
+
+                Route::get('/users', [AuthController::class, 'getUsers'])->name('auth-getUsers');
             });
         });
     });

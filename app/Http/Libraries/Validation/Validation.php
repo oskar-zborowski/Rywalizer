@@ -2,6 +2,8 @@
 
 namespace App\Http\Libraries\Validation;
 
+use App\Http\Libraries\Encrypter\Encrypter;
+use App\Models\AccountOperationType;
 use App\Models\User;
 
 /**
@@ -23,6 +25,24 @@ class Validation
         $userExist = User::where($field, $value)->first();
 
         return empty($userExist) ? true : false;
+    }
+
+    /**
+     * Pobranie id typu operacji na koncie
+     * 
+     * @param string $name nazwa typu operacji na koncie
+     * 
+     * @return int|null
+     */
+    public static function getAccountOperationTypeId(string $name): ?int {
+
+        $encrypter = new Encrypter;
+        $encryptedName = $encrypter->encrypt($name, 18);
+
+        /** @var AccountOperationType $accountOperationType */
+        $accountOperationType = AccountOperationType::where('name', $encryptedName)->first();
+
+        return $accountOperationType ? $accountOperationType->id : null;
     }
 
     /**

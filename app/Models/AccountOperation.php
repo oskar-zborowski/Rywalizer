@@ -6,14 +6,13 @@ use App\Exceptions\ApiException;
 use App\Http\ErrorCodes\AuthErrorCode;
 use App\Http\Libraries\Validation\Validation;
 use App\Http\Traits\Encryptable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class EmailVerification extends Model
+class AccountOperation extends BaseModel
 {
-    use HasFactory, Encryptable;
+    use Encryptable;
 
     protected $fillable = [
+        'account_operation_type_id',
         'token',
         'email_sending_counter'
     ];
@@ -28,6 +27,7 @@ class EmailVerification extends Model
     protected $hidden = [
         'id',
         'user_id',
+        'account_operation_type_id',
         'token',
         'email_sending_counter',
         'created_at',
@@ -43,17 +43,30 @@ class EmailVerification extends Model
         'token' => 48
     ];
 
+    protected $with = [
+        'accountOperationType'
+    ];
+
     public function user() {
         return $this->belongsTo(User::class);
     }
 
-    public function countMailing() {
+    public function accountOperationType() {
+        return $this->belongsTo(AccountOperationType::class);
+    }
+
+    /**
+     * Zwrócenie liczby wysłanych maili powiązanych z daną akcją
+     * 
+     * @return int
+     */
+    public function countMailing(): int {
 
         if (Validation::timeComparison($this->updated_at, env('PAUSE_BEFORE_RETRYING')*60, '<=', 'seconds')) {
             throw new ApiException(AuthErrorCode::WAIT_BEFORE_RETRYING());
         }
 
-        $emailSendingCounter = $this->email_sending_counter;
+        $emailSendingCounter = (int) $this->email_sending_counter;
 
         if ($emailSendingCounter >= 255) {
             $emailSendingCounter = 0;

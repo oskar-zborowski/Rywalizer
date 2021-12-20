@@ -75,10 +75,6 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perDay(env('DEFAULT_AUTH_RATE_LIMIT_PER_DAY'))->by($request->ip());
         });
 
-        RateLimiter::for('logoutOtherDevicesLimit', function (Request $request) {
-            return Limit::perDay(3)->by($request->user()->id);
-        });
-
         RateLimiter::for('githubLimit', function (Request $request) {
             return Limit::perMinute(3)->by($request->ip());
         });

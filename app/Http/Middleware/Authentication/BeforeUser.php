@@ -28,6 +28,7 @@ class BeforeUser
         $verifyEmail = 'auth-verifyEmail';
         $updateUser = 'auth-updateUser';
         $uploadAvatar = 'auth-uploadAvatar';
+        $logoutOtherDevices = 'auth-logoutOtherDevices';
 
         $encrypter = new Encrypter;
 
@@ -61,7 +62,8 @@ class BeforeUser
         if ($routeName == $login ||
             $routeName == $register ||
             $routeName == $resetPassword ||
-            $routeName == $updateUser)
+            $routeName == $updateUser ||
+            $routeName == $logoutOtherDevices)
         {
             $request->validate([
                 'password' => 'nullable|string|between:8,20'
@@ -73,7 +75,7 @@ class BeforeUser
                 ]);
             }
 
-            if ($routeName != $login) {
+            if ($routeName != $login && $routeName != $logoutOtherDevices) {
 
                 $request->validate([
                     'password' => ['confirmed', RulesPassword::defaults()]
@@ -93,20 +95,15 @@ class BeforeUser
                 'token' => 'required|string|alpha_num|size:48'
             ]);
 
+            if ($routeName == $resetPassword) {
+                $request->validate([
+                    'do_not_logout' => 'nullable|boolean'
+                ]);
+            }
+
             if ($request->token) {
                 $encryptedToken = $encrypter->encrypt($request->token);
                 $request->merge(['token' => $encryptedToken]);
-            }
-
-            if ($routeName == $resetPassword) {
-                $request->validate([
-                    'token' => 'exists:password_resets',
-                    'do_not_logout' => 'nullable|boolean'
-                ]);
-            } else {
-                $request->validate([
-                    'token' => 'exists:email_verifications',
-                ]);
             }
         }
 

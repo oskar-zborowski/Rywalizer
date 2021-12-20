@@ -2,14 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
-class AccountAction extends Model
+class AccountAction extends BaseModel
 {
-    use HasFactory;
-
     protected $fillable = [
+        'founder_id',
         'account_action_type_id',
         'expires_at'
     ];
@@ -24,11 +20,13 @@ class AccountAction extends Model
     protected $hidden = [
         'id',
         'user_id',
+        'founder_id',
         'account_action_type_id',
         'updated_at'
     ];
 
     protected $casts = [
+        'expires_at' => 'string',
         'created_at' => 'string',
         'updated_at' => 'string'
     ];
@@ -38,6 +36,10 @@ class AccountAction extends Model
     ];
 
     public function user() {
+        return $this->belongsTo(User::class);
+    }
+
+    public function founder() {
         return $this->belongsTo(User::class);
     }
 

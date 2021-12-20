@@ -3,12 +3,10 @@
 namespace App\Models;
 
 use App\Http\Traits\Encryptable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class AccountActionType extends Model
+class AccountActionType extends BaseModel
 {
-    use HasFactory, Encryptable;
+    use Encryptable;
 
     protected $guarded = [
         'id',

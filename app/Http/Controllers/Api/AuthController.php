@@ -5,15 +5,17 @@ namespace App\Http\Controllers\Api;
 use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Http\ErrorCodes\AuthErrorCode;
+use App\Http\ErrorCodes\BaseErrorCode;
 use App\Http\Libraries\Encrypter\Encrypter;
+use App\Http\Libraries\Validation\Validation;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\UpdateUserRequest;
 use App\Http\Responses\JsonResponse;
-use App\Mail\VerificationEmail;
+use App\Mail\EmailVerification as MailEmailVerification;
 use App\Models\AccountActionType;
+use App\Models\AccountOperation;
 use App\Models\ExternalAuthentication;
 use App\Models\GenderType;
-use App\Models\PasswordReset;
 use App\Models\PersonalAccessToken;
 use App\Models\ProviderType;
 use App\Models\RoleType;
@@ -21,6 +23,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Socialite\Facades\Socialite;
@@ -46,7 +49,9 @@ class AuthController extends Controller
 
         JsonResponse::checkUserAccess($request, 'LOGIN');
 
-        $this->checkMissingUserInformation(true);
+        /** @var User $user */
+        $user = Auth::user();
+        $user->checkMissingUserInformation(true);
     }
 
     /**
@@ -64,19 +69,21 @@ class AuthController extends Controller
         $request->merge(['email' => $email]);
 
         /** @var User $user */
-        $user = User::create($request->only('first_name', 'last_name', 'email', 'password', 'birth_date', 'gender_type_id'));
+        $newUser = User::create($request->only('first_name', 'last_name', 'email', 'password', 'birth_date', 'gender_type_id'));
 
-        Auth::loginUsingId($user->id);
+        Auth::loginUsingId($newUser->id);
 
         JsonResponse::checkUserAccess($request, 'REGISTER');
 
-        $this->sendVerificationEmail(true);
-        $this->checkMissingUserInformation(true);
+        /** @var User $user */
+        $user = Auth::user();
+        $user->sendVerificationEmail(true);
+        $user->checkMissingUserInformation(true);
     }
 
     /**
      * #### `POST` `/api/auth/forgot-password`
-     * Wysłanie maila z linkiem do resetu hasła
+     * Proces utworzenia niezbędnych danych do przeprowadzenia resetu hasła
      * 
      * @param Illuminate\Http\Request $request
      * 
@@ -97,23 +104,32 @@ class AuthController extends Controller
      * @return void
      */
     public function resetPassword(Request $request): void {
-        /** @var PasswordReset $passwordReset */
-        $passwordReset = PasswordReset::where('token', $request->token)->first();
-        $passwordReset->resetPassword($request);
+
+        $accountOperationTypeId = Validation::getAccountOperationTypeId('PASSWORD_RESET');
+
+        /** @var AccountOperation $accountOperation */
+        $accountOperation = AccountOperation::where([
+            'account_operation_type_id' => $accountOperationTypeId,
+            'token' => $request->token
+        ])->first();
+
+        if (!$accountOperation) {
+            throw new ApiException(AuthErrorCode::INVALID_PASSWORD_RESET_TOKEN());
+        }
+
+        $accountOperation->user()->first()->resetPassword($request, $accountOperation);
     }
 
     /**
      * #### `POST` `/api/user/email/verification-notification`
-     * Wysłanie maila z linkiem aktywacyjnym
-     * 
-     * @param bool $afterRegistartion flaga z informacją czy wywołanie metody jest pochodną procesu rejestracji nowego użytkownika
+     * Proces utworzenia niezbędnych danych do zweryfikowania maila
      * 
      * @return void
      */
-    public function sendVerificationEmail(bool $afterRegistartion = false): void {
+    public function sendVerificationEmail(): void {
         /** @var User $user */
         $user = Auth::user();
-        $user->sendVerificationEmail($afterRegistartion);
+        $user->sendVerificationEmail();
     }
 
     /**
@@ -125,12 +141,10 @@ class AuthController extends Controller
      * @return void
      */
     public function verifyEmail(Request $request): void {
-
         /** @var User $user */
         $user = Auth::user();
         $user->verifyEmail($request);
-
-        $this->checkMissingUserInformation();
+        $user->checkMissingUserInformation();
     }
 
     /**
@@ -178,10 +192,21 @@ class AuthController extends Controller
 
         /** @var User $user */
         $user = Auth::user();
-        $user->tokens()->delete();
 
-        JsonResponse::checkDevice($request, 'REFRESH_TOKEN');
-        JsonResponse::prepareCookies();
+        if (!Hash::check($request->password, $user->getAuthPassword())) {
+            throw new ApiException(AuthErrorCode::INVALID_CREDENTIALS());
+        }
+
+        if (!isset($user->currentAccessToken()->id)) {
+            $userAccessTokenId = $user->personalAccessToken()->latest()->first()->id;
+        } else {
+            $userAccessTokenId = $user->currentAccessToken()->id;
+        }
+
+        /** @var PersonalAccessToken $personalAccessTokens */
+        $personalAccessTokens = $user->personalAccessToken()->where('id', '<>', $userAccessTokenId);
+        $personalAccessTokens->delete();
+
         JsonResponse::sendSuccess();
     }
 
@@ -236,7 +261,7 @@ class AuthController extends Controller
         }
 
         /** @var ExternalAuthentication $externalAuthentication */
-        $externalAuthentication = $providerType->externalAuthentication()->where('authentication_id', $encryptedAuthenticationId)->first();
+        $externalAuthentication = $providerType->externalAuthentication()->where('external_authentication_id', $encryptedAuthenticationId)->first();
 
         if (!$externalAuthentication) {
 
@@ -285,7 +310,8 @@ class AuthController extends Controller
             } else if (!$foundUser->email_verified_at) {
 
                 if (isset($encryptedEmail)) {
-                    $foundUser->emailVerification()->delete();
+                    $accountOperationTypeId = Validation::getAccountOperationTypeId('EMAIL_VERIFICATION');
+                    $foundUser->accountOperation()->where('account_operation_type_id', $accountOperationTypeId)->delete();
                 }
 
                 $newUser['password'] = null;
@@ -300,21 +326,22 @@ class AuthController extends Controller
                 $newUser['avatar'] = $this->saveAvatar($user->getAvatar());
             }
 
-            /** @var User $createUser */
-            $createUser = User::updateOrCreate([], $newUser);
+            /** @var User $createdUser */
+            $createdUser = User::updateOrCreate([], $newUser);
 
-            $createUser->externalAuthentication()->create([
-                'authentication_id' => $authenticationId,
+            $createdUser->externalAuthentication()->create([
+                'exteranal_authentication_id' => $authenticationId,
                 'provider_type_id' => $providerType->id
             ]);
 
-            Auth::loginUsingId($createUser->id);
+            Auth::loginUsingId($createdUser->id);
 
-            JsonResponse::checkUserAccess(null, 'REGISTER_' . strtoupper($provider));
+            $activity = 'REGISTER_' . strtoupper($provider);
+            JsonResponse::checkUserAccess(null, $activity);
 
-            if ($createUser->email) {
+            if ($createdUser->email) {
                 if (!$foundUser) {
-                    Mail::to($createUser)->send(new VerificationEmail());
+                    Mail::to($createdUser)->send(new MailEmailVerification());
                 } else {
                     // TODO Jakiś inny mail, że dodano możliwość logowania się providerem
                 }
@@ -322,10 +349,13 @@ class AuthController extends Controller
 
         } else {
             Auth::loginUsingId($externalAuthentication->user_id);
-            JsonResponse::checkUserAccess(null, 'LOGIN_' . strtoupper($provider));
+            $activity = 'LOGIN_' . strtoupper($provider);
+            JsonResponse::checkUserAccess(null, $activity);
         }
 
-        $this->checkMissingUserInformation(true);
+        /** @var User $user */
+        $user = Auth::user();
+        $user->checkMissingUserInformation(true);
     }
 
     /**
@@ -340,23 +370,100 @@ class AuthController extends Controller
 
         /** @var User $user */
         $user = Auth::user();
-        $updatedEmail = $user->updateInformation($request);
+        $isUpdatedEmail = $user->updateInformation($request);
 
-        if ($updatedEmail) {
-            $this->sendVerificationEmail(true);
+        if ($isUpdatedEmail) {
+            $user->sendVerificationEmail(true);
         }
 
-        $this->checkMissingUserInformation();
+        $user->checkMissingUserInformation();
     }
 
     /**
      * #### `GET` `/api/user`
-     * Pobranie informacji o użytkowniku
+     * Pobranie prywatnych informacji o użytkowniku
      * 
      * @return void
      */
     public function getUser(): void {
-        $this->checkMissingUserInformation();
+        /** @var User $user */
+        $user = Auth::user();
+        $user->checkMissingUserInformation();
+    }
+
+    /**
+     * #### `GET` `/api/users`
+     * Pobranie szczegółowych informacji o użytkownikach
+     * 
+     * @param Illuminate\Http\Request $request
+     * 
+     * @return void
+     */
+    public function getUsers(Request $request): void {
+
+        $perPage = $this->getNumberOfItemsPerPage($request);
+
+        /** @var User $users */
+        $users = User::filter()->paginate($perPage);
+
+        $result = $this->preparePagination($users, 'detailedInformation');
+
+        JsonResponse::sendSuccess($result['data'], $result['metadata']);
+    }
+
+    /**
+     * #### `GET` `/api/user/{id}/authentication`
+     * Pobranie informacji o uwierzytelnieniach użytkownika
+     * 
+     * @param int $id identyfikator użytkownika
+     * @param Illuminate\Http\Request $request
+     * 
+     * @return void
+     */
+    public function getUserAuthentication(int $id, Request $request): void {
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        if ($user->id != $id) {
+
+            if ($user->roleType()->first()->name != 'ADMIN') {
+                throw new ApiException(BaseErrorCode::PERMISSION_DENIED());
+            }
+
+            if (!$user->hasVerifiedEmail()) {
+                throw new ApiException(
+                    BaseErrorCode::PERMISSION_DENIED(),
+                    'Your email address is not verified.'
+                );
+            }
+        }
+
+        $perPage = $this->getNumberOfItemsPerPage($request);
+
+        if ($user->roleType()->first()->name == 'ADMIN' && $user->hasVerifiedEmail()) {
+
+            /** @var User $user */
+            $user = User::where('id', $id)->first();
+
+            if ($user) {
+                /** @var Authentication $authentications */
+                $authentications = $user->authentication()->filter()->paginate($perPage);
+            } else {
+                $authentications = null;
+            }
+
+            $result = $this->preparePagination($authentications, 'detailedInformation');
+
+        } else {
+
+            /** @var Authentication $authentications */
+            $authentications = $user->authentication()->filter()->paginate($perPage);
+
+            $result = $this->preparePagination($authentications, 'privateInformation');
+        }
+
+        JsonResponse::sendSuccess($result['data'], $result['metadata']);
     }
 
     /**
@@ -384,7 +491,7 @@ class AuthController extends Controller
             $user->update($updateInformation);
         }
 
-        $this->checkMissingUserInformation();
+        $user->checkMissingUserInformation();
     }
 
     /**
@@ -405,7 +512,7 @@ class AuthController extends Controller
             $user->update(['avatar' => null]);
         }
 
-        $this->checkMissingUserInformation();
+        $user->checkMissingUserInformation();
     }
 
     /**
@@ -415,8 +522,37 @@ class AuthController extends Controller
      * @return void
      */
     public function getProviderTypes(): void {
-        $providerTypes = ProviderType::get();
-        JsonResponse::sendSuccess(['providerTypes' => $providerTypes]);
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        if ($user) {
+
+            if ($user->roleType()->first()->name != 'ADMIN') {
+                throw new ApiException(BaseErrorCode::PERMISSION_DENIED());
+            }
+
+            if (!$user->hasVerifiedEmail()) {
+                throw new ApiException(
+                    BaseErrorCode::PERMISSION_DENIED(),
+                    'Your email address is not verified.'
+                );
+            }
+
+            /** @var ProviderType $providerTypes */
+            $providerTypes = ProviderType::get();
+
+            $result = null;
+
+            foreach ($providerTypes as $pT) {
+                $result[] = $pT->detailedInformation();
+            }
+
+        } else {
+            $result = ProviderType::where('is_enabled', true)->get();
+        }
+
+        JsonResponse::sendSuccess(['providerTypes' => $result]);
     }
 
     /**
@@ -426,7 +562,10 @@ class AuthController extends Controller
      * @return void
      */
     public function getGenderTypes(): void {
+
+        /** @var GenderType $genderTypes */
         $genderTypes = GenderType::get();
+
         JsonResponse::sendSuccess(['genderTypes' => $genderTypes]);
     }
 
@@ -437,7 +576,10 @@ class AuthController extends Controller
      * @return void
      */
     public function getRoleTypes(): void {
+
+        /** @var RoleType $roleTypes */
         $roleTypes = RoleType::get();
+
         JsonResponse::sendSuccess(['roleTypes' => $roleTypes]);
     }
 
@@ -448,7 +590,10 @@ class AuthController extends Controller
      * @return void
      */
     public function getAccountActionTypes(): void {
+
+        /** @var AccountActionType $accountActionTypes */
         $accountActionTypes = AccountActionType::get();
+
         JsonResponse::sendSuccess(['accountActionTypes' => $accountActionTypes]);
     }
 
@@ -502,18 +647,5 @@ class AuthController extends Controller
         imagejpeg($newImage, $avatarDestination, 100); // TODO Potestować ile maksymalnie można zmniejszyć jakość obrazu, żeby nadal był akceptowalny
 
         return $avatarFilename;
-    }
-
-    /**
-     * Sprawdzenie brakujących informacji o użytkowniku i zwrócenie obiektu użytkownika
-     * 
-     * @param bool $withTokens flaga określająca czy mają zostać utworzone tokeny autoryzacyjne
-     * 
-     * @return void
-     */
-    private function checkMissingUserInformation($withTokens = false): void {
-        /** @var User $user */
-        $user = Auth::user();
-        $user->checkMissingUserInformation($withTokens);
     }
 }

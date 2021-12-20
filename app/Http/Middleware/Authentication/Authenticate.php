@@ -46,6 +46,10 @@ class Authenticate extends Middleware
             'auth-handleProviderCallback'
         ];
 
+        $independentRouteNames = [
+            'auth-getProviderTypes'
+        ];
+
         $logout = 'auth-logoutMe';
 
         if ($jwt = $request->cookie(env('JWT_COOKIE_NAME'))) {
@@ -82,7 +86,9 @@ class Authenticate extends Middleware
                         throw new ApiException(AuthErrorCode::ALREADY_LOGGED_OUT());
                     }
 
-                    if (!in_array($currentRootName, $exceptionalRouteNames)) {
+                    if (!in_array($currentRootName, $exceptionalRouteNames) &&
+                        !in_array($currentRootName, $independentRouteNames))
+                    {
                         throw new ApiException(AuthErrorCode::UNAUTHORIZED());
                     }
 
@@ -121,7 +127,9 @@ class Authenticate extends Middleware
                     throw new ApiException(AuthErrorCode::ALREADY_LOGGED_OUT());
                 }
 
-                if (!in_array($currentRootName, $exceptionalRouteNames)) {
+                if (!in_array($currentRootName, $exceptionalRouteNames) &&
+                    !in_array($currentRootName, $independentRouteNames))
+                {
                     throw new ApiException(AuthErrorCode::UNAUTHORIZED());
                 }
             }

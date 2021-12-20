@@ -3,12 +3,10 @@
 namespace App\Models;
 
 use App\Http\Traits\Encryptable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class Device extends Model
+class Device extends BaseModel
 {
-    use HasFactory, Encryptable;
+    use Encryptable;
 
     protected $fillable = [
         'ip',
@@ -26,7 +24,15 @@ class Device extends Model
     ];
 
     protected $hidden = [
-        'id'
+        'id',
+        'ip',
+        'uuid',
+        'os_name',
+        'os_version',
+        'browser_name',
+        'browser_version',
+        'created_at',
+        'updated_at'
     ];
 
     protected $casts = [

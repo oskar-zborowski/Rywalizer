@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use ArgumentCountError;
 use App\Http\ErrorCodes\AuthErrorCode;
 use App\Http\ErrorCodes\BaseErrorCode;
 use App\Http\Responses\JsonResponse;
@@ -79,6 +80,7 @@ class Handler extends ExceptionHandler
                 );
                 break;
 
+            case ArgumentCountError::class:
             case BadMethodCallException::class:
             case BindingResolutionException::class:
             case Error::class:

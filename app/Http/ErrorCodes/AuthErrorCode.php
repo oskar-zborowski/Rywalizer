@@ -26,7 +26,7 @@ class AuthErrorCode
     }
 
     public static function ACOUNT_BLOCKED(): ErrorCode {
-        return new ErrorCode('ATH5', 'ACOUNT BLOCKED', Response::HTTP_FORBIDDEN);
+        return new ErrorCode('ATH5', 'ACOUNT BLOCKED', Response::HTTP_UNAUTHORIZED);
     }
 
     public static function ALREADY_LOGGED_IN(): ErrorCode {

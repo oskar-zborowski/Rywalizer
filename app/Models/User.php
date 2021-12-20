@@ -9,18 +9,19 @@ use App\Http\Libraries\Encrypter\Encrypter;
 use App\Http\Libraries\Validation\Validation;
 use App\Http\Responses\JsonResponse;
 use App\Http\Traits\Encryptable;
-use App\Mail\PasswordReset;
-use App\Mail\VerificationEmail;
+use App\Mail\PasswordReset as MailPasswordReset;
+use App\Mail\EmailVerification as MailEmailVerification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\HasApiTokens;
+use Mehradsadeghi\FilterQueryString\FilterQueryString;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable, Encryptable;
+    use Encryptable, FilterQueryString, HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
         'first_name',
@@ -91,6 +92,18 @@ class User extends Authenticatable implements MustVerifyEmail
         'instagram_profile' => 255
     ];
 
+    protected $filters = [
+        'sort',
+        'greater',
+        'greater_or_equal',
+        'less',
+        'less_or_equal',
+        'between',
+        'not_between',
+        'in',
+        'like'
+    ];
+
     public function genderType() {
         return $this->belongsTo(GenderType::class);
     }
@@ -99,42 +112,49 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(RoleType::class);
     }
 
-    public function personalAccessToken() {
-        return $this->hasMany(PersonalAccessToken::class, 'tokenable_id');
+    public function accountAction() {
+        return $this->hasMany(AccountAction::class);
     }
 
-    public function externalAuthentication() {
-        return $this->hasMany(ExternalAuthentication::class);
-    }
-
-    public function passwordReset() {
-        return $this->hasOne(PasswordReset::class);
-    }
-
-    public function emailVerification() {
-        return $this->hasOne(EmailVerification::class);
+    public function accountOperation() {
+        return $this->hasMany(AccountOperation::class);
     }
 
     public function authentication() {
         return $this->hasMany(Authentication::class);
     }
 
-    public function accountAction() {
-        return $this->hasMany(AccountAction::class);
+    public function externalAuthentication() {
+        return $this->hasMany(ExternalAuthentication::class);
     }
 
+    public function personalAccessToken() {
+        return $this->hasMany(PersonalAccessToken::class, 'tokenable_id');
+    }
+
+    /**
+     * Zwrócenie podstawowych informacji o użytkowniku
+     * 
+     * @return array
+     */
     public function basicInformation(): array {
         return [
             'id' => $this->id,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
             'avatar' => $this->avatar,
-            'gender' => $this->genderType()->get(['description', 'icon'])[0] ?? null
+            'gender_types' => $this->genderType()->first(['description', 'icon']) ?? null
         ];
     }
 
+    /**
+     * Zwrócenie prywatnych informacji o użytkowniku
+     * 
+     * @return array
+     */
     public function privateInformation(): array {
         return [
+            'id' => $this->id,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
             'email' => $this->email,
@@ -144,25 +164,40 @@ class User extends Authenticatable implements MustVerifyEmail
             'telephone' => $this->telephone,
             'facebook_profile' => $this->facebook_profile,
             'instagram_profile' => $this->instagram_profile,
-            'gender' => $this->genderType()->get(['description', 'icon'])[0] ?? null,
-            'role' => $this->roleType()->get(['name', 'access_level'])[0],
-            'is_account_blocked' => (bool) $this->is_account_blocked,
+            'gender_types' => $this->genderType()->first(['description', 'icon']) ?? null,
+            'role_types' => $this->roleType()->first(['name', 'access_level']),
             'last_time_name_changed' => $this->last_time_name_changed,
             'last_time_password_changed' => $this->last_time_password_changed
         ];
     }
 
+    /**
+     * Zwrócenie szczegółowych informacji o użytkowniku
+     * 
+     * @return array
+     */
     public function detailedInformation(): array {
 
-        $loginForm = null;
-        $externalAuthentication = $this->externalAuthentication()->get();
+        $accountDeleted = null;
+        $accountBlocked = null;
 
-        if ($this->password) {
-            $loginForm[] = 'TRADYCYJNIE';
-        }
+        $accountAction = $this->accountAction()->get();
 
-        foreach ($externalAuthentication as $eA) {
-            $loginForm[] = json_decode($eA['providerType'])->name;
+        foreach ($accountAction as $aA) {
+            if (strpos($aA->accountActionType->name, 'ACCOUNT_DELETED') !== false) {
+                $accountDeleted = [
+                    'description' => $aA->accountActionType->description,
+                    'created_at' => $aA->created_at,
+                    'expires_at' => $aA->expires_at
+                ];
+            } else if (strpos($aA->accountActionType->name, 'ACCOUNT_BLOCKED') !== false) {
+                $accountBlocked = [
+                    'description' => $aA->accountActionType->description,
+                    'founder' => $aA->founder->basicInformation(),
+                    'created_at' => $aA->created_at,
+                    'expires_at' => $aA->expires_at
+                ];
+            }
         }
 
         return [
@@ -176,12 +211,13 @@ class User extends Authenticatable implements MustVerifyEmail
             'telephone' => $this->telephone,
             'facebook_profile' => $this->facebook_profile,
             'instagram_profile' => $this->instagram_profile,
-            'gender' => $this->genderType()->get(['description', 'icon'])[0] ?? null,
-            'role' => $this->roleType()->get('name')[0],
-            'login_form' => $loginForm,
+            'gender_types' => $this->genderType()->first(['description', 'icon']) ?? null,
+            'role_types' => $this->roleType()->first('name'),
+            'standard_login' => $this->password ? true : false,
+            'external_authentiaction' => $this->externalAuthentication()->get(),
             'is_email_verified' => (bool) $this->email_verified_at,
-            'is_account_deleted' => (bool) $this->is_account_deleted,
-            'is_account_blocked' => (bool) $this->is_account_blocked,
+            'account_deleted' => $accountDeleted,
+            'account_blocked' => $accountBlocked,
             'last_time_name_changed' => $this->last_time_name_changed,
             'last_time_password_changed' => $this->last_time_password_changed,
             'created_at' => $this->created_at,
@@ -189,31 +225,153 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    public function getAuthentication($deviceFields = '*', bool $withAuthenticationType = false): ?array {
+    /**
+     * Utworzenie rekordu do resetu hasła i wysłanie maila z tokenem
+     * 
+     * @return void
+     */
+    public function forgotPassword(): void {
 
-        $result = null;
-        $authentication = $this->authentication()->get();
+        $accountOperationTypeId = Validation::getAccountOperationTypeId('PASSWORD_RESET');
 
-        $i = 0;
+        /** @var AccountOperation $passwordReset */
+        $passwordReset = $this->accountOperation()->where('account_operation_type_id', $accountOperationTypeId)->first();
 
-        foreach ($authentication as $a) {
+        $emailSendingCounter = 1;
 
-            $result[$i] = [
-                'device' => $a['device']->get($deviceFields)[0],
-                'created_at' => $a['created_at']
-            ];
-
-            if ($withAuthenticationType) {
-                $result[$i]['type'] = $a['authenticationType'];
-            }
-
-            $i++;
+        if ($passwordReset) {
+            $emailSendingCounter += $passwordReset->countMailing();
         }
 
-        return $result;
+        $encrypter = new Encrypter;
+        $token = $encrypter->generateToken(64, AccountOperation::class);
+
+        $this->accountOperation()->updateOrCreate([],
+        [
+            'account_operation_type_id' => $accountOperationTypeId,
+            'token' => $token,
+            'email_sending_counter' => $emailSendingCounter
+        ]);
+
+        $url = env('APP_URL') . '/reset-password?token=' . $token; // TODO Poprawić na prawidłowy URL
+        Mail::to($this)->send(new MailPasswordReset($url));
+
+        JsonResponse::sendSuccess();
     }
 
-    public function forgotPassword() {
+    /**
+     * Zresetowanie hasła użytkownika
+     * 
+     * @param Illuminate\Http\Request $request
+     * @param AccountOperation $accountOperation
+     * 
+     * @return void
+     */
+    public function resetPassword($request, AccountOperation $accountOperation): void {
+
+        if (Validation::timeComparison($accountOperation->updated_at, env('EMAIL_TOKEN_LIFETIME'), '>')) {
+            throw new ApiException(AuthErrorCode::PASSWORD_RESET_TOKEN_HAS_EXPIRED());
+        }
+
+        $accountOperation->delete();
+
+        $this->update([
+            'password' => $request->password,
+            'last_time_password_changed' => now()
+        ]);
+
+        if (!$request->do_not_logout) {
+            PersonalAccessToken::where('tokenable_id', $this->id)->delete();
+        }
+
+        JsonResponse::sendSuccess();
+    }
+
+    /**
+     * Utworzenie rekordu do weryfikacji maila oraz wysłanie maila z tokenem
+     * 
+     * @param bool $afterRegistartion flaga z informacją czy wywołanie metody jest pochodną procesu rejestracji nowego użytkownika
+     * 
+     * @return void
+     */
+    public function sendVerificationEmail(bool $afterRegistartion = false): void {
+
+        if (!$this->email) {
+            throw new ApiException(AuthErrorCode::EMPTY_EMAIL());
+        }
+
+        $accountOperationTypeId = Validation::getAccountOperationTypeId('EMAIL_VERIFICATION');
+
+        $emailSendingCounter = 1;
+
+        if (!$afterRegistartion) {
+
+            if ($this->hasVerifiedEmail()) {
+                throw new ApiException(AuthErrorCode::EMAIL_ALREADY_VERIFIED());
+            }
+
+            /** @var AccountOperation $emailVerification */
+            $emailVerification = $this->accountOperation()->where('account_operation_type_id', $accountOperationTypeId)->first();
+
+            if ($emailVerification) {
+                $emailSendingCounter += $emailVerification->countMailing();
+            }
+        }
+
+        $encrypter = new Encrypter;
+        $token = $encrypter->generateToken(64, AccountOperation::class);
+
+        $this->accountOperation()->updateOrCreate([],
+        [
+            'account_operation_type_id' => $accountOperationTypeId,
+            'token' => $token,
+            'email_sending_counter' => $emailSendingCounter
+        ]);
+
+        $url = env('APP_URL') . '/email/verify?token=' . $token; // TODO Poprawić na prawidłowy URL
+        Mail::to($this)->send(new MailEmailVerification($url, $afterRegistartion));
+
+        if (!$afterRegistartion) {
+            JsonResponse::sendSuccess();
+        }
+    }
+
+    /**
+     * Zweryfikowanie adresu email użytkownika
+     * 
+     * @param Illuminate\Http\Request $request
+     * 
+     * @return void
+     */
+    public function verifyEmail($request) {
+
+        if ($this->hasVerifiedEmail()) {
+            throw new ApiException(AuthErrorCode::EMAIL_ALREADY_VERIFIED());
+        }
+
+        $accountOperationTypeId = Validation::getAccountOperationTypeId('EMAIL_VERIFICATION');
+
+        /** @var AccountOperation $emailVerification */
+        $emailVerification = $this->accountOperation()->where([
+            'account_operation_type_id' => $accountOperationTypeId,
+            'token' => $request->token
+        ])->first();
+
+        if (!$emailVerification) {
+            throw new ApiException(AuthErrorCode::INVALID_EMAIL_VERIFIFICATION_TOKEN());
+        }
+
+        if (Validation::timeComparison($emailVerification->updated_at, env('EMAIL_TOKEN_LIFETIME'), '>')) {
+            throw new ApiException(AuthErrorCode::EMAIL_VERIFIFICATION_TOKEN_HAS_EXPIRED());
+        }
+
+        $emailVerification->delete();
+
+        $this->timestamps = false;
+        $this->markEmailAsVerified();
+    }
+
+    public function unlockAccount($request) {
 
         /** @var PasswordReset $passwordReset */
         $passwordReset = $this->passwordReset()->first();
@@ -234,70 +392,19 @@ class User extends Authenticatable implements MustVerifyEmail
         ]);
 
         $url = env('APP_URL') . '/reset-password?token=' . $token; // TODO Poprawić na prawidłowy URL
-        Mail::to($this)->send(new PasswordReset($url));
+        Mail::to($this)->send(new MailPasswordReset($url));
 
         JsonResponse::sendSuccess();
     }
 
-    public function sendVerificationEmail($afterRegistartion) {
-
-        if (!$this->email) {
-            throw new ApiException(AuthErrorCode::EMPTY_EMAIL());
-        }
-
-        $emailSendingCounter = 1;
-
-        if (!$afterRegistartion) {
-
-            if ($this->hasVerifiedEmail()) {
-                throw new ApiException(AuthErrorCode::EMAIL_ALREADY_VERIFIED());
-            }
-
-            /** @var EmailVerification $emailVerification */
-            $emailVerification = $this->emailVerification()->first();
-
-            if ($emailVerification) {
-                $emailSendingCounter += $emailVerification->countMailing();
-            }
-        }
-
-        $encrypter = new Encrypter;
-        $token = $encrypter->generateToken(64, EmailVerification::class);
-
-        $this->emailVerification()->updateOrCreate([],
-        [
-            'token' => $token,
-            'email_sending_counter' => $emailSendingCounter
-        ]);
-
-        $url = env('APP_URL') . '/email/verify?token=' . $token; // TODO Poprawić na prawidłowy URL
-        Mail::to($this)->send(new VerificationEmail($url, $afterRegistartion));
-
-        if (!$afterRegistartion) {
-            JsonResponse::sendSuccess();
-        }
-    }
-
-    public function verifyEmail($request) {
-
-        if ($this->hasVerifiedEmail()) {
-            throw new ApiException(AuthErrorCode::EMAIL_ALREADY_VERIFIED());
-        }
-
-        /** @var EmailVerification $emailVerification */
-        $emailVerification = $this->emailVerification()->where('token', $request->token)->first();
-
-        if (Validation::timeComparison($emailVerification->updated_at, env('EMAIL_TOKEN_LIFETIME'), '>')) {
-            throw new ApiException(AuthErrorCode::EMAIL_VERIFIFICATION_TOKEN_HAS_EXPIRED());
-        }
-
-        $emailVerification->delete();
-
-        $this->timestamps = false;
-        $this->markEmailAsVerified();
-    }
-
-    public function updateInformation($request) {
+    /**
+     * Zaktualizowanie informacji o użytkowniku
+     * 
+     * @param Illuminate\Http\Request $request
+     * 
+     * @return bool
+     */
+    public function updateInformation($request): bool {
 
         $encrypter = new Encrypter;
 
@@ -446,7 +553,14 @@ class User extends Authenticatable implements MustVerifyEmail
         return isset($updatedInformation['email']);
     }
 
-    public function checkMissingUserInformation($withTokens) {
+    /**
+     * Sprawdzenie brakujących informacji o użytkowniku i zwrócenie jego encji
+     * 
+     * @param bool $withTokens flaga określająca czy mają zostać utworzone tokeny uwierzytelniające
+     * 
+     * @return void
+     */
+    public function checkMissingUserInformation(bool $withTokens = false): void {
 
         $missingInformation = null;
 

@@ -14,7 +14,7 @@ class CreateExternalAuthenticationsTable extends Migration
     public function up(): void {
         Schema::create('external_authentications', function (Blueprint $table) {
             $table->mediumIncrements('id');
-            $table->string('authentication_id', 340);
+            $table->string('external_authentication_id', 340);
             $table->mediumInteger('user_id')->unsigned();
             $table->tinyInteger('provider_type_id')->unsigned();
             $table->timestamps();

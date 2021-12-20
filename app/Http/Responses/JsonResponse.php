@@ -32,11 +32,13 @@ class JsonResponse
         header('Content-Type: application/json');
         http_response_code(Response::HTTP_OK);
 
-        if ($data === null) {
+        if ($data === null && $metadata === null) {
             $response = 'Success';
         } else {
 
-            $response['data'] = $data;
+            if ($data !== null) {
+                $response['data'] = $data;
+            }
 
             if ($metadata !== null) {
                 $response['metadata'] = $metadata;
@@ -246,11 +248,7 @@ class JsonResponse
         /** @var User $user */
         $user = Auth::user();
 
-        if ($activity) {
-            self::checkDevice($request, $activity);
-        }
-
-        if (($user->account_blocked_at || $user->account_deleted_at)) {
+        if (($user->is_account_blocked || $user->is_account_deleted)) {
 
             self::deleteCookie('JWT');
 
@@ -258,15 +256,19 @@ class JsonResponse
                 self::deleteCookie('REFRESH-TOKEN');
             }
 
-            if ($user->account_blocked_at) {
+            if ($user->is_account_blocked) {
                 $user->tokens()->delete();
                 throw new ApiException(AuthErrorCode::ACOUNT_BLOCKED());
             }
 
-            if ($user->account_deleted_at) {
+            if ($user->is_account_deleted) {
                 $user->tokens()->delete();
                 throw new ApiException(AuthErrorCode::ACOUNT_DELETED());
             }
+        }
+
+        if ($activity) {
+            self::checkDevice($request, $activity);
         }
     }
 }
