@@ -45,7 +45,7 @@ Route::middleware('throttle:defaultLimit')->group(function () {
             Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword'])->name('auth-forgotPassword');
             Route::patch('/auth/reset-password', [AuthController::class, 'resetPassword'])->name('auth-resetPassword');
 
-            Route::delete('/auth/logout/other-devices', [AuthController::class, 'logoutOtherDevices'])->name('auth-logoutOtherDevices');
+            Route::patch('/auth/restore-account', [AuthController::class, 'restoreAccount'])->name('auth-restoreAccount');
 
             Route::patch('/user', [UserController::class, 'updateUser'])->name('user-updateUser');
             Route::patch('/user/email/verify', [UserController::class, 'verifyEmail'])->name('user-verifyEmail');

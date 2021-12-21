@@ -92,4 +92,12 @@ class AuthErrorCode
     public static function EMPTY_EMAIL(): ErrorCode {
         return new ErrorCode('ATH21', 'EMPTY EMAIL', Response::HTTP_NOT_ACCEPTABLE);
     }
+
+    public static function INVALID_RESTORE_ACCOUNT_TOKEN(): ErrorCode {
+        return new ErrorCode('ATH22', 'INVALID RESTORE ACCOUNT TOKEN', Response::HTTP_BAD_REQUEST);
+    }
+
+    public static function RESTORE_ACCOUNT_TOKEN_HAS_EXPIRED(): ErrorCode {
+        return new ErrorCode('ATH23', 'RESTORE ACCOUNT TOKEN HAS EXPIRED', Response::HTTP_NOT_ACCEPTABLE);
+    }
 }

@@ -344,6 +344,38 @@ class AuthController extends Controller
     }
 
     /**
+     * #### `PATCH` `/api/auth/restore-account`
+     * Proces przywrócenia usuniętego konta
+     * 
+     * @param Request $request
+     * 
+     * @return void
+     */
+    public function restoreAccount(Request $request): void {
+
+        $accountOperationType = Validation::getAccountOperationType('ACCOUNT_RESTORATION');
+
+        if (!$accountOperationType) {
+            throw new ApiException(
+                BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                'Invalid account operation type.'
+            );
+        }
+
+        /** @var AccountOperation $accountOperation */
+        $accountOperation = AccountOperation::where([
+            'account_operation_type_id' => $accountOperationType->id,
+            'token' => $request->token
+        ])->first();
+
+        if (!$accountOperation) {
+            throw new ApiException(AuthErrorCode::INVALID_RESTORE_ACCOUNT_TOKEN());
+        }
+
+        $accountOperation->user()->first()->restoreAccount($accountOperation);
+    }
+
+    /**
      * Sprawdzenie czy dany serwis uwierzytelniający jest dostępny
      * 
      * @param string $provider nazwa zewnętrznego serwisu

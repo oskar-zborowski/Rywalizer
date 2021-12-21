@@ -9,6 +9,7 @@ use App\Http\Libraries\Encrypter\Encrypter;
 use App\Http\Libraries\Validation\Validation;
 use App\Http\Responses\JsonResponse;
 use App\Http\Traits\Encryptable;
+use App\Mail\AccountRestoration as MailAccountRestoration;
 use App\Mail\PasswordReset as MailPasswordReset;
 use App\Mail\EmailVerification as MailEmailVerification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -38,8 +39,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'gender_type_id',
         'role_type_id',
         'email_verified_at',
-        'is_account_deleted',
-        'is_account_blocked',
         'last_time_name_changed',
         'last_time_password_changed'
     ];
@@ -65,8 +64,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'gender_type_id',
         'role_type_id',
         'email_verified_at',
-        'is_account_deleted',
-        'is_account_blocked',
         'last_time_name_changed',
         'last_time_password_changed',
         'created_at',
@@ -232,38 +229,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @return void
      */
     public function forgotPassword(): void {
-
-        $accountOperationType = Validation::getAccountOperationType('PASSWORD_RESET');
-
-        if (!$accountOperationType) {
-            throw new ApiException(
-                BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                'Invalid account operation type.'
-            );
-        }
-
-        /** @var AccountOperation $passwordReset */
-        $passwordReset = $this->accountOperation()->where('account_operation_type_id', $accountOperationType->id)->first();
-
-        $emailSendingCounter = 1;
-
-        if ($passwordReset) {
-            $emailSendingCounter += $passwordReset->countMailing();
-        }
-
-        $encrypter = new Encrypter;
-        $token = $encrypter->generateToken(64, AccountOperation::class);
-
-        $this->accountOperation()->updateOrCreate([],
-        [
-            'account_operation_type_id' => $accountOperationType->id,
-            'token' => $token,
-            'email_sending_counter' => $emailSendingCounter
-        ]);
-
-        $url = env('APP_URL') . '/reset-password?token=' . $token; // TODO Poprawić na prawidłowy URL
-        Mail::to($this)->send(new MailPasswordReset($url));
-
+        $this->prepareEmail('PASSWORD_RESET', 'reset-password', MailPasswordReset::class);
         JsonResponse::sendSuccess();
     }
 
@@ -394,28 +360,36 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->markEmailAsVerified();
     }
 
-    public function unlockAccount($request) {
+    /**
+     * Przywrócenie usuniętego konta
+     * 
+     * @param AccountOperation $accountOperation
+     * 
+     * @return void
+     */
+    public function restoreAccount(AccountOperation $accountOperation): void {
 
-        /** @var PasswordReset $passwordReset */
-        $passwordReset = $this->passwordReset()->first();
-
-        $emailSendingCounter = 1;
-
-        if ($passwordReset) {
-            $emailSendingCounter += $passwordReset->countMailing();
+        if (Validation::timeComparison($accountOperation->updated_at, env('EMAIL_TOKEN_LIFETIME'), '>')) {
+            throw new ApiException(AuthErrorCode::RESTORE_ACCOUNT_TOKEN_HAS_EXPIRED());
         }
 
-        $encrypter = new Encrypter;
-        $token = $encrypter->generateToken(64, PasswordReset::class);
+        $accountActionType = Validation::getAccountActionType('ACCOUNT_DELETED');
 
-        $this->passwordReset()->updateOrCreate([],
-        [
-            'token' => $token,
-            'email_sending_counter' => $emailSendingCounter
-        ]);
+        if (!$accountActionType) {
+            throw new ApiException(
+                BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                'Invalid account operation type.'
+            );
+        }
 
-        $url = env('APP_URL') . '/reset-password?token=' . $token; // TODO Poprawić na prawidłowy URL
-        Mail::to($this)->send(new MailPasswordReset($url));
+        /** @var AccountAction $accountDeleted */
+        $accountDeleted = $this->accountAction()->where([
+            'user_id' => $accountOperation->user_id,
+            'account_action_type_id' => $accountActionType->id
+        ])->first();
+
+        $accountOperation->delete();
+        $accountDeleted->delete();
 
         JsonResponse::sendSuccess();
     }
@@ -638,19 +612,47 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function checkAccess(): void {
 
-        if ($this->is_account_blocked || $this->is_account_deleted) {
+        $accountDeleted = null;
+        $accountBlocked = null;
+
+        $accountAction = $this->accountAction()->get();
+
+        foreach ($accountAction as $aA) {
+            if (strpos($aA->accountActionType->name, 'ACCOUNT_DELETED') !== false) {
+                $accountDeleted = $aA;
+            } else if (strpos($aA->accountActionType->name, 'ACCOUNT_BLOCKED') !== false) {
+                $accountBlocked = $aA;
+            }
+        }
+
+        if ($accountBlocked || $accountDeleted) {
 
             JsonResponse::deleteCookie('JWT');
             JsonResponse::deleteCookie('REFRESH-TOKEN');
 
             $this->personalAccessToken()->delete();
 
-            if ($this->is_account_blocked) {
-                throw new ApiException(AuthErrorCode::ACOUNT_BLOCKED());
+            if ($accountBlocked) {
+                throw new ApiException(
+                    AuthErrorCode::ACOUNT_BLOCKED(),
+                    [
+                        $accountBlocked->accountActionType->description,
+                        'Data zniesienia blokady: ' . $accountBlocked->expires_at
+                    ]
+                );
             }
 
-            if ($this->is_account_deleted) {
-                throw new ApiException(AuthErrorCode::ACOUNT_DELETED());
+            if ($accountDeleted) {
+
+                $this->prepareEmail('ACCOUNT_RESTORATION', 'restore-account', MailAccountRestoration::class);
+
+                throw new ApiException(
+                    AuthErrorCode::ACOUNT_DELETED(),
+                    [
+                        $accountDeleted->accountActionType->description,
+                        'Wysłaliśmy na Twojego maila link do przywrócenia konta'
+                    ]
+                );
             }
         }
     }
@@ -695,5 +697,48 @@ class User extends Authenticatable implements MustVerifyEmail
             'device_id' => $deviceId,
             'authentication_type_id' => $authenticationType->id
         ]);
+    }
+
+    /**
+     * Utworzenie niezbędnych danych do wysłania maila i wysłanie go
+     * 
+     * @param string $accountOperation typ przeprowadzanej operacji, np. PASSWORD_RESET
+     * @param string $urlEndpoint końcowa nazwa endpointu, dla którego zostanie wygenerowany token np. reset-password
+     * @param string $mail klasa maila, który ma zostać wywołany
+     * 
+     * @return void
+     */
+    public function prepareEmail(string $accountOperation, string $urlEndpoint, $mail) {
+
+        $accountOperationType = Validation::getAccountOperationType($accountOperation);
+
+        if (!$accountOperationType) {
+            throw new ApiException(
+                BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                'Invalid account operation type.'
+            );
+        }
+
+        /** @var AccountOperation $accountOperation */
+        $accountOperation = $this->accountOperation()->where('account_operation_type_id', $accountOperationType->id)->first();
+
+        $emailSendingCounter = 1;
+
+        if ($accountOperation) {
+            $emailSendingCounter += $accountOperation->countMailing();
+        }
+
+        $encrypter = new Encrypter;
+        $token = $encrypter->generateToken(64, AccountOperation::class);
+
+        $this->accountOperation()->updateOrCreate([],
+        [
+            'account_operation_type_id' => $accountOperationType->id,
+            'token' => $token,
+            'email_sending_counter' => $emailSendingCounter
+        ]);
+
+        $url = env('APP_URL') . '/' . $urlEndpoint . '?token=' . $token; // TODO Poprawić na prawidłowy URL
+        Mail::to($this)->send(new $mail($url));
     }
 }

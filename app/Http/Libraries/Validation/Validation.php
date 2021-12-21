@@ -3,6 +3,7 @@
 namespace App\Http\Libraries\Validation;
 
 use App\Http\Libraries\Encrypter\Encrypter;
+use App\Models\AccountActionType;
 use App\Models\AccountOperationType;
 use App\Models\User;
 
@@ -28,6 +29,24 @@ class Validation
     }
 
     /**
+     * Pobranie id typu akcji na koncie
+     * 
+     * @param string $name nazwa typu akcji na koncie
+     * 
+     * @return AccountActionType|null
+     */
+    public static function getAccountActionType(string $name): ?AccountActionType {
+
+        $encrypter = new Encrypter;
+        $encryptedName = $encrypter->encrypt($name, 27);
+
+        /** @var AccountActionType $accountActionType */
+        $accountActionType = AccountActionType::where('name', $encryptedName)->first();
+
+        return $accountActionType ?? $accountActionType;
+    }
+
+    /**
      * Pobranie id typu operacji na koncie
      * 
      * @param string $name nazwa typu operacji na koncie
@@ -37,7 +56,7 @@ class Validation
     public static function getAccountOperationType(string $name): ?AccountOperationType {
 
         $encrypter = new Encrypter;
-        $encryptedName = $encrypter->encrypt($name, 18);
+        $encryptedName = $encrypter->encrypt($name, 21);
 
         /** @var AccountOperationType $accountOperationType */
         $accountOperationType = AccountOperationType::where('name', $encryptedName)->first();

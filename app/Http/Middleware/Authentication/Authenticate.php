@@ -45,7 +45,8 @@ class Authenticate extends Middleware
             'auth-forgotPassword',
             'auth-resetPassword',
             'auth-redirectToProvider',
-            'auth-handleProviderCallback'
+            'auth-handleProviderCallback',
+            'auth-restoreAccount'
         ];
 
         $independentRouteNames = [

@@ -25,6 +25,7 @@ class BeforeUser
         $register = 'auth-register';
         $forgotPassword = 'auth-forgotPassword';
         $resetPassword = 'auth-resetPassword';
+        $restoreAccount = 'auth-restoreAccount';
         $verifyEmail = 'user-verifyEmail';
         $updateUser = 'user-updateUser';
         $uploadAvatar = 'user-uploadAvatar';
@@ -89,7 +90,8 @@ class BeforeUser
         }
 
         if ($routeName == $resetPassword ||
-            $routeName == $verifyEmail)
+            $routeName == $verifyEmail ||
+            $routeName == $restoreAccount)
         {
             $request->validate([
                 'token' => 'required|string|alpha_num|size:48'
