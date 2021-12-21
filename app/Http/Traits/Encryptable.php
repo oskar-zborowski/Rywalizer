@@ -32,8 +32,13 @@ trait Encryptable
         $value = parent::getAttribute($key);
 
         if ($this->encryptable($key)) {
-            $encrypter = new Encrypter;
-            $value = $encrypter->decrypt($value);
+
+            $value = null;
+
+            if ($value) {
+                $encrypter = new Encrypter;
+                $value = $encrypter->decrypt((string) $value);
+            }
         }
 
         return $value;
@@ -50,8 +55,13 @@ trait Encryptable
     public function setAttribute($key, $value): ?string {
 
         if ($this->encryptable($key)) {
-            $encrypter = new Encrypter;
-            $value = $encrypter->encrypt($value, $this->encryptable[$key]);
+
+            $value = null;
+
+            if ($value) {
+                $encrypter = new Encrypter;
+                $value = $encrypter->encrypt((string) $value, (int) $this->encryptable[$key]);
+            }
         }
 
         return parent::setAttribute($key, $value);
@@ -66,10 +76,16 @@ trait Encryptable
 
         $attributes = parent::getArrayableAttributes();
 
+        $encrypter = new Encrypter;
+
         foreach ($attributes as $key => $attribute) {
             if ($this->encryptable($key)) {
-                $encrypter = new Encrypter;
-                $attributes[$key] = $encrypter->decrypt($attribute);
+
+                $attributes[$key] = null;
+
+                if ($attribute) {
+                    $attributes[$key] = $encrypter->decrypt((string) $attribute);
+                }
             }
         }
 
