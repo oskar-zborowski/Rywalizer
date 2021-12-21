@@ -28,9 +28,7 @@ class DeviceRecognize
 
         $encrypter = new Encrypter;
 
-        $uuid = $request->cookie(env('UUID_COOKIE_NAME'));
-
-        if (!empty($uuid)) {
+        if ($uuid = $request->cookie(env('UUID_COOKIE_NAME'))) {
 
             $encryptedIp = $encrypter->encrypt($request->ip(), 15);
             $encryptedUuid = $encrypter->encrypt($uuid);
@@ -46,8 +44,9 @@ class DeviceRecognize
                 $deviceBrowserName &= $request->browser_name != $device->browser_name;
                 $deviceBrowserVersion &= $request->browser_version != $device->browser_version;
             }
+        }
 
-        } else {
+        if (!isset($uuid)) {
             $uuid = $encrypter->generateToken(64, Device::class, 'uuid');
         }
 
