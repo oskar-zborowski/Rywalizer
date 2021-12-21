@@ -9,7 +9,7 @@ class ExternalAuthentication extends BaseModel
     use Encryptable;
 
     protected $fillable = [
-        'exteral_authentication_id',
+        'external_authentication_id',
         'provider_type_id'
     ];
 
