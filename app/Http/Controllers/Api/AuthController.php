@@ -318,7 +318,7 @@ class AuthController extends Controller
             $createdUser = User::updateOrCreate([], $newUser);
 
             $createdUser->externalAuthentication()->create([
-                'exteranal_authentication_id' => $externalAuthenticationId,
+                'external_authentication_id' => $externalAuthenticationId,
                 'provider_type_id' => $providerType->id
             ]);
 
