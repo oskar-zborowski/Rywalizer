@@ -14,7 +14,7 @@ use Illuminate\Validation\Rules\Password as RulesPassword;
 class BeforeUser
 {
     /**
-     * @param Illuminate\Http\Request $request
+     * @param Request $request
      * @param Closure $next
      */
     public function handle(Request $request, Closure $next) {
@@ -25,9 +25,9 @@ class BeforeUser
         $register = 'auth-register';
         $forgotPassword = 'auth-forgotPassword';
         $resetPassword = 'auth-resetPassword';
-        $verifyEmail = 'auth-verifyEmail';
-        $updateUser = 'auth-updateUser';
-        $uploadAvatar = 'auth-uploadAvatar';
+        $verifyEmail = 'user-verifyEmail';
+        $updateUser = 'user-updateUser';
+        $uploadAvatar = 'user-uploadAvatar';
         $logoutOtherDevices = 'auth-logoutOtherDevices';
 
         $encrypter = new Encrypter;

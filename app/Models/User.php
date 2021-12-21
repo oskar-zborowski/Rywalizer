@@ -14,6 +14,7 @@ use App\Mail\EmailVerification as MailEmailVerification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\HasApiTokens;
@@ -232,10 +233,17 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function forgotPassword(): void {
 
-        $accountOperationTypeId = Validation::getAccountOperationTypeId('PASSWORD_RESET');
+        $accountOperationType = Validation::getAccountOperationType('PASSWORD_RESET');
+
+        if (!$accountOperationType) {
+            throw new ApiException(
+                BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                'Invalid account operation type.'
+            );
+        }
 
         /** @var AccountOperation $passwordReset */
-        $passwordReset = $this->accountOperation()->where('account_operation_type_id', $accountOperationTypeId)->first();
+        $passwordReset = $this->accountOperation()->where('account_operation_type_id', $accountOperationType->id)->first();
 
         $emailSendingCounter = 1;
 
@@ -248,7 +256,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
         $this->accountOperation()->updateOrCreate([],
         [
-            'account_operation_type_id' => $accountOperationTypeId,
+            'account_operation_type_id' => $accountOperationType->id,
             'token' => $token,
             'email_sending_counter' => $emailSendingCounter
         ]);
@@ -262,12 +270,12 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Zresetowanie hasła użytkownika
      * 
-     * @param Illuminate\Http\Request $request
+     * @param Request $request
      * @param AccountOperation $accountOperation
      * 
      * @return void
      */
-    public function resetPassword($request, AccountOperation $accountOperation): void {
+    public function resetPassword(Request $request, AccountOperation $accountOperation): void {
 
         if (Validation::timeComparison($accountOperation->updated_at, env('EMAIL_TOKEN_LIFETIME'), '>')) {
             throw new ApiException(AuthErrorCode::PASSWORD_RESET_TOKEN_HAS_EXPIRED());
@@ -291,16 +299,24 @@ class User extends Authenticatable implements MustVerifyEmail
      * Utworzenie rekordu do weryfikacji maila oraz wysłanie maila z tokenem
      * 
      * @param bool $afterRegistartion flaga z informacją czy wywołanie metody jest pochodną procesu rejestracji nowego użytkownika
+     * @param bool $ignorePause flaga określająca czy ma być sprawdzany czas ostatniego wysłania maila
      * 
      * @return void
      */
-    public function sendVerificationEmail(bool $afterRegistartion = false): void {
+    public function sendVerificationEmail(bool $afterRegistartion = false, bool $ignorePause = false): void {
 
         if (!$this->email) {
             throw new ApiException(AuthErrorCode::EMPTY_EMAIL());
         }
 
-        $accountOperationTypeId = Validation::getAccountOperationTypeId('EMAIL_VERIFICATION');
+        $accountOperationType = Validation::getAccountOperationType('EMAIL_VERIFICATION');
+
+        if (!$accountOperationType) {
+            throw new ApiException(
+                BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                'Invalid account operation type.'
+            );
+        }
 
         $emailSendingCounter = 1;
 
@@ -311,10 +327,10 @@ class User extends Authenticatable implements MustVerifyEmail
             }
 
             /** @var AccountOperation $emailVerification */
-            $emailVerification = $this->accountOperation()->where('account_operation_type_id', $accountOperationTypeId)->first();
+            $emailVerification = $this->accountOperation()->where('account_operation_type_id', $accountOperationType->id)->first();
 
             if ($emailVerification) {
-                $emailSendingCounter += $emailVerification->countMailing();
+                $emailSendingCounter += $emailVerification->countMailing($ignorePause);
             }
         }
 
@@ -323,7 +339,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
         $this->accountOperation()->updateOrCreate([],
         [
-            'account_operation_type_id' => $accountOperationTypeId,
+            'account_operation_type_id' => $accountOperationType->id,
             'token' => $token,
             'email_sending_counter' => $emailSendingCounter
         ]);
@@ -339,21 +355,28 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Zweryfikowanie adresu email użytkownika
      * 
-     * @param Illuminate\Http\Request $request
+     * @param Request $request
      * 
      * @return void
      */
-    public function verifyEmail($request) {
+    public function verifyEmail(Request $request): void {
 
         if ($this->hasVerifiedEmail()) {
             throw new ApiException(AuthErrorCode::EMAIL_ALREADY_VERIFIED());
         }
 
-        $accountOperationTypeId = Validation::getAccountOperationTypeId('EMAIL_VERIFICATION');
+        $accountOperationType = Validation::getAccountOperationType('EMAIL_VERIFICATION');
+
+        if (!$accountOperationType) {
+            throw new ApiException(
+                BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                'Invalid account operation type.'
+            );
+        }
 
         /** @var AccountOperation $emailVerification */
         $emailVerification = $this->accountOperation()->where([
-            'account_operation_type_id' => $accountOperationTypeId,
+            'account_operation_type_id' => $accountOperationType->id,
             'token' => $request->token
         ])->first();
 
@@ -400,11 +423,11 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Zaktualizowanie informacji o użytkowniku
      * 
-     * @param Illuminate\Http\Request $request
+     * @param Request $request
      * 
      * @return bool
      */
-    public function updateInformation($request): bool {
+    public function updateInformation(Request $request): bool {
 
         $encrypter = new Encrypter;
 
@@ -556,11 +579,9 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Sprawdzenie brakujących informacji o użytkowniku i zwrócenie jego encji
      * 
-     * @param bool $withTokens flaga określająca czy mają zostać utworzone tokeny uwierzytelniające
-     * 
      * @return void
      */
-    public function checkMissingUserInformation(bool $withTokens = false): void {
+    public function checkMissingInformation(): void {
 
         $missingInformation = null;
 
@@ -596,10 +617,6 @@ class User extends Authenticatable implements MustVerifyEmail
             $missingInformation['optional']['gender_type_id'] = [__('validation.custom.is-missing', ['attribute' => 'płeć'])];
         }
 
-        if ($withTokens) {
-            JsonResponse::prepareCookies();
-        }
-
         if (isset($missingInformation['required']) || !$this->email_verified_at) {
             throw new ApiException(
                 $this->email_verified_at ? AuthErrorCode::MISSING_USER_INFORMATION() : AuthErrorCode::UNVERIFIED_EMAIL(),
@@ -612,5 +629,71 @@ class User extends Authenticatable implements MustVerifyEmail
             ['user' => $this->privateInformation()],
             ['missing_user_information' => $missingInformation]
         );
+    }
+
+    /**
+     * Sprawdzenie czy użytkownik może korzystać z serwisu
+     * 
+     * @return void
+     */
+    public function checkAccess(): void {
+
+        if ($this->is_account_blocked || $this->is_account_deleted) {
+
+            JsonResponse::deleteCookie('JWT');
+            JsonResponse::deleteCookie('REFRESH-TOKEN');
+
+            $this->personalAccessToken()->delete();
+
+            if ($this->is_account_blocked) {
+                throw new ApiException(AuthErrorCode::ACOUNT_BLOCKED());
+            }
+
+            if ($this->is_account_deleted) {
+                throw new ApiException(AuthErrorCode::ACOUNT_DELETED());
+            }
+        }
+    }
+
+    /**
+     * Utworzenie tokenów uwierzytelniających
+     * 
+     * @return void
+     */
+    public function createTokens(): void {
+
+        $encrypter = new Encrypter;
+        $refreshToken = $encrypter->generateToken(64, PersonalAccessToken::class, 'refresh_token');
+        $encryptedRefreshToken = $encrypter->encrypt($refreshToken);
+
+        $jwtEncryptedName = $encrypter->encrypt('JWT', 3);
+        $jwt = $this->createToken($jwtEncryptedName);
+        $jwtToken = $jwt->plainTextToken;
+        $jwtId = $jwt->accessToken->getKey();
+
+        $this->personalAccessToken()->where('id', $jwtId)->update(['refresh_token' => $encryptedRefreshToken]);
+
+        JsonResponse::setCookie($jwtToken, 'JWT');
+        JsonResponse::setCookie($refreshToken, 'REFRESH-TOKEN');
+    }
+
+    /**
+     * Zweryfikowanie urządzenia i stworzenie odpowiednich logów
+     * 
+     * @param int $deviceId identyfikator urządzenia
+     * @param string $activity nazwa aktywności, która wywołała daną metodę np. LOGIN
+     * 
+     * @return void
+     */
+    public function checkDevice(int $deviceId, string $activity): void {
+
+        $encrypter = new Encrypter;
+        $encryptedActivity = $encrypter->encrypt($activity, 18);
+        $authenticationType = AuthenticationType::where('name', $encryptedActivity)->first();
+
+        $this->authentication()->create([
+            'device_id' => $deviceId,
+            'authentication_type_id' => $authenticationType->id
+        ]);
     }
 }

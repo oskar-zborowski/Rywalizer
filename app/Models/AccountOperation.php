@@ -58,11 +58,13 @@ class AccountOperation extends BaseModel
     /**
      * Zwrócenie liczby wysłanych maili powiązanych z daną akcją
      * 
+     * @param bool $ignorePause flaga określająca czy ma być sprawdzany czas ostatniego wysłania maila
+     * 
      * @return int
      */
-    public function countMailing(): int {
+    public function countMailing(bool $ignorePause = false): int {
 
-        if (Validation::timeComparison($this->updated_at, env('PAUSE_BEFORE_RETRYING')*60, '<=', 'seconds')) {
+        if (!$ignorePause && Validation::timeComparison($this->updated_at, env('PAUSE_BEFORE_RESENDING_EMAIL')*60, '<=', 'seconds')) {
             throw new ApiException(AuthErrorCode::WAIT_BEFORE_RETRYING());
         }
 

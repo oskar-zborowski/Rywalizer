@@ -32,9 +32,9 @@ class Validation
      * 
      * @param string $name nazwa typu operacji na koncie
      * 
-     * @return int|null
+     * @return AccountOperationType|null
      */
-    public static function getAccountOperationTypeId(string $name): ?int {
+    public static function getAccountOperationType(string $name): ?AccountOperationType {
 
         $encrypter = new Encrypter;
         $encryptedName = $encrypter->encrypt($name, 18);
@@ -42,7 +42,7 @@ class Validation
         /** @var AccountOperationType $accountOperationType */
         $accountOperationType = AccountOperationType::where('name', $encryptedName)->first();
 
-        return $accountOperationType ? $accountOperationType->id : null;
+        return $accountOperationType ?? $accountOperationType;
     }
 
     /**

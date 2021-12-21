@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 class DeviceRecognize
 {
     /**
-     * @param Illuminate\Http\Request $request
+     * @param Request $request
      * @param Closure $next
      */
     public function handle(Request $request, Closure $next) {

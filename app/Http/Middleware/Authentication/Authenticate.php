@@ -6,10 +6,12 @@ use App\Exceptions\ApiException;
 use App\Http\ErrorCodes\AuthErrorCode;
 use App\Http\Responses\JsonResponse;
 use App\Models\PersonalAccessToken;
+use App\Models\User;
 use Closure;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -18,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 class Authenticate extends Middleware
 {
     /**
-     * @param Illuminate\Http\Request $request
+     * @param Request $request
      */
     protected function redirectTo($request) {
 
@@ -28,7 +30,7 @@ class Authenticate extends Middleware
     }
 
     /**
-     * @param Illuminate\Http\Request $request
+     * @param Request $request
      * @param Closure $next
      */
     public function handle($request, Closure $next, ...$guards) {
@@ -47,7 +49,7 @@ class Authenticate extends Middleware
         ];
 
         $independentRouteNames = [
-            'auth-getProviderTypes'
+            'defaultType-getProviderTypes'
         ];
 
         $logout = 'auth-logoutMe';
@@ -56,7 +58,7 @@ class Authenticate extends Middleware
 
             $request->headers->set('Authorization', 'Bearer ' . $jwt);
             $authenticated = true;
-            $activity = null;
+            $isTokenRefreshed = false;
 
             try {
                 $this->authenticate($request, $guards);
@@ -74,8 +76,8 @@ class Authenticate extends Middleware
                     }
 
                     if ($currentRootName != $logout) {
-                        JsonResponse::refreshToken($personalAccessToken);
-                        $activity = 'REFRESH_TOKEN';
+                        JsonResponse::refreshToken($personalAccessToken, $request);
+                        $isTokenRefreshed = true;
                     } else {
                         $authenticated = false;
                     }
@@ -102,7 +104,13 @@ class Authenticate extends Middleware
                     throw new ApiException(AuthErrorCode::ALREADY_LOGGED_IN());
                 }
 
-                JsonResponse::checkUserAccess($request, $activity);
+                /** @var User $user */
+                $user = Auth::user();
+                $user->checkAccess();
+
+                if ($isTokenRefreshed) {
+                    $user->checkDevice($request->device_id, 'REFRESH_TOKEN');
+                }
             }
 
         } else {
@@ -117,8 +125,13 @@ class Authenticate extends Middleware
                 }
 
                 if ($currentRootName != $logout) {
-                    JsonResponse::refreshToken($personalAccessToken);
-                    JsonResponse::checkUserAccess($request, 'REFRESH_TOKEN');
+
+                    JsonResponse::refreshToken($personalAccessToken, $request);
+
+                    /** @var User $user */
+                    $user = Auth::user();
+                    $user->checkAccess();
+                    $user->checkDevice($request->device_id, 'REFRESH_TOKEN');
                 }
 
             } else {

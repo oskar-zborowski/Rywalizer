@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DefaultTypeController;
 use App\Http\Controllers\Api\GitHubController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,7 +28,7 @@ Route::middleware('throttle:defaultLimit')->group(function () {
 
     Route::middleware('auth:sanctum')->group(function () {
 
-        Route::get('/provider/types', [AuthController::class, 'getProviderTypes'])->name('auth-getProviderTypes');
+        Route::get('/provider/types', [DefaultTypeController::class, 'getProviderTypes'])->name('defaultType-getProviderTypes');
 
         /*
         |-------------------------------------------------------------------------------------------------------
@@ -45,9 +47,9 @@ Route::middleware('throttle:defaultLimit')->group(function () {
 
             Route::delete('/auth/logout/other-devices', [AuthController::class, 'logoutOtherDevices'])->name('auth-logoutOtherDevices');
 
-            Route::patch('/user', [AuthController::class, 'updateUser'])->name('auth-updateUser');
-            Route::patch('/user/email/verify', [AuthController::class, 'verifyEmail'])->name('auth-verifyEmail');
-            Route::post('/user/avatar/upload', [AuthController::class, 'uploadAvatar'])->name('auth-uploadAvatar');
+            Route::patch('/user', [UserController::class, 'updateUser'])->name('user-updateUser');
+            Route::patch('/user/email/verify', [UserController::class, 'verifyEmail'])->name('user-verifyEmail');
+            Route::post('/user/avatar/upload', [UserController::class, 'uploadAvatar'])->name('user-uploadAvatar');
         });
 
         /*
@@ -69,12 +71,12 @@ Route::middleware('throttle:defaultLimit')->group(function () {
 
         Route::middleware('user.roles')->group(function () {
 
-            Route::get('/user', [AuthController::class, 'getUser'])->name('auth-getUser');
-            Route::post('/user/email/verification-notification', [AuthController::class, 'sendVerificationEmail'])->name('auth-sendVerificationEmail');
-            Route::delete('/user/avatar/delete', [AuthController::class, 'deleteAvatar'])->name('auth-deleteAvatar');
-            Route::get('/user/{id}/authentication', [AuthController::class, 'getUserAuthentication'])->name('auth-getUserAuthentication');
+            Route::get('/user', [UserController::class, 'getUser'])->name('user-getUser');
+            Route::post('/user/email/verification-notification', [UserController::class, 'sendVerificationEmail'])->name('user-sendVerificationEmail');
+            Route::delete('/user/avatar/delete', [UserController::class, 'deleteAvatar'])->name('user-deleteAvatar');
+            Route::get('/user/{id}/authentication', [UserController::class, 'getUserAuthentication'])->name('user-getUserAuthentication');
 
-            Route::get('/gender/types', [AuthController::class, 'getGenderTypes'])->name('auth-getGenderTypes');
+            Route::get('/gender/types', [DefaultTypeController::class, 'getGenderTypes'])->name('defaultType-getGenderTypes');
 
             /*
             |---------------------------------------------------------------------------------------------------
@@ -84,10 +86,10 @@ Route::middleware('throttle:defaultLimit')->group(function () {
 
             Route::middleware('verified')->group(function () {
 
-                Route::get('/role/types', [AuthController::class, 'getRoleTypes'])->name('auth-getRoleTypes');
-                Route::get('/account-action/types', [AuthController::class, 'getAccountActionTypes'])->name('auth-getAccountActionTypes');
+                Route::get('/role/types', [DefaultTypeController::class, 'getRoleTypes'])->name('defaultType-getRoleTypes');
+                Route::get('/account-action/types', [DefaultTypeController::class, 'getAccountActionTypes'])->name('defaultType-getAccountActionTypes');
 
-                Route::get('/users', [AuthController::class, 'getUsers'])->name('auth-getUsers');
+                Route::get('/users', [UserController::class, 'getUsers'])->name('user-getUsers');
             });
         });
     });

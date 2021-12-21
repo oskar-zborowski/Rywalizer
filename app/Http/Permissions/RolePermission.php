@@ -19,11 +19,11 @@ class RolePermission
             '1' => [
                 'auth-logoutMe',
                 'auth-logoutOtherDevices',
-                'auth-getUser',
-                'auth-sendVerificationEmail',
-                'auth-deleteAvatar',
-                'auth-getGenderTypes',
-                'auth-getUserAuthentication'
+                'user-getUser',
+                'user-sendVerificationEmail',
+                'user-deleteAvatar',
+                'defaultType-getGenderTypes',
+                'user-getUserAuthentication'
             ],
 
             '2' => [
@@ -35,9 +35,9 @@ class RolePermission
             ],
 
             '4' => [
-                'auth-getRoleTypes',
-                'auth-getAccountActionTypes',
-                'auth-getUsers'
+                'defaultType-getRoleTypes',
+                'defaultType-getAccountActionTypes',
+                'user-getUsers'
             ],
 
             'exceptions' => [
