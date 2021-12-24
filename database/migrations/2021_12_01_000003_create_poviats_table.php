@@ -15,14 +15,18 @@ class CreatePoviatsTable extends Migration
         Schema::create('poviats', function (Blueprint $table) {
             $table->smallIncrements('id');
             $table->unsignedTinyInteger('voivodeship_id');
-            $table->string('name', 25);
+            $table->unsignedMediumInteger('creator_id');
+            $table->unsignedMediumInteger('supervisor_id');
+            $table->string('name', 30);
             $table->polygon('boundary')->nullable();
-            $table->boolean('is_active')->default(0);
+            $table->boolean('is_visible')->default(0);
             $table->timestamps();
         });
 
         Schema::table('poviats', function (Blueprint $table) {
             $table->foreign('voivodeship_id')->references('id')->on('voivodeships');
+            $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('supervisor_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 

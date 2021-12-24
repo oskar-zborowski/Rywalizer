@@ -13,14 +13,15 @@ class CreateSportsAnnouncementPartnersTable extends Migration
      */
     public function up() {
         Schema::create('sports_announcement_partners', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedSmallInteger('partner_id');
-            $table->float('commission')->default(0.05);
+            $table->smallIncrements('id');
+            $table->unsignedSmallInteger('partner_id')->unique();
+            $table->float('commission_id')->default(1);
             $table->timestamps();
         });
 
         Schema::table('sports_announcement_partners', function (Blueprint $table) {
-            $table->foreign('partner_id')->references('id')->on('partners');
+            $table->foreign('partner_id')->references('id')->on('partners')->cascadeOnDelete();
+            $table->foreign('commission_id')->references('id')->on('commissions');
         });
     }
 

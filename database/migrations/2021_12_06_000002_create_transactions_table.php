@@ -16,12 +16,12 @@ class CreateTransactionsTable extends Migration
             $table->integerIncrements('id');
             $table->unsignedTinyInteger('transaction_status_id')->default(1);
             $table->unsignedMediumInteger('discount_code_id')->nullable();
-            $table->string('number', 32);
+            $table->string('number', 32); // Kodowane natywnie
             $table->unsignedMediumInteger('transaction_amount');
             $table->mediumInteger('system_amount');
             $table->unsignedMediumInteger('partner_amount');
-            $table->string('transaction_order_id', 64)->nullable();
-            $table->string('transaction_session_id', 64);
+            $table->string('transaction_order_id', 64)->nullable(); // Kodowane natywnie
+            $table->string('transaction_session_id', 64); // Kodowane natywnie
             $table->timestamp('transaction_confirmed_at')->nullable();
             $table->timestamps();
         });

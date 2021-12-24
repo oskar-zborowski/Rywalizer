@@ -15,14 +15,18 @@ class CreateVoivodeshipsTable extends Migration
         Schema::create('voivodeships', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->unsignedTinyInteger('country_id');
+            $table->unsignedMediumInteger('creator_id');
+            $table->unsignedMediumInteger('supervisor_id');
             $table->string('name', 20);
             $table->polygon('boundary')->nullable();
-            $table->boolean('is_active')->default(0);
+            $table->boolean('is_visible')->default(0);
             $table->timestamps();
         });
 
         Schema::table('voivodeships', function (Blueprint $table) {
             $table->foreign('country_id')->references('id')->on('countries');
+            $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('supervisor_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 

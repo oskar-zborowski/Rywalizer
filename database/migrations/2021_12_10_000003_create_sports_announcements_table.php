@@ -24,12 +24,12 @@ class CreateSportsAnnouncementsTable extends Migration
             $table->unsignedTinyInteger('sports_announcement_type_id');
             $table->unsignedMediumInteger('front_picture_id')->nullable();
             $table->unsignedMediumInteger('background_picture_id')->nullable();
-            $table->unsignedTinyInteger('name_id');
-            $table->unsignedTinyInteger('logo_id')->nullable();
-            $table->unsignedTinyInteger('email_id')->nullable();
-            $table->unsignedTinyInteger('telephone_id')->nullable();
-            $table->unsignedTinyInteger('facebook_id')->nullable();
-            $table->unsignedTinyInteger('instagram_id')->nullable();
+            $table->string('organizer_name', 268); // Kodowane natywnie
+            $table->string('organizer_picture', 64)->nullable(); // Kodowane natywnie
+            $table->string('organizer_email', 340)->nullable(); // Kodowane natywnie
+            $table->string('organizer_telephone', 32)->nullable(); // Kodowane natywnie
+            $table->string('organizer_facebook', 340)->nullable(); // Kodowane natywnie
+            $table->string('organizer_instagram', 340)->nullable(); // Kodowane natywnie
             $table->unsignedTinyInteger('minimal_age')->nullable();
             $table->unsignedTinyInteger('maximum_age')->nullable();
             $table->unsignedMediumInteger('ticket_price');
@@ -43,7 +43,7 @@ class CreateSportsAnnouncementsTable extends Migration
         });
 
         Schema::table('sports_announcements', function (Blueprint $table) {
-            $table->foreign('sports_announcement_partner_id')->references('id')->on('sports_announcement_partners');
+            $table->foreign('sports_announcement_partner_id')->references('id')->on('sports_announcement_partners')->nullOnDelete();
             $table->foreign('sports_facility_id')->references('id')->on('sports_facilities');
             $table->foreign('sport_id')->references('id')->on('sports');
             $table->foreign('gender_type_id')->references('id')->on('gender_types');
@@ -53,12 +53,6 @@ class CreateSportsAnnouncementsTable extends Migration
             $table->foreign('sports_announcement_type_id')->references('id')->on('sports_announcement_types');
             $table->foreign('front_picture_id')->references('id')->on('pictures')->nullOnDelete();
             $table->foreign('background_picture_id')->references('id')->on('pictures')->nullOnDelete();
-            $table->foreign('name_id')->references('id')->on('display_names');
-            $table->foreign('logo_id')->references('id')->on('display_names');
-            $table->foreign('email_id')->references('id')->on('display_names');
-            $table->foreign('telephone_id')->references('id')->on('display_names');
-            $table->foreign('facebook_id')->references('id')->on('display_names');
-            $table->foreign('instagram_id')->references('id')->on('display_names');
         });
     }
 

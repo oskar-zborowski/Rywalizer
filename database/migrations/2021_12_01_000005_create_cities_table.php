@@ -15,14 +15,18 @@ class CreateCitiesTable extends Migration
         Schema::create('cities', function (Blueprint $table) {
             $table->mediumIncrements('id');
             $table->unsignedSmallInteger('commune_id');
-            $table->string('name', 32);
+            $table->unsignedMediumInteger('creator_id');
+            $table->unsignedMediumInteger('supervisor_id');
+            $table->string('name', 40);
             $table->polygon('boundary')->nullable();
-            $table->boolean('is_active')->default(0);
+            $table->boolean('is_visible')->default(0);
             $table->timestamps();
         });
 
         Schema::table('cities', function (Blueprint $table) {
             $table->foreign('commune_id')->references('id')->on('communies');
+            $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('supervisor_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 
