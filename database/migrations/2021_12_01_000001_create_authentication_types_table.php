@@ -4,18 +4,18 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRoleTypesTable extends Migration
+class CreateAuthenticationTypesTable extends Migration
 {
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up(): void {
-        Schema::create('role_types', function (Blueprint $table) {
+    public function up() {
+        Schema::create('authentication_types', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->string('name', 20)->unique();
-            $table->string('access_level', 4);
+            $table->string('description', 30);
         });
     }
 
@@ -24,7 +24,7 @@ class CreateRoleTypesTable extends Migration
      *
      * @return void
      */
-    public function down(): void {
-        Schema::dropIfExists('role_types');
+    public function down() {
+        Schema::dropIfExists('authentication_types');
     }
 }

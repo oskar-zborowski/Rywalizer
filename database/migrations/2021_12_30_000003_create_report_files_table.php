@@ -15,12 +15,12 @@ class CreateReportFilesTable extends Migration
         Schema::create('report_files', function (Blueprint $table) {
             $table->mediumIncrements('id');
             $table->unsignedMediumInteger('report_id');
-            $table->string('file', 64); // Kodowane natywnie
+            $table->string('file', 64)->unique(); // Kodowane natywnie
             $table->timestamps();
         });
 
         Schema::table('report_files', function (Blueprint $table) {
-            $table->foreign('report_id')->references('id')->on('reports');
+            $table->foreign('report_id')->references('id')->on('reports')->cascadeOnDelete();
         });
     }
 

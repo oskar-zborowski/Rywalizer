@@ -14,13 +14,17 @@ class CreatePersonalAccessTokensTable extends Migration
     public function up() {
         Schema::create('personal_access_tokens', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->morphs('tokenable');
-            $table->string('name', 4); // Kodowane podczas przetwarzania
+            $table->morphs('tokenable'); // tokenable_type kodowany podczas przetwarzania (spróbować czy zadziała)
+            $table->string('name', 40); // Kodowane podczas przetwarzania
             $table->string('token', 64)->unique(); // Kodowane przez dostawcę
             $table->string('refresh_token', 64)->unique()->nullable(); // Kodowane podczas przetwarzania
             $table->text('abilities')->nullable();
             $table->timestamp('last_used_at')->nullable();
             $table->timestamps();
+        });
+
+        Schema::table('personal_access_tokens', function (Blueprint $table) {
+            $table->foreign('tokenable_id')->references('id')->on('users')->cascadeOnDelete();
         });
     }
 

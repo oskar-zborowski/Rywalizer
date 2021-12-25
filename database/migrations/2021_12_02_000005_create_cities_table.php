@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDistrictsTable extends Migration
+class CreateCitiesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,21 +12,27 @@ class CreateDistrictsTable extends Migration
      * @return void
      */
     public function up() {
-        Schema::create('districts', function (Blueprint $table) {
+        Schema::create('cities', function (Blueprint $table) {
             $table->mediumIncrements('id');
-            $table->unsignedMediumInteger('city_id');
-            $table->unsignedMediumInteger('creator_id');
-            $table->unsignedMediumInteger('supervisor_id');
+            $table->unsignedSmallInteger('commune_id');
+            $table->unsignedMediumInteger('creator_id')->nullable();
+            $table->unsignedMediumInteger('supervisor_id')->nullable();
             $table->string('name', 40);
             $table->polygon('boundary')->nullable();
             $table->boolean('is_visible')->default(0);
             $table->timestamps();
         });
 
-        Schema::table('districts', function (Blueprint $table) {
-            $table->foreign('city_id')->references('id')->on('cities');
+        Schema::table('cities', function (Blueprint $table) {
+            $table->foreign('commune_id')->references('id')->on('communies');
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('supervisor_id')->references('id')->on('users')->nullOnDelete();
+        });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreign('city_id')->references('id')->on('cities');
+            $table->foreign('gender_id')->references('id')->on('genders');
+            $table->foreign('role_id')->references('id')->on('roles');
         });
     }
 
@@ -36,6 +42,6 @@ class CreateDistrictsTable extends Migration
      * @return void
      */
     public function down() {
-        Schema::dropIfExists('districts');
+        Schema::dropIfExists('cities');
     }
 }

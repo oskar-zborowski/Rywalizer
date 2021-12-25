@@ -11,13 +11,13 @@ class CreateAccountActionTypesTable extends Migration
      *
      * @return void
      */
-    public function up(): void {
+    public function up() {
         Schema::create('account_action_types', function (Blueprint $table) {
             $table->tinyIncrements('id');
-            $table->string('name', 36)->unique();
-            $table->string('description', 52);
-            $table->string('description_admin', 36);
-            $table->smallInteger('period')->unsigned(); // Czas wyrażony w dniach
+            $table->string('name', 30)->unique();
+            $table->string('description_simple', 30);
+            $table->string('description_perfect', 40);
+            $table->unsignedSmallInteger('period'); // Czas wyrażony w dniach
         });
     }
 
@@ -26,7 +26,7 @@ class CreateAccountActionTypesTable extends Migration
      *
      * @return void
      */
-    public function down(): void {
+    public function down() {
         Schema::dropIfExists('account_action_types');
     }
 }

@@ -11,18 +11,18 @@ class CreateAuthenticationsTable extends Migration
      *
      * @return void
      */
-    public function up(): void {
+    public function up() {
         Schema::create('authentications', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->mediumInteger('user_id')->unsigned();
-            $table->bigInteger('device_id')->unsigned();
-            $table->tinyInteger('authentication_type_id')->unsigned();
+            $table->unsignedMediumInteger('user_id');
+            $table->unsignedInteger('device_id')->nullable();
+            $table->unsignedTinyInteger('authentication_type_id');
             $table->timestamps();
         });
 
         Schema::table('authentications', function (Blueprint $table) {
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('device_id')->references('id')->on('devices');
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
+            $table->foreign('device_id')->references('id')->on('devices')->nullOnDelete();
             $table->foreign('authentication_type_id')->references('id')->on('authentication_types');
         });
     }
@@ -32,7 +32,7 @@ class CreateAuthenticationsTable extends Migration
      *
      * @return void
      */
-    public function down(): void {
+    public function down() {
         Schema::dropIfExists('authentications');
     }
 }

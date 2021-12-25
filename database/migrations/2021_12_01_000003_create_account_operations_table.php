@@ -13,16 +13,16 @@ class CreateAccountOperationsTable extends Migration
      */
     public function up() {
         Schema::create('account_operations', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->mediumInteger('user_id')->unsigned();
-            $table->tinyInteger('account_operation_type_id')->unsigned();
-            $table->string('token', 64)->unique();
-            $table->tinyInteger('email_sending_counter')->unsigned();
+            $table->integerIncrements('id');
+            $table->unsignedMediumInteger('user_id');
+            $table->unsignedTinyInteger('account_operation_type_id');
+            $table->string('token', 64)->unique(); // Kodowane natywnie
+            $table->unsignedTinyInteger('email_sending_counter');
             $table->timestamps();
         });
 
         Schema::table('account_operations', function (Blueprint $table) {
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreign('account_operation_type_id')->references('id')->on('account_operation_types');
         });
     }
