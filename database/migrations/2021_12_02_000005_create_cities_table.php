@@ -14,11 +14,11 @@ class CreateCitiesTable extends Migration
     public function up() {
         Schema::create('cities', function (Blueprint $table) {
             $table->mediumIncrements('id');
+            $table->string('name', 40);
+            $table->polygon('boundary')->nullable();
             $table->unsignedSmallInteger('commune_id');
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->unsignedMediumInteger('supervisor_id')->nullable();
-            $table->string('name', 40);
-            $table->polygon('boundary')->nullable();
             $table->boolean('is_visible')->default(0);
             $table->timestamps();
         });
@@ -30,8 +30,8 @@ class CreateCitiesTable extends Migration
         });
 
         Schema::table('users', function (Blueprint $table) {
-            $table->foreign('city_id')->references('id')->on('cities');
             $table->foreign('gender_id')->references('id')->on('genders');
+            $table->foreign('city_id')->references('id')->on('cities');
             $table->foreign('role_id')->references('id')->on('roles');
         });
     }

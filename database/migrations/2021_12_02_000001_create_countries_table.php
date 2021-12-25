@@ -14,10 +14,10 @@ class CreateCountriesTable extends Migration
     public function up() {
         Schema::create('countries', function (Blueprint $table) {
             $table->tinyIncrements('id');
-            $table->unsignedMediumInteger('creator_id')->nullable();
-            $table->unsignedMediumInteger('supervisor_id')->nullable();
             $table->string('name', 30);
             $table->polygon('boundary')->nullable();
+            $table->unsignedMediumInteger('creator_id')->nullable();
+            $table->unsignedMediumInteger('supervisor_id')->nullable();
             $table->boolean('is_visible')->default(0);
             $table->timestamps();
         });

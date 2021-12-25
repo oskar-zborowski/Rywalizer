@@ -14,11 +14,11 @@ class CreateVoivodeshipsTable extends Migration
     public function up() {
         Schema::create('voivodeships', function (Blueprint $table) {
             $table->tinyIncrements('id');
+            $table->string('name', 20);
+            $table->polygon('boundary')->nullable();
             $table->unsignedTinyInteger('country_id');
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->unsignedMediumInteger('supervisor_id')->nullable();
-            $table->string('name', 20);
-            $table->polygon('boundary')->nullable();
             $table->boolean('is_visible')->default(0);
             $table->timestamps();
         });

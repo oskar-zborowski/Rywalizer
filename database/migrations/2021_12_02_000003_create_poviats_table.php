@@ -14,11 +14,11 @@ class CreatePoviatsTable extends Migration
     public function up() {
         Schema::create('poviats', function (Blueprint $table) {
             $table->smallIncrements('id');
+            $table->string('name', 30);
+            $table->polygon('boundary')->nullable();
             $table->unsignedTinyInteger('voivodeship_id');
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->unsignedMediumInteger('supervisor_id')->nullable();
-            $table->string('name', 30);
-            $table->polygon('boundary')->nullable();
             $table->boolean('is_visible')->default(0);
             $table->timestamps();
         });

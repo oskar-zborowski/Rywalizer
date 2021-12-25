@@ -20,13 +20,13 @@ class CreateUsersTable extends Migration
             $table->string('password', 60)->nullable(); // Kodowane natywnie
             $table->string('avatar', 64)->unique()->nullable(); // Kodowane natywnie
             $table->string('birth_date', 16)->nullable(); // Kodowane natywnie
+            $table->unsignedTinyInteger('gender_id')->nullable();
             $table->unsignedMediumInteger('city_id')->nullable();
             $table->string('address_coordinates', 20)->nullable(); // Kodowane natywnie
+            $table->unsignedTinyInteger('role_id')->default(1);
             $table->string('telephone', 32)->unique()->nullable(); // Kodowane natywnie
             $table->string('facebook_profile', 340)->unique()->nullable(); // Kodowane natywnie
             $table->string('instagram_profile', 340)->unique()->nullable(); // Kodowane natywnie
-            $table->unsignedTinyInteger('gender_id')->nullable();
-            $table->unsignedTinyInteger('role_id')->default(1);
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('telephone_verified_at')->nullable();
             $table->timestamp('last_time_name_changed')->nullable();
