@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSportsAnnouncementSeatsTable extends Migration
+class CreateAnnouncementSeatsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,18 +12,18 @@ class CreateSportsAnnouncementSeatsTable extends Migration
      * @return void
      */
     public function up() {
-        Schema::create('sports_announcement_seats', function (Blueprint $table) {
+        Schema::create('announcement_seats', function (Blueprint $table) {
             $table->integerIncrements('id');
-            $table->unsignedInteger('sports_announcement_id');
+            $table->unsignedInteger('announcement_id');
             $table->unsignedTinyInteger('sports_position_id');
             $table->unsignedTinyInteger('occupied_seats_number')->default(0);
             $table->unsignedTinyInteger('maximum_seats_number');
             $table->timestamps();
         });
 
-        Schema::table('sports_announcement_seats', function (Blueprint $table) {
-            $table->foreign('sports_announcement_id')->references('id')->on('sports_announcements')->cascadeOnDelete();
-            $table->foreign('sports_position_id')->references('id')->on('sports_positions');
+        Schema::table('announcement_seats', function (Blueprint $table) {
+            $table->foreign('announcement_id')->references('id')->on('announcements')->cascadeOnDelete();
+            // $table->foreign('sports_position_id')->references('id')->on('sports_positions');
         });
     }
 
@@ -33,6 +33,6 @@ class CreateSportsAnnouncementSeatsTable extends Migration
      * @return void
      */
     public function down() {
-        Schema::dropIfExists('sports_announcement_seats');
+        Schema::dropIfExists('announcement_seats');
     }
 }

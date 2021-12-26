@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSportsAnnouncementPartnersTable extends Migration
+class CreateAnnouncementPartnersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,10 +12,10 @@ class CreateSportsAnnouncementPartnersTable extends Migration
      * @return void
      */
     public function up() {
-        Schema::create('sports_announcement_partners', function (Blueprint $table) {
+        Schema::create('announcement_partners', function (Blueprint $table) {
             $table->smallIncrements('id');
             $table->unsignedSmallInteger('partner_id')->unique();
-            $table->float('commission_id');
+            $table->unsignedTinyInteger('commission_id');
             $table->unsignedTinyInteger('name_id')->nullable();
             $table->unsignedTinyInteger('picture_id')->nullable();
             $table->unsignedTinyInteger('email_id')->nullable();
@@ -25,7 +25,7 @@ class CreateSportsAnnouncementPartnersTable extends Migration
             $table->timestamps();
         });
 
-        Schema::table('sports_announcement_partners', function (Blueprint $table) {
+        Schema::table('announcement_partners', function (Blueprint $table) {
             $table->foreign('partner_id')->references('id')->on('partners')->cascadeOnDelete();
             $table->foreign('commission_id')->references('id')->on('commissions');
             $table->foreign('name_id')->references('id')->on('visible_fields');
@@ -43,6 +43,6 @@ class CreateSportsAnnouncementPartnersTable extends Migration
      * @return void
      */
     public function down() {
-        Schema::dropIfExists('sports_announcement_partners');
+        Schema::dropIfExists('announcement_partners');
     }
 }

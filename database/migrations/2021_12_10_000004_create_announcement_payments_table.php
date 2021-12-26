@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSportsAnnouncementPaymentsTable extends Migration
+class CreateAnnouncementPaymentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,17 +12,17 @@ class CreateSportsAnnouncementPaymentsTable extends Migration
      * @return void
      */
     public function up() {
-        Schema::create('sports_announcement_payments', function (Blueprint $table) {
+        Schema::create('announcement_payments', function (Blueprint $table) {
             $table->integerIncrements('id');
-            $table->unsignedInteger('sports_announcement_id');
+            $table->unsignedInteger('announcement_id');
             $table->unsignedTinyInteger('payment_type_id');
             $table->boolean('is_active')->default(1);
             $table->timestamps();
         });
 
-        Schema::table('sports_announcement_payments', function (Blueprint $table) {
-            $table->foreign('sports_announcement_id')->references('id')->on('sports_announcements')->cascadeOnDelete();
-            $table->foreign('payment_type_id')->references('id')->on('payment_types');
+        Schema::table('announcement_payments', function (Blueprint $table) {
+            $table->foreign('announcement_id')->references('id')->on('announcements')->cascadeOnDelete();
+            // $table->foreign('payment_type_id')->references('id')->on('payment_types');
         });
     }
 
@@ -32,6 +32,6 @@ class CreateSportsAnnouncementPaymentsTable extends Migration
      * @return void
      */
     public function down() {
-        Schema::dropIfExists('sports_announcement_payments');
+        Schema::dropIfExists('announcement_payments');
     }
 }

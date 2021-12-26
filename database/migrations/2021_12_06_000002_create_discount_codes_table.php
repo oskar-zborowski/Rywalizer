@@ -19,7 +19,7 @@ class CreateDiscountCodesTable extends Migration
             $table->unsignedTinyInteger('discount_type_id');
             $table->unsignedTinyInteger('discount_value_type_id');
             $table->unsignedMediumInteger('value');
-            $table->unsignedMediumInteger('payer_id');
+            $table->unsignedSmallInteger('payer_id');
             $table->unsignedMediumInteger('creator_id');
             $table->timestamps();
         });
