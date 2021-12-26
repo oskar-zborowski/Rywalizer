@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateReportStatusesTable extends Migration
+class CreateAuthenticationTypesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,15 +12,15 @@ class CreateReportStatusesTable extends Migration
      * @return void
      */
     public function up() {
-        Schema::create('report_statuses', function (Blueprint $table) {
+        Schema::create('authentication_types', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->string('name', 20)->unique();
-            $table->string('description', 20);
+            $table->string('description', 30);
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->timestamps();
         });
 
-        Schema::table('report_statuses', function (Blueprint $table) {
+        Schema::table('authentication_types', function (Blueprint $table) {
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
         });
     }
@@ -31,6 +31,6 @@ class CreateReportStatusesTable extends Migration
      * @return void
      */
     public function down() {
-        Schema::dropIfExists('report_statuses');
+        Schema::dropIfExists('authentication_types');
     }
 }

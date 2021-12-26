@@ -15,7 +15,6 @@ class CreatePartnersTable extends Migration
         Schema::create('partners', function (Blueprint $table) {
             $table->smallIncrements('id');
             $table->unsignedMediumInteger('user_id');
-            $table->unsignedMediumInteger('district_id')->nullable();
             $table->string('submerchant_id', 9)->unique()->nullable(); // Kodowane natywnie
             $table->string('business_name', 268)->nullable(); // Kodowane natywnie
             $table->string('logo', 64)->unique()->nullable(); // Kodowane natywnie
@@ -24,11 +23,10 @@ class CreatePartnersTable extends Migration
             $table->string('telephone', 32)->unique()->nullable(); // Kodowane natywnie
             $table->string('facebook_profile', 340)->unique()->nullable(); // Kodowane natywnie
             $table->string('instagram_profile', 340)->unique()->nullable(); // Kodowane natywnie
-            $table->string('pesel', 16)->unique()->nullable(); // Kodowane natywnie
             $table->string('nip', 16)->unique()->nullable(); // Kodowane natywnie
-            $table->string('regon', 16)->unique()->nullable(); // Kodowane natywnie
             $table->string('street', 108)->nullable(); // Kodowane natywnie
             $table->string('post_code', 9)->nullable(); // Kodowane natywnie
+            $table->unsignedMediumInteger('city_id')->nullable();
             $table->timestamp('przelewy24_verified_at')->nullable();
             $table->timestamp('contact_email_verified_at')->nullable();
             $table->timestamp('invoice_email_verified_at')->nullable();
@@ -37,8 +35,8 @@ class CreatePartnersTable extends Migration
         });
 
         Schema::table('partners', function (Blueprint $table) {
-            $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
-            $table->foreign('district_id')->references('id')->on('districts');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('city_id')->references('id')->on('cities');
         });
     }
 

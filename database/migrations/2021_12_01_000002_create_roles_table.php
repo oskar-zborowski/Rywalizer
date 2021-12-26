@@ -17,6 +17,12 @@ class CreateRolesTable extends Migration
             $table->string('name', 30)->unique();
             $table->string('description', 30);
             $table->string('access_level', 4);
+            $table->unsignedMediumInteger('creator_id')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::table('roles', function (Blueprint $table) {
+            $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 

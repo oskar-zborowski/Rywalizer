@@ -14,8 +14,14 @@ class CreateDiscountTypesTable extends Migration
     public function up() {
         Schema::create('discount_types', function (Blueprint $table) {
             $table->tinyIncrements('id');
-            $table->string('name', 20)->unique();
-            $table->string('description', 60);
+            $table->string('name', 30)->unique();
+            $table->string('description', 40);
+            $table->unsignedMediumInteger('creator_id')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::table('discount_types', function (Blueprint $table) {
+            $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 

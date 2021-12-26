@@ -13,17 +13,22 @@ class CreateDiscountCodesTable extends Migration
      */
     public function up() {
         Schema::create('discount_codes', function (Blueprint $table) {
-            $table->mediumIncrements('id');
-            $table->unsignedTinyInteger('discount_type_id');
-            $table->unsignedMediumInteger('payer_id');
+            $table->smallIncrements('id');
             $table->string('code', 40)->unique()->nullable(); // Kodowane natywnie
-            $table->mediumInteger('value');
-            $table->string('description', 100);
+            $table->string('description', 2000)->nullable();
+            $table->unsignedTinyInteger('discount_type_id');
+            $table->unsignedTinyInteger('discount_value_type_id');
+            $table->unsignedMediumInteger('value');
+            $table->unsignedMediumInteger('payer_id');
+            $table->unsignedMediumInteger('creator_id');
+            $table->timestamps();
         });
 
         Schema::table('discount_codes', function (Blueprint $table) {
             $table->foreign('discount_type_id')->references('id')->on('discount_types');
+            $table->foreign('discount_value_type_id')->references('id')->on('discount_value_types');
             $table->foreign('payer_id')->references('id')->on('partners');
+            $table->foreign('creator_id')->references('id')->on('users');
         });
     }
 

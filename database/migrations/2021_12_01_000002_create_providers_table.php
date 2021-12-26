@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateGendersTable extends Migration
+class CreateProvidersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,11 +12,17 @@ class CreateGendersTable extends Migration
      * @return void
      */
     public function up() {
-        Schema::create('genders', function (Blueprint $table) {
+        Schema::create('providers', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->string('name', 10)->unique();
-            $table->string('description', 20);
             $table->string('icon', 20)->unique();
+            $table->unsignedMediumInteger('creator_id')->nullable();
+            $table->boolean('is_enabled');
+            $table->timestamps();
+        });
+
+        Schema::table('providers', function (Blueprint $table) {
+            $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 
@@ -26,6 +32,6 @@ class CreateGendersTable extends Migration
      * @return void
      */
     public function down() {
-        Schema::dropIfExists('genders');
+        Schema::dropIfExists('providers');
     }
 }

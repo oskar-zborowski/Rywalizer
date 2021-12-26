@@ -33,6 +33,10 @@ class CreateUsersTable extends Migration
             $table->timestamp('last_time_password_changed')->nullable();
             $table->timestamps();
         });
+
+        Schema::table('personal_access_tokens', function (Blueprint $table) {
+            $table->foreign('tokenable_id')->references('id')->on('users')->cascadeOnDelete();
+        });
     }
 
     /**

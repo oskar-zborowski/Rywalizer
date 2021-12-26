@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCommissionsTable extends Migration
+class CreateVisibleFieldsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,18 +12,15 @@ class CreateCommissionsTable extends Migration
      * @return void
      */
     public function up() {
-        Schema::create('commissions', function (Blueprint $table) {
+        Schema::create('visible_fields', function (Blueprint $table) {
             $table->tinyIncrements('id');
-            $table->unsignedMediumInteger('creator_id');
-            $table->string('name', 40)->unique();
-            $table->string('description', 50);
-            $table->float('commission');
-            $table->timestamp('start_date')->nullable();
-            $table->timestamp('end_date')->nullable();
+            $table->string('name', 20)->unique();
+            $table->string('description', 30);
+            $table->unsignedMediumInteger('creator_id')->nullable();
             $table->timestamps();
         });
 
-        Schema::table('commissions', function (Blueprint $table) {
+        Schema::table('visible_fields', function (Blueprint $table) {
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
         });
     }
@@ -34,6 +31,6 @@ class CreateCommissionsTable extends Migration
      * @return void
      */
     public function down() {
-        Schema::dropIfExists('commissions');
+        Schema::dropIfExists('visible_fields');
     }
 }

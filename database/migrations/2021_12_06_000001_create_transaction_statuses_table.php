@@ -16,6 +16,12 @@ class CreateTransactionStatusesTable extends Migration
             $table->tinyIncrements('id');
             $table->string('name', 10)->unique();
             $table->string('description', 20);
+            $table->unsignedMediumInteger('creator_id')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::table('transaction_statuses', function (Blueprint $table) {
+            $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 

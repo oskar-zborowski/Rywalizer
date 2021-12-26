@@ -18,6 +18,12 @@ class CreateAccountActionTypesTable extends Migration
             $table->string('description_simple', 30);
             $table->string('description_perfect', 40);
             $table->unsignedSmallInteger('period'); // Czas wyrażony w dniach
+            $table->unsignedMediumInteger('creator_id')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::table('account_action_types', function (Blueprint $table) {
+            $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 
