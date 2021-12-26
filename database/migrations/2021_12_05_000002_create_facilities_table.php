@@ -32,9 +32,11 @@ class CreateFacilitiesTable extends Migration
             $table->unsignedTinyInteger('age_category_id')->nullable();
             $table->unsignedTinyInteger('minimal_age')->nullable();
             $table->unsignedTinyInteger('maximum_age')->nullable();
-            $table->string('description', 2668)->nullable(); // Kodowane natywnie
+            $table->string('description', 6000)->nullable(); // Kodowane natywnie
             $table->unsignedMediumInteger('price_from')->nullable();
             $table->unsignedFloat('occupancy_level');
+            $table->unsignedFloat('avarage_rating')->nullable();
+            $table->smallInteger('ratings_number')->default(0);
             $table->boolean('is_visible')->default(0);
             $table->timestamps();
         });

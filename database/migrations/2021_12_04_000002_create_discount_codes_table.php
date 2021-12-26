@@ -15,13 +15,15 @@ class CreateDiscountCodesTable extends Migration
         Schema::create('discount_codes', function (Blueprint $table) {
             $table->smallIncrements('id');
             $table->string('code', 40)->unique()->nullable(); // Kodowane natywnie
-            $table->string('description', 2000)->nullable();
+            $table->string('description', 2000)->nullable(); // Kodowane natywnie
             $table->string('icon', 64)->nullable(); // Kodowane natywnie
             $table->unsignedTinyInteger('discount_type_id');
             $table->unsignedTinyInteger('discount_value_type_id');
             $table->unsignedMediumInteger('value');
             $table->unsignedSmallInteger('payer_id');
             $table->unsignedMediumInteger('creator_id');
+            $table->boolean('is_visible')->default(0);
+            $table->boolean('is_active')->default(0);
             $table->timestamps();
         });
 

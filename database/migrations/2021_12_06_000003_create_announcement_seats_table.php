@@ -23,7 +23,7 @@ class CreateAnnouncementSeatsTable extends Migration
 
         Schema::table('announcement_seats', function (Blueprint $table) {
             $table->foreign('announcement_id')->references('id')->on('announcements')->cascadeOnDelete();
-            // $table->foreign('sports_position_id')->references('id')->on('sports_positions');
+            $table->foreign('sports_position_id')->references('id')->on('sports_positions');
         });
     }
 

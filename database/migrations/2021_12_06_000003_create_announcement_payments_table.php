@@ -22,7 +22,7 @@ class CreateAnnouncementPaymentsTable extends Migration
 
         Schema::table('announcement_payments', function (Blueprint $table) {
             $table->foreign('announcement_id')->references('id')->on('announcements')->cascadeOnDelete();
-            // $table->foreign('payment_type_id')->references('id')->on('payment_types');
+            $table->foreign('payment_type_id')->references('id')->on('payment_types');
         });
     }
 

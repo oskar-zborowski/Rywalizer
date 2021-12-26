@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMinimumSkillLevelsTable extends Migration
+class CreatePaymentTypesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,18 +12,16 @@ class CreateMinimumSkillLevelsTable extends Migration
      * @return void
      */
     public function up() {
-        Schema::create('minimum_skill_levels', function (Blueprint $table) {
+        Schema::create('payment_types', function (Blueprint $table) {
             $table->tinyIncrements('id');
-            $table->string('name', 10)->unique();
-            $table->string('description', 1500);
-            $table->string('icon', 20)->nullable();
-            $table->unsignedTinyInteger('sport_id');
+            $table->string('name', 20)->unique();
+            $table->string('description', 30);
+            $table->string('icon', 30)->nullable();
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->timestamps();
         });
 
-        Schema::table('minimum_skill_levels', function (Blueprint $table) {
-            $table->foreign('sport_id')->references('id')->on('sports');
+        Schema::table('payment_types', function (Blueprint $table) {
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
         });
     }
@@ -33,7 +31,8 @@ class CreateMinimumSkillLevelsTable extends Migration
      *
      * @return void
      */
-    public function down() {
-        Schema::dropIfExists('minimum_skill_levels');
+    public function down()
+    {
+        Schema::dropIfExists('payment_types');
     }
 }

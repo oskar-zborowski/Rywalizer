@@ -23,6 +23,8 @@ class CreateAnnouncementPartnersTable extends Migration
             $table->unsignedTinyInteger('facebook_id')->nullable();
             $table->unsignedTinyInteger('instagram_id')->nullable();
             $table->unsignedTinyInteger('website_id')->nullable();
+            $table->unsignedFloat('avarage_rating')->nullable();
+            $table->smallInteger('ratings_number')->default(0);
             $table->timestamps();
         });
 

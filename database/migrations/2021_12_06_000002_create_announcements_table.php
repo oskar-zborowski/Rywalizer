@@ -27,7 +27,7 @@ class CreateAnnouncementsTable extends Migration
             $table->unsignedMediumInteger('front_picture_id')->nullable();
             $table->unsignedMediumInteger('background_picture_id')->nullable();
             $table->unsignedMediumInteger('ticket_price');
-            $table->string('description', 2668)->nullable(); // Kodowane natywnie
+            $table->string('description', 2000)->nullable(); // Kodowane natywnie
             $table->unsignedTinyInteger('current_participants_number')->default(0);
             $table->unsignedTinyInteger('maximum_participants_number');
             $table->boolean('is_public');
