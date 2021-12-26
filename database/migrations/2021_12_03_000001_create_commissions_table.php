@@ -16,7 +16,7 @@ class CreateCommissionsTable extends Migration
             $table->tinyIncrements('id');
             $table->string('name', 40)->unique();
             $table->string('description', 50);
-            $table->float('commission');
+            $table->unsignedFloat('commission');
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();

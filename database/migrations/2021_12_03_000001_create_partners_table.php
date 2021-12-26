@@ -23,6 +23,7 @@ class CreatePartnersTable extends Migration
             $table->string('telephone', 32)->unique()->nullable(); // Kodowane natywnie
             $table->string('facebook_profile', 340)->unique()->nullable(); // Kodowane natywnie
             $table->string('instagram_profile', 340)->unique()->nullable(); // Kodowane natywnie
+            $table->string('website', 340)->unique()->nullable(); // Kodowane natywnie
             $table->string('nip', 16)->unique()->nullable(); // Kodowane natywnie
             $table->string('street', 108)->nullable(); // Kodowane natywnie
             $table->string('post_code', 9)->nullable(); // Kodowane natywnie

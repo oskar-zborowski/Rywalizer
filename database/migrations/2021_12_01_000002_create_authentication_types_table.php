@@ -16,6 +16,7 @@ class CreateAuthenticationTypesTable extends Migration
             $table->tinyIncrements('id');
             $table->string('name', 20)->unique();
             $table->string('description', 30);
+            $table->string('icon', 30)->nullable();
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->timestamps();
         });

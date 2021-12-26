@@ -17,6 +17,7 @@ class CreateAccountActionTypesTable extends Migration
             $table->string('name', 30)->unique();
             $table->string('description_simple', 30);
             $table->string('description_perfect', 40);
+            $table->string('icon', 30)->nullable();
             $table->unsignedSmallInteger('period'); // Czas wyrażony w dniach
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->timestamps();

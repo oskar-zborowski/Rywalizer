@@ -15,7 +15,7 @@ class CreateProvidersTable extends Migration
         Schema::create('providers', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->string('name', 10)->unique();
-            $table->string('icon', 20)->unique();
+            $table->string('icon', 20)->nullable();
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->boolean('is_enabled');
             $table->timestamps();

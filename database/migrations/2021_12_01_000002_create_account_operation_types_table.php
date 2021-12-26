@@ -15,6 +15,8 @@ class CreateAccountOperationTypesTable extends Migration
         Schema::create('account_operation_types', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->string('name', 20)->unique();
+            $table->string('description', 60);
+            $table->string('icon', 30)->nullable();
         });
     }
 

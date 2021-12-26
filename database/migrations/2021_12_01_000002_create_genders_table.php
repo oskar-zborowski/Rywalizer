@@ -16,7 +16,7 @@ class CreateGendersTable extends Migration
             $table->tinyIncrements('id');
             $table->string('name', 10)->unique();
             $table->string('description', 20);
-            $table->string('icon', 20)->unique();
+            $table->string('icon', 20)->nullable();
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->timestamps();
         });

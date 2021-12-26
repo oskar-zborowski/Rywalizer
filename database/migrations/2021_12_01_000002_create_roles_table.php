@@ -16,6 +16,7 @@ class CreateRolesTable extends Migration
             $table->tinyIncrements('id');
             $table->string('name', 30)->unique();
             $table->string('description', 30);
+            $table->string('icon', 30)->nullable();
             $table->string('access_level', 4);
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->timestamps();

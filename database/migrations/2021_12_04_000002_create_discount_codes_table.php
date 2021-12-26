@@ -16,6 +16,7 @@ class CreateDiscountCodesTable extends Migration
             $table->smallIncrements('id');
             $table->string('code', 40)->unique()->nullable(); // Kodowane natywnie
             $table->string('description', 2000)->nullable();
+            $table->string('icon', 64)->nullable(); // Kodowane natywnie
             $table->unsignedTinyInteger('discount_type_id');
             $table->unsignedTinyInteger('discount_value_type_id');
             $table->unsignedMediumInteger('value');

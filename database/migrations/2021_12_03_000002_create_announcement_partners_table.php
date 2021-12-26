@@ -22,6 +22,7 @@ class CreateAnnouncementPartnersTable extends Migration
             $table->unsignedTinyInteger('telephone_id')->nullable();
             $table->unsignedTinyInteger('facebook_id')->nullable();
             $table->unsignedTinyInteger('instagram_id')->nullable();
+            $table->unsignedTinyInteger('website_id')->nullable();
             $table->timestamps();
         });
 
@@ -34,6 +35,7 @@ class CreateAnnouncementPartnersTable extends Migration
             $table->foreign('telephone_id')->references('id')->on('visible_fields');
             $table->foreign('facebook_id')->references('id')->on('visible_fields');
             $table->foreign('instagram_id')->references('id')->on('visible_fields');
+            $table->foreign('website_id')->references('id')->on('visible_fields');
         });
     }
 

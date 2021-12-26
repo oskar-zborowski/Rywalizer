@@ -27,6 +27,7 @@ class CreateUsersTable extends Migration
             $table->string('telephone', 32)->unique()->nullable(); // Kodowane natywnie
             $table->string('facebook_profile', 340)->unique()->nullable(); // Kodowane natywnie
             $table->string('instagram_profile', 340)->unique()->nullable(); // Kodowane natywnie
+            $table->string('website', 340)->unique()->nullable(); // Kodowane natywnie
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('telephone_verified_at')->nullable();
             $table->timestamp('last_time_name_changed')->nullable();

@@ -16,6 +16,7 @@ class CreateReportedObjectTypesTable extends Migration
             $table->tinyIncrements('id');
             $table->string('name', 30)->unique();
             $table->string('description', 40);
+            $table->string('icon', 30)->nullable();
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->timestamps();
         });
