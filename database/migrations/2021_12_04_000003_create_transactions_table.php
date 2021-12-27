@@ -20,7 +20,7 @@ class CreateTransactionsTable extends Migration
             $table->mediumInteger('partner_amount');
             $table->string('transaction_order_id', 64)->nullable(); // Kodowane natywnie
             $table->string('transaction_session_id', 64); // Kodowane natywnie
-            $table->unsignedSmallInteger('discount_code_id')->nullable();
+            $table->unsignedMediumInteger('discount_code_id')->nullable();
             $table->unsignedTinyInteger('transaction_status_id')->default(1);
             $table->timestamp('transaction_confirmed_at')->nullable();
             $table->timestamps();
