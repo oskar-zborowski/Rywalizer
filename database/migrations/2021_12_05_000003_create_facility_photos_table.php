@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateProvidersTable extends Migration
+class CreateFacilityPhotosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,16 +12,17 @@ class CreateProvidersTable extends Migration
      * @return void
      */
     public function up() {
-        Schema::create('providers', function (Blueprint $table) {
-            $table->tinyIncrements('id');
-            $table->string('name', 10)->unique();
-            $table->string('icon', 20)->nullable();
+        Schema::create('facility_photos', function (Blueprint $table) {
+            $table->mediumIncrements('id');
+            $table->unsignedSmallInteger('facility_id');
+            $table->string('filename', 64); // Kodowane natywnie
             $table->unsignedMediumInteger('creator_id')->nullable();
-            $table->boolean('is_active');
+            $table->boolean('is_visible')->default(1);
             $table->timestamps();
         });
 
-        Schema::table('providers', function (Blueprint $table) {
+        Schema::table('facility_photos', function (Blueprint $table) {
+            $table->foreign('facility_id')->references('id')->on('facilities')->cascadeOnDelete();
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
         });
     }
@@ -32,6 +33,6 @@ class CreateProvidersTable extends Migration
      * @return void
      */
     public function down() {
-        Schema::dropIfExists('providers');
+        Schema::dropIfExists('facility_photos');
     }
 }
