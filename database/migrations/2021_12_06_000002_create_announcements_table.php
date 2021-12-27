@@ -18,22 +18,22 @@ class CreateAnnouncementsTable extends Migration
             $table->unsignedSmallInteger('facility_id')->nullable();
             $table->unsignedSmallInteger('announcement_partner_id')->nullable();
             $table->unsignedTinyInteger('announcement_type_id')->nullable();
+            $table->dateTime('start_date');
+            $table->dateTime('end_date');
             $table->unsignedTinyInteger('minimum_skill_level_id')->nullable();
             $table->unsignedTinyInteger('gender_id')->nullable();
             $table->unsignedTinyInteger('age_category_id')->nullable();
             $table->unsignedTinyInteger('minimal_age')->nullable();
             $table->unsignedTinyInteger('maximum_age')->nullable();
             $table->unsignedTinyInteger('game_variant_id');
+            $table->unsignedMediumInteger('ticket_price');
             $table->unsignedMediumInteger('front_picture_id')->nullable();
             $table->unsignedMediumInteger('background_picture_id')->nullable();
-            $table->unsignedMediumInteger('ticket_price');
             $table->string('description', 2000)->nullable(); // Kodowane natywnie
             $table->unsignedTinyInteger('current_participants_number')->default(0);
             $table->unsignedTinyInteger('maximum_participants_number');
             $table->boolean('is_public');
             $table->boolean('is_active')->default(0);
-            $table->timestamp('start_date')->nullable();
-            $table->timestamp('end_date')->nullable();
             $table->timestamps();
         });
 

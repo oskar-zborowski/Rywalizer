@@ -19,7 +19,7 @@ class CreateFacilitiesTable extends Migration
             $table->string('street', 108)->nullable(); // Kodowane natywnie
             $table->string('post_code', 9)->nullable(); // Kodowane natywnie
             $table->unsignedMediumInteger('city_id')->nullable();
-            $table->string('address_coordinates', 20)->nullable(); // Kodowane natywnie
+            $table->point('address_coordinates')->nullable();
             $table->string('contact_email', 340)->unique()->nullable(); // Kodowane natywnie
             $table->string('telephone', 32)->unique()->nullable(); // Kodowane natywnie
             $table->string('facebook_profile', 340)->unique()->nullable(); // Kodowane natywnie

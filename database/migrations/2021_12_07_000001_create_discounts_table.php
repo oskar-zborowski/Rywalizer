@@ -17,10 +17,10 @@ class CreateDiscountsTable extends Migration
             $table->unsignedMediumInteger('discount_code_id');
             $table->unsignedTinyInteger('object_type_id');
             $table->unsignedInteger('object_id');
+            $table->dateTime('start_date')->nullable();
+            $table->dateTime('end_date')->nullable();
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->boolean('is_active')->default(1);
-            $table->timestamp('start_date')->nullable();
-            $table->timestamp('end_date')->nullable();
             $table->timestamps();
         });
 

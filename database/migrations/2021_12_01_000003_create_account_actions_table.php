@@ -17,7 +17,7 @@ class CreateAccountActionsTable extends Migration
             $table->unsignedTinyInteger('account_action_type_id');
             $table->unsignedMediumInteger('user_id');
             $table->unsignedMediumInteger('founder_id')->nullable();
-            $table->timestamp('expires_at')->nullable();
+            $table->dateTime('expires_at')->nullable();
             $table->timestamps();
         });
 

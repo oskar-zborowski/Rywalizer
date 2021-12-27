@@ -20,8 +20,8 @@ class CreateReportsTable extends Migration
             $table->unsignedMediumInteger('supervisor_id')->nullable();
             $table->string('message', 6000); // Kodowane natywnie
             $table->unsignedTinyInteger('report_status_id')->default(0);
+            $table->dateTime('deadline_at')->nullable();
             $table->timestamp('fixed_at')->nullable();
-            $table->timestamp('deadline_at')->nullable();
             $table->timestamps();
         });
 

@@ -17,9 +17,9 @@ class CreateCommissionsTable extends Migration
             $table->string('name', 40)->unique();
             $table->string('description', 50);
             $table->unsignedFloat('commission');
+            $table->dateTime('start_date')->nullable();
+            $table->dateTime('end_date')->nullable();
             $table->unsignedMediumInteger('creator_id')->nullable();
-            $table->timestamp('start_date')->nullable();
-            $table->timestamp('end_date')->nullable();
             $table->timestamps();
         });
 

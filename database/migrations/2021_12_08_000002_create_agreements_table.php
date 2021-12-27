@@ -21,9 +21,9 @@ class CreateAgreementsTable extends Migration
             $table->unsignedTinyInteger('object_type_id');
             $table->unsignedInteger('object_id')->nullable();
             $table->unsignedTinyInteger('agreement_type_id')->nullable();
+            $table->dateTime('effective_date');
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->boolean('is_required');
-            $table->timestamp('effective_date')->nullable();
             $table->timestamps();
         });
 
