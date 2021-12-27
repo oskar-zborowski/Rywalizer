@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAnnouncementParticipantsTable extends Migration
+class CreateFacilityPlaceBookingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,21 +12,22 @@ class CreateAnnouncementParticipantsTable extends Migration
      * @return void
      */
     public function up() {
-        Schema::create('announcement_participants', function (Blueprint $table) {
+        Schema::create('facility_place_bookings', function (Blueprint $table) {
             $table->integerIncrements('id');
             $table->unsignedMediumInteger('user_id')->nullable();
-            $table->unsignedInteger('announcement_seat_id');
-            $table->unsignedInteger('announcement_payment_id')->nullable();
+            $table->unsignedMediumInteger('facility_place_id');
+            $table->dateTime('start_date');
+            $table->dateTime('end_date');
             $table->unsignedInteger('transaction_id')->nullable();
-            $table->boolean('is_accepted')->default(0);
+            $table->unsignedTinyInteger('booking_status_id')->default(1);
             $table->timestamps();
         });
 
-        Schema::table('announcement_participants', function (Blueprint $table) {
+        Schema::table('facility_place_bookings', function (Blueprint $table) {
             $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
-            $table->foreign('announcement_seat_id')->references('id')->on('announcement_seats');
-            $table->foreign('announcement_payment_id')->references('id')->on('announcement_payments');
+            $table->foreign('facility_place_id')->references('id')->on('facility_places');
             $table->foreign('transaction_id')->references('id')->on('transactions');
+            $table->foreign('booking_status_id')->references('id')->on('booking_statuses');
         });
     }
 
@@ -36,6 +37,6 @@ class CreateAnnouncementParticipantsTable extends Migration
      * @return void
      */
     public function down() {
-        Schema::dropIfExists('announcement_participants');
+        Schema::dropIfExists('facility_place_bookings');
     }
 }

@@ -14,17 +14,17 @@ class CreateFacilitiesTable extends Migration
     public function up() {
         Schema::create('facilities', function (Blueprint $table) {
             $table->smallIncrements('id');
-            $table->string('name', 268)->nullable(); // Kodowane natywnie
-            $table->string('logo', 64)->unique()->nullable(); // Kodowane natywnie
-            $table->string('street', 108)->nullable(); // Kodowane natywnie
-            $table->string('post_code', 9)->nullable(); // Kodowane natywnie
+            $table->string('name', 200)->nullable();
+            $table->string('logo', 48)->unique()->nullable();
+            $table->string('street', 80)->nullable();
+            $table->string('post_code', 5)->nullable();
             $table->unsignedMediumInteger('city_id')->nullable();
             $table->point('address_coordinates')->nullable();
-            $table->string('contact_email', 340)->unique()->nullable(); // Kodowane natywnie
-            $table->string('telephone', 32)->unique()->nullable(); // Kodowane natywnie
-            $table->string('facebook_profile', 340)->unique()->nullable(); // Kodowane natywnie
-            $table->string('instagram_profile', 340)->unique()->nullable(); // Kodowane natywnie
-            $table->string('website', 340)->unique()->nullable(); // Kodowane natywnie
+            $table->string('contact_email', 340)->unique()->nullable();
+            $table->string('telephone', 32)->unique()->nullable();
+            $table->string('facebook_profile', 340)->unique()->nullable();
+            $table->string('instagram_profile', 340)->unique()->nullable();
+            $table->string('website', 340)->unique()->nullable();
             $table->unsignedSmallInteger('facility_partner_id')->nullable();
             $table->unsignedTinyInteger('facility_type_id')->nullable();
             $table->unsignedTinyInteger('places_number')->nullable();
@@ -32,7 +32,7 @@ class CreateFacilitiesTable extends Migration
             $table->unsignedTinyInteger('age_category_id')->nullable();
             $table->unsignedTinyInteger('minimal_age')->nullable();
             $table->unsignedTinyInteger('maximum_age')->nullable();
-            $table->string('description', 6000)->nullable(); // Kodowane natywnie
+            $table->string('description', 4000)->nullable();
             $table->unsignedMediumInteger('price_from')->nullable();
             $table->unsignedFloat('occupancy_level');
             $table->unsignedFloat('avarage_rating')->nullable();
