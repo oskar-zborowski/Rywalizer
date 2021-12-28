@@ -10,13 +10,12 @@ use Illuminate\Support\Facades\Auth;
  */
 class UpdateUserRequest extends FormRequest
 {
-    public function authorize()
-    {
+    public function authorize(): bool {
         return true;
     }
 
-    public function rules()
-    {
+    public function rules(): array {
+
         /** @var User $user */
         $user = Auth::user();
 

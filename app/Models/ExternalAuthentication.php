@@ -3,15 +3,13 @@
 namespace App\Models;
 
 use App\Http\Traits\Encryptable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class ExternalAuthentication extends Model
+class ExternalAuthentication extends BaseModel
 {
-    use HasFactory, Encryptable;
+    use Encryptable;
 
     protected $fillable = [
-        'authentication_id',
+        'external_authentication_id',
         'provider_type_id'
     ];
 
@@ -24,7 +22,7 @@ class ExternalAuthentication extends Model
 
     protected $hidden = [
         'id',
-        'authentication_id',
+        'external_authentication_id',
         'user_id',
         'provider_type_id',
         'created_at',
@@ -37,7 +35,7 @@ class ExternalAuthentication extends Model
     ];
 
     protected $encryptable = [
-        'authentication_id' => 255
+        'external_authentication_id' => 255
     ];
 
     protected $with = [

@@ -5,28 +5,27 @@ namespace App\Http\Controllers\Api;
 use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Http\ErrorCodes\AuthErrorCode;
+use App\Http\ErrorCodes\BaseErrorCode;
 use App\Http\Libraries\Encrypter\Encrypter;
+use App\Http\Libraries\ImageProcessing\ImageProcessing;
+use App\Http\Libraries\Validation\Validation;
 use App\Http\Requests\Auth\RegisterRequest;
-use App\Http\Requests\Auth\UpdateUserRequest;
 use App\Http\Responses\JsonResponse;
-use App\Mail\VerificationEmail;
-use App\Models\AccountActionType;
+use App\Mail\EmailVerification as MailEmailVerification;
+use App\Models\AccountOperation;
 use App\Models\ExternalAuthentication;
-use App\Models\GenderType;
-use App\Models\PasswordReset;
 use App\Models\PersonalAccessToken;
 use App\Models\ProviderType;
-use App\Models\RoleType;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
 use Laravel\Socialite\Facades\Socialite;
 
 /**
- * Klasa odpowiedzialna za wszelkie kwestie związane z uwierzytelnianiem i jego pochodnymi, a także instancją użytkownika
+ * Klasa odpowiedzialna za wszelkie kwestie związane z uwierzytelnianiem
  */
 class AuthController extends Controller
 {
@@ -34,7 +33,7 @@ class AuthController extends Controller
      * #### `POST` `/api/auth/login`
      * Proces logowania użytkownika
      * 
-     * @param Illuminate\Http\Request $request
+     * @param Request $request
      * 
      * @return void
      */
@@ -44,17 +43,20 @@ class AuthController extends Controller
             throw new ApiException(AuthErrorCode::INVALID_CREDENTIALS());
         }
 
-        JsonResponse::checkUserAccess($request, 'LOGIN');
-
-        $this->checkMissingUserInformation(true);
+        /** @var User $user */
+        $user = Auth::user();
+        $user->checkAccess();
+        $user->checkDevice($request->device_id, 'LOGIN');
+        $user->createTokens();
+        $user->checkMissingInformation();
     }
 
     /**
      * #### `POST` `/api/auth/register`
      * Proces rejestracji nowego użytkownika
      * 
-     * @param App\Http\Requests\Auth\RegisterRequest $request
-     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
+     * @param RegisterRequest $request
+     * @param Encrypter $encrypter
      * 
      * @return void
      */
@@ -63,22 +65,24 @@ class AuthController extends Controller
         $email = $encrypter->decrypt($request->email);
         $request->merge(['email' => $email]);
 
+        /** @var User $newUser */
+        $newUser = User::create($request->only('first_name', 'last_name', 'email', 'password', 'birth_date', 'gender_type_id'));
+
+        Auth::loginUsingId($newUser->id);
+
         /** @var User $user */
-        $user = User::create($request->only('first_name', 'last_name', 'email', 'password', 'birth_date', 'gender_type_id'));
-
-        Auth::loginUsingId($user->id);
-
-        JsonResponse::checkUserAccess($request, 'REGISTER');
-
-        $this->sendVerificationEmail(true);
-        $this->checkMissingUserInformation(true);
+        $user = Auth::user();
+        $user->checkDevice($request->device_id, 'REGISTER');
+        $user->createTokens();
+        $user->sendVerificationEmail(true);
+        $user->checkMissingInformation();
     }
 
     /**
      * #### `POST` `/api/auth/forgot-password`
-     * Wysłanie maila z linkiem do resetu hasła
+     * Proces utworzenia niezbędnych danych do przeprowadzenia resetu hasła
      * 
-     * @param Illuminate\Http\Request $request
+     * @param Request $request
      * 
      * @return void
      */
@@ -92,60 +96,49 @@ class AuthController extends Controller
      * #### `PATCH` `/api/auth/reset-password`
      * Proces resetu hasła
      * 
-     * @param Illuminate\Http\Request $request
+     * @param Request $request
      * 
      * @return void
      */
     public function resetPassword(Request $request): void {
-        /** @var PasswordReset $passwordReset */
-        $passwordReset = PasswordReset::where('token', $request->token)->first();
-        $passwordReset->resetPassword($request);
-    }
 
-    /**
-     * #### `POST` `/api/user/email/verification-notification`
-     * Wysłanie maila z linkiem aktywacyjnym
-     * 
-     * @param bool $afterRegistartion flaga z informacją czy wywołanie metody jest pochodną procesu rejestracji nowego użytkownika
-     * 
-     * @return void
-     */
-    public function sendVerificationEmail(bool $afterRegistartion = false): void {
-        /** @var User $user */
-        $user = Auth::user();
-        $user->sendVerificationEmail($afterRegistartion);
-    }
+        $accountOperationType = Validation::getAccountOperationType('PASSWORD_RESET');
 
-    /**
-     * #### `PATCH` `/api/user/email/verify`
-     * Proces weryfikacji maila
-     * 
-     * @param Illuminate\Http\Request $request
-     * 
-     * @return void
-     */
-    public function verifyEmail(Request $request): void {
+        if (!$accountOperationType) {
+            throw new ApiException(
+                BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                'Invalid account operation type.'
+            );
+        }
 
-        /** @var User $user */
-        $user = Auth::user();
-        $user->verifyEmail($request);
+        /** @var AccountOperation $accountOperation */
+        $accountOperation = AccountOperation::where([
+            'account_operation_type_id' => $accountOperationType->id,
+            'token' => $request->token
+        ])->first();
 
-        $this->checkMissingUserInformation();
+        if (!$accountOperation) {
+            throw new ApiException(AuthErrorCode::INVALID_PASSWORD_RESET_TOKEN());
+        }
+
+        $accountOperation->user()->first()->resetPassword($request, $accountOperation);
     }
 
     /**
      * #### `DELETE` `/api/auth/logout/me`
      * Proces wylogowania użytkownika
      * 
-     * @param Illuminate\Http\Request $request
-     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
+     * @param Request $request
+     * @param Encrypter $encrypter
      * 
      * @return void
      */
     public function logoutMe(Request $request, Encrypter $encrypter): void {
 
-        if ($request->user()) {
-            $request->user()->currentAccessToken()->delete();
+        $user = $request->user();
+
+        if ($user) {
+            $user->currentAccessToken()->delete();
             JsonResponse::deleteCookie('JWT');
         }
 
@@ -170,7 +163,7 @@ class AuthController extends Controller
      * #### `DELETE` `/api/auth/logout/other-devices`
      * Proces wylogowania użytkownika ze wszystkich urządzeń poza obecnym
      * 
-     * @param Illuminate\Http\Request $request
+     * @param Request $request
      * 
      * @return void
      */
@@ -178,10 +171,21 @@ class AuthController extends Controller
 
         /** @var User $user */
         $user = Auth::user();
-        $user->tokens()->delete();
 
-        JsonResponse::checkDevice($request, 'REFRESH_TOKEN');
-        JsonResponse::prepareCookies();
+        if (!Hash::check($request->password, $user->getAuthPassword())) {
+            throw new ApiException(AuthErrorCode::INVALID_CREDENTIALS());
+        }
+
+        if (!isset($user->currentAccessToken()->id)) {
+            $userAccessTokenId = $user->personalAccessToken()->latest()->first()->id;
+        } else {
+            $userAccessTokenId = $user->currentAccessToken()->id;
+        }
+
+        /** @var PersonalAccessToken $personalAccessTokens */
+        $personalAccessTokens = $user->personalAccessToken()->where('id', '<>', $userAccessTokenId);
+        $personalAccessTokens->delete();
+
         JsonResponse::sendSuccess();
     }
 
@@ -191,7 +195,7 @@ class AuthController extends Controller
      *
      * @param string $provider nazwa zewnętrznego serwisu uwierzytelniającego
      * 
-     * @return Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function redirectToProvider(string $provider): RedirectResponse {
 
@@ -209,7 +213,7 @@ class AuthController extends Controller
      * Odebranie informacji o użytkowniku od zewnętrznego serwisu uwierzytelniającego
      *
      * @param string $provider nazwa zewnętrznego serwisu uwierzytelniającego
-     * @param App\Http\Libraries\Encrypter\Encrypter $encrypter
+     * @param Encrypter $encrypter
      * 
      * @return void
      */
@@ -225,10 +229,10 @@ class AuthController extends Controller
 
         $user = $driver->stateless()->user();
 
-        $authenticationId = (strlen($user->getId()) > 0 && strlen($user->getId()) < 256) ? $user->getId() : null;
-        $encryptedAuthenticationId = $encrypter->encrypt($authenticationId, 255);
+        $externalAuthenticationId = (strlen($user->getId()) > 0 && strlen($user->getId()) < 256) ? $user->getId() : null;
+        $encryptedExternalAuthenticationId = $encrypter->encrypt($externalAuthenticationId, 255);
 
-        if (!$authenticationId) {
+        if (!$externalAuthenticationId) {
             throw new ApiException(
                 AuthErrorCode::INVALID_CREDENTIALS_PROVIDED(),
                 __('validation.custom.invalid-provider-id')
@@ -236,7 +240,7 @@ class AuthController extends Controller
         }
 
         /** @var ExternalAuthentication $externalAuthentication */
-        $externalAuthentication = $providerType->externalAuthentication()->where('authentication_id', $encryptedAuthenticationId)->first();
+        $externalAuthentication = $providerType->externalAuthentication()->where('external_authentication_id', $encryptedExternalAuthenticationId)->first();
 
         if (!$externalAuthentication) {
 
@@ -285,7 +289,17 @@ class AuthController extends Controller
             } else if (!$foundUser->email_verified_at) {
 
                 if (isset($encryptedEmail)) {
-                    $foundUser->emailVerification()->delete();
+
+                    $accountOperationType = Validation::getAccountOperationType('EMAIL_VERIFICATION');
+
+                    if (!$accountOperationType) {
+                        throw new ApiException(
+                            BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                            'Invalid account operation type.'
+                        );
+                    }
+
+                    $foundUser->accountOperation()->where('account_operation_type_id', $accountOperationType->id)->delete();
                 }
 
                 $newUser['password'] = null;
@@ -297,24 +311,22 @@ class AuthController extends Controller
 
             if (strlen($user->getAvatar()) > 0 && (!$foundUser || !$foundUser->avatar)) {
                 // TODO Sprawdzić wariant co jest zwracane kiedy użytkownik nie ma ustawionego zdjęcia profilowego
-                $newUser['avatar'] = $this->saveAvatar($user->getAvatar());
+                $newUser['avatar'] = ImageProcessing::saveAvatar($user->getAvatar());
             }
 
-            /** @var User $createUser */
-            $createUser = User::updateOrCreate([], $newUser);
+            /** @var User $createdUser */
+            $createdUser = User::updateOrCreate([], $newUser);
 
-            $createUser->externalAuthentication()->create([
-                'authentication_id' => $authenticationId,
+            $createdUser->externalAuthentication()->create([
+                'external_authentication_id' => $externalAuthenticationId,
                 'provider_type_id' => $providerType->id
             ]);
 
-            Auth::loginUsingId($createUser->id);
+            Auth::loginUsingId($createdUser->id);
 
-            JsonResponse::checkUserAccess(null, 'REGISTER_' . strtoupper($provider));
-
-            if ($createUser->email) {
+            if ($createdUser->email) {
                 if (!$foundUser) {
-                    Mail::to($createUser)->send(new VerificationEmail());
+                    Mail::to($createdUser)->send(new MailEmailVerification());
                 } else {
                     // TODO Jakiś inny mail, że dodano możliwość logowania się providerem
                 }
@@ -322,134 +334,45 @@ class AuthController extends Controller
 
         } else {
             Auth::loginUsingId($externalAuthentication->user_id);
-            JsonResponse::checkUserAccess(null, 'LOGIN_' . strtoupper($provider));
         }
 
-        $this->checkMissingUserInformation(true);
+        /** @var User $foundUser */
+        $foundUser = Auth::user();
+        $foundUser->checkAccess();
+        $foundUser->createTokens();
+        $foundUser->checkMissingInformation();
     }
 
     /**
-     * #### `PATCH` `/api/user`
-     * Proces uzupełnienia danych użytkownika, bądź też zaktualizowania już istniejących
+     * #### `PATCH` `/api/auth/restore-account`
+     * Proces przywrócenia usuniętego konta
      * 
-     * @param App\Http\Requests\Auth\UpdateUserRequest $request
+     * @param Request $request
      * 
      * @return void
      */
-    public function updateUser(UpdateUserRequest $request): void {
+    public function restoreAccount(Request $request): void {
 
-        /** @var User $user */
-        $user = Auth::user();
-        $updatedEmail = $user->updateInformation($request);
+        $accountOperationType = Validation::getAccountOperationType('ACCOUNT_RESTORATION');
 
-        if ($updatedEmail) {
-            $this->sendVerificationEmail(true);
+        if (!$accountOperationType) {
+            throw new ApiException(
+                BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                'Invalid account operation type.'
+            );
         }
 
-        $this->checkMissingUserInformation();
-    }
+        /** @var AccountOperation $accountOperation */
+        $accountOperation = AccountOperation::where([
+            'account_operation_type_id' => $accountOperationType->id,
+            'token' => $request->token
+        ])->first();
 
-    /**
-     * #### `GET` `/api/user`
-     * Pobranie informacji o użytkowniku
-     * 
-     * @return void
-     */
-    public function getUser(): void {
-        $this->checkMissingUserInformation();
-    }
-
-    /**
-     * #### `POST` `/api/user/avatar/upload`
-     * Wgranie zdjęcia profilowego
-     * 
-     * @param Illuminate\Http\Request $request
-     * 
-     * @return void
-     */
-    public function uploadAvatar(Request $request): void {
-
-        /** @var User $user */
-        $user = Auth::user();
-
-        if ($request->avatar) {
-
-            $updateInformation['avatar'] = $this->saveAvatar($request->avatar);
-
-            if ($user->avatar) {
-                $oldAvatarPath = 'avatars/' . $user->avatar;
-                Storage::delete($oldAvatarPath);
-            }
-
-            $user->update($updateInformation);
+        if (!$accountOperation) {
+            throw new ApiException(AuthErrorCode::INVALID_RESTORE_ACCOUNT_TOKEN());
         }
 
-        $this->checkMissingUserInformation();
-    }
-
-    /**
-     * #### `DELETE` `/api/user/avatar/delete`
-     * Usunięcie zdjęcia profilowego
-     * 
-     * @return void
-     */
-    public function deleteAvatar(): void {
-
-        /** @var User $user */
-        $user = Auth::user();
-
-        if ($user->avatar) {
-            $avatarPath = 'avatars/' . $user->avatar;
-            Storage::delete($avatarPath);
-
-            $user->update(['avatar' => null]);
-        }
-
-        $this->checkMissingUserInformation();
-    }
-
-    /**
-     * #### `GET` `/api/provider/types`
-     * Pobranie listy zewnętrznych serwisów uwierzytelniających
-     * 
-     * @return void
-     */
-    public function getProviderTypes(): void {
-        $providerTypes = ProviderType::get();
-        JsonResponse::sendSuccess(['providerTypes' => $providerTypes]);
-    }
-
-    /**
-     * #### `GET` `/api/gender/types`
-     * Pobranie listy płci
-     * 
-     * @return void
-     */
-    public function getGenderTypes(): void {
-        $genderTypes = GenderType::get();
-        JsonResponse::sendSuccess(['genderTypes' => $genderTypes]);
-    }
-
-    /**
-     * #### `GET` `/api/role/types`
-     * Pobranie listy ról w serwisie
-     * 
-     * @return void
-     */
-    public function getRoleTypes(): void {
-        $roleTypes = RoleType::get();
-        JsonResponse::sendSuccess(['roleTypes' => $roleTypes]);
-    }
-
-    /**
-     * #### `GET` `/api/account-action/types`
-     * Pobranie listy ze wszystkimi akcjami jakie można wykonać na koncie, np. blokada konta
-     * 
-     * @return void
-     */
-    public function getAccountActionTypes(): void {
-        $accountActionTypes = AccountActionType::get();
-        JsonResponse::sendSuccess(['accountActionTypes' => $accountActionTypes]);
+        $accountOperation->user()->first()->restoreAccount($accountOperation);
     }
 
     /**
@@ -457,7 +380,7 @@ class AuthController extends Controller
      * 
      * @param string $provider nazwa zewnętrznego serwisu
      * 
-     * @return App\Models\ProviderType
+     * @return ProviderType
      */
     private function validateProvider(string $provider): ProviderType {
 
@@ -476,44 +399,5 @@ class AuthController extends Controller
         }
 
         return $providerType;
-    }
-
-    /**
-     * Zapisanie na serwerze zdjęcia profilowego użytkownika
-     * 
-     * @param string $avatarPath ścieżka do zdjęcia profilowego
-     * 
-     * @return string
-     */
-    private function saveAvatar(string $avatarPath): string {
-
-        $encrypter = new Encrypter;
-        $avatarFileExtension = '.' . env('AVATAR_FILE_EXTENSION');
-        $avatarFilename = $encrypter->generateToken(64, User::class, 'avatar', $avatarFileExtension);
-
-        $avatarContents = file_get_contents($avatarPath);
-        $uploadedImage = imagecreatefromstring($avatarContents);
-        $imageWidth = imagesx($uploadedImage);
-        $imageHeight = imagesy($uploadedImage);
-        $newImage = imagecreatetruecolor($imageWidth, $imageHeight);
-        imagecopyresampled($newImage , $uploadedImage, 0, 0, 0, 0, $imageWidth, $imageHeight, $imageWidth, $imageHeight);
-
-        $avatarDestination = 'storage/avatars/' . $avatarFilename;
-        imagejpeg($newImage, $avatarDestination, 100); // TODO Potestować ile maksymalnie można zmniejszyć jakość obrazu, żeby nadal był akceptowalny
-
-        return $avatarFilename;
-    }
-
-    /**
-     * Sprawdzenie brakujących informacji o użytkowniku i zwrócenie obiektu użytkownika
-     * 
-     * @param bool $withTokens flaga określająca czy mają zostać utworzone tokeny autoryzacyjne
-     * 
-     * @return void
-     */
-    private function checkMissingUserInformation($withTokens = false): void {
-        /** @var User $user */
-        $user = Auth::user();
-        $user->checkMissingUserInformation($withTokens);
     }
 }

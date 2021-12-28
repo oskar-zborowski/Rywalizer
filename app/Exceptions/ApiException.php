@@ -17,7 +17,7 @@ class ApiException extends Exception
     /**
      * Ustawienie obiektu błędu, danych oraz metadanych
      * 
-     * @param App\Http\ErrorCodes\ErrorCode $errorCode obiekt zwracanego błędu
+     * @param ErrorCode $errorCode obiekt zwracanego błędu
      * @param $data podstawowe zwracane informacje
      * @param $metadata dodatkowe informacje
      */

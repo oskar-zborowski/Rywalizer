@@ -11,13 +11,13 @@ class CreatePersonalAccessTokensTable extends Migration
      *
      * @return void
      */
-    public function up(): void {
+    public function up() {
         Schema::create('personal_access_tokens', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->morphs('tokenable');
-            $table->string('name', 4);
-            $table->string('token', 64)->unique();
-            $table->string('refresh_token', 64)->unique()->nullable();
+            $table->morphs('tokenable'); // tokenable_type kodowany podczas przetwarzania (spróbować czy zadziała)
+            $table->string('name', 40); // Kodowane podczas przetwarzania
+            $table->string('token', 64)->unique(); // Kodowane przez dostawcę
+            $table->string('refresh_token', 64)->unique()->nullable(); // Kodowane podczas przetwarzania
             $table->text('abilities')->nullable();
             $table->timestamp('last_used_at')->nullable();
             $table->timestamps();
@@ -29,7 +29,7 @@ class CreatePersonalAccessTokensTable extends Migration
      *
      * @return void
      */
-    public function down(): void {
+    public function down() {
         Schema::dropIfExists('personal_access_tokens');
     }
 }

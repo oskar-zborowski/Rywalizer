@@ -3,12 +3,10 @@
 namespace App\Models;
 
 use App\Http\Traits\Encryptable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class ProviderType extends Model
+class ProviderType extends BaseModel
 {
-    use HasFactory, Encryptable;
+    use Encryptable;
 
     protected $guarded = [
         'id',
@@ -18,7 +16,8 @@ class ProviderType extends Model
     ];
 
     protected $hidden = [
-        'id'
+        'id',
+        'is_enabled'
     ];
 
     protected $encryptable = [
@@ -28,5 +27,19 @@ class ProviderType extends Model
 
     public function externalAuthentication() {
         return $this->hasMany(ExternalAuthentication::class);
+    }
+
+    /**
+     * Zwrócenie szczegółowych informacji o wykorzystywanych zewnętrznych systemach uwierzytelniających
+     * 
+     * @return array
+     */
+    public function detailedInformation(): array {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'icon' => $this->icon,
+            'is_enabled' => (bool) $this->is_enabled
+        ];
     }
 }

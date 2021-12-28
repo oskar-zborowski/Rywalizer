@@ -14,7 +14,7 @@ use Illuminate\Validation\Rules\Password as RulesPassword;
 class BeforeUser
 {
     /**
-     * @param Illuminate\Http\Request $request
+     * @param Request $request
      * @param Closure $next
      */
     public function handle(Request $request, Closure $next) {
@@ -25,9 +25,11 @@ class BeforeUser
         $register = 'auth-register';
         $forgotPassword = 'auth-forgotPassword';
         $resetPassword = 'auth-resetPassword';
-        $verifyEmail = 'auth-verifyEmail';
-        $updateUser = 'auth-updateUser';
-        $uploadAvatar = 'auth-uploadAvatar';
+        $restoreAccount = 'auth-restoreAccount';
+        $verifyEmail = 'user-verifyEmail';
+        $updateUser = 'user-updateUser';
+        $uploadAvatar = 'user-uploadAvatar';
+        $logoutOtherDevices = 'auth-logoutOtherDevices';
 
         $encrypter = new Encrypter;
 
@@ -61,7 +63,8 @@ class BeforeUser
         if ($routeName == $login ||
             $routeName == $register ||
             $routeName == $resetPassword ||
-            $routeName == $updateUser)
+            $routeName == $updateUser ||
+            $routeName == $logoutOtherDevices)
         {
             $request->validate([
                 'password' => 'nullable|string|between:8,20'
@@ -73,7 +76,7 @@ class BeforeUser
                 ]);
             }
 
-            if ($routeName != $login) {
+            if ($routeName != $login && $routeName != $logoutOtherDevices) {
 
                 $request->validate([
                     'password' => ['confirmed', RulesPassword::defaults()]
@@ -87,26 +90,22 @@ class BeforeUser
         }
 
         if ($routeName == $resetPassword ||
-            $routeName == $verifyEmail)
+            $routeName == $verifyEmail ||
+            $routeName == $restoreAccount)
         {
             $request->validate([
                 'token' => 'required|string|alpha_num|size:48'
             ]);
 
+            if ($routeName == $resetPassword) {
+                $request->validate([
+                    'do_not_logout' => 'nullable|boolean'
+                ]);
+            }
+
             if ($request->token) {
                 $encryptedToken = $encrypter->encrypt($request->token);
                 $request->merge(['token' => $encryptedToken]);
-            }
-
-            if ($routeName == $resetPassword) {
-                $request->validate([
-                    'token' => 'exists:password_resets',
-                    'do_not_logout' => 'nullable|boolean'
-                ]);
-            } else {
-                $request->validate([
-                    'token' => 'exists:email_verifications',
-                ]);
             }
         }
 

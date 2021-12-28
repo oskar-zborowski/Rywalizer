@@ -2,13 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
-class Authentication extends Model
+class Authentication extends BaseModel
 {
-    use HasFactory;
-
     protected $fillable = [
         'device_id',
         'authentication_type_id'
@@ -26,6 +21,7 @@ class Authentication extends Model
         'user_id',
         'device_id',
         'authentication_type_id',
+        'created_at',
         'updated_at'
     ];
 
@@ -49,5 +45,45 @@ class Authentication extends Model
 
     public function authenticationType() {
         return $this->belongsTo(AuthenticationType::class);
+    }
+
+    /**
+     * Zwrócenie prywatnych informacji o uwierzytelnianiu użytkownika
+     * 
+     * @return array
+     */
+    public function privateInformation(): array {
+        return [
+            'created_at' => $this->created_at,
+            'device' => [
+                'ip' => $this->device->ip,
+                'os_name' => $this->device->os_name,
+                'os_version' => $this->device->os_version,
+                'browser_name' => $this->device->browser_name
+            ],
+            'authentication_type' => $this->authenticationType
+        ];
+    }
+
+    /**
+     * Zwrócenie szczegółowych informacji o uwierzytelnianiu użytkownika
+     * 
+     * @return array
+     */
+    public function detailedInformation(): array {
+        return [
+            'created_at' => $this->created_at,
+            'device' => [
+                'ip' => $this->device->ip,
+                'uuid' => $this->device->uuid,
+                'os_name' => $this->device->os_name,
+                'os_version' => $this->device->os_version,
+                'browser_name' => $this->device->browser_name,
+                'browser_version' => $this->device->browser_version,
+                'created_at' => $this->device->created_at,
+                'updated_at' => $this->device->updated_at
+            ],
+            'authentication_type' => $this->authenticationType
+        ];
     }
 }

@@ -2,19 +2,28 @@
 
 namespace App\Http\Permissions;
 
+/**
+ * Klasa zawierająca informacje o dostępnych endpointach dla poszczególnych ról w serwisie
+ */
 class RolePermission
 {
-    public static function getMinimumAccessLevel() {
+    /**
+     * Metoda zwraca listę wszystkich endpointów (wraz z wyjątkami), na które może wejść użytkownik z daną rolą w systemie
+     * 
+     * @return array
+     */
+    public static function getMinimumAccessLevel(): array {
 
         return [
 
             '1' => [
                 'auth-logoutMe',
                 'auth-logoutOtherDevices',
-                'auth-getUser',
-                'auth-sendVerificationEmail',
-                'auth-deleteAvatar',
-                'auth-getGenderTypes'
+                'user-getUser',
+                'user-sendVerificationEmail',
+                'user-deleteAvatar',
+                'defaultType-getGenderTypes',
+                'user-getUserAuthentication'
             ],
 
             '2' => [
@@ -26,8 +35,9 @@ class RolePermission
             ],
 
             '4' => [
-                'auth-getRoleTypes',
-                'auth-getAccountActionTypes'
+                'defaultType-getRoleTypes',
+                'defaultType-getAccountActionTypes',
+                'user-getUsers'
             ],
 
             'exceptions' => [

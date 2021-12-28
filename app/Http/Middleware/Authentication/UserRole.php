@@ -4,7 +4,6 @@ namespace App\Http\Middleware\Authentication;
 
 use App\Exceptions\ApiException;
 use App\Http\ErrorCodes\BaseErrorCode;
-use App\Http\Libraries\FieldConversion\FieldConversion;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 class UserRole
 {
     /**
-     * @param Illuminate\Http\Request $request
+     * @param Request $request
      * @param Closure $next
      */
     public function handle(Request $request, Closure $next) {
