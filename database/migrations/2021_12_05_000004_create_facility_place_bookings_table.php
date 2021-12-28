@@ -19,7 +19,7 @@ class CreateFacilityPlaceBookingsTable extends Migration
             $table->dateTime('start_date');
             $table->dateTime('end_date');
             $table->unsignedInteger('transaction_id')->nullable();
-            $table->unsignedTinyInteger('booking_status_id')->default(1);
+            $table->unsignedSmallInteger('booking_status_id')->default(1);
             $table->timestamps();
         });
 
@@ -27,7 +27,7 @@ class CreateFacilityPlaceBookingsTable extends Migration
             $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('facility_place_id')->references('id')->on('facility_places');
             $table->foreign('transaction_id')->references('id')->on('transactions');
-            $table->foreign('booking_status_id')->references('id')->on('booking_statuses');
+            $table->foreign('booking_status_id')->references('id')->on('default_types');
         });
     }
 

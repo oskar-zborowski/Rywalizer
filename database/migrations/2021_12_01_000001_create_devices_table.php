@@ -14,12 +14,12 @@ class CreateDevicesTable extends Migration
     public function up() {
         Schema::create('devices', function (Blueprint $table) {
             $table->integerIncrements('id');
-            $table->string('ip', 20); // Kodowane natywnie
-            $table->string('uuid', 64); // Kodowane natywnie
-            $table->string('os_name', 28)->nullable(); // Kodowane natywnie
-            $table->string('os_version', 28)->nullable(); // Kodowane natywnie
-            $table->string('browser_name', 28)->nullable(); // Kodowane natywnie
-            $table->string('browser_version', 28)->nullable(); // Kodowane natywnie
+            $table->char('ip', 20); // Kodowane natywnie
+            $table->char('uuid', 64); // Kodowane natywnie
+            $table->char('os_name', 40)->nullable(); // Kodowane natywnie
+            $table->char('os_version', 40)->nullable(); // Kodowane natywnie
+            $table->char('browser_name', 40)->nullable(); // Kodowane natywnie
+            $table->char('browser_version', 40)->nullable(); // Kodowane natywnie
             $table->timestamps();
         });
     }

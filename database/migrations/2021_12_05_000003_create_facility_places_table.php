@@ -15,7 +15,7 @@ class CreateFacilityPlacesTable extends Migration
         Schema::create('facility_places', function (Blueprint $table) {
             $table->mediumIncrements('id');
             $table->unsignedSmallInteger('facility_id');
-            $table->unsignedTinyInteger('facility_type_id');
+            $table->unsignedSmallInteger('facility_type_id');
             $table->string('name', 30);
             $table->unsignedMediumInteger('unit'); // Czas w minutach
             $table->unsignedMediumInteger('price_per_unit'); // Cena w groszach
@@ -28,7 +28,7 @@ class CreateFacilityPlacesTable extends Migration
 
         Schema::table('facility_places', function (Blueprint $table) {
             $table->foreign('facility_id')->references('id')->on('facilities')->cascadeOnDelete();
-            $table->foreign('facility_type_id')->references('id')->on('facility_types');
+            $table->foreign('facility_type_id')->references('id')->on('default_types');
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
         });
     }

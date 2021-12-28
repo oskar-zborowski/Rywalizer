@@ -15,7 +15,7 @@ class CreateFacilityEquipmentsTable extends Migration
         Schema::create('facility_equipments', function (Blueprint $table) {
             $table->mediumIncrements('id');
             $table->unsignedSmallInteger('facility_id');
-            $table->unsignedTinyInteger('equipment_id');
+            $table->unsignedSmallInteger('equipment_id');
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->boolean('is_visible')->default(1);
             $table->timestamps();
@@ -23,7 +23,7 @@ class CreateFacilityEquipmentsTable extends Migration
 
         Schema::table('facility_equipments', function (Blueprint $table) {
             $table->foreign('facility_id')->references('id')->on('facilities')->cascadeOnDelete();
-            $table->foreign('equipment_id')->references('id')->on('equipments');
+            $table->foreign('equipment_id')->references('id')->on('default_types');
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
         });
     }

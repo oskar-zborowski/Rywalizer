@@ -15,14 +15,14 @@ class CreateFacilityAvailableSportsTable extends Migration
         Schema::create('facility_available_sports', function (Blueprint $table) {
             $table->mediumIncrements('id');
             $table->unsignedSmallInteger('facility_id');
-            $table->unsignedTinyInteger('sport_id');
+            $table->unsignedSmallInteger('sport_id');
             $table->boolean('is_active')->default(1);
             $table->timestamps();
         });
 
         Schema::table('facility_available_sports', function (Blueprint $table) {
             $table->foreign('facility_id')->references('id')->on('facilities');
-            $table->foreign('sport_id')->references('id')->on('sports');
+            $table->foreign('sport_id')->references('id')->on('default_types');
         });
     }
 

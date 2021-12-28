@@ -13,16 +13,16 @@ class CreateAuthenticationsTable extends Migration
      */
     public function up() {
         Schema::create('authentications', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->unsignedTinyInteger('authentication_type_id');
+            $table->integerIncrements('id');
             $table->unsignedMediumInteger('user_id');
+            $table->unsignedSmallInteger('authentication_type_id');
             $table->unsignedInteger('device_id')->nullable();
             $table->timestamps();
         });
 
         Schema::table('authentications', function (Blueprint $table) {
-            $table->foreign('authentication_type_id')->references('id')->on('authentication_types');
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
+            $table->foreign('authentication_type_id')->references('id')->on('default_types');
             $table->foreign('device_id')->references('id')->on('devices')->nullOnDelete();
         });
     }

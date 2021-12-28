@@ -28,7 +28,7 @@ class UpdateUserRequest extends FormRequest
             'telephone' => 'unique:users,telephone,' . $user->id,
             'facebook_profile' => 'unique:users,facebook_profile,' . $user->id,
             'instagram_profile' => 'unique:users,instagram_profile,' . $user->id,
-            'gender_type_id' => 'nullable|integer|exists:gender_types,id'
+            'gender_id' => 'nullable|integer|exists:genders,id'
         ];
     }
 }

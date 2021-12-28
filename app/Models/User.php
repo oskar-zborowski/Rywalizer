@@ -36,8 +36,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'telephone',
         'facebook_profile',
         'instagram_profile',
-        'gender_type_id',
-        'role_type_id',
+        'gender_id',
+        'role_id',
         'email_verified_at',
         'last_time_name_changed',
         'last_time_password_changed'
@@ -61,8 +61,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'telephone',
         'facebook_profile',
         'instagram_profile',
-        'gender_type_id',
-        'role_type_id',
+        'gender_id',
+        'role_id',
         'email_verified_at',
         'last_time_name_changed',
         'last_time_password_changed',
@@ -102,12 +102,12 @@ class User extends Authenticatable implements MustVerifyEmail
         'like'
     ];
 
-    public function genderType() {
-        return $this->belongsTo(GenderType::class);
+    public function gender() {
+        return $this->belongsTo(Gender::class);
     }
 
-    public function roleType() {
-        return $this->belongsTo(RoleType::class);
+    public function role() {
+        return $this->belongsTo(Role::class);
     }
 
     public function accountAction() {
@@ -141,7 +141,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
             'avatar' => $this->avatar,
-            'gender_types' => $this->genderType()->first(['description', 'icon']) ?? null
+            'gender_types' => $this->gender()->first(['description', 'icon']) ?? null
         ];
     }
 
@@ -162,8 +162,8 @@ class User extends Authenticatable implements MustVerifyEmail
             'telephone' => $this->telephone,
             'facebook_profile' => $this->facebook_profile,
             'instagram_profile' => $this->instagram_profile,
-            'gender_types' => $this->genderType()->first(['description', 'icon']) ?? null,
-            'role_types' => $this->roleType()->first(['name', 'access_level']),
+            'gender_types' => $this->gender()->first(['description', 'icon']) ?? null,
+            'role_types' => $this->role()->first(['name', 'access_level']),
             'last_time_name_changed' => $this->last_time_name_changed,
             'last_time_password_changed' => $this->last_time_password_changed
         ];
@@ -209,8 +209,8 @@ class User extends Authenticatable implements MustVerifyEmail
             'telephone' => $this->telephone,
             'facebook_profile' => $this->facebook_profile,
             'instagram_profile' => $this->instagram_profile,
-            'gender_types' => $this->genderType()->first(['description', 'icon']) ?? null,
-            'role_types' => $this->roleType()->first('name'),
+            'gender_types' => $this->gender()->first(['description', 'icon']) ?? null,
+            'role_types' => $this->role()->first('name'),
             'standard_login' => $this->password ? true : false,
             'external_authentiaction' => $this->externalAuthentication()->get(),
             'is_email_verified' => (bool) $this->email_verified_at,
@@ -691,7 +691,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
         $encrypter = new Encrypter;
         $encryptedActivity = $encrypter->encrypt($activity, 18);
-        $authenticationType = AuthenticationType::where('name', $encryptedActivity)->first();
+        $authenticationType = AuthenticationType::where('name', 'LOGIN')->first();
 
         $this->authentication()->create([
             'device_id' => $deviceId,

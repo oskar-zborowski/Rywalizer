@@ -17,13 +17,13 @@ class CreateSportsPositionsTable extends Migration
             $table->string('name', 20)->unique();
             $table->string('description', 30);
             $table->string('icon', 30)->nullable();
-            $table->unsignedTinyInteger('sport_id');
+            $table->unsignedSmallInteger('sport_id');
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->timestamps();
         });
 
         Schema::table('sports_positions', function (Blueprint $table) {
-            $table->foreign('sport_id')->references('id')->on('sports');
+            $table->foreign('sport_id')->references('id')->on('default_types');
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
         });
     }

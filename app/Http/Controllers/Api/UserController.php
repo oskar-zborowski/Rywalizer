@@ -111,7 +111,7 @@ class UserController extends Controller
 
         if ($user->id != $id) {
 
-            if ($user->roleType()->first()->name != 'ADMIN') {
+            if ($user->role()->first()->name != 'ADMIN') {
                 throw new ApiException(BaseErrorCode::PERMISSION_DENIED());
             }
 
@@ -125,7 +125,7 @@ class UserController extends Controller
 
         $paginationAttributes = $this->getPaginationAttributes($request);
 
-        if ($user->roleType()->first()->name == 'ADMIN' && $user->hasVerifiedEmail()) {
+        if ($user->role()->first()->name == 'ADMIN' && $user->hasVerifiedEmail()) {
 
             /** @var User $searchedUser */
             $searchedUser = User::where('id', $id)->first();

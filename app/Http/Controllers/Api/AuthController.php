@@ -66,7 +66,7 @@ class AuthController extends Controller
         $request->merge(['email' => $email]);
 
         /** @var User $newUser */
-        $newUser = User::create($request->only('first_name', 'last_name', 'email', 'password', 'birth_date', 'gender_type_id'));
+        $newUser = User::create($request->only('first_name', 'last_name', 'email', 'password', 'birth_date', 'gender_id'));
 
         Auth::loginUsingId($newUser->id);
 

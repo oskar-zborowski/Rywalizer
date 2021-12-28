@@ -14,20 +14,21 @@ class CreateUsersTable extends Migration
     public function up() {
         Schema::create('users', function (Blueprint $table) {
             $table->mediumIncrements('id');
-            $table->string('first_name', 40); // Kodowane natywnie
-            $table->string('last_name', 40); // Kodowane natywnie
+            $table->char('first_name', 40); // Kodowane natywnie
+            $table->char('last_name', 40); // Kodowane natywnie
             $table->string('email', 340)->unique()->nullable(); // Kodowane natywnie
-            $table->string('password', 60)->nullable(); // Kodowane natywnie
-            $table->string('avatar', 64)->unique()->nullable(); // Kodowane natywnie
-            $table->string('birth_date', 16)->nullable(); // Kodowane natywnie
-            $table->unsignedTinyInteger('gender_id')->nullable();
+            $table->char('password', 60)->nullable(); // Kodowane natywnie
+            $table->char('avatar', 64)->unique()->nullable(); // Kodowane natywnie
+            $table->char('birth_date', 16)->nullable(); // Kodowane natywnie
+            $table->unsignedSmallInteger('gender_id')->nullable();
+            $table->unsignedTinyInteger('role_id');
             $table->unsignedMediumInteger('city_id')->nullable();
-            $table->string('address_coordinates', 28)->nullable(); // Kodowane natywnie
-            $table->unsignedTinyInteger('role_id')->default(1);
-            $table->string('telephone', 32)->unique()->nullable(); // Kodowane natywnie
-            $table->string('facebook_profile', 340)->unique()->nullable(); // Kodowane natywnie
-            $table->string('instagram_profile', 340)->unique()->nullable(); // Kodowane natywnie
-            $table->string('website', 340)->unique()->nullable(); // Kodowane natywnie
+            $table->char('address_coordinates', 28)->nullable(); // Kodowane natywnie
+            $table->char('telephone', 32)->unique()->nullable(); // Kodowane natywnie
+            $table->string('facebook_profile', 340)->nullable(); // Kodowane natywnie
+            $table->string('instagram_profile', 340)->nullable(); // Kodowane natywnie
+            $table->string('website', 340)->nullable(); // Kodowane natywnie
+            $table->boolean('is_visible_in_comments')->default(1);
             $table->boolean('is_deleted')->default(0);
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('telephone_verified_at')->nullable();

@@ -43,10 +43,10 @@ class Device extends BaseModel
     protected $encryptable = [
         'ip' => 15,
         'uuid' => 48,
-        'os_name' => 15,
-        'os_version' => 24,
-        'browser_name' => 18,
-        'browser_version' => 24
+        'os_name' => 21,
+        'os_version' => 21,
+        'browser_name' => 21,
+        'browser_version' => 21
     ];
 
     public function authentication() {

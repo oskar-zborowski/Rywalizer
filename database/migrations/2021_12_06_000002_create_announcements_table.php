@@ -14,18 +14,18 @@ class CreateAnnouncementsTable extends Migration
     public function up() {
         Schema::create('announcements', function (Blueprint $table) {
             $table->integerIncrements('id');
-            $table->unsignedTinyInteger('sport_id');
+            $table->unsignedSmallInteger('sport_id');
             $table->unsignedSmallInteger('facility_id')->nullable();
             $table->unsignedSmallInteger('announcement_partner_id')->nullable();
-            $table->unsignedTinyInteger('announcement_type_id')->nullable();
+            $table->unsignedSmallInteger('announcement_type_id')->nullable();
             $table->dateTime('start_date');
             $table->dateTime('end_date');
             $table->unsignedTinyInteger('minimum_skill_level_id')->nullable();
-            $table->unsignedTinyInteger('gender_id')->nullable();
-            $table->unsignedTinyInteger('age_category_id')->nullable();
+            $table->unsignedSmallInteger('gender_id')->nullable();
+            $table->unsignedSmallInteger('age_category_id')->nullable();
             $table->unsignedTinyInteger('minimal_age')->nullable();
             $table->unsignedTinyInteger('maximum_age')->nullable();
-            $table->unsignedTinyInteger('game_variant_id');
+            $table->unsignedSmallInteger('game_variant_id');
             $table->unsignedMediumInteger('ticket_price');
             $table->unsignedMediumInteger('front_picture_id')->nullable();
             $table->unsignedMediumInteger('background_picture_id')->nullable();
@@ -38,14 +38,14 @@ class CreateAnnouncementsTable extends Migration
         });
 
         Schema::table('announcements', function (Blueprint $table) {
-            $table->foreign('sport_id')->references('id')->on('sports');
+            $table->foreign('sport_id')->references('id')->on('default_types');
             $table->foreign('facility_id')->references('id')->on('facilities')->nullOnDelete();
             $table->foreign('announcement_partner_id')->references('id')->on('announcement_partners')->nullOnDelete();
-            $table->foreign('announcement_type_id')->references('id')->on('announcement_types');
+            $table->foreign('announcement_type_id')->references('id')->on('default_types');
             $table->foreign('minimum_skill_level_id')->references('id')->on('minimum_skill_levels');
-            $table->foreign('gender_id')->references('id')->on('genders');
-            $table->foreign('age_category_id')->references('id')->on('age_categories');
-            $table->foreign('game_variant_id')->references('id')->on('game_variants');
+            $table->foreign('gender_id')->references('id')->on('default_types');
+            $table->foreign('age_category_id')->references('id')->on('default_types');
+            $table->foreign('game_variant_id')->references('id')->on('default_types');
             $table->foreign('front_picture_id')->references('id')->on('pictures')->nullOnDelete();
             $table->foreign('background_picture_id')->references('id')->on('pictures')->nullOnDelete();
         });

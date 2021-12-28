@@ -26,10 +26,10 @@ class CreateFacilitiesTable extends Migration
             $table->string('instagram_profile', 340)->unique()->nullable();
             $table->string('website', 340)->unique()->nullable();
             $table->unsignedSmallInteger('facility_partner_id')->nullable();
-            $table->unsignedTinyInteger('facility_type_id')->nullable();
+            $table->unsignedSmallInteger('facility_type_id')->nullable();
             $table->unsignedTinyInteger('places_number')->nullable();
-            $table->unsignedTinyInteger('gender_id')->nullable();
-            $table->unsignedTinyInteger('age_category_id')->nullable();
+            $table->unsignedSmallInteger('gender_id')->nullable();
+            $table->unsignedSmallInteger('age_category_id')->nullable();
             $table->unsignedTinyInteger('minimal_age')->nullable();
             $table->unsignedTinyInteger('maximum_age')->nullable();
             $table->string('description', 4000)->nullable();
@@ -42,11 +42,11 @@ class CreateFacilitiesTable extends Migration
         });
 
         Schema::table('facilities', function (Blueprint $table) {
-            $table->foreign('city_id')->references('id')->on('cities');
+            $table->foreign('city_id')->references('id')->on('areas');
             $table->foreign('facility_partner_id')->references('id')->on('facility_partners')->nullOnDelete();
-            $table->foreign('facility_type_id')->references('id')->on('facility_types');
-            $table->foreign('gender_id')->references('id')->on('genders');
-            $table->foreign('age_category_id')->references('id')->on('age_categories');
+            $table->foreign('facility_type_id')->references('id')->on('default_types');
+            $table->foreign('gender_id')->references('id')->on('default_types');
+            $table->foreign('age_category_id')->references('id')->on('default_types');
         });
     }
 

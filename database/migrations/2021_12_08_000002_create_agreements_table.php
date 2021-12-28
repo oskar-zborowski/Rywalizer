@@ -18,9 +18,9 @@ class CreateAgreementsTable extends Migration
             $table->string('description', 136); // Kodowane natywnie
             $table->string('signature', 40); // Kodowane natywnie
             $table->unsignedTinyInteger('version');
-            $table->unsignedTinyInteger('object_type_id');
+            $table->unsignedSmallInteger('object_type_id');
             $table->unsignedInteger('object_id')->nullable();
-            $table->unsignedTinyInteger('agreement_type_id')->nullable();
+            $table->unsignedSmallInteger('agreement_type_id')->nullable();
             $table->dateTime('effective_date');
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->boolean('is_required');
@@ -28,8 +28,8 @@ class CreateAgreementsTable extends Migration
         });
 
         Schema::table('agreements', function (Blueprint $table) {
-            $table->foreign('object_type_id')->references('id')->on('object_types');
-            $table->foreign('agreement_type_id')->references('id')->on('agreement_types');
+            $table->foreign('object_type_id')->references('id')->on('default_types');
+            $table->foreign('agreement_type_id')->references('id')->on('default_types');
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
         });
     }

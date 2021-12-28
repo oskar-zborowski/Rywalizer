@@ -14,16 +14,12 @@ class CreateRolesTable extends Migration
     public function up() {
         Schema::create('roles', function (Blueprint $table) {
             $table->tinyIncrements('id');
-            $table->string('name', 30)->unique();
-            $table->string('description', 30);
-            $table->string('icon', 30)->nullable();
-            $table->string('access_level', 4);
-            $table->unsignedMediumInteger('creator_id')->nullable();
-            $table->timestamps();
+            $table->unsignedSmallInteger('role_id')->unique();
+            $table->unsignedTinyInteger('access_level');
         });
 
         Schema::table('roles', function (Blueprint $table) {
-            $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('role_id')->references('id')->on('default_types')->cascadeOnDelete();
         });
     }
 

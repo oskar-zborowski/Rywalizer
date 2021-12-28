@@ -17,13 +17,13 @@ class CreateMinimumSkillLevelsTable extends Migration
             $table->string('name', 10)->unique();
             $table->string('description', 1500);
             $table->string('icon', 20)->nullable();
-            $table->unsignedTinyInteger('sport_id');
+            $table->unsignedSmallInteger('sport_id');
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->timestamps();
         });
 
         Schema::table('minimum_skill_levels', function (Blueprint $table) {
-            $table->foreign('sport_id')->references('id')->on('sports');
+            $table->foreign('sport_id')->references('id')->on('default_types');
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
         });
     }

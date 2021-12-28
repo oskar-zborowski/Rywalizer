@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateVoivodeshipsTable extends Migration
+class CreatePicturesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,19 +12,18 @@ class CreateVoivodeshipsTable extends Migration
      * @return void
      */
     public function up() {
-        Schema::create('voivodeships', function (Blueprint $table) {
-            $table->tinyIncrements('id');
-            $table->string('name', 20);
-            $table->polygon('boundary')->nullable();
-            $table->unsignedTinyInteger('country_id');
+        Schema::create('pictures', function (Blueprint $table) {
+            $table->mediumIncrements('id');
+            $table->char('picture', 64)->unique(); // Kodowane natywnie
+            $table->unsignedMediumInteger('user_id')->nullable();
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->unsignedMediumInteger('supervisor_id')->nullable();
             $table->boolean('is_visible')->default(0);
             $table->timestamps();
         });
 
-        Schema::table('voivodeships', function (Blueprint $table) {
-            $table->foreign('country_id')->references('id')->on('countries');
+        Schema::table('pictures', function (Blueprint $table) {
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('supervisor_id')->references('id')->on('users')->nullOnDelete();
         });
@@ -36,6 +35,6 @@ class CreateVoivodeshipsTable extends Migration
      * @return void
      */
     public function down() {
-        Schema::dropIfExists('voivodeships');
+        Schema::dropIfExists('pictures');
     }
 }

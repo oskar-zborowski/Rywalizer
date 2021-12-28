@@ -4,25 +4,19 @@ namespace App\Models;
 
 use App\Http\Traits\Encryptable;
 
-class GenderType extends BaseModel
+class Role extends BaseModel
 {
     use Encryptable;
 
     protected $guarded = [
         'id',
         'name',
-        'description',
-        'icon'
-    ];
-
-    protected $hidden = [
-        'name'
+        'access_level'
     ];
 
     protected $encryptable = [
-        'name' => 6,
-        'description' => 12,
-        'icon' => 15
+        'name' => 15,
+        'access_level' => 3
     ];
 
     public function user() {

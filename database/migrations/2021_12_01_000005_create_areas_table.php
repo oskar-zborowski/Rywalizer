@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCitiesTable extends Migration
+class CreateAreasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,27 +12,31 @@ class CreateCitiesTable extends Migration
      * @return void
      */
     public function up() {
-        Schema::create('cities', function (Blueprint $table) {
+        Schema::create('areas', function (Blueprint $table) {
             $table->mediumIncrements('id');
-            $table->string('name', 40);
+            $table->string('name', 50);
             $table->polygon('boundary')->nullable();
-            $table->unsignedSmallInteger('commune_id');
+            $table->unsignedSmallInteger('area_type_id');
+            $table->unsignedMediumInteger('parent_id')->nullable();
             $table->unsignedMediumInteger('creator_id')->nullable();
+            $table->unsignedMediumInteger('editor_id')->nullable();
             $table->unsignedMediumInteger('supervisor_id')->nullable();
             $table->boolean('is_visible')->default(0);
             $table->timestamps();
         });
 
-        Schema::table('cities', function (Blueprint $table) {
-            $table->foreign('commune_id')->references('id')->on('communies');
+        Schema::table('areas', function (Blueprint $table) {
+            $table->foreign('area_type_id')->references('id')->on('default_types');
+            $table->foreign('parent_id')->references('id')->on('areas');
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('editor_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('supervisor_id')->references('id')->on('users')->nullOnDelete();
         });
 
         Schema::table('users', function (Blueprint $table) {
-            $table->foreign('gender_id')->references('id')->on('genders');
-            $table->foreign('city_id')->references('id')->on('cities');
+            $table->foreign('gender_id')->references('id')->on('default_types');
             $table->foreign('role_id')->references('id')->on('roles');
+            $table->foreign('city_id')->references('id')->on('areas');
         });
     }
 
@@ -42,6 +46,6 @@ class CreateCitiesTable extends Migration
      * @return void
      */
     public function down() {
-        Schema::dropIfExists('cities');
+        Schema::dropIfExists('areas');
     }
 }

@@ -14,17 +14,16 @@ class CreateCommissionsTable extends Migration
     public function up() {
         Schema::create('commissions', function (Blueprint $table) {
             $table->tinyIncrements('id');
-            $table->string('name', 40)->unique();
-            $table->string('description', 50);
-            $table->unsignedFloat('commission');
+            $table->unsignedSmallInteger('commission_id')->unique();
+            $table->string('signature', 50);
+            $table->unsignedTinyInteger('version');
+            $table->unsignedFloat('value');
             $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();
-            $table->unsignedMediumInteger('creator_id')->nullable();
-            $table->timestamps();
         });
 
         Schema::table('commissions', function (Blueprint $table) {
-            $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('commission_id')->references('id')->on('default_types')->cascadeOnDelete();
         });
     }
 

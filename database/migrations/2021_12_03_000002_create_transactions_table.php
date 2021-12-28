@@ -14,21 +14,21 @@ class CreateTransactionsTable extends Migration
     public function up() {
         Schema::create('transactions', function (Blueprint $table) {
             $table->integerIncrements('id');
-            $table->string('number', 28); // Kodowane natywnie
-            $table->unsignedMediumInteger('transaction_amount');
+            $table->char('number', 40)->unique(); // Kodowane natywnie
+            $table->unsignedMediumInteger('total_amount');
             $table->mediumInteger('system_amount');
             $table->mediumInteger('partner_amount');
-            $table->string('transaction_order_id', 64)->nullable(); // Kodowane natywnie
-            $table->string('transaction_session_id', 64); // Kodowane natywnie
+            $table->char('order_id', 64)->nullable()->unique(); // Kodowane natywnie
+            $table->char('session_id', 64)->unique(); // Kodowane natywnie
             $table->unsignedMediumInteger('discount_code_id')->nullable();
-            $table->unsignedTinyInteger('transaction_status_id')->default(1);
-            $table->timestamp('transaction_confirmed_at')->nullable();
+            $table->unsignedSmallInteger('transaction_status_id');
+            $table->timestamp('confirmed_at')->nullable();
             $table->timestamps();
         });
 
         Schema::table('transactions', function (Blueprint $table) {
             $table->foreign('discount_code_id')->references('id')->on('discount_codes');
-            $table->foreign('transaction_status_id')->references('id')->on('transaction_statuses');
+            $table->foreign('transaction_status_id')->references('id')->on('default_types');
         });
     }
 
