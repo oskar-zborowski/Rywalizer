@@ -23,6 +23,10 @@
     position: relative;
     background-color: #29292e;
 
+    @include respond-to(null, "md") {
+        height: 240px;
+    }
+
     .backgroundImage {
         position: relative;
         z-index: 1;
@@ -68,30 +72,78 @@
             display: flex;
             gap: 8px;
             flex-direction: column;
+
+            @include respond-to(null, "md") {
+                align-self: flex-start;
+            }
         }
 
-        .userDetailsRow {
+        .userDetailsRow.contact {
             display: flex;
-            align-items: center;
+            margin: 0;
+        }
 
-            & > * {
-                white-space: nowrap;
-                color: #a1a1a1;
+        @include respond-to(null, "md") {
+            .userDetailsRow {
+                flex-direction: column;
+                align-items: flex-start;
+        
+                .detailsSeparator {
+                    display: none;
+                }
+        
+                .detailsTitle {
+                    margin-bottom: 10px;
+                    margin-right: 0;
+                }
+        
+                &.contact {
+                    display: none;
+                }
             }
+        }
+    }
+}
 
-            .detailsTitle {
-                font-size: 19px;
-                font-weight: bold;
-                color: #fff;
-                margin-right: 20px;
-            }
+.userDetailsRow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    row-gap: 5px;
+    column-gap: 20px;
 
-            .detailsSeparator {
-                margin: 0 20px;
-                width: 1px;
-                height: 16px;
-                background-color: #6e6e70;
-            }
+    & > * {
+        white-space: nowrap;
+        color: #a1a1a1;
+    }
+
+    .detailsTitle {
+        font-size: 19px;
+        font-weight: bold;
+        color: #fff;
+        // margin-right: 20px;
+    }
+
+    .detailsSeparator {
+        margin: 0 20px;
+        min-width: 1px;
+        width: 1px;
+        height: 16px;
+        background-color: #6e6e70;
+    }
+
+    &.contactSM {
+        margin-top: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #141417;
+
+        @include respond-to(null, "sm") {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        @include respond-to("md", null) {
+            display: none
         }
     }
 }

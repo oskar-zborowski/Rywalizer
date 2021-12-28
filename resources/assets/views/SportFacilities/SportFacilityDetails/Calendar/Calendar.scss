@@ -115,3 +115,19 @@
         }
     }
 }
+
+.tooltip {
+    background-color: #{$color-primary}55 !important;
+    border-radius: 8px !important;
+    opacity: 1 !important;
+    color: #fff !important;
+    text-align: center !important;
+    padding: 5px !important;
+    margin: 5px !important;
+    border: 2px solid $color-primary !important;
+    backdrop-filter: blur(5px);
+
+    &::after, &::before {
+        content: none !important;
+    }
+}

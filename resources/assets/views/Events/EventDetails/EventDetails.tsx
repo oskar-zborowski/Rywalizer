@@ -5,8 +5,11 @@ import styles from './EventDetails.scss';
 import prof from '@/static/images/prof.png';
 import Icon from '@/components/Icon/Icon';
 
-import UserSvg from '@/static/icons/ball.svg';
+import UserSvg from '@/static/icons/my-account.svg';
 import ContactSvg from '@/static/icons/food.svg';
+import TelephoneSvg from '@/static/icons/telephone.svg';
+import MailSvg from '@/static/icons/mail.svg';
+import FacebookSvg from '@/static/icons/facebook.svg';
 
 const EventDetails: React.FC = (props) => {
     return (
@@ -19,22 +22,30 @@ const EventDetails: React.FC = (props) => {
                     <div className={styles.userDetails}>
                         <div className={styles.userDetailsRow}>
                             <span className={styles.detailsTitle}>Organizator:</span>
-                            <Icon icon={ContactSvg}>Krystian Borowicz</Icon>
-                            <div className={styles.detailsSeparator}></div>
-                            <StarRatings rating={96} />
+                            <Icon svg={UserSvg}>Krystian Borowicz</Icon>
+                            {/* <div className={styles.detailsSeparator}></div> */}
+                            <StarRatings rating={67} />
                         </div>
 
-                        <div className={styles.userDetailsRow}>
+                        <div className={styles.userDetailsRow + ' ' + styles.contact}>
                             <span className={styles.detailsTitle}>Kontakt:</span>
-                            <Icon icon={UserSvg}>123 456 789</Icon>
-                            <div className={styles.detailsSeparator}></div>
-                            <Icon icon={ContactSvg}>siatkowka@obiekt.pl</Icon>
-                            <div className={styles.detailsSeparator}></div>
-                            <Icon icon={UserSvg}>fb.jakis.profil.23</Icon>
+                            <Icon svg={TelephoneSvg}>123 456 789</Icon>
+                            {/* <div className={styles.detailsSeparator}></div> */}
+                            <Icon svg={MailSvg}>siatkowka@obiekt.pl</Icon>
+                            {/* <div className={styles.detailsSeparator}></div> */}
+                            <Icon svg={FacebookSvg}>fb.jakis.profil.23</Icon>
                         </div>
                     </div>
                 </div>
             </header>
+            <div className={styles.userDetailsRow + ' ' + styles.contactSM}>
+                <span className={styles.detailsTitle}>Kontakt:</span>
+                <Icon svg={MailSvg}>siatkowka@obiekt.pl</Icon>
+                {/* <div className={styles.detailsSeparator}></div> */}
+                <Icon svg={TelephoneSvg}>123 456 789</Icon>
+                {/* <div className={styles.detailsSeparator}></div> */}
+                <Icon svg={FacebookSvg}>fb.jakis.profil.23</Icon>
+            </div>
         </div>
     );
 };

@@ -3,15 +3,23 @@
 interface CssExports {
   'buttons': string;
   'contactSection': string;
+  'description': string;
   'descriptionSection': string;
   'details': string;
+  'disabledEquipmentItem': string;
+  'equipmentGrid': string;
+  'equipmentSection': string;
+  'gallery': string;
+  'gallerySection': string;
   'header': string;
+  'image': string;
   'location': string;
   'logo': string;
   'name': string;
   'navButtons': string;
   'navButtonsWrapper': string;
   'sectionName': string;
+  'seeMoreButton': string;
   'separator': string;
   'sportFacilityDetails': string;
   'stars': string;

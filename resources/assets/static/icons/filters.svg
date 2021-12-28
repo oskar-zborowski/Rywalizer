@@ -1,0 +1,15 @@
+<svg id="filters" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19.5" height="20.503" viewBox="0 0 19.5 20.503">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_620" data-name="Rectangle 620" width="19.5" height="20.503" transform="translate(0 0)"/>
+    </clipPath>
+  </defs>
+  <g id="Group_583" data-name="Group 583" clip-path="url(#clip-path)">
+    <path id="Path_5290" data-name="Path 5290" d="M3.748,11.5a.75.75,0,0,0,.75-.75V.75A.75.75,0,0,0,3,.75v10a.75.75,0,0,0,.75.75"/>
+    <path id="Path_5291" data-name="Path 5291" d="M15.748,11.5a.75.75,0,0,0,.75-.75V.75a.75.75,0,1,0-1.5,0v10a.75.75,0,0,0,.75.75"/>
+    <path id="Path_5292" data-name="Path 5292" d="M9.748,9A.75.75,0,0,0,9,9.75v10a.75.75,0,0,0,1.5,0v-10A.75.75,0,0,0,9.748,9"/>
+    <path id="Path_5293" data-name="Path 5293" d="M6.75,13h-6a.75.75,0,0,0,0,1.5H3v5.25a.75.75,0,0,0,1.5,0V14.5H6.75a.75.75,0,0,0,0-1.5"/>
+    <path id="Path_5294" data-name="Path 5294" d="M18.75,13h-6a.75.75,0,0,0,0,1.5H15v5.25a.75.75,0,1,0,1.5,0V14.5h2.25a.75.75,0,0,0,0-1.5"/>
+    <path id="Path_5295" data-name="Path 5295" d="M6.75,7.5h6a.75.75,0,0,0,0-1.5H10.5V.753a.75.75,0,1,0-1.5,0V6H6.75a.75.75,0,0,0,0,1.5"/>
+  </g>
+</svg>

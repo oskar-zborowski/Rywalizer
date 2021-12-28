@@ -1,9 +1,11 @@
 .icon {
     display: flex;
     align-items: center;
+    justify-content: center;
     white-space: nowrap;
     color: #fff;
-    gap: 6px;
+    gap: 7px;
+    width: auto;
 
     .svgContainer {
         min-width: 15px;

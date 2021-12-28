@@ -3,6 +3,7 @@ import { UserStore } from '@/store/UserStore';
 import { observer } from 'mobx-react';
 import React from 'react';
 import styles from './UserView.scss';
+import prof from '@/static/images/prof.png';
 
 const UserView: React.FC<{ store: UserStore }> = (props) => {
     const data = props.store.user;
@@ -15,7 +16,7 @@ const UserView: React.FC<{ store: UserStore }> = (props) => {
             </header>
             <div className={styles.userDataWrapper}>
                 <div className={styles.leftColumn}>
-                    <img src={`/storage/avatars/${data?.avatar}`} alt="" className={styles.image} />
+                    <img src={prof} alt="" className={styles.image} />
                 </div>
                 <div className={styles.rightColumn}>
                     {/* DANE PODSTAWOWE */}

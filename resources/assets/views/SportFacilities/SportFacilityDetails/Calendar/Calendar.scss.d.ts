@@ -4,6 +4,7 @@ interface CssExports {
   'calendar': string;
   'cell': string;
   'disabled': string;
+  'tooltip': string;
   'wrapper': string;
 }
 export const cssExports: CssExports;

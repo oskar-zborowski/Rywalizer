@@ -2,6 +2,8 @@
 // Please do not change this file!
 interface CssExports {
   'backgroundImage': string;
+  'contact': string;
+  'contactSM': string;
   'detailsSeparator': string;
   'detailsTitle': string;
   'eventDetails': string;
