@@ -50,7 +50,13 @@ class Authenticate extends Middleware
         ];
 
         $independentRouteNames = [
-            'defaultType-getProviderTypes'
+            'defaultType-getProviderTypes',
+            'brackets/admin-auth::admin',
+            'admin/edit-password',
+            'admin/edit-profile',
+            'admin/admin-users/index',
+            'admin/roles/index',
+            'admin/devices/index'
         ];
 
         $logout = 'auth-logoutMe';
@@ -89,7 +95,8 @@ class Authenticate extends Middleware
                         throw new ApiException(AuthErrorCode::ALREADY_LOGGED_OUT());
                     }
 
-                    if (!in_array($currentRootName, $exceptionalRouteNames) &&
+                    if ($currentRootName &&
+                        !in_array($currentRootName, $exceptionalRouteNames) &&
                         !in_array($currentRootName, $independentRouteNames))
                     {
                         throw new ApiException(AuthErrorCode::UNAUTHORIZED());
@@ -141,9 +148,12 @@ class Authenticate extends Middleware
                     throw new ApiException(AuthErrorCode::ALREADY_LOGGED_OUT());
                 }
 
-                if (!in_array($currentRootName, $exceptionalRouteNames) &&
+                if ($currentRootName &&
+                    !in_array($currentRootName, $exceptionalRouteNames) &&
                     !in_array($currentRootName, $independentRouteNames))
                 {
+                    echo json_encode($currentRootName);
+                    die;
                     throw new ApiException(AuthErrorCode::UNAUTHORIZED());
                 }
             }

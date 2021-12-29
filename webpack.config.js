@@ -7,7 +7,9 @@ module.exports = {
     mode: 'development',
     stats: 'minimal',
     entry: {
-        app: path.resolve(__dirname, 'resources/assets/main.tsx')
+        app: path.resolve(__dirname, 'resources/assets/main.tsx'),
+        // adminJs: path.resolve(__dirname, 'resources/js/admin/admin.js'),
+        // adminCss: path.resolve(__dirname, 'resources/sass/admin/admin.scss')
     },
     output: {
         path: path.resolve(__dirname, 'public/assets'),

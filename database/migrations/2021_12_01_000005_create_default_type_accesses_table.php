@@ -20,7 +20,7 @@ class CreateDefaultTypeAccessesTable extends Migration
 
         Schema::table('default_type_accesses', function (Blueprint $table) {
             $table->foreign('default_type_id')->references('id')->on('default_types')->cascadeOnDelete();
-            $table->foreign('role_id')->references('id')->on('roles')->cascadeOnDelete();
+            $table->foreign('role_id')->references('id')->on('user_roles')->cascadeOnDelete();
         });
     }
 

@@ -1,7 +1,9 @@
 {
-  "/assets/app.css": "/assets/app.css",
-  "/assets/app.js": "/assets/app.js",
-  "/assets/prof.png": "/assets/prof.png",
-  "/assets/app.js.map": "/assets/app.js.map",
-  "/assets/app.css.map": "/assets/app.css.map"
+    "/assets/app.css": "/assets/app.css",
+    "/assets/app.js": "/assets/app.js",
+    "/assets/prof.png": "/assets/prof.png",
+    "/assets/app.css.map": "/assets/app.css.map",
+    "/assets/app.js.map": "/assets/app.js.map",
+    "/js/admin.js": "/js/admin.js",
+    "/css/admin.css": "/css/admin.css"
 }

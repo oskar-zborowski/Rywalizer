@@ -35,7 +35,7 @@ class CreateAreasTable extends Migration
 
         Schema::table('users', function (Blueprint $table) {
             $table->foreign('gender_id')->references('id')->on('default_types');
-            $table->foreign('role_id')->references('id')->on('roles');
+            $table->foreign('role_id')->references('id')->on('user_roles');
             $table->foreign('city_id')->references('id')->on('areas');
         });
     }
