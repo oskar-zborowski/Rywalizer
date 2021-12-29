@@ -23,6 +23,7 @@ class CreateFacilityPlacesTable extends Migration
             $table->unsignedMediumInteger('maximum_unit_booking')->nullable();
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->unsignedMediumInteger('editor_id')->nullable();
+            $table->boolean('is_automatically_approved');
             $table->boolean('is_visible');
             $table->timestamps();
         });

@@ -16,7 +16,7 @@ class CreateUserAgreementsTable extends Migration
             $table->integerIncrements('id');
             $table->unsignedMediumInteger('user_id');
             $table->unsignedMediumInteger('agreement_id');
-            $table->dateTime('canceled_at')->nullable();
+            $table->timestamp('canceled_at')->nullable();
             $table->timestamps();
         });
 

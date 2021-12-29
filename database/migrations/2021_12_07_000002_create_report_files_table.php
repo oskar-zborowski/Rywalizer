@@ -14,8 +14,8 @@ class CreateReportFilesTable extends Migration
     public function up() {
         Schema::create('report_files', function (Blueprint $table) {
             $table->mediumIncrements('id');
-            $table->string('file', 64)->unique(); // Kodowane natywnie
             $table->unsignedMediumInteger('report_id');
+            $table->char('file', 64)->unique(); // Kodowane natywnie
             $table->timestamps();
         });
 

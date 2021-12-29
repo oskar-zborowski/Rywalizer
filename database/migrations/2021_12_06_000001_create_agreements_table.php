@@ -14,23 +14,24 @@ class CreateAgreementsTable extends Migration
     public function up() {
         Schema::create('agreements', function (Blueprint $table) {
             $table->mediumIncrements('id');
-            $table->string('filename', 64); // Kodowane natywnie
-            $table->string('description', 136); // Kodowane natywnie
-            $table->string('signature', 40); // Kodowane natywnie
+            $table->morphs('agreementable');
+            $table->char('filename', 64); // Kodowane natywnie
+            $table->char('description', 136); // Kodowane natywnie
+            $table->char('signature', 40); // Kodowane natywnie
             $table->unsignedTinyInteger('version');
-            $table->unsignedSmallInteger('object_type_id');
-            $table->unsignedInteger('object_id')->nullable();
-            $table->unsignedSmallInteger('agreement_type_id')->nullable();
             $table->dateTime('effective_date');
+            $table->unsignedSmallInteger('agreement_type_id')->nullable();
             $table->unsignedMediumInteger('creator_id')->nullable();
+            $table->unsignedMediumInteger('editor_id')->nullable();
             $table->boolean('is_required');
+            $table->boolean('is_visible');
             $table->timestamps();
         });
 
         Schema::table('agreements', function (Blueprint $table) {
-            $table->foreign('object_type_id')->references('id')->on('default_types');
             $table->foreign('agreement_type_id')->references('id')->on('default_types');
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('editor_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 
