@@ -14,18 +14,18 @@ class CreateDiscountsTable extends Migration
     public function up() {
         Schema::create('discounts', function (Blueprint $table) {
             $table->mediumIncrements('id');
+            $table->morphs('discountable');
             $table->unsignedMediumInteger('discount_code_id');
-            $table->unsignedSmallInteger('object_type_id');
-            $table->unsignedInteger('object_id');
             $table->unsignedMediumInteger('creator_id')->nullable();
-            $table->boolean('is_active')->default(1);
+            $table->unsignedMediumInteger('editor_id')->nullable();
+            $table->boolean('is_active');
             $table->timestamps();
         });
 
         Schema::table('discounts', function (Blueprint $table) {
-            $table->foreign('discount_code_id')->references('id')->on('discounts')->cascadeOnDelete();
-            $table->foreign('object_type_id')->references('id')->on('default_types');
+            $table->foreign('discount_code_id')->references('id')->on('discount_codes')->cascadeOnDelete();
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('editor_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 

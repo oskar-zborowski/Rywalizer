@@ -18,9 +18,9 @@ class CreatePartnersTable extends Migration
             $table->char('submerchant_id', 9)->unique()->nullable(); // Kodowane natywnie
             $table->string('business_name', 268)->nullable(); // Kodowane natywnie
             $table->char('logo', 64)->unique()->nullable(); // Kodowane natywnie
-            $table->string('contact_email', 340)->unique()->nullable(); // Kodowane natywnie
+            $table->string('contact_email', 340)->nullable(); // Kodowane natywnie
             $table->string('invoice_email', 340)->nullable(); // Kodowane natywnie
-            $table->char('telephone', 32)->unique()->nullable(); // Kodowane natywnie
+            $table->char('telephone', 32)->nullable(); // Kodowane natywnie
             $table->string('facebook_profile', 340)->nullable(); // Kodowane natywnie
             $table->string('instagram_profile', 340)->nullable(); // Kodowane natywnie
             $table->string('website', 340)->nullable(); // Kodowane natywnie
@@ -28,6 +28,7 @@ class CreatePartnersTable extends Migration
             $table->char('street', 108)->nullable(); // Kodowane natywnie
             $table->char('post_code', 9)->nullable(); // Kodowane natywnie
             $table->unsignedMediumInteger('city_id')->nullable();
+            $table->boolean('is_verified')->default(0);
             $table->timestamp('przelewy24_verified_at')->nullable();
             $table->timestamp('contact_email_verified_at')->nullable();
             $table->timestamp('invoice_email_verified_at')->nullable();

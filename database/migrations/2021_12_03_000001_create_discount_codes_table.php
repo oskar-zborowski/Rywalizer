@@ -15,7 +15,7 @@ class CreateDiscountCodesTable extends Migration
         Schema::create('discount_codes', function (Blueprint $table) {
             $table->mediumIncrements('id');
             $table->char('code', 40)->nullable(); // Kodowane natywnie
-            $table->string('description', 2000)->nullable();
+            $table->text('description')->nullable();
             $table->char('advertisement', 64)->unique()->nullable(); // Kodowane natywnie
             $table->unsignedSmallInteger('discount_type_id');
             $table->unsignedSmallInteger('discount_value_type_id');

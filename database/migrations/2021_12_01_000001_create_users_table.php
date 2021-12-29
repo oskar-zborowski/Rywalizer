@@ -28,6 +28,7 @@ class CreateUsersTable extends Migration
             $table->string('facebook_profile', 340)->nullable(); // Kodowane natywnie
             $table->string('instagram_profile', 340)->nullable(); // Kodowane natywnie
             $table->string('website', 340)->nullable(); // Kodowane natywnie
+            $table->boolean('is_verified')->default(0);
             $table->boolean('is_visible_in_comments')->default(1);
             $table->boolean('is_deleted')->default(0);
             $table->timestamp('email_verified_at')->nullable();

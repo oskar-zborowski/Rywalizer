@@ -30,13 +30,17 @@ class CreateFacilityOpeningHoursTable extends Migration
             $table->time('sunday_from')->nullable();
             $table->time('sunday_to')->nullable();
             $table->unsignedMediumInteger('creator_id')->nullable();
-            $table->boolean('is_visible')->default(1);
+            $table->unsignedMediumInteger('editor_id')->nullable();
+            $table->unsignedMediumInteger('supervisor_id')->nullable();
+            $table->boolean('is_visible')->default(0);
             $table->timestamps();
         });
 
         Schema::table('facility_opening_hours', function (Blueprint $table) {
             $table->foreign('facility_id')->references('id')->on('facilities')->cascadeOnDelete();
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('editor_id')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('supervisor_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 
