@@ -13,6 +13,7 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Responses\JsonResponse;
 use App\Mail\EmailVerification as MailEmailVerification;
 use App\Models\AccountOperation;
+use App\Models\AccountOperationType;
 use App\Models\ExternalAuthentication;
 use App\Models\PersonalAccessToken;
 use App\Models\ProviderType;
@@ -112,7 +113,7 @@ class AuthController extends Controller
         }
 
         /** @var AccountOperation $accountOperation */
-        $accountOperation = AccountOperation::where([
+        $accountOperation = AccountOperationType::where([
             'account_operation_type_id' => $accountOperationType->id,
             'token' => $request->token
         ])->first();
@@ -363,7 +364,7 @@ class AuthController extends Controller
         }
 
         /** @var AccountOperation $accountOperation */
-        $accountOperation = AccountOperation::where([
+        $accountOperation = AccountOperationType::where([
             'account_operation_type_id' => $accountOperationType->id,
             'token' => $request->token
         ])->first();

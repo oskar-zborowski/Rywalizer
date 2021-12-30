@@ -2,10 +2,10 @@
 
 namespace App\Exceptions;
 
-use ArgumentCountError;
 use App\Http\ErrorCodes\AuthErrorCode;
 use App\Http\ErrorCodes\BaseErrorCode;
 use App\Http\Responses\JsonResponse;
+use ArgumentCountError;
 use BadMethodCallException;
 use Error;
 use ErrorException;
@@ -51,7 +51,7 @@ class Handler extends ExceptionHandler
      *
      * @return void
      */
-    public function register(): void {
+    public function register() {
         $this->reportable(function (Throwable $e) {
             //
         });
@@ -65,7 +65,7 @@ class Handler extends ExceptionHandler
      * 
      * @return void
      */
-    public function render($request, Throwable $throwable): void {
+    public function render($request, Throwable $throwable) {
 
         $class = get_class($throwable);
 

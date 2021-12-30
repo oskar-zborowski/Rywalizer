@@ -33,7 +33,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot(): void {
+    public function boot() {
 
         $this->configureRateLimiting();
 
@@ -55,28 +55,28 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function configureRateLimiting(): void {
+    protected function configureRateLimiting() {
 
-        RateLimiter::for('api', function (Request $request) {
-            return Limit::none()->by($request->ip());
+        RateLimiter::for('web', function (Request $request) {
+            return Limit::perMinute(env('WEB_IP_RATE_LIMIT_PER_MINUTE'))->by($request->ip());
         });
 
-        RateLimiter::for('defaultLimit', function (Request $request) {
+        RateLimiter::for('api', function (Request $request) {
             return $request->user()
-                ? Limit::perMinute(env('DEFAULT_USER_RATE_LIMIT_PER_MINUTE'))->by($request->user()->id)
-                : Limit::perMinute(env('DEFAULT_IP_RATE_LIMIT_PER_MINUTE'))->by($request->ip());
+                ? Limit::perMinute(env('API_USER_RATE_LIMIT_PER_MINUTE'))->by($request->user()->id)
+                : Limit::perMinute(env('API_IP_RATE_LIMIT_PER_MINUTE'))->by($request->ip());
         });
 
         RateLimiter::for('loginLimit', function (Request $request) {
-            return Limit::perDay(2*env('DEFAULT_AUTH_RATE_LIMIT_PER_DAY'))->by($request->ip());
+            return Limit::perDay(2*env('API_AUTH_RATE_LIMIT_PER_DAY'))->by($request->ip());
         });
 
         RateLimiter::for('registerLimit', function (Request $request) {
-            return Limit::perDay(env('DEFAULT_AUTH_RATE_LIMIT_PER_DAY'))->by($request->ip());
+            return Limit::perDay(env('API_AUTH_RATE_LIMIT_PER_DAY'))->by($request->ip());
         });
 
         RateLimiter::for('githubLimit', function (Request $request) {
-            return Limit::perMinute(3)->by($request->ip());
+            return Limit::perMinute(env('API_GITHUB_RATE_LIMIT_PER_MINUTE'))->by($request->ip());
         });
     }
 }
