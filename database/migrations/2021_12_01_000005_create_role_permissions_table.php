@@ -17,7 +17,7 @@ class CreateRolePermissionsTable extends Migration
             $table->unsignedSmallInteger('role_id');
             $table->unsignedSmallInteger('permission_id');
             $table->unsignedMediumInteger('creator_id')->nullable();
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
         });
 
         Schema::table('role_permissions', function (Blueprint $table) {

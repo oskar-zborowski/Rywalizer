@@ -13,21 +13,17 @@ class CreatePicturesTable extends Migration
      */
     public function up() {
         Schema::create('pictures', function (Blueprint $table) {
-            $table->mediumIncrements('id');
-            $table->morphs('picturable');
+            $table->integerIncrements('id');
+            $table->morphs('imageable');
             $table->char('filename', 64)->unique(); // Kodowane natywnie
-            $table->unsignedMediumInteger('user_id')->nullable();
             $table->unsignedMediumInteger('creator_id')->nullable();
-            $table->unsignedMediumInteger('editor_id')->nullable();
             $table->unsignedMediumInteger('supervisor_id')->nullable();
-            $table->boolean('is_visible')->default(false);
+            $table->timestamp('visible_at')->nullable();
             $table->timestamps();
         });
 
         Schema::table('pictures', function (Blueprint $table) {
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
-            $table->foreign('editor_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('supervisor_id')->references('id')->on('users')->nullOnDelete();
         });
     }

@@ -14,7 +14,7 @@ class CreateAccountOperationsTable extends Migration
     public function up() {
         Schema::create('account_operations', function (Blueprint $table) {
             $table->mediumIncrements('id');
-            $table->unsignedMediumInteger('user_id');
+            $table->morphs('operationable');
             $table->unsignedSmallInteger('account_operation_type_id');
             $table->char('token', 64)->unique(); // Kodowane natywnie
             $table->unsignedTinyInteger('email_sending_counter')->default(1);
@@ -24,7 +24,6 @@ class CreateAccountOperationsTable extends Migration
         });
 
         Schema::table('account_operations', function (Blueprint $table) {
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreign('account_operation_type_id')->references('id')->on('default_types');
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('editor_id')->references('id')->on('users')->nullOnDelete();

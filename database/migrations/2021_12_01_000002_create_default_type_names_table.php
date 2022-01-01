@@ -14,7 +14,7 @@ class CreateDefaultTypeNamesTable extends Migration
     public function up() {
         Schema::create('default_type_names', function (Blueprint $table) {
             $table->tinyIncrements('id');
-            $table->string('name', 50);
+            $table->string('name', 50)->unique();
             $table->string('description', 250)->nullable();
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->unsignedMediumInteger('editor_id')->nullable();

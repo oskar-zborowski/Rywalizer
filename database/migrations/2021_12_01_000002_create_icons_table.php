@@ -18,7 +18,6 @@ class CreateIconsTable extends Migration
             $table->string('filename', 50)->unique();
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->unsignedMediumInteger('editor_id')->nullable();
-            $table->boolean('is_visible');
             $table->timestamps();
         });
 

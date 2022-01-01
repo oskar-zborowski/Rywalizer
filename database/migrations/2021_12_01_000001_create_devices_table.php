@@ -14,8 +14,8 @@ class CreateDevicesTable extends Migration
     public function up() {
         Schema::create('devices', function (Blueprint $table) {
             $table->integerIncrements('id');
+            $table->char('uuid', 64)->comment('Token zapisywany w ciasteczkach'); // Kodowane natywnie
             $table->char('ip', 20)->nullable(); // Kodowane natywnie
-            $table->char('uuid', 64); // Kodowane natywnie
             $table->char('os_name', 40)->nullable(); // Kodowane natywnie
             $table->char('os_version', 40)->nullable(); // Kodowane natywnie
             $table->char('browser_name', 40)->nullable(); // Kodowane natywnie

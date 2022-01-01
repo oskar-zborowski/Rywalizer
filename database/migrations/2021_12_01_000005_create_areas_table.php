@@ -21,7 +21,7 @@ class CreateAreasTable extends Migration
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->unsignedMediumInteger('editor_id')->nullable();
             $table->unsignedMediumInteger('supervisor_id')->nullable();
-            $table->boolean('is_visible')->default(false);
+            $table->timestamp('visible_at')->nullable();
             $table->timestamps();
         });
 
@@ -31,13 +31,6 @@ class CreateAreasTable extends Migration
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('editor_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('supervisor_id')->references('id')->on('users')->nullOnDelete();
-        });
-
-        Schema::table('users', function (Blueprint $table) {
-            $table->foreign('avatar_id')->references('id')->on('user_pictures');
-            $table->foreign('gender_id')->references('id')->on('default_types');
-            $table->foreign('role_id')->references('id')->on('default_types');
-            $table->foreign('city_id')->references('id')->on('areas');
         });
     }
 

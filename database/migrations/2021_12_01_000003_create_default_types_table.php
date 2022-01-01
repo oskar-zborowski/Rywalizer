@@ -28,9 +28,14 @@ class CreateDefaultTypesTable extends Migration
 
         Schema::table('default_types', function (Blueprint $table) {
             $table->foreign('default_type_name_id')->references('id')->on('default_type_names');
-            $table->foreign('icon_id')->references('id')->on('icons');
+            $table->foreign('icon_id')->references('id')->on('icons')->nullOnDelete();
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('editor_id')->references('id')->on('users')->nullOnDelete();
+        });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreign('gender_id')->references('id')->on('default_types');
+            $table->foreign('role_id')->references('id')->on('default_types');
         });
     }
 
