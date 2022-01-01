@@ -14,10 +14,11 @@ class CreatePartnersTable extends Migration
     public function up() {
         Schema::create('partners', function (Blueprint $table) {
             $table->smallIncrements('id');
-            $table->unsignedMediumInteger('user_id');
+            $table->unsignedMediumInteger('user_id')->nullable();
             $table->char('submerchant_id', 9)->unique()->nullable(); // Kodowane natywnie
+            $table->char('first_name', 40)->nullable(); // Kodowane natywnie
+            $table->char('last_name', 40)->nullable(); // Kodowane natywnie
             $table->string('business_name', 268)->nullable(); // Kodowane natywnie
-            $table->unsignedMediumInteger('logo_id')->unique()->nullable();
             $table->string('contact_email', 340)->nullable(); // Kodowane natywnie
             $table->string('invoice_email', 340)->nullable(); // Kodowane natywnie
             $table->char('telephone', 32)->nullable(); // Kodowane natywnie
@@ -34,22 +35,16 @@ class CreatePartnersTable extends Migration
             $table->timestamp('contact_email_verified_at')->nullable();
             $table->timestamp('invoice_email_verified_at')->nullable();
             $table->timestamp('telephone_verified_at')->nullable();
-            $table->timestamp('verified_at')->nullable();
-            $table->timestamp('deleted_at')->nullable();
+            $table->timestamp('verified_at')->nullable()->comment('Zweryfikowanie partnera jako zaufanego, a nie potencjalny oszust');
+            $table->timestamp('deleted_at')->nullable()->comment('Uzupełniane tylko w przypadku kiedy nie możemy usunąć partnera');
             $table->timestamps();
         });
 
         Schema::table('partners', function (Blueprint $table) {
-            $table->foreign('logo_id')->references('id')->on('partner_pictures')->nullOnDelete();
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
+            $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('city_id')->references('id')->on('areas');
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('editor_id')->references('id')->on('users')->nullOnDelete();
-        });
-
-        Schema::table('partner_pictures', function (Blueprint $table) {
-            $table->foreign('partner_id')->references('id')->on('partners')->cascadeOnDelete();
-            $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 

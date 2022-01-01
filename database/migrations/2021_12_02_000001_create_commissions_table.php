@@ -16,8 +16,8 @@ class CreateCommissionsTable extends Migration
             $table->tinyIncrements('id');
             $table->string('name', 50)->unique()->nullable();
             $table->string('description', 250)->nullable();
-            $table->string('signature', 30);
-            $table->unsignedTinyInteger('version');
+            $table->string('signature', 30)->comment('Nazwa serii, do której należy prowizja');
+            $table->unsignedTinyInteger('version')->comment('Numer porządkowy kolejnej wersji prowizji w danej serii');
             $table->unsignedFloat('value');
             $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();

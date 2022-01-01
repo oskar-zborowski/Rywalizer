@@ -16,8 +16,8 @@ class CreateAreasTable extends Migration
             $table->mediumIncrements('id');
             $table->string('name', 50);
             $table->polygon('boundary')->nullable();
-            $table->unsignedSmallInteger('area_type_id');
-            $table->unsignedMediumInteger('parent_id')->nullable();
+            $table->unsignedSmallInteger('area_type_id')->comment('Typ obszaru, np. województwo, powiat etc.');
+            $table->unsignedMediumInteger('parent_id')->nullable()->comment('ID obszaru o poziom wyżej, do którego należy bieżący obszar');
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->unsignedMediumInteger('editor_id')->nullable();
             $table->unsignedMediumInteger('supervisor_id')->nullable();

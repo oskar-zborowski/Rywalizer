@@ -14,7 +14,7 @@ class CreateAccountActionTypesTable extends Migration
     public function up() {
         Schema::create('account_action_types', function (Blueprint $table) {
             $table->tinyIncrements('id');
-            $table->unsignedSmallInteger('account_action_type_id')->unique();
+            $table->unsignedSmallInteger('account_action_type_id')->unique()->comment('Typ akcji, np. usunięcie konta, zbanowanie konta etc.');
             $table->unsignedMediumInteger('period')->nullable()->comment('Czas wyrażony w sekundach');
         });
 

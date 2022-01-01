@@ -14,11 +14,11 @@ class CreateDefaultTypesTable extends Migration
     public function up() {
         Schema::create('default_types', function (Blueprint $table) {
             $table->smallIncrements('id');
-            $table->unsignedTinyInteger('default_type_name_id');
+            $table->unsignedTinyInteger('default_type_name_id')->comment('Nazwa grupy domyślnych typów, np. genders, roles etc.');
             $table->string('name', 50)->nullable();
-            $table->string('description_simple', 250)->nullable();
-            $table->string('description_perfect', 250)->nullable();
-            $table->string('description_future', 250)->nullable();
+            $table->string('description_simple', 250)->nullable()->comment('Opis w czasie teraźniejszym');
+            $table->string('description_perfect', 250)->nullable()->comment('Opis w czasie dokonanym');
+            $table->string('description_future', 250)->nullable()->comment('Opis w czasie przyszłym');
             $table->unsignedSmallInteger('icon_id')->nullable();
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->unsignedMediumInteger('editor_id')->nullable();

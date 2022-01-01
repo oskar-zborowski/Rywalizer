@@ -15,17 +15,17 @@ class CreateRatingsTable extends Migration
         Schema::create('ratings', function (Blueprint $table) {
             $table->mediumIncrements('id');
             $table->morphs('evaluable');
+            $table->nullableMorphs('evaluator');
+            $table->unsignedMediumInteger('answer_to_id')->nullable()->comment('ID komentarza do którego bieżący komentarz się odnosi');
             $table->unsignedTinyInteger('rating')->nullable();
             $table->text('comment')->nullable();
-            $table->unsignedSmallInteger('usefulness')->default(0);
-            $table->unsignedMediumInteger('answer_to_id')->nullable();
-            $table->unsignedMediumInteger('user_id')->nullable();
+            $table->unsignedSmallInteger('positive_counter')->default(0)->comment('Liczba pozytywnych reakcji na komentarz');
+            $table->unsignedSmallInteger('negative_counter')->default(0)->comment('Liczba negatywnych reakcji na komentarz');
             $table->timestamps();
         });
 
         Schema::table('ratings', function (Blueprint $table) {
             $table->foreign('answer_to_id')->references('id')->on('ratings')->cascadeOnDelete();
-            $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 

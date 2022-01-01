@@ -15,7 +15,7 @@ class CreatePartnerSettingsTable extends Migration
         Schema::create('partner_settings', function (Blueprint $table) {
             $table->smallIncrements('id');
             $table->unsignedSmallInteger('partner_id');
-            $table->unsignedSmallInteger('partner_type_id');
+            $table->unsignedSmallInteger('partner_type_id')->comment('Typ partnera, np. partner obiektów sportowych, partner ogłoszeń etc.');
             $table->unsignedTinyInteger('commission_id');
             $table->unsignedSmallInteger('visible_name_id');
             $table->unsignedSmallInteger('visible_picture_id')->nullable();

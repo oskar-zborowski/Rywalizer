@@ -15,7 +15,7 @@ class CreateExternalAuthenticationsTable extends Migration
         Schema::create('external_authentications', function (Blueprint $table) {
             $table->mediumIncrements('id');
             $table->unsignedMediumInteger('user_id');
-            $table->string('external_authentication_id', 340); // Kodowane natywnie
+            $table->string('external_authentication_id', 340)->comment('ID otrzymane od serwisu uwierzytelniającego'); // Kodowane natywnie
             $table->unsignedSmallInteger('provider_id');
             $table->timestamp('created_at')->useCurrent();
         });

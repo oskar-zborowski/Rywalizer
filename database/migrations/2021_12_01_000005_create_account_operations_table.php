@@ -15,7 +15,7 @@ class CreateAccountOperationsTable extends Migration
         Schema::create('account_operations', function (Blueprint $table) {
             $table->mediumIncrements('id');
             $table->morphs('operationable');
-            $table->unsignedSmallInteger('account_operation_type_id');
+            $table->unsignedSmallInteger('account_operation_type_id')->comment('Typ operacji, np. reset hasła, weryfikacja maila etc.');
             $table->char('token', 64)->unique(); // Kodowane natywnie
             $table->unsignedTinyInteger('email_sending_counter')->default(1);
             $table->unsignedMediumInteger('creator_id')->nullable();

@@ -30,7 +30,6 @@ class CreateUsersTable extends Migration
             $table->timestamp('last_time_name_changed_at')->nullable()->comment('Data ostatniej zmiany imienia, bądź nazwiska');
             $table->timestamp('last_time_password_changed_at')->nullable();
             $table->timestamp('verified_at')->nullable()->comment('Zweryfikowanie użytkownika jako aktywnego, a nie potencjalne fake konto');
-            $table->timestamp('deleted_at')->nullable()->comment('Wypełniane tylko w przypadku, gdy nie możemy z różnych przyczyn usunąć użytkownika');
             $table->timestamps();
         });
     }
