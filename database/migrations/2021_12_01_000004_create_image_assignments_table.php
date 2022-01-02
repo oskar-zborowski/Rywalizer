@@ -15,7 +15,7 @@ class CreateImageAssignmentsTable extends Migration
         Schema::create('image_assignments', function (Blueprint $table) {
             $table->integerIncrements('id');
             $table->morphs('imageable');
-            $table->unsignedTinyInteger('image_type_id')->comment('Typ zdjęcia, np. avatar, zdjęcia obiektu etc.');
+            $table->unsignedSmallInteger('image_type_id')->comment('Typ zdjęcia, np. avatar, zdjęcia obiektu etc.');
             $table->unsignedInteger('image_id');
             $table->unsignedTinyInteger('number')->comment('Numer porządkowy zdjęcia w agregowanej grupie');
             $table->unsignedMediumInteger('creator_id')->nullable();

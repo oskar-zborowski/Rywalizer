@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePicturesTable extends Migration
+class CreateImagesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,7 +12,7 @@ class CreatePicturesTable extends Migration
      * @return void
      */
     public function up() {
-        Schema::create('pictures', function (Blueprint $table) {
+        Schema::create('images', function (Blueprint $table) {
             $table->integerIncrements('id');
             $table->morphs('imageable');
             $table->char('filename', 64)->unique(); // Kodowane natywnie
@@ -22,7 +22,7 @@ class CreatePicturesTable extends Migration
             $table->timestamps();
         });
 
-        Schema::table('pictures', function (Blueprint $table) {
+        Schema::table('images', function (Blueprint $table) {
             $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('supervisor_id')->references('id')->on('users')->nullOnDelete();
         });
@@ -34,6 +34,6 @@ class CreatePicturesTable extends Migration
      * @return void
      */
     public function down() {
-        Schema::dropIfExists('pictures');
+        Schema::dropIfExists('images');
     }
 }

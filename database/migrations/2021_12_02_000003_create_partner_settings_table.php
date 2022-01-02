@@ -18,7 +18,7 @@ class CreatePartnerSettingsTable extends Migration
             $table->unsignedSmallInteger('partner_type_id')->comment('Typ partnera, np. partner obiektów sportowych, partner ogłoszeń etc.');
             $table->unsignedTinyInteger('commission_id');
             $table->unsignedSmallInteger('visible_name_id');
-            $table->unsignedSmallInteger('visible_picture_id')->nullable();
+            $table->unsignedSmallInteger('visible_image_id')->nullable();
             $table->unsignedSmallInteger('visible_email_id')->nullable();
             $table->unsignedSmallInteger('visible_telephone_id')->nullable();
             $table->unsignedSmallInteger('visible_facebook_id')->nullable();
@@ -34,7 +34,7 @@ class CreatePartnerSettingsTable extends Migration
             $table->foreign('partner_type_id')->references('id')->on('default_types');
             $table->foreign('commission_id')->references('id')->on('commissions');
             $table->foreign('visible_name_id')->references('id')->on('default_types');
-            $table->foreign('visible_picture_id')->references('id')->on('default_types');
+            $table->foreign('visible_image_id')->references('id')->on('default_types');
             $table->foreign('visible_email_id')->references('id')->on('default_types');
             $table->foreign('visible_telephone_id')->references('id')->on('default_types');
             $table->foreign('visible_facebook_id')->references('id')->on('default_types');
