@@ -32,6 +32,12 @@ class CreateAreasTable extends Migration
             $table->foreign('editor_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('supervisor_id')->references('id')->on('users')->nullOnDelete();
         });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreign('gender_id')->references('id')->on('default_types');
+            $table->foreign('role_id')->references('id')->on('default_types');
+            $table->foreign('city_id')->references('id')->on('areas');
+        });
     }
 
     /**

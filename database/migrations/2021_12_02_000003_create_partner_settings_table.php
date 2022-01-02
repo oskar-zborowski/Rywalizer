@@ -24,8 +24,6 @@ class CreatePartnerSettingsTable extends Migration
             $table->unsignedSmallInteger('visible_facebook_id')->nullable();
             $table->unsignedSmallInteger('visible_instagram_id')->nullable();
             $table->unsignedSmallInteger('visible_website_id')->nullable();
-            $table->unsignedFloat('avarage_rating')->nullable();
-            $table->unsignedSmallInteger('ratings_number')->default(0);
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->unsignedMediumInteger('editor_id')->nullable();
             $table->timestamps();

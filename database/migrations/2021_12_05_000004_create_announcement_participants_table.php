@@ -18,6 +18,7 @@ class CreateAnnouncementParticipantsTable extends Migration
             $table->unsignedInteger('announcement_seat_id');
             $table->unsignedInteger('announcement_payment_id')->nullable();
             $table->timestamp('approved_at')->nullable();
+            $table->unsignedSmallInteger('booking_status_id'); // zamiast tego wyżej
             $table->timestamps();
         });
 

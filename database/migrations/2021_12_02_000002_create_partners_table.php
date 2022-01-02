@@ -29,6 +29,8 @@ class CreatePartnersTable extends Migration
             $table->char('street', 108)->nullable(); // Kodowane natywnie
             $table->char('post_code', 9)->nullable(); // Kodowane natywnie
             $table->unsignedMediumInteger('city_id')->nullable();
+            $table->unsignedFloat('avarage_rating')->nullable();
+            $table->unsignedSmallInteger('rating_counter')->default(0);
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->unsignedMediumInteger('editor_id')->nullable();
             $table->timestamp('przelewy24_verified_at')->nullable();

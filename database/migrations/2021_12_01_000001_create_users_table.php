@@ -22,6 +22,8 @@ class CreateUsersTable extends Migration
             $table->char('birth_date', 16)->nullable(); // Kodowane natywnie
             $table->unsignedSmallInteger('gender_id')->nullable();
             $table->unsignedSmallInteger('role_id');
+            $table->unsignedMediumInteger('city_id')->nullable();
+            $table->char('address_coordinates', 28)->nullable()->comment('Struktura: 12.3456789;12.3456789'); // Kodowane natywnie
             $table->string('facebook_profile', 340)->nullable(); // Kodowane natywnie
             $table->string('instagram_profile', 340)->nullable(); // Kodowane natywnie
             $table->string('website', 340)->nullable(); // Kodowane natywnie

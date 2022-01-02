@@ -21,7 +21,8 @@ class CreateFacilitySpecialOpeningHoursTable extends Migration
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->unsignedMediumInteger('editor_id')->nullable();
             $table->unsignedMediumInteger('supervisor_id')->nullable();
-            $table->boolean('is_visible')->default(false);
+            $table->boolean('is_closed');
+            $table->timestamp('visible_at')->nullable();
             $table->timestamps();
         });
 

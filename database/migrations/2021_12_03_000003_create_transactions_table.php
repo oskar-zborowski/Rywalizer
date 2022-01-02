@@ -15,16 +15,16 @@ class CreateTransactionsTable extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->integerIncrements('id');
             $table->morphs('transactionable');
-            $table->char('number', 40)->unique(); // Kodowane natywnie
-            $table->unsignedMediumInteger('total_amount');
-            $table->mediumInteger('system_amount');
-            $table->mediumInteger('partner_amount');
+            $table->char('number', 40)->unique()->comment('Numer transakcji, który może być jednocześnie numerem faktury'); // Kodowane natywnie
+            $table->unsignedMediumInteger('regular_price')->comment('Kwota wyrażona w groszach');
+            $table->unsignedMediumInteger('total_amount')->comment('Kwota wyrażona w groszach');
+            $table->mediumInteger('system_amount')->comment('Kwota wyrażona w groszach');
+            $table->mediumInteger('partner_amount')->comment('Kwota wyrażona w groszach');
             $table->char('order_id', 64)->nullable()->unique(); // Kodowane natywnie
             $table->char('session_id', 64)->unique(); // Kodowane natywnie
             $table->unsignedMediumInteger('discount_id')->nullable();
             $table->unsignedSmallInteger('transaction_status_id');
             $table->timestamp('confirmed_at')->nullable();
-            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
 

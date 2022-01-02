@@ -14,7 +14,7 @@ class CreateFacilityOpeningHoursTable extends Migration
     public function up() {
         Schema::create('facility_opening_hours', function (Blueprint $table) {
             $table->smallIncrements('id');
-            $table->unsignedSmallInteger('facility_id');
+            $table->unsignedSmallInteger('facility_id')->unique();
             $table->time('monday_from')->nullable();
             $table->time('monday_to')->nullable();
             $table->time('tuesday_from')->nullable();
@@ -32,7 +32,7 @@ class CreateFacilityOpeningHoursTable extends Migration
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->unsignedMediumInteger('editor_id')->nullable();
             $table->unsignedMediumInteger('supervisor_id')->nullable();
-            $table->boolean('is_visible')->default(false);
+            $table->timestamp('visible_at')->nullable();
             $table->timestamps();
         });
 

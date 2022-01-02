@@ -15,7 +15,7 @@ class CreateAccountActionsTable extends Migration
         Schema::create('account_actions', function (Blueprint $table) {
             $table->mediumIncrements('id');
             $table->morphs('actionable');
-            $table->unsignedTinyInteger('account_action_type_id');
+            $table->unsignedTinyInteger('account_action_type_id')->comment('Typ akcji, np. usunięcie konta, zbanowanie konta etc.');
             $table->dateTime('expires_at')->nullable();
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->unsignedMediumInteger('editor_id')->nullable();
