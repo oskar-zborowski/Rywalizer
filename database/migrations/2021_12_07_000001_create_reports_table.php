@@ -22,7 +22,6 @@ class CreateReportsTable extends Migration
             $table->unsignedSmallInteger('report_status_id');
             $table->dateTime('deadline_at')->nullable();
             $table->timestamp('fixed_at')->nullable();
-            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
 

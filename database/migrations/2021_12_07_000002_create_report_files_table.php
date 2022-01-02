@@ -16,7 +16,6 @@ class CreateReportFilesTable extends Migration
             $table->mediumIncrements('id');
             $table->unsignedMediumInteger('report_id');
             $table->char('filename', 64)->unique(); // Kodowane natywnie
-            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
 

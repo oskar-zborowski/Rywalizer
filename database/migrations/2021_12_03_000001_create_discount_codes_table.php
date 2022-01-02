@@ -26,7 +26,6 @@ class CreateDiscountCodesTable extends Migration
             $table->unsignedMediumInteger('editor_id')->nullable();
             $table->boolean('is_active');
             $table->boolean('is_visible');
-            $table->timestamp('deleted_at')->nullable()->comment('Uzupełniane tylko w przypadku kiedy nie możemy usunąć kodu rabatowego');
             $table->timestamps();
         });
 

@@ -17,7 +17,6 @@ class CreateDiscountsTable extends Migration
             $table->morphs('discountable');
             $table->unsignedMediumInteger('discount_code_id');
             $table->unsignedMediumInteger('creator_id')->nullable();
-            $table->timestamp('deleted_at')->nullable()->comment('Uzupełniane tylko w przypadku kiedy nie możemy usunąć obniżki');
             $table->timestamp('created_at')->useCurrent();
         });
 

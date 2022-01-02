@@ -15,17 +15,16 @@ class CreateAgreementsTable extends Migration
         Schema::create('agreements', function (Blueprint $table) {
             $table->mediumIncrements('id');
             $table->morphs('contractable');
-            $table->char('filename', 64); // Kodowane natywnie
+            $table->char('filename', 64)->unique(); // Kodowane natywnie
             $table->char('description', 136); // Kodowane natywnie
-            $table->char('signature', 40); // Kodowane natywnie
-            $table->unsignedTinyInteger('version');
-            $table->dateTime('effective_date');
-            $table->unsignedSmallInteger('agreement_type_id')->nullable();
+            $table->char('signature', 40)->comment('Nazwa serii, do której należy regulamin'); // Kodowane natywnie
+            $table->unsignedTinyInteger('version')->comment('Numer porządkowy kolejnej wersji regulaminu w danej serii');
+            $table->unsignedSmallInteger('agreement_type_id')->comment('Typ regulaminu, np. regulamin podczas rejestracji, regulamin przy dokonywaniu rezerwacji etc.');
+            $table->dateTime('effective_date')->comment('Data wejścia regulaminu w życie');
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->unsignedMediumInteger('editor_id')->nullable();
             $table->boolean('is_required');
             $table->boolean('is_visible');
-            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
 
