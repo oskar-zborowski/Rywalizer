@@ -19,7 +19,7 @@ class CreateReportsTable extends Migration
             $table->unsignedMediumInteger('supervisor_id')->nullable();
             $table->string('email', 340)->nullable(); // Kodowane natywnie
             $table->string('message', 6000); // Kodowane natywnie
-            $table->unsignedSmallInteger('report_status_id');
+            $table->unsignedSmallInteger('report_status_id')->comment('Status zgłoszenia, np. w trakcie przetwarzania, zakończono etc.');
             $table->dateTime('deadline_at')->nullable();
             $table->timestamp('fixed_at')->nullable();
             $table->timestamps();
