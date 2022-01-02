@@ -17,8 +17,7 @@ class CreateAnnouncementParticipantsTable extends Migration
             $table->unsignedMediumInteger('user_id')->nullable();
             $table->unsignedInteger('announcement_seat_id');
             $table->unsignedInteger('announcement_payment_id')->nullable();
-            $table->timestamp('approved_at')->nullable();
-            $table->unsignedSmallInteger('booking_status_id'); // zamiast tego wyżej
+            $table->unsignedSmallInteger('joining_status_id')->comment('Status dołączenia, np. zatwierdzone, odrzucone etc.');
             $table->timestamps();
         });
 
@@ -26,6 +25,7 @@ class CreateAnnouncementParticipantsTable extends Migration
             $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('announcement_seat_id')->references('id')->on('announcement_seats');
             $table->foreign('announcement_payment_id')->references('id')->on('announcement_payments');
+            $table->foreign('joining_status_id')->references('id')->on('default_types');
         });
     }
 

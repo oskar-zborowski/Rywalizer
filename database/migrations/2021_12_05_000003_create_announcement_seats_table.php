@@ -16,7 +16,7 @@ class CreateAnnouncementSeatsTable extends Migration
             $table->integerIncrements('id');
             $table->unsignedInteger('announcement_id');
             $table->unsignedTinyInteger('sports_position_id');
-            $table->unsignedTinyInteger('occupied_seats_number')->default(0);
+            $table->unsignedTinyInteger('occupied_seats_counter')->default(0);
             $table->unsignedTinyInteger('maximum_seats_number');
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->unsignedMediumInteger('editor_id')->nullable();

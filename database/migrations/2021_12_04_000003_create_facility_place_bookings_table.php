@@ -15,16 +15,16 @@ class CreateFacilityPlaceBookingsTable extends Migration
         Schema::create('facility_place_bookings', function (Blueprint $table) {
             $table->integerIncrements('id');
             $table->unsignedMediumInteger('user_id')->nullable();
-            $table->unsignedMediumInteger('facility_place_id');
+            $table->unsignedMediumInteger('facility_place_id')->nullable();
             $table->dateTime('start_date');
             $table->dateTime('end_date');
-            $table->unsignedSmallInteger('booking_status_id');
+            $table->unsignedSmallInteger('booking_status_id')->comment('Status rezerwacji, np. zaakceptowana, odrzucona etc.');
             $table->timestamps();
         });
 
         Schema::table('facility_place_bookings', function (Blueprint $table) {
             $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
-            $table->foreign('facility_place_id')->references('id')->on('facility_places');
+            $table->foreign('facility_place_id')->references('id')->on('facility_places')->nullOnDelete();
             $table->foreign('booking_status_id')->references('id')->on('default_types');
         });
     }

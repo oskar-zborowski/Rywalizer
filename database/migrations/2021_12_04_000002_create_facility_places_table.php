@@ -23,9 +23,8 @@ class CreateFacilityPlacesTable extends Migration
             $table->unsignedSmallInteger('maximum_unit_booking')->nullable()->comment('Maksymalna liczba jednostek dla dokonania rezerwacji');
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->unsignedMediumInteger('editor_id')->nullable();
-            $table->boolean('is_automatically_approved');
+            $table->boolean('is_automatically_approved')->comment('Flaga z informacją czy rezerwacje będą automatycznie zatwierdzane, czy trzeba je ręcznie zaakceptować');
             $table->boolean('is_visible');
-            $table->timestamp('deleted_at')->nullable()->comment('Uzupełniane tylko w przypadku kiedy nie możemy usunąć miejsca w obiekcie');
             $table->timestamps();
         });
 

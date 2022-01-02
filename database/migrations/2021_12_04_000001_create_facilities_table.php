@@ -35,14 +35,13 @@ class CreateFacilitiesTable extends Migration
             $table->unsignedMediumInteger('price_from')->nullable();
             $table->unsignedFloat('occupancy_level')->default(0);
             $table->unsignedFloat('avarage_rating')->nullable();
-            $table->unsignedSmallInteger('ratings_counter')->default(0);
+            $table->unsignedSmallInteger('rating_counter')->default(0);
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->unsignedMediumInteger('editor_id')->nullable();
             $table->unsignedMediumInteger('supervisor_id')->nullable();
             $table->timestamp('contact_email_verified_at')->nullable();
             $table->timestamp('telephone_verified_at')->nullable();
             $table->timestamp('visible_at')->nullable();
-            $table->timestamp('deleted_at')->nullable()->comment('Uzupełniane tylko w przypadku kiedy nie możemy usunąć obiektu');
             $table->timestamps();
         });
 
