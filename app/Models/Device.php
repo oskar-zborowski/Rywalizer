@@ -9,8 +9,6 @@ class Device extends BaseModel
     use Encryptable;
 
     protected $fillable = [
-        'ip',
-        'uuid',
         'os_name',
         'os_version',
         'browser_name',
@@ -19,14 +17,16 @@ class Device extends BaseModel
 
     protected $guarded = [
         'id',
+        'uuid',
+        'ip',
         'created_at',
         'updated_at'
     ];
 
     protected $hidden = [
         'id',
-        'ip',
         'uuid',
+        'ip',
         'os_name',
         'os_version',
         'browser_name',
@@ -41,15 +41,19 @@ class Device extends BaseModel
     ];
 
     protected $encryptable = [
-        'ip' => 15,
         'uuid' => 48,
-        'os_name' => 15,
-        'os_version' => 24,
-        'browser_name' => 18,
-        'browser_version' => 24
+        'ip' => 15,
+        'os_name' => 30,
+        'os_version' => 30,
+        'browser_name' => 30,
+        'browser_version' => 30
     ];
 
     public function authentication() {
         return $this->hasMany(Authentication::class);
+    }
+
+    public function registeredGuestAction() {
+        return $this->hasMany(RegisteredGuestAction::class);
     }
 }

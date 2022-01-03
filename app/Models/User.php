@@ -7,6 +7,7 @@ use App\Http\ErrorCodes\AuthErrorCode;
 use App\Http\ErrorCodes\BaseErrorCode;
 use App\Http\Libraries\Encrypter\Encrypter;
 use App\Http\Libraries\Validation\Validation;
+use App\Http\Permissions\RolePermission;
 use App\Http\Responses\JsonResponse;
 use App\Http\Traits\Encryptable;
 use App\Mail\AccountRestoration as MailAccountRestoration;
@@ -29,22 +30,25 @@ class User extends Authenticatable implements MustVerifyEmail
         'first_name',
         'last_name',
         'email',
-        'password',
-        'avatar',
-        'birth_date',
-        'address_coordinates',
         'telephone',
+        'password',
+        'birth_date',
+        'gender_id',
+        'city_id',
+        'address_coordinates',
         'facebook_profile',
         'instagram_profile',
-        'gender_type_id',
-        'role_type_id',
-        'email_verified_at',
-        'last_time_name_changed',
-        'last_time_password_changed'
+        'website'
     ];
 
     protected $guarded = [
         'id',
+        'role_id',
+        'email_verified_at',
+        'telephone_verified_at',
+        'last_time_name_changed',
+        'last_time_password_changed',
+        'verified_at',
         'created_at',
         'updated_at'
     ];
@@ -54,26 +58,31 @@ class User extends Authenticatable implements MustVerifyEmail
         'first_name',
         'last_name',
         'email',
-        'password',
-        'avatar',
-        'birth_date',
-        'address_coordinates',
         'telephone',
+        'password',
+        'birth_date',
+        'gender_id',
+        'role_id',
+        'city_id',
+        'address_coordinates',
         'facebook_profile',
         'instagram_profile',
-        'gender_type_id',
-        'role_type_id',
+        'website',
         'email_verified_at',
+        'telephone_verified_at',
         'last_time_name_changed',
         'last_time_password_changed',
+        'verified_at',
         'created_at',
         'updated_at'
     ];
 
     protected $casts = [
         'email_verified_at' => 'string',
+        'telephone_verified_at' => 'string',
         'last_time_name_changed' => 'string',
         'last_time_password_changed' => 'string',
+        'verified' => 'string',
         'created_at' => 'string',
         'updated_at' => 'string'
     ];
@@ -82,40 +91,104 @@ class User extends Authenticatable implements MustVerifyEmail
         'first_name' => 30,
         'last_name' => 30,
         'email' => 254,
-        'avatar' => 48,
-        'birth_date' => 10,
-        'address_coordinates' => 15,
         'telephone' => 24,
+        'birth_date' => 10,
+        'address_coordinates' => 21,
         'facebook_profile' => 255,
-        'instagram_profile' => 255
+        'instagram_profile' => 255,
+        'website' => 255
     ];
 
-    protected $filters = [
-        'sort',
-        'greater',
-        'greater_or_equal',
-        'less',
-        'less_or_equal',
-        'between',
-        'not_between',
-        'in',
-        'like'
-    ];
-
-    public function genderType() {
-        return $this->belongsTo(GenderType::class);
+    public function gender() {
+        return $this->belongsTo(DefaultType::class, 'id');
     }
 
-    public function roleType() {
-        return $this->belongsTo(RoleType::class);
+    public function role() {
+        return $this->belongsTo(DefaultType::class, 'id');
     }
 
-    public function accountAction() {
-        return $this->hasMany(AccountAction::class);
+    public function city() {
+        return $this->belongsTo(Area::class, 'id');
     }
 
-    public function accountOperation() {
-        return $this->hasMany(AccountOperation::class);
+    public function defaultTypeNameCreator() {
+        return $this->hasMany(DefaultTypeName::class, 'creator_id');
+    }
+
+    public function defaultTypeNameEditor() {
+        return $this->hasMany(DefaultTypeName::class, 'editor_id');
+    }
+
+    public function FriendRequestingUser() {
+        return $this->hasMany(Friend::class, 'requesting_user_id');
+    }
+
+    public function FriendRespondingUser() {
+        return $this->hasMany(Friend::class, 'responding_user_id');
+    }
+
+    public function iconCreator() {
+        return $this->hasMany(Icon::class, 'creator_id');
+    }
+
+    public function iconEditor() {
+        return $this->hasMany(Icon::class, 'editor_id');
+    }
+
+    public function imageCreator() {
+        return $this->hasMany(Image::class, 'creator_id');
+    }
+
+    public function imageSupervisor() {
+        return $this->hasMany(Image::class, 'supervisor_id');
+    }
+
+    public function userSetting() {
+        return $this->hasOne(UserSetting::class);
+    }
+
+    public function defaultTypeCreator() {
+        return $this->hasMany(DefaultType::class, 'creator_id');
+    }
+
+    public function defaultTypeEditor() {
+        return $this->hasMany(DefaultType::class, 'editor_id');
+    }
+
+    public function imageAssignmentCreator() {
+        return $this->hasMany(ImageAssignment::class, 'creator_id');
+    }
+
+    public function imageAssignmentEditor() {
+        return $this->hasMany(ImageAssignment::class, 'editor_id');
+    }
+
+    public function accountActionCreator() {
+        return $this->hasMany(AccountAction::class, 'creator_id');
+    }
+
+    public function accountActionEditor() {
+        return $this->hasMany(AccountAction::class, 'editor_id');
+    }
+
+    public function accountOperationCreator() {
+        return $this->hasMany(AccountOperation::class, 'creator_id');
+    }
+
+    public function accountOperationEditor() {
+        return $this->hasMany(AccountOperation::class, 'editor_id');
+    }
+
+    public function areaCreator() {
+        return $this->hasMany(Area::class, 'creator_id');
+    }
+
+    public function areaEditor() {
+        return $this->hasMany(Area::class, 'editor_id');
+    }
+
+    public function areaSupervisor() {
+        return $this->hasMany(Area::class, 'supervisor_id');
     }
 
     public function authentication() {
@@ -126,8 +199,192 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(ExternalAuthentication::class);
     }
 
-    public function personalAccessToken() {
-        return $this->hasMany(PersonalAccessToken::class, 'tokenable_id');
+    public function rolePermissionCreator() {
+        return $this->hasMany(RolePermission::class, 'creator_id');
+    }
+
+    public function commissionCreator() {
+        return $this->hasMany(Commission::class, 'creator_id');
+    }
+
+    public function commissionEditor() {
+        return $this->hasMany(Commission::class, 'editor_id');
+    }
+
+    public function partner() {
+        return $this->hasMany(Partner::class);
+    }
+
+    public function partnerCreator() {
+        return $this->hasMany(Partner::class, 'creator_id');
+    }
+
+    public function partnerEditor() {
+        return $this->hasMany(Partner::class, 'editor_id');
+    }
+
+    public function partnerSettingCreator() {
+        return $this->hasMany(PartnerSetting::class, 'creator_id');
+    }
+
+    public function partnerSettingEditor() {
+        return $this->hasMany(PartnerSetting::class, 'editor_id');
+    }
+
+    public function discountCodeCreator() {
+        return $this->hasMany(DiscountCode::class, 'creator_id');
+    }
+
+    public function discountCodeEditor() {
+        return $this->hasMany(DiscountCode::class, 'editor_id');
+    }
+
+    public function discountCreator() {
+        return $this->hasMany(Discount::class, 'creator_id');
+    }
+
+    public function facilityCreator() {
+        return $this->hasMany(Facility::class, 'creator_id');
+    }
+
+    public function facilityEditor() {
+        return $this->hasMany(Facility::class, 'editor_id');
+    }
+
+    public function facilitySupervisor() {
+        return $this->hasMany(Facility::class, 'supervisor_id');
+    }
+
+    public function facilityAvailableSportCreator() {
+        return $this->hasMany(FacilityAvailableSport::class, 'creator_id');
+    }
+
+    public function facilityAvailableSportEditor() {
+        return $this->hasMany(FacilityAvailableSport::class, 'editor_id');
+    }
+
+    public function facilityAvailableSportSupervisor() {
+        return $this->hasMany(FacilityAvailableSport::class, 'supervisor_id');
+    }
+
+    public function facilityEquipmentCreator() {
+        return $this->hasMany(FacilityEquipment::class, 'creator_id');
+    }
+
+    public function facilityEquipmentEditor() {
+        return $this->hasMany(FacilityEquipment::class, 'editor_id');
+    }
+
+    public function facilityEquipmentSupervisor() {
+        return $this->hasMany(FacilityEquipment::class, 'supervisor_id');
+    }
+
+    public function facilityOpeningHourCreator() {
+        return $this->hasMany(FacilityOpeningHour::class, 'creator_id');
+    }
+
+    public function facilityOpeningHourEditor() {
+        return $this->hasMany(FacilityOpeningHour::class, 'editor_id');
+    }
+
+    public function facilityOpeningHourSupervisor() {
+        return $this->hasMany(FacilityOpeningHour::class, 'supervisor_id');
+    }
+
+    public function facilityPlaceCreator() {
+        return $this->hasMany(FacilityPlace::class, 'creator_id');
+    }
+
+    public function facilityPlaceEditor() {
+        return $this->hasMany(FacilityPlace::class, 'editor_id');
+    }
+
+    public function facilitySpecialOpeningHourCreator() {
+        return $this->hasMany(FacilitySpecialOpeningHour::class, 'creator_id');
+    }
+
+    public function facilitySpecialOpeningHourEditor() {
+        return $this->hasMany(FacilitySpecialOpeningHour::class, 'editor_id');
+    }
+
+    public function facilitySpecialOpeningHourSupervisor() {
+        return $this->hasMany(FacilitySpecialOpeningHour::class, 'supervisor_id');
+    }
+
+    public function facilityPlaceBooking() {
+        return $this->hasMany(FacilityPlaceBooking::class);
+    }
+
+    public function minimumSkillLevelCreator() {
+        return $this->hasMany(MinimumSkillLevel::class, 'creator_id');
+    }
+
+    public function minimumSkillLevelEditor() {
+        return $this->hasMany(MinimumSkillLevel::class, 'editor_id');
+    }
+
+    public function minimumSkillLevelSupervisor() {
+        return $this->hasMany(MinimumSkillLevel::class, 'supervisor_id');
+    }
+
+    public function sportsPositionCreator() {
+        return $this->hasMany(SportsPosition::class, 'creator_id');
+    }
+
+    public function sportsPositionEditor() {
+        return $this->hasMany(SportsPosition::class, 'editor_id');
+    }
+
+    public function sportsPositionSupervisor() {
+        return $this->hasMany(SportsPosition::class, 'supervisor_id');
+    }
+
+    public function announcementCreator() {
+        return $this->hasMany(Announcement::class, 'creator_id');
+    }
+
+    public function announcementEditor() {
+        return $this->hasMany(Announcement::class, 'editor_id');
+    }
+
+    public function announcementPaymentCreator() {
+        return $this->hasMany(AnnouncementPayment::class, 'creator_id');
+    }
+
+    public function announcementPaymentEditor() {
+        return $this->hasMany(AnnouncementPayment::class, 'editor_id');
+    }
+
+    public function announcementSeatCreator() {
+        return $this->hasMany(AnnouncementSeat::class, 'creator_id');
+    }
+
+    public function announcementSeatEditor() {
+        return $this->hasMany(AnnouncementSeat::class, 'editor_id');
+    }
+
+    public function announcementParticipant() {
+        return $this->hasMany(AnnouncementParticipant::class);
+    }
+
+    public function agreementCreator() {
+        return $this->hasMany(Agreement::class, 'creator_id');
+    }
+
+    public function agreementEditor() {
+        return $this->hasMany(Agreement::class, 'editor_id');
+    }
+
+    public function userAgreement() {
+        return $this->hasMany(UserAgreement::class);
+    }
+
+    public function report() {
+        return $this->hasMany(Report::class);
+    }
+
+    public function reportSupervisor() {
+        return $this->hasMany(Report::class, 'supervisor_id');
     }
 
     /**

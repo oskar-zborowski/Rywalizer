@@ -18,7 +18,7 @@ class CreateUsersTable extends Migration
             $table->char('last_name', 40); // Kodowane natywnie
             $table->string('email', 340)->unique()->nullable(); // Kodowane natywnie
             $table->char('telephone', 32)->unique()->nullable(); // Kodowane natywnie
-            $table->char('password', 60)->nullable(); // Kodowane natywnie
+            $table->char('password', 60)->nullable(); // Kodowane przez dostawcę
             $table->char('birth_date', 16)->nullable(); // Kodowane natywnie
             $table->unsignedSmallInteger('gender_id')->nullable();
             $table->unsignedSmallInteger('role_id');

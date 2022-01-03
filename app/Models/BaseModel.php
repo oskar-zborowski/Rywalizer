@@ -10,15 +10,15 @@ class BaseModel extends Model
 {
     use FilterQueryString, HasFactory;
 
-    protected $filters = [
-        'sort',
-        'greater',
-        'greater_or_equal',
-        'less',
-        'less_or_equal',
-        'between',
-        'not_between',
-        'in',
-        'like'
-    ];
+    // protected $filters = [
+    //     'sort',
+    //     'greater',
+    //     'greater_or_equal',
+    //     'less',
+    //     'less_or_equal',
+    //     'between',
+    //     'not_between',
+    //     'in',
+    //     'like'
+    // ];
 }
