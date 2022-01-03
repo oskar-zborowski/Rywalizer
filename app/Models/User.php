@@ -82,7 +82,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'telephone_verified_at' => 'string',
         'last_time_name_changed' => 'string',
         'last_time_password_changed' => 'string',
-        'verified' => 'string',
+        'verified_at' => 'string',
         'created_at' => 'string',
         'updated_at' => 'string'
     ];
@@ -100,46 +100,50 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     public function gender() {
-        return $this->belongsTo(DefaultType::class, 'id');
+        return $this->belongsTo(DefaultType::class, 'gender_id', 'id');
     }
 
     public function role() {
-        return $this->belongsTo(DefaultType::class, 'id');
+        return $this->belongsTo(DefaultType::class, 'role_id', 'id');
     }
 
     public function city() {
-        return $this->belongsTo(Area::class, 'id');
+        return $this->belongsTo(Area::class, 'city_id', 'id');
     }
 
-    public function defaultTypeNameCreator() {
+    public function images() {
+        return $this->morphMany(Image::class, 'imageable');
+    }
+
+    public function defaultTypeNamesByCreator() {
         return $this->hasMany(DefaultTypeName::class, 'creator_id');
     }
 
-    public function defaultTypeNameEditor() {
+    public function defaultTypeNamesByEditor() {
         return $this->hasMany(DefaultTypeName::class, 'editor_id');
     }
 
-    public function FriendRequestingUser() {
+    public function friendsByRequestingUser() {
         return $this->hasMany(Friend::class, 'requesting_user_id');
     }
 
-    public function FriendRespondingUser() {
+    public function friendsByRespondingUser() {
         return $this->hasMany(Friend::class, 'responding_user_id');
     }
 
-    public function iconCreator() {
+    public function iconsByCreator() {
         return $this->hasMany(Icon::class, 'creator_id');
     }
 
-    public function iconEditor() {
+    public function iconsByEditor() {
         return $this->hasMany(Icon::class, 'editor_id');
     }
 
-    public function imageCreator() {
+    public function imagesByCreator() {
         return $this->hasMany(Image::class, 'creator_id');
     }
 
-    public function imageSupervisor() {
+    public function imagesBySupervisor() {
         return $this->hasMany(Image::class, 'supervisor_id');
     }
 
@@ -147,243 +151,243 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(UserSetting::class);
     }
 
-    public function defaultTypeCreator() {
+    public function defaultTypesByCreator() {
         return $this->hasMany(DefaultType::class, 'creator_id');
     }
 
-    public function defaultTypeEditor() {
+    public function defaultTypesByEditor() {
         return $this->hasMany(DefaultType::class, 'editor_id');
     }
 
-    public function imageAssignmentCreator() {
+    public function imagesAssignmentByCreator() {
         return $this->hasMany(ImageAssignment::class, 'creator_id');
     }
 
-    public function imageAssignmentEditor() {
+    public function imagesAssignmentByEditor() {
         return $this->hasMany(ImageAssignment::class, 'editor_id');
     }
 
-    public function accountActionCreator() {
+    public function accountsActionsByCreator() {
         return $this->hasMany(AccountAction::class, 'creator_id');
     }
 
-    public function accountActionEditor() {
+    public function accountsActionsByEditor() {
         return $this->hasMany(AccountAction::class, 'editor_id');
     }
 
-    public function accountOperationCreator() {
+    public function accountsOperationsByCreator() {
         return $this->hasMany(AccountOperation::class, 'creator_id');
     }
 
-    public function accountOperationEditor() {
+    public function accountsOperationsByEditor() {
         return $this->hasMany(AccountOperation::class, 'editor_id');
     }
 
-    public function areaCreator() {
+    public function areasByCreator() {
         return $this->hasMany(Area::class, 'creator_id');
     }
 
-    public function areaEditor() {
+    public function areasByEditor() {
         return $this->hasMany(Area::class, 'editor_id');
     }
 
-    public function areaSupervisor() {
+    public function areasBySupervisor() {
         return $this->hasMany(Area::class, 'supervisor_id');
     }
 
-    public function authentication() {
+    public function authentications() {
         return $this->hasMany(Authentication::class);
     }
 
-    public function externalAuthentication() {
+    public function externalAuthentications() {
         return $this->hasMany(ExternalAuthentication::class);
     }
 
-    public function rolePermissionCreator() {
+    public function rolePermissionsByCreator() {
         return $this->hasMany(RolePermission::class, 'creator_id');
     }
 
-    public function commissionCreator() {
+    public function commissionsByCreator() {
         return $this->hasMany(Commission::class, 'creator_id');
     }
 
-    public function commissionEditor() {
+    public function commissionsByEditor() {
         return $this->hasMany(Commission::class, 'editor_id');
     }
 
-    public function partner() {
+    public function partners() {
         return $this->hasMany(Partner::class);
     }
 
-    public function partnerCreator() {
+    public function partnersByCreator() {
         return $this->hasMany(Partner::class, 'creator_id');
     }
 
-    public function partnerEditor() {
+    public function partnersByEditor() {
         return $this->hasMany(Partner::class, 'editor_id');
     }
 
-    public function partnerSettingCreator() {
+    public function partnersSettingsByCreator() {
         return $this->hasMany(PartnerSetting::class, 'creator_id');
     }
 
-    public function partnerSettingEditor() {
+    public function partnersSettingsByEditor() {
         return $this->hasMany(PartnerSetting::class, 'editor_id');
     }
 
-    public function discountCodeCreator() {
+    public function discountCodesByCreator() {
         return $this->hasMany(DiscountCode::class, 'creator_id');
     }
 
-    public function discountCodeEditor() {
+    public function discountCodesByEditor() {
         return $this->hasMany(DiscountCode::class, 'editor_id');
     }
 
-    public function discountCreator() {
+    public function discountsByCreator() {
         return $this->hasMany(Discount::class, 'creator_id');
     }
 
-    public function facilityCreator() {
+    public function facilitiesByCreator() {
         return $this->hasMany(Facility::class, 'creator_id');
     }
 
-    public function facilityEditor() {
+    public function facilitiesByEditor() {
         return $this->hasMany(Facility::class, 'editor_id');
     }
 
-    public function facilitySupervisor() {
+    public function facilitiesBySupervisor() {
         return $this->hasMany(Facility::class, 'supervisor_id');
     }
 
-    public function facilityAvailableSportCreator() {
+    public function facilitiesAvailableSportsByCreator() {
         return $this->hasMany(FacilityAvailableSport::class, 'creator_id');
     }
 
-    public function facilityAvailableSportEditor() {
+    public function facilitiesAvailableSportsByEditor() {
         return $this->hasMany(FacilityAvailableSport::class, 'editor_id');
     }
 
-    public function facilityAvailableSportSupervisor() {
+    public function facilitiesAvailableSportsBySupervisor() {
         return $this->hasMany(FacilityAvailableSport::class, 'supervisor_id');
     }
 
-    public function facilityEquipmentCreator() {
+    public function facilitiesEquipmentByCreator() {
         return $this->hasMany(FacilityEquipment::class, 'creator_id');
     }
 
-    public function facilityEquipmentEditor() {
+    public function facilitiesEquipmentByEditor() {
         return $this->hasMany(FacilityEquipment::class, 'editor_id');
     }
 
-    public function facilityEquipmentSupervisor() {
+    public function facilitiesEquipmentBySupervisor() {
         return $this->hasMany(FacilityEquipment::class, 'supervisor_id');
     }
 
-    public function facilityOpeningHourCreator() {
+    public function facilitiesOpeningHoursByCreator() {
         return $this->hasMany(FacilityOpeningHour::class, 'creator_id');
     }
 
-    public function facilityOpeningHourEditor() {
+    public function facilitiesOpeningHoursByEditor() {
         return $this->hasMany(FacilityOpeningHour::class, 'editor_id');
     }
 
-    public function facilityOpeningHourSupervisor() {
+    public function facilitiesOpeningHoursBySupervisor() {
         return $this->hasMany(FacilityOpeningHour::class, 'supervisor_id');
     }
 
-    public function facilityPlaceCreator() {
+    public function facilitiesPlacesByCreator() {
         return $this->hasMany(FacilityPlace::class, 'creator_id');
     }
 
-    public function facilityPlaceEditor() {
+    public function facilitiesPlacesByEditor() {
         return $this->hasMany(FacilityPlace::class, 'editor_id');
     }
 
-    public function facilitySpecialOpeningHourCreator() {
+    public function facilitiesSpecialOpeningHoursByCreator() {
         return $this->hasMany(FacilitySpecialOpeningHour::class, 'creator_id');
     }
 
-    public function facilitySpecialOpeningHourEditor() {
+    public function facilitiesSpecialOpeningHoursByEditor() {
         return $this->hasMany(FacilitySpecialOpeningHour::class, 'editor_id');
     }
 
-    public function facilitySpecialOpeningHourSupervisor() {
+    public function facilitiesSpecialOpeningHoursBySupervisor() {
         return $this->hasMany(FacilitySpecialOpeningHour::class, 'supervisor_id');
     }
 
-    public function facilityPlaceBooking() {
+    public function facilitiesPlacesBookings() {
         return $this->hasMany(FacilityPlaceBooking::class);
     }
 
-    public function minimumSkillLevelCreator() {
+    public function minimumSkillLevelsByCreator() {
         return $this->hasMany(MinimumSkillLevel::class, 'creator_id');
     }
 
-    public function minimumSkillLevelEditor() {
+    public function minimumSkillLevelsByEditor() {
         return $this->hasMany(MinimumSkillLevel::class, 'editor_id');
     }
 
-    public function minimumSkillLevelSupervisor() {
+    public function minimumSkillLevelsBySupervisor() {
         return $this->hasMany(MinimumSkillLevel::class, 'supervisor_id');
     }
 
-    public function sportsPositionCreator() {
+    public function sportsPositionsByCreator() {
         return $this->hasMany(SportsPosition::class, 'creator_id');
     }
 
-    public function sportsPositionEditor() {
+    public function sportsPositionsByEditor() {
         return $this->hasMany(SportsPosition::class, 'editor_id');
     }
 
-    public function sportsPositionSupervisor() {
+    public function sportsPositionsBySupervisor() {
         return $this->hasMany(SportsPosition::class, 'supervisor_id');
     }
 
-    public function announcementCreator() {
+    public function announcementsByCreator() {
         return $this->hasMany(Announcement::class, 'creator_id');
     }
 
-    public function announcementEditor() {
+    public function announcementsByEditor() {
         return $this->hasMany(Announcement::class, 'editor_id');
     }
 
-    public function announcementPaymentCreator() {
+    public function announcementsPaymentsByCreator() {
         return $this->hasMany(AnnouncementPayment::class, 'creator_id');
     }
 
-    public function announcementPaymentEditor() {
+    public function announcementsPaymentsByEditor() {
         return $this->hasMany(AnnouncementPayment::class, 'editor_id');
     }
 
-    public function announcementSeatCreator() {
+    public function announcementsSeatsByCreator() {
         return $this->hasMany(AnnouncementSeat::class, 'creator_id');
     }
 
-    public function announcementSeatEditor() {
+    public function announcementsSeatsByEditor() {
         return $this->hasMany(AnnouncementSeat::class, 'editor_id');
     }
 
-    public function announcementParticipant() {
+    public function announcementsParticipants() {
         return $this->hasMany(AnnouncementParticipant::class);
     }
 
-    public function agreementCreator() {
+    public function agreementsByCreator() {
         return $this->hasMany(Agreement::class, 'creator_id');
     }
 
-    public function agreementEditor() {
+    public function agreementsByEditor() {
         return $this->hasMany(Agreement::class, 'editor_id');
     }
 
-    public function userAgreement() {
+    public function userAgreements() {
         return $this->hasMany(UserAgreement::class);
     }
 
-    public function report() {
+    public function reports() {
         return $this->hasMany(Report::class);
     }
 
-    public function reportSupervisor() {
+    public function reportsBySupervisor() {
         return $this->hasMany(Report::class, 'supervisor_id');
     }
 

@@ -49,11 +49,11 @@ class Device extends BaseModel
         'browser_version' => 30
     ];
 
-    public function authentication() {
+    public function authentications() {
         return $this->hasMany(Authentication::class);
     }
 
-    public function registeredGuestAction() {
+    public function registeredGuestActions() {
         return $this->hasMany(RegisteredGuestAction::class);
     }
 }

@@ -2,32 +2,34 @@
 
 namespace App\Models;
 
-use App\Http\Traits\Encryptable;
-
 class AccountActionType extends BaseModel
 {
-    use Encryptable;
-
-    protected $guarded = [
-        'id',
-        'name',
-        'description',
-        'description_admin',
+    protected $fillable = [
         'period'
     ];
 
+    protected $guarded = [
+        'id',
+        'account_action_type_id'
+    ];
+
     protected $hidden = [
-        'name',
-        'description'
+        'id',
+        'account_action_type_id',
+        'period'
     ];
 
-    protected $encryptable = [
-        'name' => 27,
-        'description' => 39,
-        'description_admin' => 27
+    protected $casts = [
+        'period' => 'int'
     ];
 
-    public function accountAction() {
+    public $timestamps = false;
+
+    public function accountActionType() {
+        return $this->belongsTo(DefaultType::class, 'account_action_type_id');
+    }
+
+    public function accountsActions() {
         return $this->hasMany(AccountAction::class);
     }
 }
