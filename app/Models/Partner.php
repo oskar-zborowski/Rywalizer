@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use App\Http\Traits\Encryptable;
+
 class Partner extends BaseModel
 {
+    use Encryptable;
+
     protected $fillable = [
         'first_name',
         'last_name',
@@ -80,6 +84,22 @@ class Partner extends BaseModel
         'deleted_at' => 'string',
         'created_at' => 'string',
         'updated_at' => 'string'
+    ];
+
+    protected $encryptable = [
+        'submerchant_id' => 6,
+        'first_name' => 30,
+        'last_name' => 30,
+        'business_name' => 200,
+        'contact_email' => 254,
+        'invoice_email' => 254,
+        'telephone' => 24,
+        'facebook_profile' => 255,
+        'instagram_profile' => 255,
+        'website' => 255,
+        'nip' => 10,
+        'street' => 80,
+        'post_code' => 5,
     ];
 
     public function user() {
