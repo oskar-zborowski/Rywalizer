@@ -11,25 +11,28 @@ class AccountOperation extends BaseModel
 {
     use Encryptable;
 
-    protected $fillable = [
-        'account_operation_type_id',
-        'token',
-        'email_sending_counter'
-    ];
-
     protected $guarded = [
         'id',
-        'user_id',
+        'operationable_type',
+        'operationable_id',
+        'account_operation_type_id',
+        'token',
+        'email_sending_counter',
+        'creator_id',
+        'editor_id',
         'created_at',
         'updated_at'
     ];
 
     protected $hidden = [
         'id',
-        'user_id',
+        'operationable_type',
+        'operationable_id',
         'account_operation_type_id',
         'token',
         'email_sending_counter',
+        'creator_id',
+        'editor_id',
         'created_at',
         'updated_at'
     ];
@@ -43,16 +46,20 @@ class AccountOperation extends BaseModel
         'token' => 48
     ];
 
-    protected $with = [
-        'accountOperationType'
-    ];
-
-    public function user() {
-        return $this->belongsTo(User::class);
+    public function operationable() {
+        return $this->morphTo();
     }
 
     public function accountOperationType() {
-        return $this->belongsTo(AccountOperationType::class);
+        return $this->belongsTo(DefaultType::class, 'account_operation_type_id');
+    }
+
+    public function creator() {
+        return $this->belongsTo(User::class, 'creator_id');
+    }
+
+    public function editor() {
+        return $this->belongsTo(User::class, 'editor_id');
     }
 
     /**

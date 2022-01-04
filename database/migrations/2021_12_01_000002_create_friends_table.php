@@ -19,6 +19,7 @@ class CreateFriendsTable extends Migration
             $table->timestamp('responding_user_displayed_at')->nullable()->comment('Data kiedy użytkownik wyświetlił informację o prośbie dodania do znajomych');
             $table->timestamp('requesting_user_displayed_at')->nullable()->comment('Data kiedy użytkownik wyświetlił informację o zaakceptowaniu prośby dodania do znajomych');
             $table->timestamp('confirmed_at')->nullable();
+            $table->timestamp('rejected_at')->nullable();
             $table->timestamps();
         });
 

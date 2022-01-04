@@ -4,24 +4,27 @@ namespace App\Models;
 
 class AccountAction extends BaseModel
 {
-    protected $fillable = [
-        'founder_id',
-        'account_action_type_id',
-        'expires_at'
-    ];
-
     protected $guarded = [
         'id',
-        'user_id',
+        'actionable_type',
+        'actionable_id',
+        'account_action_type_id',
+        'expires_at',
+        'creator_id',
+        'editor_id',
         'created_at',
         'updated_at'
     ];
 
     protected $hidden = [
         'id',
-        'user_id',
-        'founder_id',
+        'actionable_type',
+        'actionable_id',
         'account_action_type_id',
+        'expires_at',
+        'creator_id',
+        'editor_id',
+        'created_at',
         'updated_at'
     ];
 
@@ -31,19 +34,19 @@ class AccountAction extends BaseModel
         'updated_at' => 'string'
     ];
 
-    protected $with = [
-        'accountActionType'
-    ];
-
-    public function user() {
-        return $this->belongsTo(User::class);
-    }
-
-    public function founder() {
-        return $this->belongsTo(User::class);
+    public function actionable() {
+        return $this->morphTo();
     }
 
     public function accountActionType() {
         return $this->belongsTo(AccountActionType::class);
+    }
+
+    public function creator() {
+        return $this->belongsTo(User::class, 'creator_id');
+    }
+
+    public function editor() {
+        return $this->belongsTo(User::class, 'editor_id');
     }
 }

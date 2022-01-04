@@ -4,14 +4,11 @@ namespace App\Models;
 
 class Authentication extends BaseModel
 {
-    protected $fillable = [
-        'device_id',
-        'authentication_type_id'
-    ];
-
     protected $guarded = [
         'id',
         'user_id',
+        'authentication_type_id',
+        'device_id',
         'created_at',
         'updated_at'
     ];
@@ -19,8 +16,8 @@ class Authentication extends BaseModel
     protected $hidden = [
         'id',
         'user_id',
-        'device_id',
         'authentication_type_id',
+        'device_id',
         'created_at',
         'updated_at'
     ];
@@ -30,21 +27,16 @@ class Authentication extends BaseModel
         'updated_at' => 'string'
     ];
 
-    protected $with = [
-        'device',
-        'authenticationType'
-    ];
-
     public function user() {
         return $this->belongsTo(User::class);
     }
 
-    public function device() {
-        return $this->belongsTo(Device::class);
+    public function authenticationType() {
+        return $this->belongsTo(DefaultType::class, 'authentication_type_id');
     }
 
-    public function authenticationType() {
-        return $this->belongsTo(AuthenticationType::class);
+    public function device() {
+        return $this->belongsTo(Device::class);
     }
 
     /**

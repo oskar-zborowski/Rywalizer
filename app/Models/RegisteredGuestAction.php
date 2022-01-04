@@ -22,6 +22,8 @@ class RegisteredGuestAction extends BaseModel
         'created_at' => 'string'
     ];
 
+    public $timestamps = false;
+
     public function device() {
         return $this->belongsTo(Device::class);
     }

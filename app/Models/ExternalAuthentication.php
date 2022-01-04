@@ -8,45 +8,37 @@ class ExternalAuthentication extends BaseModel
 {
     use Encryptable;
 
-    protected $fillable = [
-        'external_authentication_id',
-        'provider_type_id'
-    ];
-
     protected $guarded = [
         'id',
         'user_id',
-        'created_at',
-        'updated_at'
+        'external_authentication_id',
+        'provider_type_id',
+        'created_at'
     ];
 
     protected $hidden = [
         'id',
-        'external_authentication_id',
         'user_id',
+        'external_authentication_id',
         'provider_type_id',
-        'created_at',
-        'updated_at'
+        'created_at'
     ];
 
     protected $casts = [
-        'created_at' => 'string',
-        'updated_at' => 'string'
+        'created_at' => 'string'
     ];
+
+    public $timestamps = false;
 
     protected $encryptable = [
         'external_authentication_id' => 255
-    ];
-
-    protected $with = [
-        'providerType'
     ];
 
     public function user() {
         return $this->belongsTo(User::class);
     }
 
-    public function providerType() {
-        return $this->belongsTo(ProviderType::class);
+    public function provider() {
+        return $this->belongsTo(DefaultType::class, 'provider_id');
     }
 }

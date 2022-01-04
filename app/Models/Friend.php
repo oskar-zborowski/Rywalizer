@@ -14,6 +14,7 @@ class Friend extends BaseModel
         'responding_user_displayed_at',
         'requesting_user_displayed_at',
         'confirmed_at',
+        'rejected_at',
         'created_at',
         'updated_at'
     ];
@@ -25,6 +26,7 @@ class Friend extends BaseModel
         'responding_user_displayed_at',
         'requesting_user_displayed_at',
         'confirmed_at',
+        'rejected_at',
         'created_at',
         'updated_at'
     ];
@@ -33,6 +35,7 @@ class Friend extends BaseModel
         'responding_user_displayed_at' => 'string',
         'requesting_user_displayed_at' => 'string',
         'confirmed_at' => 'string',
+        'rejected_at' => 'string',
         'created_at' => 'string',
         'updated_at' => 'string'
     ];
