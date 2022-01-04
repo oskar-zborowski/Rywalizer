@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRatingUsefulnessesTable extends Migration
+class CreateRatingUsefulnessTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,7 +12,7 @@ class CreateRatingUsefulnessesTable extends Migration
      * @return void
      */
     public function up() {
-        Schema::create('rating_usefulnesses', function (Blueprint $table) {
+        Schema::create('rating_usefulness', function (Blueprint $table) {
             $table->integerIncrements('id');
             $table->nullableMorphs('evaluator');
             $table->unsignedMediumInteger('rating_id');
@@ -20,7 +20,7 @@ class CreateRatingUsefulnessesTable extends Migration
             $table->timestamps();
         });
 
-        Schema::table('rating_usefulnesses', function (Blueprint $table) {
+        Schema::table('rating_usefulness', function (Blueprint $table) {
             $table->foreign('rating_id')->references('id')->on('ratings')->cascadeOnDelete();
         });
     }
@@ -31,6 +31,6 @@ class CreateRatingUsefulnessesTable extends Migration
      * @return void
      */
     public function down() {
-        Schema::dropIfExists('rating_usefulnesses');
+        Schema::dropIfExists('rating_usefulness');
     }
 }

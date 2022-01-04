@@ -38,6 +38,7 @@ class AccountOperation extends BaseModel
     ];
 
     protected $casts = [
+        'email_sending_counter' => 'int',
         'created_at' => 'string',
         'updated_at' => 'string'
     ];
