@@ -15,9 +15,9 @@ class CreateReportsTable extends Migration
         Schema::create('reports', function (Blueprint $table) {
             $table->mediumIncrements('id');
             $table->morphs('reportable');
+            $table->string('email', 340)->nullable(); // Kodowane natywnie
             $table->unsignedMediumInteger('user_id')->nullable();
             $table->unsignedMediumInteger('supervisor_id')->nullable();
-            $table->string('email', 340)->nullable(); // Kodowane natywnie
             $table->string('message', 6000); // Kodowane natywnie
             $table->unsignedSmallInteger('report_status_id')->comment('Status zgłoszenia, np. w trakcie przetwarzania, zakończono etc.');
             $table->dateTime('deadline_at')->nullable();
