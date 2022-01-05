@@ -118,6 +118,42 @@ class Partner extends BaseModel
         return $this->belongsTo(User::class, 'editor_id');
     }
 
+    public function images() {
+        return $this->morphMany(Image::class, 'imageable');
+    }
+
+    public function imageAssignments() {
+        return $this->morphMany(ImageAssignment::class, 'imageable');
+    }
+
+    public function actionables() {
+        return $this->morphMany(AccountAction::class, 'actionable');
+    }
+
+    public function operationable() {
+        return $this->morphMany(AccountOperation::class, 'operationable');
+    }
+
+    public function evaluable() {
+        return $this->morphMany(Rating::class, 'evaluable');
+    }
+
+    public function evaluatorRating() {
+        return $this->morphMany(Rating::class, 'evaluator');
+    }
+
+    public function evaluatorRatingUsefulness() {
+        return $this->morphMany(RatingUsefulness::class, 'evaluator');
+    }
+
+    public function contractable() {
+        return $this->morphMany(Agreement::class, 'contractable');
+    }
+
+    public function reportable() {
+        return $this->morphMany(Report::class, 'reportable');
+    }
+
     public function partnerSettings() {
         return $this->hasMany(PartnerSetting::class);
     }

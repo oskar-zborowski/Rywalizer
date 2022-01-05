@@ -57,6 +57,10 @@ class Image extends BaseModel
         return $this->belongsTo(User::class, 'supervisor_id');
     }
 
+    public function reportable() {
+        return $this->morphMany(Report::class, 'reportable');
+    }
+
     public function imageAssignment() {
         return $this->hasMany(ImageAssignment::class);
     }

@@ -57,6 +57,10 @@ class Rating extends BaseModel
         return $this->belongsTo(Rating::class, 'answer_to_id');
     }
 
+    public function reportable() {
+        return $this->morphMany(Report::class, 'reportable');
+    }
+
     public function ratingUsefulness() {
         return $this->hasMany(RatingUseFulness::class);
     }

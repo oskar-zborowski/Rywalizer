@@ -61,6 +61,14 @@ class DefaultType extends BaseModel
         return $this->belongsTo(User::class, 'editor_id');
     }
 
+    public function images() {
+        return $this->morphMany(Image::class, 'imageable');
+    }
+
+    public function reportable() {
+        return $this->morphMany(Report::class, 'reportable');
+    }
+
     public function userGenders() {
         return $this->hasMany(User::class, 'gender_id');
     }

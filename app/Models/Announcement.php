@@ -133,6 +133,26 @@ class Announcement extends BaseModel
         return $this->belongsTo(User::class, 'editor_id');
     }
 
+    public function imageAssignments() {
+        return $this->morphMany(ImageAssignment::class, 'imageable');
+    }
+
+    public function actionables() {
+        return $this->morphMany(AccountAction::class, 'actionable');
+    }
+
+    public function discountable() {
+        return $this->morphMany(Discount::class, 'discountable');
+    }
+
+    public function contractable() {
+        return $this->morphMany(Agreement::class, 'contractable');
+    }
+
+    public function reportable() {
+        return $this->morphMany(Report::class, 'reportable');
+    }
+
     public function announcementPayments() {
         return $this->hasMany(AnnouncementPayment::class);
     }

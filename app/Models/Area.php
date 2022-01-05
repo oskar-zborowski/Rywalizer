@@ -61,6 +61,10 @@ class Area extends BaseModel
         return $this->belongsTo(User::class, 'supervisor_id');
     }
 
+    public function reportable() {
+        return $this->morphMany(Report::class, 'reportable');
+    }
+
     public function partners() {
         return $this->hasMany(Partner::class, 'city_id');
     }

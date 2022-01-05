@@ -115,6 +115,30 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->morphMany(Image::class, 'imageable');
     }
 
+    public function imageAssignments() {
+        return $this->morphMany(ImageAssignment::class, 'imageable');
+    }
+
+    public function actionables() {
+        return $this->morphMany(AccountAction::class, 'actionable');
+    }
+
+    public function operationable() {
+        return $this->morphMany(AccountOperation::class, 'operationable');
+    }
+
+    public function evaluatorRating() {
+        return $this->morphMany(Rating::class, 'evaluator');
+    }
+
+    public function evaluatorRatingUsefulness() {
+        return $this->morphMany(RatingUsefulness::class, 'evaluator');
+    }
+
+    public function reportable() {
+        return $this->morphMany(Report::class, 'reportable');
+    }
+
     public function defaultTypeNamesByCreator() {
         return $this->hasMany(DefaultTypeName::class, 'creator_id');
     }

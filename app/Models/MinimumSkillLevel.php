@@ -55,6 +55,10 @@ class MinimumSkillLevel extends BaseModel
         return $this->belongsTo(User::class, 'supervisor_id');
     }
 
+    public function reportable() {
+        return $this->morphMany(Report::class, 'reportable');
+    }
+
     public function announcements() {
         return $this->hasMany(Announcement::class);
     }

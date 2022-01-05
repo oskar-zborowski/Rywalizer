@@ -47,4 +47,8 @@ class AnnouncementParticipant extends BaseModel
     public function joiningStatus() {
         return $this->belongsTo(DefaultType::class, 'joining_status_id');
     }
+
+    public function transactionable() {
+        return $this->morphOne(Transaction::class, 'transactionable');
+    }
 }

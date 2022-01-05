@@ -68,7 +68,15 @@ class FacilityPlace extends BaseModel
         return $this->belongsTo(User::class, 'editor_id');
     }
 
+    public function discountable() {
+        return $this->morphMany(Discount::class, 'discountable');
+    }
+
     public function facilityPlaceBookings() {
         return $this->hasMany(FacilityPlaceBooking::class);
+    }
+
+    public function reportable() {
+        return $this->morphMany(Report::class, 'reportable');
     }
 }

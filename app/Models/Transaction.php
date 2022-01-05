@@ -63,6 +63,10 @@ class Transaction extends BaseModel
         return $this->morphTo();
     }
 
+    public function reportable() {
+        return $this->morphMany(Report::class, 'reportable');
+    }
+
     public function discount() {
         return $this->belongsTo(Discount::class);
     }

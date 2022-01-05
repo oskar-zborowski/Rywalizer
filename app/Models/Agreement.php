@@ -74,6 +74,10 @@ class Agreement extends BaseModel
         return $this->belongsTo(User::class, 'editor_id');
     }
 
+    public function reportable() {
+        return $this->morphMany(Report::class, 'reportable');
+    }
+
     public function usersAgreements() {
         return $this->hasMany(UserAgreement::class);
     }

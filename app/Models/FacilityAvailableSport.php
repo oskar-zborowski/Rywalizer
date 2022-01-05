@@ -56,4 +56,8 @@ class FacilityAvailableSport extends BaseModel
     public function supervisor() {
         return $this->belongsTo(User::class, 'supervisor_id');
     }
+
+    public function reportable() {
+        return $this->morphMany(Report::class, 'reportable');
+    }
 }

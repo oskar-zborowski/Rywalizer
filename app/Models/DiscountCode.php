@@ -81,6 +81,14 @@ class DiscountCode extends BaseModel
         return $this->belongsTo(User::class, 'editor_id');
     }
 
+    public function imageAssignments() {
+        return $this->morphMany(ImageAssignment::class, 'imageable');
+    }
+
+    public function reportable() {
+        return $this->morphMany(Report::class, 'reportable');
+    }
+
     public function discounts() {
         return $this->hasMany(Discount::class, 'discount_code_id');
     }

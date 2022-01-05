@@ -47,4 +47,12 @@ class FacilityPlaceBooking extends BaseModel
     public function bookingStatus() {
         return $this->belongsTo(DefaultType::class, 'booking_status_id');
     }
+
+    public function transactionable() {
+        return $this->morphOne(Transaction::class, 'transactionable');
+    }
+
+    public function reportable() {
+        return $this->morphMany(Report::class, 'reportable');
+    }
 }

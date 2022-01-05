@@ -53,6 +53,10 @@ class SportsPosition extends BaseModel
         return $this->belongsTo(User::class, 'supervisor_id');
     }
 
+    public function reportable() {
+        return $this->morphMany(Report::class, 'reportable');
+    }
+
     public function announcementsSeats() {
         return $this->hasMany(AnnouncementSeat::class);
     }
