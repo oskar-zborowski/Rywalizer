@@ -5,18 +5,46 @@ namespace App\Http\Controllers\Api;
 use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Http\ErrorCodes\BaseErrorCode;
-use App\Http\Libraries\ImageProcessing\ImageProcessing;
 use App\Http\Requests\Auth\UpdateUserRequest;
 use App\Http\Responses\JsonResponse;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
+/**
+ * Klasa odpowiedzialna za wszelkie kwestie związane z użytkownikiem
+ */
 class UserController extends Controller
 {
     /**
-     * #### `POST` `/api/user/email/verification-notification`
+     * #### `GET` `/api/v1/user`
+     * Pobranie prywatnych informacji o użytkowniku
+     * 
+     * @return void
+     */
+    public function getUser(): void {
+        /** @var User $user */
+        $user = Auth::user();
+        $user->getDetailedInformation();
+    }
+
+    /**
+     * #### `PATCH` `/api/v1/user`
+     * Proces uzupełnienia danych użytkownika, bądź też zaktualizowania już istniejących
+     * 
+     * @param UpdateUserRequest $request
+     * 
+     * @return void
+     */
+    public function updateUser(UpdateUserRequest $request): void {
+        /** @var User $user */
+        $user = Auth::user();
+        $user->updateInformation($request);
+        $user->getDetailedInformation();
+    }
+
+    /**
+     * #### `POST` `/api/v1/user/email`
      * Proces utworzenia niezbędnych danych do zweryfikowania maila
      * 
      * @return void
@@ -28,7 +56,7 @@ class UserController extends Controller
     }
 
     /**
-     * #### `PATCH` `/api/user/email/verify`
+     * #### `PUT` `/api/v1/user/email`
      * Proces weryfikacji maila
      * 
      * @param Request $request
@@ -39,40 +67,45 @@ class UserController extends Controller
         /** @var User $user */
         $user = Auth::user();
         $user->verifyEmail($request);
-        $user->checkMissingInformation();
+        $user->getBasicInformation();
     }
 
     /**
-     * #### `PATCH` `/api/user`
-     * Proces uzupełnienia danych użytkownika, bądź też zaktualizowania już istniejących
+     * #### `POST` `/api/v1/user/avatar`
+     * Wgranie zdjęcia profilowego
      * 
-     * @param UpdateUserRequest $request
+     * @param Request $request
      * 
      * @return void
      */
-    public function updateUser(UpdateUserRequest $request): void {
+    public function uploadAvatar(Request $request): void {
 
-        /** @var User $user */
-        $user = Auth::user();
-        $isUpdatedEmail = $user->updateInformation($request);
-
-        if ($isUpdatedEmail) {
-            $user->sendVerificationEmail(false, true);
+        if (!$request->avatar) {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Missing avatar image.'
+            );
         }
 
-        $user->checkMissingInformation();
+        /** @var User $user */
+        $user = Auth::user();
+        $user->saveAvatar($request->avatar);
+        $user->getBasicInformation();
     }
 
     /**
-     * #### `GET` `/api/user`
-     * Pobranie prywatnych informacji o użytkowniku
+     * #### `DELETE` `/api/v1/user/avatar`
+     * Usunięcie zdjęcia profilowego
+     * 
+     * @param Request $request
      * 
      * @return void
      */
-    public function getUser(): void {
+    public function deleteAvatar(Request $request): void {
         /** @var User $user */
         $user = Auth::user();
-        $user->checkMissingInformation();
+        $user->deleteAvatar($request);
+        $user->getBasicInformation();
     }
 
     /**
@@ -147,54 +180,5 @@ class UserController extends Controller
         }
 
         JsonResponse::sendSuccess($result['data'], $result['metadata']);
-    }
-
-    /**
-     * #### `POST` `/api/user/avatar/upload`
-     * Wgranie zdjęcia profilowego
-     * 
-     * @param Request $request
-     * 
-     * @return void
-     */
-    public function uploadAvatar(Request $request): void {
-
-        /** @var User $user */
-        $user = Auth::user();
-
-        if ($request->avatar) {
-
-            $updateInformation['avatar'] = ImageProcessing::saveAvatar($request->avatar);
-
-            if ($user->avatar) {
-                $oldAvatarPath = 'avatars/' . $user->avatar;
-                Storage::delete($oldAvatarPath);
-            }
-
-            $user->update($updateInformation);
-        }
-
-        $user->checkMissingInformation();
-    }
-
-    /**
-     * #### `DELETE` `/api/user/avatar/delete`
-     * Usunięcie zdjęcia profilowego
-     * 
-     * @return void
-     */
-    public function deleteAvatar(): void {
-
-        /** @var User $user */
-        $user = Auth::user();
-
-        if ($user->avatar) {
-            $avatarPath = 'avatars/' . $user->avatar;
-            Storage::delete($avatarPath);
-
-            $user->update(['avatar' => null]);
-        }
-
-        $user->checkMissingInformation();
     }
 }

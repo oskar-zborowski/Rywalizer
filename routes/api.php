@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DefaultTypeController;
 use App\Http\Controllers\Api\GitHubController;
@@ -15,16 +16,18 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('before.user')->group(function () {
 
-    Route::post('/auth/login', [AuthController::class, 'login'])->name('auth-login')->middleware('throttle:loginLimit');
-    Route::post('/auth/register', [AuthController::class, 'register'])->name('auth-register')->middleware('throttle:registerLimit');
+    Route::post('/v1/auth/login', [AuthController::class, 'login'])->name('auth-login')->middleware('throttle:loginLimit');
+    Route::post('/v1/auth/register', [AuthController::class, 'register'])->name('auth-register')->middleware('throttle:registerLimit');
 
-    Route::post('/accounts/password', [AuthController::class, 'forgotPassword'])->name('auth-forgotPassword');
-    Route::patch('/accounts/password', [AuthController::class, 'resetPassword'])->name('auth-resetPassword');
-    Route::patch('/accounts/restore', [AuthController::class, 'restoreAccount'])->name('auth-restoreAccount');
+    Route::post('/v1/account/password', [AccountController::class, 'forgotPassword'])->name('account-forgotPassword');
+    Route::put('/v1/account/password', [AccountController::class, 'resetPassword'])->name('account-resetPassword');
+    Route::put('/v1/account/restore', [AccountController::class, 'restoreAccount'])->name('account-restoreAccount');
 
-    Route::patch('/users', [UserController::class, 'updateUser'])->name('user-updateUser');
-    Route::patch('/users/email', [UserController::class, 'verifyEmail'])->name('user-verifyEmail');
-    Route::post('/users/avatar', [UserController::class, 'uploadAvatar'])->name('user-uploadAvatar');
+    Route::patch('/v1/user', [UserController::class, 'updateUser'])->name('user-updateUser');
+    Route::put('/v1/user/email', [UserController::class, 'verifyEmail'])->name('user-verifyEmail');
+    Route::post('/v1/user/avatar', [UserController::class, 'uploadAvatar'])->name('user-uploadAvatar');
+    Route::put('/v1/user/avatar', [UserController::class, 'changeAvatar'])->name('user-changeAvatar');
+    Route::post('/v1/user/image', [UserController::class, 'uploadImage'])->name('user-uploadImage');
 });
 
 
@@ -37,8 +40,8 @@ Route::middleware('before.user')->group(function () {
 |-------------------------------------------------------------------------------------------------------
 */
 
-Route::get('/auth/{provider}/redirect', [AuthController::class, 'redirectToProvider'])->name('auth-redirectToProvider')->middleware('throttle:loginLimit');
-Route::get('/auth/{provider}/callback', [AuthController::class, 'handleProviderCallback'])->name('auth-handleProviderCallback')->withoutMiddleware('throttle:api');
+Route::get('/v1/auth/{provider}/redirect', [AuthController::class, 'redirectToProvider'])->name('auth-redirectToProvider')->middleware('throttle:loginLimit');
+Route::get('/v1/auth/{provider}/callback', [AuthController::class, 'handleProviderCallback'])->name('auth-handleProviderCallback')->withoutMiddleware('throttle:api');
 
 
 
@@ -46,27 +49,26 @@ Route::get('/auth/{provider}/callback', [AuthController::class, 'handleProviderC
 
 /*
 |-------------------------------------------------------------------------------------------------------
-| Endpointy dostępne po poprawnym uwierzytelnieniu i autoryzacji użytkownika
+| Endpointy podlegające procesowi autoryzacji
 |-------------------------------------------------------------------------------------------------------
 */
 
-Route::delete('/auth/logout/me', [AuthController::class, 'logoutMe'])->name('auth-logoutMe');
-Route::delete('/auth/logout/other-devices', [AuthController::class, 'logoutOtherDevices'])->name('auth-logoutOtherDevices');
+Route::delete('/v1/auth/logout', [AuthController::class, 'logout'])->name('auth-logout');
+Route::delete('/v1/auth/logout/all', [AuthController::class, 'logoutAll'])->name('auth-logoutAll');
 
-Route::get('/users', [UserController::class, 'getUser'])->name('user-getUser');
-Route::get('/users/{id}', [UserController::class, 'getUser'])->name('user-getUser');
-Route::get('/users/all', [UserController::class, 'getAllUsers'])->name('user-getAllUsers');
+Route::get('/v1/user', [UserController::class, 'getUser'])->name('user-getUser');
+Route::post('/v1/user/email', [UserController::class, 'sendVerificationEmail'])->name('user-sendVerificationEmail');
+Route::delete('/v1/user/avatar', [UserController::class, 'deleteAvatar'])->name('user-deleteAvatar');
+Route::delete('/v1/user/images', [UserController::class, 'deleteImages'])->name('user-deleteImages');
+Route::get('/v1/user/authentications', [UserController::class, 'getUserAuthentications'])->name('user-getUserAuthentications');
 
-Route::post('/users/email', [UserController::class, 'sendVerificationEmail'])->name('user-sendVerificationEmail');
-Route::delete('/users/avatar', [UserController::class, 'deleteAvatar'])->name('user-deleteAvatar');
+Route::get('/v1/users', [UserController::class, 'getAllUsers'])->name('user-getAllUsers');
+Route::get('/v1/users/{id}/authentications', [UserController::class, 'getUserAuthentications'])->name('user-getUserAuthentications');
 
-Route::get('/users/authentication', [UserController::class, 'getUserAuthentication'])->name('user-getUserAuthentication');
-Route::get('/users/{id}/authentication', [UserController::class, 'getUserAuthentication'])->name('user-getUserAuthentication');
-
-Route::get('/providers', [DefaultTypeController::class, 'getProviders'])->name('defaultType-getProviders');
-Route::get('/genders', [DefaultTypeController::class, 'getGenders'])->name('defaultType-getGenders');
-Route::get('/roles', [DefaultTypeController::class, 'getRoles'])->name('defaultType-getRoles');
-Route::get('/account-action-types', [DefaultTypeController::class, 'getAccountActionTypes'])->name('defaultType-getAccountActionTypes');
+Route::get('/v1/default-type-names', [DefaultTypeController::class, 'getDefaultTypeNames'])->name('defaultType-getDefaultTypeNames');
+Route::get('/v1/default-types/{name}', [DefaultTypeController::class, 'getDefaultTypes'])->name('defaultType-getDefaultTypes');
+Route::get('/v1/providers', [DefaultTypeController::class, 'getProviders'])->name('defaultType-getProviders');
+Route::get('/v1/genders', [DefaultTypeController::class, 'getGenders'])->name('defaultType-getGenders');
 
 
 
@@ -92,5 +94,5 @@ Route::middleware('verified')->group(function () {
 */
 
 Route::middleware('throttle:githubLimit')->group(function () {
-    Route::post('/github/pull', [GitHubController::class, 'pull'])->name('github-pull');
+    Route::post('/v1/github/pull', [GitHubController::class, 'pull'])->name('github-pull');
 });

@@ -2,97 +2,96 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
-use App\Http\ErrorCodes\BaseErrorCode;
+use App\Http\Libraries\Validation\Validation;
 use App\Http\Responses\JsonResponse;
-use App\Models\AccountActionType;
-use App\Models\GenderType;
-use App\Models\ProviderType;
-use App\Models\RoleType;
-use Illuminate\Support\Facades\Auth;
+use App\Models\DefaultTypeName;
+use Illuminate\Http\Request;
 
+/**
+ * Klasa odpowiedzialna za przetwarzanie domyślnych typów
+ */
 class DefaultTypeController extends Controller
 {
     /**
-     * #### `GET` `/api/provider/types`
+     * #### `GET` `/api/v1/default-type-names`
+     * Pobranie listy nazw domyślnych typów
+     * 
+     * @param Request $request
+     * 
+     * @return void
+     */
+    public function getDefaultTypeNames(Request $request): void {
+
+        $paginationAttributes = $this->getPaginationAttributes($request);
+
+        /** @var DefaultTypeNames $defaultTypeNames */
+        $defaultTypeNames = DefaultTypeName::filter()->paginate($paginationAttributes['perPage']);
+
+        $result = $this->preparePagination($defaultTypeNames, 'getDetailedInformation');
+
+        JsonResponse::sendSuccess($result['data'], $result['metadata']);
+    }
+
+    /**
+     * #### `GET` `/api/v1/default-types/{name}`
+     * Pobranie listy domyślnych typów
+     * 
+     * @param string $name nazwa jednego z domyślnych typów trzymanych w bazie danych
+     * @param Request $request
+     * @param string $modelFunctionName nazwa metody wywołanej po stronie modelu
+     * 
+     * @return void
+     */
+    public function getDefaultTypes(string $name, Request $request = null, string $modelFunctionName = 'getBasicInformation'): void {
+
+        $name = strtoupper($name);
+        $defaultTypeName = Validation::getDefaultTypeName($name);
+
+        if ($request) {
+
+            $paginationAttributes = $this->getPaginationAttributes($request);
+
+            /** @var \App\Models\DefaultType $defaultTypes */
+            $defaultTypes = $defaultTypeName->defaultTypes()->filter()->paginate($paginationAttributes['perPage']);
+
+            $result = $this->preparePagination($defaultTypes, 'getDetailedInformation');
+
+            JsonResponse::sendSuccess($result['data'], $result['metadata']);
+        }
+
+        $result = null;
+
+        /** @var \App\Models\DefaultType $defaultTypes */
+        $defaultTypes = $defaultTypeName->defaultTypes()->get();
+
+        /** @var \App\Models\DefaultType $dT */
+        foreach ($defaultTypes as $dT) {
+            $result[] = $dT->$modelFunctionName();
+        }
+
+        $name = strtolower($name);
+
+        JsonResponse::sendSuccess([$name => $result]);
+    }
+
+    /**
+     * #### `GET` `/api/v1/providers`
      * Pobranie listy zewnętrznych serwisów uwierzytelniających
      * 
      * @return void
      */
-    public function getProviderTypes(): void {
-
-        /** @var User $user */
-        $user = Auth::user();
-
-        if ($user) {
-
-            if ($user->roleType()->first()->name != 'ADMIN') {
-                throw new ApiException(BaseErrorCode::PERMISSION_DENIED());
-            }
-
-            if (!$user->hasVerifiedEmail()) {
-                throw new ApiException(
-                    BaseErrorCode::PERMISSION_DENIED(),
-                    'Your email address is not verified.'
-                );
-            }
-
-            /** @var ProviderType $providerTypes */
-            $providerTypes = ProviderType::get();
-
-            $result = null;
-
-            foreach ($providerTypes as $pT) {
-                $result[] = $pT->detailedInformation();
-            }
-
-        } else {
-            $result = ProviderType::where('is_enabled', true)->get();
-        }
-
-        JsonResponse::sendSuccess(['providerTypes' => $result]);
+    public function getProviders(): void {
+        $this->getDefaultTypes('PROVIDER');
     }
 
     /**
-     * #### `GET` `/api/gender/types`
+     * #### `GET` `/api/v1/genders`
      * Pobranie listy płci
      * 
      * @return void
      */
-    public function getGenderTypes(): void {
-
-        /** @var GenderType $genderTypes */
-        $genderTypes = GenderType::get();
-
-        JsonResponse::sendSuccess(['genderTypes' => $genderTypes]);
-    }
-
-    /**
-     * #### `GET` `/api/role/types`
-     * Pobranie listy ról w serwisie
-     * 
-     * @return void
-     */
-    public function getRoleTypes(): void {
-
-        /** @var RoleType $roleTypes */
-        $roleTypes = RoleType::get();
-
-        JsonResponse::sendSuccess(['roleTypes' => $roleTypes]);
-    }
-
-    /**
-     * #### `GET` `/api/account-action/types`
-     * Pobranie listy ze wszystkimi akcjami jakie można wykonać na koncie, np. blokada konta
-     * 
-     * @return void
-     */
-    public function getAccountActionTypes(): void {
-
-        /** @var AccountActionType $accountActionTypes */
-        $accountActionTypes = AccountActionType::get();
-
-        JsonResponse::sendSuccess(['accountActionTypes' => $accountActionTypes]);
+    public function getGenders(): void {
+        $this->getDefaultTypes('GENDER');
     }
 }

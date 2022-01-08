@@ -10,7 +10,7 @@ use App\Http\Controllers\Controller;
 class GitHubController extends Controller
 {
     /**
-     * #### `POST` `/api/github/pull`
+     * #### `POST` `/api/v1/github/pull`
      * Zaciągnięcie nowych zmian ze zdalnego repozytorium
      * 
      * @return void

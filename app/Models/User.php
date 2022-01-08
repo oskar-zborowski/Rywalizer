@@ -135,6 +135,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->morphMany(RatingUsefulness::class, 'evaluator');
     }
 
+    public function tokenable() {
+        return $this->morphMany(PersonalAccessToken::class, 'tokenable');
+    }
+
     public function reportable() {
         return $this->morphMany(Report::class, 'reportable');
     }
