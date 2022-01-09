@@ -20,7 +20,8 @@ for (let i = 0; i < tilesCount; i++) {
         address: faker.address.cityName(),
         locationName: faker.address.cityName(),
         imageSrc: faker.image.image(),
-        date: new Date()
+        date: new Date(),
+        color: ['#FFD653', '#FF5E44', '#5CD3E6', '#7AB661'][Math.round(Math.random() * 3)]
     });
 }
 

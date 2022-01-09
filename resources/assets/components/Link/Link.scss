@@ -1,0 +1,10 @@
+@import "@/styles/bootstrap.scss";
+
+.link {
+    cursor: pointer;
+
+    &:hover {
+        color: $color-primary;
+        text-decoration: underline;
+    }
+}
