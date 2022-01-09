@@ -69,13 +69,13 @@ class DeviceRecognize
             $updatedInformation['browser_version'] = $request->browser_version;
         }
 
-        if (!isset($device)) {
-            $device = Device::create($updatedInformation); 
-        } else if ($updatedInformation) {
-            $device->update($updatedInformation);
-        }
+        // if (!isset($device)) {
+        //     $device = Device::create($updatedInformation); 
+        // } else if ($updatedInformation) {
+        //     $device->update($updatedInformation);
+        // }
 
-        $request->merge(['device_id' => $device->id]);
+        // $request->merge(['device_id' => $device->id]);
 
         JsonResponse::setCookie($uuid, 'UUID');
         

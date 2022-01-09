@@ -2,15 +2,18 @@
 // Please do not change this file!
 interface CssExports {
   'address': string;
+  'border': string;
   'busyBar': string;
   'date': string;
   'detailsRow': string;
   'divider': string;
   'eventTile': string;
+  'icon': string;
   'image': string;
   'innerBar': string;
   'locationName': string;
   'price': string;
+  'tile': string;
 }
 export const cssExports: CssExports;
 export default cssExports;

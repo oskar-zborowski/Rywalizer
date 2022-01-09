@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './EventTile.scss';
 import chroma from 'chroma-js';
+import BallSvg from '@/static/icons/ball.svg';
 
 export interface EventTileProps {
     imageSrc: string;
@@ -10,6 +11,7 @@ export interface EventTileProps {
     address: string;
     soldTickets: number;
     availableTickets: number;
+    color: string;
 }
 
 //TODO nieliniowa funckja, patrz nizej
@@ -25,24 +27,32 @@ const EventTile: React.FC<EventTileProps> = (props) => {
 
     return (
         <div className={styles.eventTile}>
-            <img src={props.imageSrc} className={styles.image} />
-            <div className={styles.detailsRow}>
-                <span className={styles.locationName}>{props.locationName}</span>
-                <span className={styles.price}>{(props.price / 100).toFixed(2)} zł</span>
-            </div>
-            <div className={styles.detailsRow}>
-                <span className={styles.address}>{props.address}</span>
-                <span className={styles.date}>{props.date.toLocaleDateString()}</span>
-            </div>
-            <div className={styles.divider}></div>
-            <div className={styles.detailsRow}>
-                <div className={styles.busyBar}>
-                    <div className={styles.innerBar} style={{
-                        width: percent + '%',
-                        backgroundColor: color
-                    }}></div>
+            <div className={styles.border} style={{ backgroundColor: props.color }}></div>
+            <div className={styles.tile}>
+                <img src={props.imageSrc} className={styles.image} />
+                <div className={styles.detailsRow}>
+                    <span className={styles.locationName} style={{ color: props.color }}>
+                        {props.locationName}
+                    </span>
+                    <span className={styles.price}>{(props.price / 100).toFixed(2)} zł</span>
                 </div>
-                <span className={styles.date}>{props.soldTickets}/{props.availableTickets}</span>
+                <div className={styles.detailsRow}>
+                    <span className={styles.address}>{props.address}</span>
+                    <span className={styles.date}>{props.date.toLocaleDateString()}</span>
+                </div>
+                <div className={styles.divider}></div>
+                <div className={styles.detailsRow}>
+                    <div className={styles.busyBar}>
+                        <div className={styles.innerBar} style={{
+                            width: percent + '%',
+                            backgroundColor: color
+                        }}></div>
+                    </div>
+                    <span className={styles.date}>{props.soldTickets}/{props.availableTickets}</span>
+                </div>
+            </div>
+            <div className={styles.icon} style={{ backgroundColor: props.color }}>
+                <BallSvg/>
             </div>
         </div>
     );

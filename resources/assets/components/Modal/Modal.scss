@@ -1,0 +1,140 @@
+@import "@/styles/bootstrap.scss";
+
+.wrapper {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    height: 100%;
+    background-color: #1c1c20;
+    border: 1px solid #29292e;
+    overflow: hidden;
+    width: 500px;
+    height: 300px;
+    margin: 15px;
+    margin-top: -100px;
+    position: relative;
+    padding: 20px;
+
+    &.top {
+        align-self: flex-start;
+    }
+
+    &.bottom {
+        align-self: flex-end;
+    }
+}
+
+// .header {
+//     border-bottom: 1px solid #e0e1e5;
+//     padding: 8px;
+//     display: flex;
+//     align-items: center;
+//     justify-content: space-between;
+
+//     .titleWrapper {
+//         display: flex;
+//         align-items: center;
+
+//         * > {
+//             float: left;
+//         }
+//     }
+
+//     $colors: (
+//         "success" : #56b35a,
+//         "info" : #2f9cf4,
+//         "warning" : #f3c93e,
+//         "error" : #f44e42,
+//     );
+
+//     .icon {
+//         @include flex;
+//         width: 30px;
+//         height: 30px;
+//         margin-right: 8px;
+//         border-radius: 3px;
+
+//         @each $name, $color in $colors {
+//             &.#{$name} {
+//                 background-color: $color;
+//             }
+//         }
+
+//         svg {
+//             width: 20px;
+//             height: 20px;
+//         }
+//     }
+
+//     .closeIcon {
+//         @include flex;
+//         width: 30px;
+//         height: 30px;
+//         cursor: pointer;
+
+//         &:hover {
+//             svg {
+//                 fill: #f57239;
+//             }
+//         }
+
+//         svg {
+//             width: 25px;
+//             height: 25px;
+//         }
+//     }
+
+//     .title {
+//         text-transform: uppercase;
+//         font-weight: 600;
+//         font-size: 16px;
+//         color: #212529;
+//         user-select: none;
+//     }
+// }
+
+// .content {
+//     padding: 8px;
+//     min-height: 100px;
+
+//     @include respond-to('md') {
+//         min-height: 80px;
+//     }
+// }
+
+// .footer {
+//     padding: 8px;
+//     border-top: 1px solid #e0e1e5;
+//     display: flex;
+
+//     button {
+//         min-width: 75px;
+//         margin-right: 8px;
+//         flex: 1;
+
+//         &:last-of-type {
+//             margin-right: 0;
+//         }
+//     }
+
+//     @include respond-to('md') {
+//         button {
+//             flex: none;
+//         }
+
+//         justify-content: flex-end;
+//     }
+// }

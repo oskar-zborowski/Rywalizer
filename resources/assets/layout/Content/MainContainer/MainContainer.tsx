@@ -5,14 +5,16 @@ import EventsView from '@/views/Events/EventsView';
 import SportFacilityDetails from '@/views/SportFacilities/SportFacilityDetails/SportFacilityDetails';
 import UserView from '@/views/User/UserView';
 import { observer } from 'mobx-react';
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Link, Route, Routes
 } from 'react-router-dom';
 import { Scrollbar, ScrollbarProvider } from '../Scrollbar/Scrollbar';
 import styles from './MainContainer.scss';
+import RegisterModal from './RegisterModal';
 
 const MainContainer: React.FC<{ store: UserStore }> = (props) => {
+    const [isRegisterModalActive, setIsRegisterModalActive] = useState(false);
     const user = props.store.user;
 
     return (
@@ -20,8 +22,8 @@ const MainContainer: React.FC<{ store: UserStore }> = (props) => {
             <main className={styles.mainContainer}>
                 {!user && <div className={styles.authButtons}>
                     <Link to="/konto"><OrangeButton>Zaloguj się</OrangeButton></Link>
-                    <GrayButton>
-                    Zarejestruj się
+                    <GrayButton onClick={() => setIsRegisterModalActive(true)}>
+                        Zarejestruj się
                     </GrayButton>
                 </div>}
                 <Routes>
@@ -32,6 +34,7 @@ const MainContainer: React.FC<{ store: UserStore }> = (props) => {
                 </Routes>
             </main>
             <Scrollbar />
+            <RegisterModal isOpen={isRegisterModalActive} onClose={() => setIsRegisterModalActive(false)} />
         </ScrollbarProvider>
     );
 };

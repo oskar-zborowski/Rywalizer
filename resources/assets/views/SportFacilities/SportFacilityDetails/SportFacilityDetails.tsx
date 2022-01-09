@@ -21,6 +21,12 @@ import FoodSvg from '@/static/icons/food.svg';
 import ShowerSvg from '@/static/icons/shower.svg';
 
 import prof from '@/static/images/prof.png';
+import Link from '@/components/Link/Link';
+
+const scrollToElement = (elementId: string) => {
+    console.log(elementId);
+    document.getElementById(elementId)?.scrollIntoView();
+};
 
 const SportFacilityDetails: React.FC = (props) => {
     return (
@@ -36,46 +42,46 @@ const SportFacilityDetails: React.FC = (props) => {
                 </div>
                 <div className={styles.buttons}>
                     <OrangeButton>Zapisz się</OrangeButton>
-                    <BlackButton>Zobacz galerię</BlackButton>
+                    <BlackButton onClick={() => scrollToElement('gallerySection')}>Zobacz galerię</BlackButton>
                 </div>
             </header>
             <div className={styles.navButtonsWrapper}>
                 <nav className={styles.navButtons}>
-                    <GrayButton>Kontakt</GrayButton>
-                    <GrayButton>Opis</GrayButton>
-                    <GrayButton>Kalendarz</GrayButton>
-                    <GrayButton>Wyposażenie</GrayButton>
-                    <GrayButton>Galeria</GrayButton>
-                    <GrayButton>Komentarze</GrayButton>
+                    <GrayButton onClick={() => scrollToElement('contantSection')}>Kontakt</GrayButton>
+                    <GrayButton onClick={() => scrollToElement('descriptionSection')}>Opis</GrayButton>
+                    <GrayButton onClick={() => scrollToElement('descriptionSection')}>Kalendarz</GrayButton>
+                    <GrayButton onClick={() => scrollToElement('equipmentSection')}>Wyposażenie</GrayButton>
+                    <GrayButton onClick={() => scrollToElement('gallerySection')}>Galeria</GrayButton>
+                    <GrayButton onClick={() => scrollToElement('commentsSection')}>Komentarze</GrayButton>
                 </nav>
             </div>
-            <div className={styles.contactSection}>
+            <div className={styles.contactSection} id="contactSection">
                 <span className={styles.sectionName}>Kontakt:</span>
                 <Icon svg={UserSvg}>Krystian Borowicz</Icon>
                 <Icon svg={TelephoneSvg}>123 456 789</Icon>
                 <Icon svg={MailSvg}>siatkowka@obiekt.pl</Icon>
-                <Icon svg={WebsiteSvg}>www.siata.org</Icon>
+                <Icon svg={WebsiteSvg}><Link url="https://posir.poznan.pl">www.siata.org</Link></Icon>
             </div>
             <div className={styles.separator}></div>
-            <div className={styles.descriptionSection}>
+            <div className={styles.descriptionSection} id="descriptionSection">
                 <span className={styles.sectionName}>Opis obiektu:</span>
                 <div className={styles.description}>
                     Na terenie Centrum  Rekreacyjno-Sportowego „Ukiel” zlokalizowano kilkanaście boisk sportowych i całoroczną halę do siatkówki plażowej.
-                    Miłośnicy sportów zespołowych mają do swojej dyspozycji kompleks niżej wymienionych boisk:<br/><br/>
+                    Miłośnicy sportów zespołowych mają do swojej dyspozycji kompleks niżej wymienionych boisk:<br /><br />
                     <ul>
                         <li>• 11 boisk do siatkówki plażowej (obiekty przy ul. Kapitańskiej 23)</li>
                         <li>• 2 boiska do siatkówki plazowej (obiekty przy ul. Olimpijskiej 1)</li>
                         <li>• boisko do koszykówki (ul. Kapitańska 23)</li>
                     </ul>
-                    <br/>
+                    <br />
                     Rezerwacji odpłatnych boisk do sportów plażowych znajdujacych się za Hotelem "Omega" dokonywac można drogą mailową: rezerwacja@ukiel.olsztyn.eu. Jednocześnie informujemy, że pozostałe boiska zlokalizowane na terenie Centrum Rekreacyjno-Sportowego "Ukiel" w Olsztynie udostępniane są bez opłat.
-                    <div class={styles.seeMoreButton}>
+                    <div className={styles.seeMoreButton}>
                         <OrangeButton>Zobacz więcej</OrangeButton>
                     </div>
                 </div>
                 <Calendar></Calendar>
             </div>
-            <div className={styles.equipmentSection}>
+            <div className={styles.equipmentSection} id="equipmentSection">
                 <span className={styles.sectionName}>Wyposażenie:</span>
                 <div className={styles.equipmentGrid}>
                     <Icon svg={NetSvg} size={25} textPosition="bottom">Siatka</Icon>
@@ -91,7 +97,7 @@ const SportFacilityDetails: React.FC = (props) => {
                 </div>
             </div>
             <div className={styles.separator}></div>
-            <div className={styles.gallerySection}>
+            <div className={styles.gallerySection} id="gallerySection">
                 <span className={styles.sectionName}>Galeria:</span>
                 <div className={styles.gallery}>
                     <div className={styles.image}><img src="https://posir.poznan.pl/images/obiekty/Strzeszynek/K%C4%85pielisko/strzeszynek.jpg" alt="" /></div>
@@ -104,7 +110,7 @@ const SportFacilityDetails: React.FC = (props) => {
                 </div>
             </div>
             <div className={styles.separator}></div>
-            <div className={styles.contactSection}>
+            <div className={styles.contactSection} id="commentsSection">
                 <span className={styles.sectionName}>Komentarze:</span>
             </div>
         </div>
