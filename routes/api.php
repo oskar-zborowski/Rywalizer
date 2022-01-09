@@ -28,6 +28,9 @@ Route::middleware('before.user')->group(function () {
     Route::post('/v1/user/avatar', [UserController::class, 'uploadAvatar'])->name('user-uploadAvatar');
     Route::put('/v1/user/avatar', [UserController::class, 'changeAvatar'])->name('user-changeAvatar');
     Route::post('/v1/user/image', [UserController::class, 'uploadImage'])->name('user-uploadImage');
+
+    Route::post('/v1/users/{userId}/actions', [UserController::class, 'setUserAction'])->name('user-setUserActions');
+    Route::put('/v1/users/{userId}/actions/{actionId)', [UserController::class, 'setUserAction'])->name('user-setUserActions');
 });
 
 
@@ -56,6 +59,8 @@ Route::get('/v1/auth/{provider}/callback', [AuthController::class, 'handleProvid
 Route::delete('/v1/auth/logout', [AuthController::class, 'logout'])->name('auth-logout');
 Route::delete('/v1/auth/logout/all', [AuthController::class, 'logoutAll'])->name('auth-logoutAll');
 
+Route::delete('/v1/account', [AccountController::class, 'deleteAccount'])->name('account-deleteAccount');
+
 Route::get('/v1/user', [UserController::class, 'getUser'])->name('user-getUser');
 Route::post('/v1/user/email', [UserController::class, 'sendVerificationEmail'])->name('user-sendVerificationEmail');
 Route::delete('/v1/user/avatar', [UserController::class, 'deleteAvatar'])->name('user-deleteAvatar');
@@ -63,7 +68,8 @@ Route::delete('/v1/user/images', [UserController::class, 'deleteImages'])->name(
 Route::get('/v1/user/authentications', [UserController::class, 'getUserAuthentications'])->name('user-getUserAuthentications');
 
 Route::get('/v1/users', [UserController::class, 'getAllUsers'])->name('user-getAllUsers');
-Route::get('/v1/users/{id}/authentications', [UserController::class, 'getUserAuthentications'])->name('user-getUserAuthentications');
+Route::get('/v1/users/{userId}/authentications', [UserController::class, 'getUserAuthentications'])->name('user-getUserAuthentications');
+Route::get('/v1/users/{userId}/actions', [UserController::class, 'getUserActions'])->name('user-getUserActions');
 
 Route::get('/v1/default-type-names', [DefaultTypeController::class, 'getDefaultTypeNames'])->name('defaultType-getDefaultTypeNames');
 Route::get('/v1/default-types/{name}', [DefaultTypeController::class, 'getDefaultTypes'])->name('defaultType-getDefaultTypes');

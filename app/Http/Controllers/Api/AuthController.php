@@ -69,6 +69,7 @@ class AuthController extends Controller
 
         /** @var User $user */
         $user = Auth::user();
+        $user->saveAcceptedAgreements($request);
         $user->checkDevice($request->device_id, 'REGISTER_FORM');
         $user->createTokens();
         $user->sendVerificationEmail(true);
@@ -291,7 +292,7 @@ class AuthController extends Controller
             throw new ApiException(AuthErrorCode::INVALID_CREDENTIALS());
         }
 
-        if (isset($user->currentAccessToken())) {
+        if ($user->currentAccessToken() !== null) {
             /** @var PersonalAccessToken $userAccessToken */
             $userAccessToken = $user->currentAccessToken();
         } else {

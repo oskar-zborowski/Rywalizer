@@ -44,7 +44,7 @@ class Authentication extends BaseModel
      * 
      * @return array
      */
-    public function privateInformation(): array {
+    public function getPrivateInformation(): array {
         return [
             'created_at' => $this->created_at,
             'device' => [
@@ -62,7 +62,7 @@ class Authentication extends BaseModel
      * 
      * @return array
      */
-    public function detailedInformation(): array {
+    public function getDetailedInformation(): array {
         return [
             'created_at' => $this->created_at,
             'device' => [

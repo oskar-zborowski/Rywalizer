@@ -39,11 +39,11 @@ class DefaultTypeController extends Controller
      * 
      * @param string $name nazwa jednego z domyślnych typów trzymanych w bazie danych
      * @param Request $request
-     * @param string $modelFunctionName nazwa metody wywołanej po stronie modelu
+     * @param string $modelMethodName nazwa metody wywołanej po stronie modelu
      * 
      * @return void
      */
-    public function getDefaultTypes(string $name, Request $request = null, string $modelFunctionName = 'getBasicInformation'): void {
+    public function getDefaultTypes(string $name, Request $request = null, string $modelMethodName = 'getBasicInformation'): void {
 
         $name = strtoupper($name);
         $defaultTypeName = Validation::getDefaultTypeName($name);
@@ -67,7 +67,7 @@ class DefaultTypeController extends Controller
 
         /** @var \App\Models\DefaultType $dT */
         foreach ($defaultTypes as $dT) {
-            $result[] = $dT->$modelFunctionName();
+            $result[] = $dT->$modelMethodName();
         }
 
         $name = strtolower($name);

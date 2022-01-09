@@ -57,7 +57,7 @@ class AccountController extends Controller
 
         /** @var User $user */
         $user = $accountOperation->operationable()->first();
-        $user->resetPassword($request);
+        $user->resetPassword($request, $accountOperation);
     }
 
     /**

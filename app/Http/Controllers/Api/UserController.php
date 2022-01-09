@@ -94,6 +94,21 @@ class UserController extends Controller
     }
 
     /**
+     * #### `PUT` `/api/v1/user/avatar`
+     * Zmiana zdjęcia profilowego
+     * 
+     * @param Request $request
+     * 
+     * @return void
+     */
+    public function changeAvatar(Request $request): void {
+        /** @var User $user */
+        $user = Auth::user();
+        $user->changeAvatar($request);
+        $user->getBasicInformation();
+    }
+
+    /**
      * #### `DELETE` `/api/v1/user/avatar`
      * Usunięcie zdjęcia profilowego
      * 
