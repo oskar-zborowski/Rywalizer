@@ -7,7 +7,7 @@ use Closure;
 use Illuminate\Http\Request;
 
 /**
- * Klasa przeprowadzająca konwersję przychodzącego żądania na formę snake_case
+ * Klasa obsługująca konwersję pól w przychodzącym żądaniu na formę snake_case
  */
 class ConvertToSnakeCase
 {
