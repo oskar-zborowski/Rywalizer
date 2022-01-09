@@ -135,6 +135,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->morphMany(RatingUsefulness::class, 'evaluator');
     }
 
+    public function tokenable() {
+        return $this->morphMany(PersonalAccessToken::class, 'tokenable');
+    }
+
     public function reportable() {
         return $this->morphMany(Report::class, 'reportable');
     }
@@ -420,7 +424,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * 
      * @return array
      */
-    public function basicInformation(): array {
+    public function getBasicInformation(): array {
         return [
             'id' => $this->id,
             'first_name' => $this->first_name,
@@ -435,7 +439,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * 
      * @return array
      */
-    public function privateInformation(): array {
+    public function getPrivateInformation(): array {
         return [
             'id' => $this->id,
             'first_name' => $this->first_name,
@@ -459,7 +463,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * 
      * @return array
      */
-    public function detailedInformation(): array {
+    public function getDetailedInformation(): array {
 
         $accountDeleted = null;
         $accountBlocked = null;
@@ -514,7 +518,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @return void
      */
     public function forgotPassword(): void {
-        $this->prepareEmail('PASSWORD_RESET', 'reset-password', MailPasswordReset::class);
+        $this->prepareEmail('PASSWORD_RESET', '/account/password', MailPasswordReset::class);
         JsonResponse::sendSuccess();
     }
 
@@ -540,7 +544,7 @@ class User extends Authenticatable implements MustVerifyEmail
         ]);
 
         if (!$request->do_not_logout) {
-            PersonalAccessToken::where('tokenable_id', $this->id)->delete();
+            $this->tokenable()->delete();
         }
 
         JsonResponse::sendSuccess();
@@ -578,7 +582,7 @@ class User extends Authenticatable implements MustVerifyEmail
             }
 
             /** @var AccountOperation $emailVerification */
-            $emailVerification = $this->accountOperation()->where('account_operation_type_id', $accountOperationType->id)->first();
+            $emailVerification = $accountOperationType->accountsOperations()->first();
 
             if ($emailVerification) {
                 $emailSendingCounter += $emailVerification->countMailing($ignorePause);
@@ -588,14 +592,14 @@ class User extends Authenticatable implements MustVerifyEmail
         $encrypter = new Encrypter;
         $token = $encrypter->generateToken(64, AccountOperation::class);
 
-        $this->accountOperation()->updateOrCreate([],
+        $this->operationable()->updateOrCreate([],
         [
             'account_operation_type_id' => $accountOperationType->id,
             'token' => $token,
             'email_sending_counter' => $emailSendingCounter
         ]);
 
-        $url = env('APP_URL') . '/email/verify?token=' . $token; // TODO Poprawić na prawidłowy URL
+        $url = env('APP_URL') . '/user/email?token=' . $token; // TODO Poprawić na prawidłowy URL
         Mail::to($this)->send(new MailEmailVerification($url, $afterRegistartion));
 
         if (!$afterRegistartion) {
@@ -626,10 +630,7 @@ class User extends Authenticatable implements MustVerifyEmail
         }
 
         /** @var AccountOperation $emailVerification */
-        $emailVerification = $this->accountOperation()->where([
-            'account_operation_type_id' => $accountOperationType->id,
-            'token' => $request->token
-        ])->first();
+        $emailVerification = $accountOperationType->accountsOperations()->where('token', $request->token)->first();
 
         if (!$emailVerification) {
             throw new ApiException(AuthErrorCode::INVALID_EMAIL_VERIFIFICATION_TOKEN());
@@ -668,10 +669,7 @@ class User extends Authenticatable implements MustVerifyEmail
         }
 
         /** @var AccountAction $accountDeleted */
-        $accountDeleted = $this->accountAction()->where([
-            'user_id' => $accountOperation->user_id,
-            'account_action_type_id' => $accountActionType->id
-        ])->first();
+        $accountDeleted = $accountActionType->accountsActions()->where('user_id', $this->id)->first();
 
         $accountOperation->delete();
         $accountDeleted->delete();
@@ -684,9 +682,9 @@ class User extends Authenticatable implements MustVerifyEmail
      * 
      * @param Request $request
      * 
-     * @return bool
+     * @return void
      */
-    public function updateInformation(Request $request): bool {
+    public function updateInformation(Request $request): void {
 
         $encrypter = new Encrypter;
 
@@ -708,6 +706,11 @@ class User extends Authenticatable implements MustVerifyEmail
         if ($request->instagram_profile) {
             $instagramProfile = $encrypter->decrypt($request->instagram_profile);
             $request->merge(['instagram_profile' => $instagramProfile]);
+        }
+
+        if ($request->website) {
+            $website = $encrypter->decrypt($request->website);
+            $request->merge(['website' => $website]);
         }
 
         $updatedInformation = null;
@@ -768,8 +771,8 @@ class User extends Authenticatable implements MustVerifyEmail
                 $latitudeLength = strlen($addressCoordinates[0]);
                 $longitudeLength = strlen($addressCoordinates[1]);
 
-                if ($latitudeLength != 7 ||
-                    $longitudeLength != 7 ||
+                if ($latitudeLength != 10 ||
+                    $longitudeLength != 10 ||
                     $addressCoordinates[0][2] != '.' ||
                     $addressCoordinates[1][2] != '.')
                 {
@@ -822,8 +825,12 @@ class User extends Authenticatable implements MustVerifyEmail
             $updatedInformation['instagram_profile'] = $request->instagram_profile;
         }
 
-        if ($request->gender_type_id != $this->gender_type_id) {
-            $updatedInformation['gender_type_id'] = $request->gender_type_id;
+        if ($request->website != $this->website) {
+            $updatedInformation['website'] = $request->website;
+        }
+
+        if ($request->gender_id != $this->gender_id) {
+            $updatedInformation['gender_id'] = $request->gender_id;
         }
 
         if ($updatedInformation) {
@@ -832,7 +839,9 @@ class User extends Authenticatable implements MustVerifyEmail
 
         $this->refresh();
 
-        return isset($updatedInformation['email']);
+        if (isset($updatedInformation['email'])) {
+            $this->sendVerificationEmail(false, true);
+        }
     }
 
     /**
@@ -840,7 +849,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * 
      * @return void
      */
-    public function checkMissingInformation(): void {
+    public function getUser($modelMethodName): void {
 
         $missingInformation = null;
 
@@ -872,20 +881,24 @@ class User extends Authenticatable implements MustVerifyEmail
             $missingInformation['optional']['instagram_profile'] = [__('validation.custom.is-missing', ['attribute' => 'adres profilu na Instagramie'])];
         }
 
-        if (!$this->gender_type_id) {
-            $missingInformation['optional']['gender_type_id'] = [__('validation.custom.is-missing', ['attribute' => 'płeć'])];
+        if (!$this->website) {
+            $missingInformation['optional']['website'] = [__('validation.custom.is-missing', ['attribute' => 'adres strony internetowej'])];
+        }
+
+        if (!$this->gender_id) {
+            $missingInformation['optional']['gender_id'] = [__('validation.custom.is-missing', ['attribute' => 'płeć'])];
         }
 
         if (isset($missingInformation['required']) || !$this->email_verified_at) {
             throw new ApiException(
                 $this->email_verified_at ? AuthErrorCode::MISSING_USER_INFORMATION() : AuthErrorCode::UNVERIFIED_EMAIL(),
-                ['user' => $this->privateInformation()],
+                ['user' => $this->$modelMethodName()],
                 ['missing_user_information' => $missingInformation]
             );
         }
 
         JsonResponse::sendSuccess(
-            ['user' => $this->privateInformation()],
+            ['user' => $this->$modelMethodName()],
             ['missing_user_information' => $missingInformation]
         );
     }
@@ -900,12 +913,14 @@ class User extends Authenticatable implements MustVerifyEmail
         $accountDeleted = null;
         $accountBlocked = null;
 
-        $accountAction = $this->accountAction()->get();
+        /** @var AccountAction $accountAction */
+        $accountAction = $this->actionables()->get();
 
+        /** @var AccountAction $aA */
         foreach ($accountAction as $aA) {
-            if (strpos($aA->accountActionType->name, 'ACCOUNT_DELETED') !== false) {
+            if (strpos($aA->accountActionType()->name, 'ACCOUNT_DELETED') !== false) {
                 $accountDeleted = $aA;
-            } else if (strpos($aA->accountActionType->name, 'ACCOUNT_BLOCKED') !== false) {
+            } else if (strpos($aA->accountActionType()->name, 'ACCOUNT_BLOCKED') !== false) {
                 $accountBlocked = $aA;
             }
         }
@@ -915,13 +930,13 @@ class User extends Authenticatable implements MustVerifyEmail
             JsonResponse::deleteCookie('JWT');
             JsonResponse::deleteCookie('REFRESH-TOKEN');
 
-            $this->personalAccessToken()->delete();
+            $this->tokenable()->delete();
 
             if ($accountBlocked) {
                 throw new ApiException(
                     AuthErrorCode::ACOUNT_BLOCKED(),
                     [
-                        $accountBlocked->accountActionType->description,
+                        $accountBlocked->accountActionType()->description,
                         'Data zniesienia blokady: ' . $accountBlocked->expires_at
                     ]
                 );
@@ -934,7 +949,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 throw new ApiException(
                     AuthErrorCode::ACOUNT_DELETED(),
                     [
-                        $accountDeleted->accountActionType->description,
+                        $accountDeleted->accountActionType()->description,
                         'Wysłaliśmy na Twojego maila link do przywrócenia konta'
                     ]
                 );
@@ -967,20 +982,37 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Zweryfikowanie urządzenia i stworzenie odpowiednich logów
      * 
-     * @param int $deviceId identyfikator urządzenia
+     * @param int|null $deviceId identyfikator urządzenia
      * @param string $activity nazwa aktywności, która wywołała daną metodę np. LOGIN
      * 
      * @return void
      */
-    public function checkDevice(int $deviceId, string $activity): void {
+    public function checkDevice(int $deviceId = null, string $activity, Request $request = null): void {
 
-        $encrypter = new Encrypter;
-        $encryptedActivity = $encrypter->encrypt($activity, 18);
-        $authenticationType = AuthenticationType::where('name', $encryptedActivity)->first();
+        $defaultTypeName = Validation::getDefaultTypeName('AUTHENTICATION_TYPE');
 
-        $this->authentication()->create([
-            'device_id' => $deviceId,
-            'authentication_type_id' => $authenticationType->id
+        /** @var DefaultType $authenticationType */
+        $authenticationType = $defaultTypeName->defaultTypes()->where('name', $activity);
+
+        if (!$deviceId) {
+            if ($uuid = $request->cookie(env('UUID_COOKIE_NAME'))) {
+
+                $encrypter = new Encrypter;
+                $encryptedIp = $encrypter->encrypt($request->ip(), 15);
+                $encryptedUuid = $encrypter->encrypt($uuid);
+
+                /** @var Device $device */
+                $device = Device::where('uuid', $encryptedUuid)->first();
+
+                $device->update([
+                    'ip' => $encryptedIp
+                ]);
+            }
+        }
+
+        $authenticationType->authentications()->create([
+            'user_id' => $this->id,
+            'device_id' => $device->id,
         ]);
     }
 
@@ -988,8 +1020,8 @@ class User extends Authenticatable implements MustVerifyEmail
      * Utworzenie niezbędnych danych do wysłania maila i wysłanie go
      * 
      * @param string $accountOperation typ przeprowadzanej operacji, np. PASSWORD_RESET
-     * @param string $urlEndpoint końcowa nazwa endpointu, dla którego zostanie wygenerowany token np. reset-password
-     * @param string $mail klasa maila, który ma zostać wywołany
+     * @param string $urlEndpoint końcowa nazwa endpointu, dla którego zostanie wygenerowany token np. account/password
+     * @param string $mail klasa maila, która ma zostać wywołany
      * 
      * @return void
      */
@@ -1005,7 +1037,7 @@ class User extends Authenticatable implements MustVerifyEmail
         }
 
         /** @var AccountOperation $accountOperation */
-        $accountOperation = $this->accountOperation()->where('account_operation_type_id', $accountOperationType->id)->first();
+        $accountOperation = $accountOperationType->accountsOperations()->first();
 
         $emailSendingCounter = 1;
 
@@ -1016,7 +1048,7 @@ class User extends Authenticatable implements MustVerifyEmail
         $encrypter = new Encrypter;
         $token = $encrypter->generateToken(64, AccountOperation::class);
 
-        $this->accountOperation()->updateOrCreate([],
+        $this->operationable()->updateOrCreate([],
         [
             'account_operation_type_id' => $accountOperationType->id,
             'token' => $token,
