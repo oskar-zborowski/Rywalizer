@@ -15,7 +15,6 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
-use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\ErrorHandler\Error\FatalError;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -60,7 +59,7 @@ class Handler extends ExceptionHandler
     /**
      * Metoda przechwytująca wszystkie napotkane wyjątki i odpowiednio je parsująca przed wysłaniem odpowiedzi zwrotnej.
      * 
-     * @param Request $request
+     * @param \Illuminate\Http\Request $request
      * @param Throwable $throwable
      * 
      * @return void
