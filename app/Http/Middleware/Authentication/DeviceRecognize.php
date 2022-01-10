@@ -7,9 +7,10 @@ use App\Http\Responses\JsonResponse;
 use App\Models\Device;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /**
- * Klasa wywoływana w celu zweryfikowania urządzenia
+ * Klasa identyfikująca urządzenie i zapisująca odpowiednie logi w bazie danych
  */
 class DeviceRecognize
 {
@@ -19,66 +20,83 @@ class DeviceRecognize
      */
     public function handle(Request $request, Closure $next) {
 
-        $updatedInformation = null;
+        $routeName = Route::currentRouteName();
 
-        $deviceOsName = (bool) $request->os_name;
-        $deviceOsVersion = (bool) $request->os_version;
-        $deviceBrowserName = (bool) $request->browser_name;
-        $deviceBrowserVersion = (bool) $request->browser_version;
+        $exceptionalRouteNames = [
+            'auth-handleProviderCallback'
+        ];
 
-        $encrypter = new Encrypter;
+        if (!in_array($routeName, $exceptionalRouteNames)) {
 
-        if ($uuid = $request->cookie(env('UUID_COOKIE_NAME'))) {
+            $deviceOsName = (bool) $request->os_name;
+            $deviceOsVersion = (bool) $request->os_version;
+            $deviceBrowserName = (bool) $request->browser_name;
+            $deviceBrowserVersion = (bool) $request->browser_version;
 
-            $encryptedIp = $encrypter->encrypt($request->ip(), 15);
-            $encryptedUuid = $encrypter->encrypt($uuid);
+            $encrypter = new Encrypter;
 
-            $device = Device::where([
-                'ip' => $encryptedIp,
-                'uuid' => $encryptedUuid
-            ])->first();
+            if ($uuid = $request->cookie(env('UUID_COOKIE_NAME'))) {
 
-            if ($device) {
-                $deviceOsName &= $request->os_name != $device->os_name;
-                $deviceOsVersion &= $request->os_version != $device->os_version;
-                $deviceBrowserName &= $request->browser_name != $device->browser_name;
-                $deviceBrowserVersion &= $request->browser_version != $device->browser_version;
+                $encryptedUuid = $encrypter->encrypt($uuid);
+                $encryptedIp = $encrypter->encrypt($request->ip(), 15);
+
+                /** @var Device $device */
+                $device = Device::where([
+                    'uuid' => $encryptedUuid,
+                    'ip' => $encryptedIp
+                ])->orWhere([
+                    'uuid' => $encryptedUuid,
+                    'ip' => null
+                ])->latest()->first();
+
+                if ($device) {
+                    $deviceOsName &= $request->os_name != $device->os_name;
+                    $deviceOsVersion &= $request->os_version != $device->os_version;
+                    $deviceBrowserName &= $request->browser_name != $device->browser_name;
+                    $deviceBrowserVersion &= $request->browser_version != $device->browser_version;
+                }
             }
+
+            if (!isset($device)) {
+                $uuid = $encrypter->generateToken(64, Device::class, 'uuid');
+            }
+
+            $updatedInformation = [];
+
+            if ($deviceOsName) {
+                $updatedInformation['os_name'] = $request->os_name;
+            }
+
+            if ($deviceOsVersion) {
+                $updatedInformation['os_version'] = $request->os_version;
+            }
+
+            if ($deviceBrowserName) {
+                $updatedInformation['browser_name'] = $request->browser_name;
+            }
+
+            if ($deviceBrowserVersion) {
+                $updatedInformation['browser_version'] = $request->browser_version;
+            }
+
+            if (!isset($device)) {
+                /** @var Device $device */
+                $device = new Device;
+                $device->uuid = $uuid;
+                $device->ip = $request->ip();
+                $device->save();
+                $device->update($updatedInformation);
+            } else {
+                $device->ip = $request->ip();
+                $device->save();
+                $device->update($updatedInformation);
+            }
+
+            $request->merge(['device_id' => $device->id]);
+
+            JsonResponse::setCookie($uuid, 'UUID');
         }
 
-        if (!isset($uuid)) {
-            $uuid = $encrypter->generateToken(64, Device::class, 'uuid');
-        }
-
-        $updatedInformation['uuid'] = $uuid;
-        $updatedInformation['ip'] = $request->ip();
-
-        if ($deviceOsName) {
-            $updatedInformation['os_name'] = $request->os_name;
-        }
-
-        if ($deviceOsVersion) {
-            $updatedInformation['os_version'] = $request->os_version;
-        }
-
-        if ($deviceBrowserName) {
-            $updatedInformation['browser_name'] = $request->browser_name;
-        }
-
-        if ($deviceBrowserVersion) {
-            $updatedInformation['browser_version'] = $request->browser_version;
-        }
-
-        // if (!isset($device)) {
-        //     $device = Device::create($updatedInformation); 
-        // } else if ($updatedInformation) {
-        //     $device->update($updatedInformation);
-        // }
-
-        // $request->merge(['device_id' => $device->id]);
-
-        JsonResponse::setCookie($uuid, 'UUID');
-        
         return $next($request);
     }
 }

@@ -26,8 +26,9 @@ class UpdateUserRequest extends FormRequest
             'birth_date' => 'nullable|string|date|size:10',
             'address_coordinates' => 'nullable|string|size:15',
             'telephone' => 'unique:users,telephone,' . $user->id,
-            'facebook_profile' => 'unique:users,facebook_profile,' . $user->id,
-            'instagram_profile' => 'unique:users,instagram_profile,' . $user->id,
+            'facebook_profile' => 'nullable|string|url|max:255',
+            'instagram_profile' => 'nullable|string|url|max:255',
+            'website' => 'nullable|string|url|max:255',
             'gender_type_id' => 'nullable|integer|exists:gender_types,id'
         ];
     }

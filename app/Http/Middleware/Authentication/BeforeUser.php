@@ -6,10 +6,10 @@ use App\Http\Libraries\Encrypter\Encrypter;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Validation\Rules\Password as RulesPassword;
+use Illuminate\Validation\Rules\Password;
 
 /**
- * Klasa wywoływana przed uwierzytelnieniem
+ * Klasa walidująca pola w przychodzącym żądaniu, powiązane z encją użytkownika
  */
 class BeforeUser
 {
@@ -23,13 +23,14 @@ class BeforeUser
 
         $login = 'auth-login';
         $register = 'auth-register';
-        $forgotPassword = 'auth-forgotPassword';
-        $resetPassword = 'auth-resetPassword';
-        $restoreAccount = 'auth-restoreAccount';
+        $logoutAll = 'auth-logoutAll';
+        $forgotPassword = 'account-forgotPassword';
+        $resetPassword = 'account-resetPassword';
+        $restoreAccount = 'account-restoreAccount';
+        $deleteAccount = 'account-deleteAccount';
         $verifyEmail = 'user-verifyEmail';
         $updateUser = 'user-updateUser';
         $uploadAvatar = 'user-uploadAvatar';
-        $logoutOtherDevices = 'auth-logoutOtherDevices';
 
         $encrypter = new Encrypter;
 
@@ -62,9 +63,10 @@ class BeforeUser
 
         if ($routeName == $login ||
             $routeName == $register ||
+            $routeName == $logoutAll ||
             $routeName == $resetPassword ||
-            $routeName == $updateUser ||
-            $routeName == $logoutOtherDevices)
+            $routeName == $deleteAccount ||
+            $routeName == $updateUser)
         {
             $request->validate([
                 'password' => 'nullable|string|between:8,20'
@@ -76,10 +78,12 @@ class BeforeUser
                 ]);
             }
 
-            if ($routeName != $login && $routeName != $logoutOtherDevices) {
-
+            if ($routeName == $register ||
+                $routeName == $resetPassword ||
+                $routeName == $updateUser)
+            {
                 $request->validate([
-                    'password' => ['confirmed', RulesPassword::defaults()]
+                    'password' => ['confirmed', Password::defaults()]
                 ]);
 
                 if ($request->password) {
@@ -90,8 +94,8 @@ class BeforeUser
         }
 
         if ($routeName == $resetPassword ||
-            $routeName == $verifyEmail ||
-            $routeName == $restoreAccount)
+            $routeName == $restoreAccount ||
+            $routeName == $verifyEmail)
         {
             $request->validate([
                 'token' => 'required|string|alpha_num|size:48'
@@ -112,30 +116,18 @@ class BeforeUser
         if ($routeName == $updateUser) {
 
             $request->validate([
-                'telephone' => 'nullable|string|max:24',
-                'facebook_profile' => 'nullable|string|url|max:255',
-                'instagram_profile' => 'nullable|string|url|max:255'
+                'telephone' => 'nullable|string|max:24'
             ]);
 
             if ($request->telephone) {
                 $encryptedTelephone = $encrypter->encrypt($request->telephone, 24);
                 $request->merge(['telephone' => $encryptedTelephone]);
             }
-
-            if ($request->facebook_profile) {
-                $encryptedFacebookProfile = $encrypter->encrypt($request->facebook_profile, 255);
-                $request->merge(['facebook_profile' => $encryptedFacebookProfile]);
-            }
-
-            if ($request->instagram_profile) {
-                $encryptedInstagramProfile = $encrypter->encrypt($request->instagram_profile, 255);
-                $request->merge(['instagram_profile' => $encryptedInstagramProfile]);
-            }
         }
 
         if ($routeName == $uploadAvatar) {
             $request->validate([
-                'avatar' => 'nullable|image|max:2048',
+                'avatar' => 'image|max:2048'
             ]);
         }
 

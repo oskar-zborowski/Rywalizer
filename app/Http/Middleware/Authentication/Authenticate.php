@@ -2,151 +2,68 @@
 
 namespace App\Http\Middleware\Authentication;
 
-use App\Exceptions\ApiException;
-use App\Http\ErrorCodes\AuthErrorCode;
+use App\Http\Libraries\Encrypter\Encrypter;
+use App\Http\Libraries\Validation\Validation;
 use App\Http\Responses\JsonResponse;
 use App\Models\PersonalAccessToken;
-use App\Models\User;
 use Closure;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 
 /**
- * Klasa wywoływana przed autoryzacją
+ * Klasa przeprowadzająca proces uwierzytelnienia użytkownika
  */
 class Authenticate extends Middleware
 {
     /**
-     * @param Request $request
+     * @param \Illuminate\Http\Request $request
      */
     protected function redirectTo($request) {
 
-        // if (!$request->expectsJson()) {
-        //     return route('login');
-        // }
+        if ($request->cookie(env('JWT_COOKIE_NAME'))) {
+            JsonResponse::deleteCookie('JWT');
+        }
+
+        if ($refreshToken = $request->cookie(env('REFRESH_TOKEN_COOKIE_NAME'))) {
+
+            $encrypter = new Encrypter;
+            $encryptedRefreshToken = $encrypter->encrypt($refreshToken);
+
+            /** @var PersonalAccessToken $personalAccessToken */
+            $personalAccessToken = PersonalAccessToken::where([
+                'tokenable_type' => 'App\Models\User',
+                'name' => 'JWT',
+                'refresh_token' => $encryptedRefreshToken
+            ])->first();
+
+            if ($personalAccessToken && Validation::timeComparison($personalAccessToken->created_at, env('REFRESH_TOKEN_LIFETIME'), '>=')) {
+
+                Auth::loginUsingId($personalAccessToken->tokenable_id);
+                $personalAccessToken->delete();
+
+                /** @var \App\Models\User $user */
+                $user = Auth::user();
+                $user->checkAccess();
+                $user->checkDevice($request->device_id, 'TOKEN_REFRESHING');
+                $user->createTokens();
+            }
+        }
     }
 
     /**
-     * @param Request $request
+     * @param \Illuminate\Http\Request $request
      * @param Closure $next
+     * @param array $guards
      */
     public function handle($request, Closure $next, ...$guards) {
 
-        /** @var Request $request */
-
-        $currentRootName = Route::currentRouteName();
-
-        $exceptionalRouteNames = [
-            'auth-login',
-            'auth-register',
-            'auth-forgotPassword',
-            'auth-resetPassword',
-            'auth-redirectToProvider',
-            'auth-handleProviderCallback',
-            'auth-restoreAccount'
-        ];
-
-        $independentRouteNames = [
-            'defaultType-getProviderTypes'
-        ];
-
-        $logout = 'auth-logoutMe';
+        /** @var \Illuminate\Http\Request $request */
 
         if ($jwt = $request->cookie(env('JWT_COOKIE_NAME'))) {
-
             $request->headers->set('Authorization', 'Bearer ' . $jwt);
-            $authenticated = true;
-            $isTokenRefreshed = false;
-
-            try {
-                $this->authenticate($request, $guards);
-            } catch (AuthenticationException $e) {
-
-                JsonResponse::deleteCookie('JWT');
-
-                /** @var PersonalAccessToken $personalAccessToken */
-                $personalAccessToken = JsonResponse::isRefreshTokenValid($request);
-
-                if ($personalAccessToken) {
-
-                    if (in_array($currentRootName, $exceptionalRouteNames)) {
-                        throw new ApiException(AuthErrorCode::REFRESH_TOKEN_IS_STILL_ACTIVE());
-                    }
-
-                    if ($currentRootName != $logout) {
-                        JsonResponse::refreshToken($personalAccessToken, $request);
-                        $isTokenRefreshed = true;
-                    } else {
-                        $authenticated = false;
-                    }
-
-                } else {
-
-                    if ($currentRootName == $logout) {
-                        throw new ApiException(AuthErrorCode::ALREADY_LOGGED_OUT());
-                    }
-
-                    if (!in_array($currentRootName, $exceptionalRouteNames) &&
-                        !in_array($currentRootName, $independentRouteNames))
-                    {
-                        throw new ApiException(AuthErrorCode::UNAUTHORIZED());
-                    }
-
-                    $authenticated = false;
-                }
-            }
-
-            if ($authenticated) {
-
-                if (in_array($currentRootName, $exceptionalRouteNames)) {
-                    throw new ApiException(AuthErrorCode::ALREADY_LOGGED_IN());
-                }
-
-                /** @var User $user */
-                $user = Auth::user();
-                $user->checkAccess();
-
-                if ($isTokenRefreshed) {
-                    $user->checkDevice($request->device_id, 'REFRESH_TOKEN');
-                }
-            }
-
+            $this->authenticate($request, $guards);
         } else {
-
-            /** @var PersonalAccessToken $personalAccessToken */
-            $personalAccessToken = JsonResponse::isRefreshTokenValid($request);
-
-            if ($personalAccessToken) {
-
-                if (in_array($currentRootName, $exceptionalRouteNames)) {
-                    throw new ApiException(AuthErrorCode::REFRESH_TOKEN_IS_STILL_ACTIVE());
-                }
-
-                if ($currentRootName != $logout) {
-
-                    JsonResponse::refreshToken($personalAccessToken, $request);
-
-                    /** @var User $user */
-                    $user = Auth::user();
-                    $user->checkAccess();
-                    $user->checkDevice($request->device_id, 'REFRESH_TOKEN');
-                }
-
-            } else {
-
-                if ($currentRootName == $logout) {
-                    throw new ApiException(AuthErrorCode::ALREADY_LOGGED_OUT());
-                }
-
-                if (!in_array($currentRootName, $exceptionalRouteNames) &&
-                    !in_array($currentRootName, $independentRouteNames))
-                {
-                    throw new ApiException(AuthErrorCode::UNAUTHORIZED());
-                }
-            }
+            $this->redirectTo($request);
         }
 
         return $next($request);
