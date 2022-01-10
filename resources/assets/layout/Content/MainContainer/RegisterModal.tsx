@@ -8,7 +8,11 @@ export interface RegisterModalProps {
 
 const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
     return (
-        <Modal isOpen={isOpen} onClose={onClose}>
+        <Modal 
+            title="Zarejestruj się"
+            isOpen={isOpen}
+            onClose={onClose}
+        >
             <span onClick={() => onClose()}>close</span><br/><br/><br/>
             Logo Fejsa<br/>
             Logo Googla<br/><br/><br/>
