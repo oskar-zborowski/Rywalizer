@@ -2,6 +2,8 @@
 // Please do not change this file!
 interface CssExports {
   'buttons': string;
+  'calenadrSection': string;
+  'calendar': string;
   'contactSection': string;
   'description': string;
   'descriptionSection': string;

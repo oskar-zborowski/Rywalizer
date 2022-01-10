@@ -305,11 +305,9 @@
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/layout/Content/Scrollbar/Scrollbar.scss ***!
   \*************************************************************************************************************************************************************************************************************************************/
 .Scrollbar_scrollbar__BNjtG {
-  margin: 0 40px 0 10px;
+  margin: 15px 2px 15px 2px;
   border-radius: 4px;
-  border: 1px solid #29292e;
-  width: 12px;
-  background-color: #18181c;
+  width: 10px;
   flex: none;
   position: relative;
   overflow: hidden;
@@ -789,6 +787,10 @@
   margin-top: 20px;
 }
 
+.SportFacilityDetails_calenadrSection__icL9j .SportFacilityDetails_calendar__U1TJ2 {
+  margin: 20px 0;
+}
+
 .SportFacilityDetails_equipmentSection__iTesp {
   margin-top: 20px;
   display: block;
@@ -924,6 +926,101 @@
   font-weight: bold;
   padding-left: 25px;
 }
+/*!******************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/form/Input/Input.scss ***!
+  \******************************************************************************************************************************************************************************************************************************/
+.Input_input__en9Yu {
+  position: relative;
+}
+
+.Input_label__YFp2G {
+  margin-bottom: 3px;
+  margin-left: 8px;
+  color: #a1a1a1;
+  display: block;
+}
+
+.Input_inputWrapper__bIYHM {
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 8px;
+  border: 1px solid #29292E;
+  position: relative;
+  overflow: hidden;
+  background-color: #141417;
+}
+.Input_inputWrapper__bIYHM input {
+  width: 100%;
+  height: 100%;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  color: #fff;
+}
+/*!*************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Modal/Modal.scss ***!
+  \*************************************************************************************************************************************************************************************************************************/
+.Modal_wrapper__cnfIJ {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Modal_container__LeMIo {
+  box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.6);
+  border-radius: 15px;
+  background-color: #1c1c20;
+  border: 1px solid #29292e;
+  overflow: hidden;
+  width: 550px;
+  margin: 15px;
+  margin-top: -100px;
+  position: relative;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.Modal_header__oRxze {
+  flex: none;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #141417;
+  display: flex;
+  align-items: center;
+}
+.Modal_header__oRxze .Modal_title__QKMeo {
+  user-select: none;
+  font-weight: bold;
+  font-size: 19px;
+  color: #fff;
+}
+
+.Modal_body__HyK14 {
+  padding-top: 10px;
+  min-height: 120px;
+  flex: 1;
+}
+
+.Modal_footer__Zfppu {
+  padding-top: 20px;
+  flex: none;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.Modal_footer__Zfppu > * {
+  min-width: 120px;
+}
 /*!*********************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/layout/Content/MainContainer/MainContainer.scss ***!
   \*********************************************************************************************************************************************************************************************************************************************/
@@ -965,43 +1062,6 @@
     right: 20px;
   }
 }
-/*!*************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Modal/Modal.scss ***!
-  \*************************************************************************************************************************************************************************************************************************/
-.Modal_wrapper__cnfIJ {
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  position: fixed;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  z-index: 999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.Modal_container__LeMIo {
-  box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.3);
-  border-radius: 15px;
-  height: 100%;
-  background-color: #1c1c20;
-  border: 1px solid #29292e;
-  overflow: hidden;
-  width: 500px;
-  height: 300px;
-  margin: 15px;
-  margin-top: -100px;
-  position: relative;
-  padding: 20px;
-}
-.Modal_container__LeMIo.Modal_top__OJXXx {
-  align-self: flex-start;
-}
-.Modal_container__LeMIo.Modal_bottom__zN_4n {
-  align-self: flex-end;
-}
 /*!***********************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/main.scss (1) ***!
   \***********************************************************************************************************************************************************************************************************/
@@ -1010,6 +1070,7 @@
 *:after {
   box-sizing: border-box;
   outline: none !important;
+  font-family: "Poppins", sans-serif;
 }
 
 body,
@@ -1021,7 +1082,6 @@ html {
 
 body {
   overflow-x: hidden;
-  font-family: "Poppins", sans-serif;
   background-color: #141417;
   color: #fff;
   font-size: 13px;

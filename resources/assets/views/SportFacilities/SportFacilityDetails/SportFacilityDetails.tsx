@@ -1,7 +1,7 @@
 import { BlackButton, GrayButton, OrangeButton } from '@/components/form/Button/Button';
 import Icon from '@/components/Icon/Icon';
 import StarRatings from '@/components/StarRating/StarRating';
-import React from 'react';
+import React, { useRef } from 'react';
 import Calendar from './Calendar/Calendar';
 import styles from './SportFacilityDetails.scss';
 
@@ -22,15 +22,13 @@ import ShowerSvg from '@/static/icons/shower.svg';
 
 import prof from '@/static/images/prof.png';
 import Link from '@/components/Link/Link';
-
-const scrollToElement = (elementId: string) => {
-    console.log(elementId);
-    document.getElementById(elementId)?.scrollIntoView();
-};
+import { scrollToElement } from '@/utils/scrollToElement';
 
 const SportFacilityDetails: React.FC = (props) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+
     return (
-        <div className={styles.sportFacilityDetails}>
+        <div className={styles.sportFacilityDetails} ref={containerRef}>
             <header className={styles.header}>
                 <div className={styles.logo}>
                     <img src="https://posir.poznan.pl/images/layout/logo-posir.svg" />
@@ -41,18 +39,18 @@ const SportFacilityDetails: React.FC = (props) => {
                     <span className={styles.location}>Poznań, Dolna Wilda Lorem Ipsum</span>
                 </div>
                 <div className={styles.buttons}>
-                    <OrangeButton>Zapisz się</OrangeButton>
-                    <BlackButton onClick={() => scrollToElement('gallerySection')}>Zobacz galerię</BlackButton>
+                    <OrangeButton onClick={() => scrollToElement(containerRef, 'calendarSection', 20)}>Zapisz się</OrangeButton>
+                    <BlackButton onClick={() => scrollToElement(containerRef, 'gallerySection', 20)}>Zobacz galerię</BlackButton>
                 </div>
             </header>
             <div className={styles.navButtonsWrapper}>
                 <nav className={styles.navButtons}>
-                    <GrayButton onClick={() => scrollToElement('contantSection')}>Kontakt</GrayButton>
-                    <GrayButton onClick={() => scrollToElement('descriptionSection')}>Opis</GrayButton>
-                    <GrayButton onClick={() => scrollToElement('descriptionSection')}>Kalendarz</GrayButton>
-                    <GrayButton onClick={() => scrollToElement('equipmentSection')}>Wyposażenie</GrayButton>
-                    <GrayButton onClick={() => scrollToElement('gallerySection')}>Galeria</GrayButton>
-                    <GrayButton onClick={() => scrollToElement('commentsSection')}>Komentarze</GrayButton>
+                    <GrayButton onClick={() => scrollToElement(containerRef, 'contactSection', 20)}>Kontakt</GrayButton>
+                    <GrayButton onClick={() => scrollToElement(containerRef, 'descriptionSection', 20)}>Opis</GrayButton>
+                    <GrayButton onClick={() => scrollToElement(containerRef, 'calendarSection', 20)}>Kalendarz</GrayButton>
+                    <GrayButton onClick={() => scrollToElement(containerRef, 'equipmentSection', 20)}>Wyposażenie</GrayButton>
+                    <GrayButton onClick={() => scrollToElement(containerRef, 'gallerySection', 20)}>Galeria</GrayButton>
+                    <GrayButton onClick={() => scrollToElement(containerRef, 'commentsSection', 20)}>Komentarze</GrayButton>
                 </nav>
             </div>
             <div className={styles.contactSection} id="contactSection">
@@ -79,7 +77,13 @@ const SportFacilityDetails: React.FC = (props) => {
                         <OrangeButton>Zobacz więcej</OrangeButton>
                     </div>
                 </div>
-                <Calendar></Calendar>
+            </div>
+            <div className={styles.separator}></div>
+            <div className={styles.calenadrSection} id="calendarSection">
+                <span className={styles.sectionName}>Kalendarz:</span>
+                <div className={styles.calendar}>
+                    <Calendar></Calendar>
+                </div>
             </div>
             <div className={styles.equipmentSection} id="equipmentSection">
                 <span className={styles.sectionName}>Wyposażenie:</span>

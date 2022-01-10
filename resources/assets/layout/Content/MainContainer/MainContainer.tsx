@@ -10,18 +10,25 @@ import {
     Link, Route, Routes
 } from 'react-router-dom';
 import { Scrollbar, ScrollbarProvider } from '../Scrollbar/Scrollbar';
+import LoginModal from './LoginModal';
 import styles from './MainContainer.scss';
 import RegisterModal from './RegisterModal';
+import ResetPasswordModal from './ResetPasswordModal';
 
 const MainContainer: React.FC<{ store: UserStore }> = (props) => {
+    const [isLoginModalActive, setIsLoginModalActive] = useState(false);
     const [isRegisterModalActive, setIsRegisterModalActive] = useState(false);
+    const [isResetPasswordModalActive, setIsResetPasswordModalActive] = useState(false);
+
     const user = props.store.user;
 
     return (
         <ScrollbarProvider>
             <main className={styles.mainContainer}>
                 {!user && <div className={styles.authButtons}>
-                    <Link to="/konto"><OrangeButton>Zaloguj się</OrangeButton></Link>
+                    <OrangeButton onClick={() => setIsLoginModalActive(true)}>
+                        Zaloguj się
+                    </OrangeButton>
                     <GrayButton onClick={() => setIsRegisterModalActive(true)}>
                         Zarejestruj się
                     </GrayButton>
@@ -34,7 +41,19 @@ const MainContainer: React.FC<{ store: UserStore }> = (props) => {
                 </Routes>
             </main>
             <Scrollbar />
-            <RegisterModal isOpen={isRegisterModalActive} onClose={() => setIsRegisterModalActive(false)} />
+
+            <LoginModal
+                isOpen={isLoginModalActive}
+                onClose={() => setIsLoginModalActive(false)}
+            />
+            <RegisterModal
+                isOpen={isRegisterModalActive}
+                onClose={() => setIsRegisterModalActive(false)}
+            />
+            <ResetPasswordModal
+                isOpen={isResetPasswordModalActive}
+                onClose={() => setIsResetPasswordModalActive(false)}
+            />
         </ScrollbarProvider>
     );
 };
