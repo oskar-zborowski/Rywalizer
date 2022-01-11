@@ -2,24 +2,27 @@ import React from 'react';
 import styles from './Link.scss';
 
 export interface LinkProps {
-    url?: string;
+    href?: string;
     onClick?: React.MouseEventHandler;
+    fixedColor?: boolean;
 }
 
-const Link: React.FC<LinkProps> = ({ url, children }) => {
-    const onClick: React.MouseEventHandler = (e) => {
+const Link: React.FC<LinkProps> = ({ href, children, onClick, fixedColor = false }) => {
+    const onClickWrapper: React.MouseEventHandler = (e) => {
         e.preventDefault();
 
-        if (url) {
-            window.open(url, '_blank');
+        if (href) {
+            window.open(href, '_blank');
+        } else {
+            onClick(e);
         }
     };
 
     return (
         <a
-            className={styles.link}
-            onClick={onClick}
-            href={url ? url : ''}
+            className={styles.link + ' ' + (fixedColor ? styles.fixedColor : '')}
+            onClick={onClickWrapper}
+            href={href ? href : undefined}
         >
             {children}
         </a>

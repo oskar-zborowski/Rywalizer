@@ -10,6 +10,7 @@ interface CssExports {
   'eventTile': string;
   'icon': string;
   'image': string;
+  'imageWrapper': string;
   'innerBar': string;
   'locationName': string;
   'price': string;

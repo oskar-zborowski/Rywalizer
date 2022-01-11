@@ -85,7 +85,7 @@
 /*!********************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/form/Button/Button.scss ***!
   \********************************************************************************************************************************************************************************************************************************/
-.Button_blackButton__yyGc0, .Button_grayButton__nvljN, .Button_orangeButton__EJ5Hq {
+.Button_button__boOXn, .Button_googleButton__ucHKq, .Button_facebookButton__h3ay4, .Button_blackButton__yyGc0, .Button_grayButton__nvljN, .Button_orangeButton__EJ5Hq {
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -95,9 +95,20 @@
   white-space: nowrap;
   border: 1px solid #141417;
   cursor: pointer;
+  min-width: 0;
 }
-.Button_blackButton__yyGc0:active, .Button_grayButton__nvljN:active, .Button_orangeButton__EJ5Hq:active {
+.Button_button__boOXn:active, .Button_googleButton__ucHKq:active, .Button_facebookButton__h3ay4:active, .Button_blackButton__yyGc0:active, .Button_grayButton__nvljN:active, .Button_orangeButton__EJ5Hq:active {
   border: 1px solid #141417 !important;
+}
+.Button_button__boOXn .Button_icon__haZQ6, .Button_googleButton__ucHKq .Button_icon__haZQ6, .Button_facebookButton__h3ay4 .Button_icon__haZQ6, .Button_blackButton__yyGc0 .Button_icon__haZQ6, .Button_grayButton__nvljN .Button_icon__haZQ6, .Button_orangeButton__EJ5Hq .Button_icon__haZQ6 {
+  margin-right: 8px;
+  height: 22px;
+  width: auto;
+}
+.Button_button__boOXn .Button_text__aZlzu, .Button_googleButton__ucHKq .Button_text__aZlzu, .Button_facebookButton__h3ay4 .Button_text__aZlzu, .Button_blackButton__yyGc0 .Button_text__aZlzu, .Button_grayButton__nvljN .Button_text__aZlzu, .Button_orangeButton__EJ5Hq .Button_text__aZlzu {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .Button_orangeButton__EJ5Hq {
@@ -114,6 +125,19 @@
 .Button_blackButton__yyGc0 {
   color: #fff;
   background-color: #141417;
+}
+
+.Button_facebookButton__h3ay4 {
+  background-color: #1877f2;
+  color: #fff;
+  height: 38px;
+}
+
+.Button_googleButton__ucHKq {
+  background-color: #fff;
+  color: #808080;
+  font-weight: 500;
+  height: 38px;
 }
 /*!***********************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/StarRating/StarRating.scss ***!
@@ -301,6 +325,16 @@
 .Icon_icon__mcVi0 .Icon_text__a6rd3 {
   color: #a1a1a1;
 }
+/*!***********************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Link/Link.scss ***!
+  \***********************************************************************************************************************************************************************************************************************/
+.Link_link__DW2O2 {
+  cursor: pointer;
+}
+.Link_link__DW2O2.Link_fixedColor__BKvAs, .Link_link__DW2O2:hover {
+  color: #ce8f3e;
+  text-decoration: underline;
+}
 /*!*************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/layout/Content/Scrollbar/Scrollbar.scss ***!
   \*************************************************************************************************************************************************************************************************************************************/
@@ -397,9 +431,11 @@
 .EventTile_eventTile__lIMZH:hover .EventTile_border__ZbEgf {
   opacity: 0.5;
 }
-.EventTile_eventTile__lIMZH:hover .EventTile_image__C_uhR {
-  opacity: 1;
+.EventTile_eventTile__lIMZH:hover .EventTile_imageWrapper__cWQ7Y {
   filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.7));
+}
+.EventTile_eventTile__lIMZH:hover .EventTile_imageWrapper__cWQ7Y .EventTile_image__C_uhR {
+  transform: scale(1.07);
 }
 .EventTile_eventTile__lIMZH .EventTile_border__ZbEgf {
   position: absolute;
@@ -420,11 +456,12 @@
   padding: 10px;
   background-color: #18181c;
   transition: background-color 0.2s;
+  opacity: 0.6;
 }
 .EventTile_eventTile__lIMZH .EventTile_icon__Or7KI {
   position: absolute;
   z-index: 3;
-  top: 0;
+  top: -2px;
   left: 20px;
   height: 36px;
   width: 31px;
@@ -434,17 +471,25 @@
   border-bottom-right-radius: 17px;
   border-top-left-radius: 4px;
   padding: 10px 5px 5px 5px;
+  filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.4));
 }
 .EventTile_eventTile__lIMZH .EventTile_icon__Or7KI svg {
   fill: #000;
   width: 100%;
   height: auto;
 }
-.EventTile_eventTile__lIMZH .EventTile_image__C_uhR {
+.EventTile_eventTile__lIMZH .EventTile_imageWrapper__cWQ7Y {
   border-radius: 8px;
-  object-fit: cover;
   height: 180px;
   width: 100%;
+  overflow: hidden;
+  margin-bottom: 10px;
+  transition: 0.2s;
+}
+.EventTile_eventTile__lIMZH .EventTile_image__C_uhR {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   transition: 0.2s;
 }
 .EventTile_eventTile__lIMZH .EventTile_detailsRow__OsKXy {
@@ -830,16 +875,6 @@
   height: 100%;
   object-fit: cover;
 }
-/*!***********************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Link/Link.scss ***!
-  \***********************************************************************************************************************************************************************************************************************/
-.Link_link__DW2O2 {
-  cursor: pointer;
-}
-.Link_link__DW2O2:hover {
-  color: #ce8f3e;
-  text-decoration: underline;
-}
 /*!**********************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/User/UserView.scss ***!
   \**********************************************************************************************************************************************************************************************************************/
@@ -931,6 +966,7 @@
   \******************************************************************************************************************************************************************************************************************************/
 .Input_input__en9Yu {
   position: relative;
+  width: 100%;
 }
 
 .Input_label__YFp2G {
@@ -950,6 +986,8 @@
   position: relative;
   overflow: hidden;
   background-color: #141417;
+  width: 100%;
+  flex: 1;
 }
 .Input_inputWrapper__bIYHM input {
   width: 100%;
@@ -1016,9 +1054,10 @@
   flex: none;
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  align-items: center;
+  gap: 15px;
 }
-.Modal_footer__Zfppu > * {
+.Modal_footer__Zfppu > button {
   min-width: 120px;
 }
 /*!*********************************************************************************************************************************************************************************************************************************************!*\
@@ -1046,7 +1085,7 @@
   display: flex;
   gap: 10px;
 }
-.MainContainer_mainContainer__RmFHB .MainContainer_authButtons__hNft8 * {
+.MainContainer_mainContainer__RmFHB .MainContainer_authButtons__hNft8 button {
   width: 120px;
   float: left;
   display: block;

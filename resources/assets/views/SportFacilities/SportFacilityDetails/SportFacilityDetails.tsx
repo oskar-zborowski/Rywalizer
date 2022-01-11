@@ -58,7 +58,7 @@ const SportFacilityDetails: React.FC = (props) => {
                 <Icon svg={UserSvg}>Krystian Borowicz</Icon>
                 <Icon svg={TelephoneSvg}>123 456 789</Icon>
                 <Icon svg={MailSvg}>siatkowka@obiekt.pl</Icon>
-                <Icon svg={WebsiteSvg}><Link url="https://posir.poznan.pl">www.siata.org</Link></Icon>
+                <Icon svg={WebsiteSvg}><Link href="https://posir.poznan.pl">www.siata.org</Link></Icon>
             </div>
             <div className={styles.separator}></div>
             <div className={styles.descriptionSection} id="descriptionSection">

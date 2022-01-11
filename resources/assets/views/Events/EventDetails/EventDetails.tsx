@@ -10,6 +10,7 @@ import ContactSvg from '@/static/icons/food.svg';
 import TelephoneSvg from '@/static/icons/telephone.svg';
 import MailSvg from '@/static/icons/mail.svg';
 import FacebookSvg from '@/static/icons/facebook.svg';
+import Link from '@/components/Link/Link';
 
 const EventDetails: React.FC = (props) => {
     return (
@@ -33,7 +34,7 @@ const EventDetails: React.FC = (props) => {
                             {/* <div className={styles.detailsSeparator}></div> */}
                             <Icon svg={MailSvg}>siatkowka@obiekt.pl</Icon>
                             {/* <div className={styles.detailsSeparator}></div> */}
-                            <Icon svg={FacebookSvg}>fb.jakis.profil.23</Icon>
+                            <Icon svg={FacebookSvg}><Link href="https://www.facebook.com/groups/356092872309341">fb.jakis.profil.23</Link></Icon>
                         </div>
                     </div>
                 </div>

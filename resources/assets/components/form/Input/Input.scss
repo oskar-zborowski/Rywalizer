@@ -1,5 +1,6 @@
 .input {
     position: relative;
+    width: 100%;
 }
 
 .label {
@@ -20,6 +21,8 @@
     position: relative;
     overflow: hidden;
     background-color: #141417;
+    width: 100%;
+    flex: 1;
 
     input {
         width: 100%;
