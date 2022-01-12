@@ -2,6 +2,7 @@
 
 namespace App\Http\Libraries\Encrypter;
 
+use App\Http\Libraries\Validation\Validation;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -87,7 +88,7 @@ class Encrypter
             do {
                 $token = $this->fillWithRandomCharacters('', $maxSize, true) . $addition;
                 $encryptedToken = $this->encrypt($token);
-            } while ($entity && !empty($entity::where($field, $encryptedToken)->first()));
+            } while ($entity && !Validation::checkUniqueness($encryptedToken, $entity, $field));
         } else {
             $token = null;
         }

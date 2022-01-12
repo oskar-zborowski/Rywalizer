@@ -54,8 +54,15 @@ class UserRole
             $role = $defaultTypeName->defaultTypes()->where('name', 'GUEST')->first();
         }
 
-        /** @var \App\Models\RolePermission $rolePermission */
-        $rolePermission = $role->rolePermissionsByRole()->where('permission_id', $permission->id)->first();
+        if ($role && $permission) {
+            /** @var \App\Models\RolePermission $rolePermission */
+            $rolePermission = $role->rolePermissionsByRole()->where('permission_id', $permission->id)->first();
+        } else {
+            throw new ApiException(
+                BaseErrorCode::PERMISSION_DENIED(),
+                'Missing role or permission.'
+            );
+        }
 
         if (!$rolePermission) {
             throw new ApiException(BaseErrorCode::PERMISSION_DENIED());

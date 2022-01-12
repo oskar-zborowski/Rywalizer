@@ -2,11 +2,11 @@
 
 namespace App\Http\Libraries\Validation;
 
-use App\Http\Libraries\Encrypter\Encrypter;
+use App\Exceptions\ApiException;
+use App\Http\ErrorCodes\BaseErrorCode;
 use App\Models\AccountActionType;
 use App\Models\DefaultType;
 use App\Models\DefaultTypeName;
-use App\Models\User;
 
 /**
  * Klasa umożliwiająca przeprowadzanie procesów walidacji danych
@@ -14,23 +14,35 @@ use App\Models\User;
 class Validation
 {
     /**
-     * Sprawdzenie czy dana wartość jest unikatowa dla modelu User
+     * Sprawdzenie czy dana wartość jest unikatowa w bazie danych
      * 
-     * @param string $field pole względem którego następuje przeszukiwanie
      * @param string $value wartość do sprawdzenia
+     * @param $entity encja w której będzie następowało przeszukiwanie pod kątem już występującej wartości
+     * @param string $field pole po którym będzie następowało przeszukiwanie
      * 
      * @return bool
      */
-    public static function checkUserUniqueness(string $field, string $value): bool {
-
-        /** @var User $userExist */
-        $userExist = User::where($field, $value)->first();
-
-        return empty($userExist) ? true : false;
+    public static function checkUniqueness(string $value, $entity, string $field): bool {
+        return empty($entity::where($field, $value)->first()) ? true : false;
     }
 
     /**
-     * Pobranie id typu akcji na koncie
+     * Pobranie obiektu nazwy domyślnego typu
+     * 
+     * @param string $name nazwa domyślnego typu
+     * 
+     * @return DefaultTypeName|null
+     */
+    public static function getDefaultTypeName(string $name): ?DefaultTypeName {
+
+        /** @var DefaultTypeName $defaultTypeName */
+        $defaultTypeName = DefaultTypeName::where('name', $name)->first();
+
+        return $defaultTypeName ?? $defaultTypeName;
+    }
+
+    /**
+     * Pobranie obiektu typu akcji na koncie
      * 
      * @param string $name nazwa typu akcji na koncie
      * 
@@ -38,17 +50,33 @@ class Validation
      */
     public static function getAccountActionType(string $name): ?AccountActionType {
 
-        $encrypter = new Encrypter;
-        $encryptedName = $encrypter->encrypt($name, 27);
+        $defaultTypeName = self::getDefaultTypeName('ACCOUNT_ACTION_TYPE');
+
+        if (!$defaultTypeName) {
+            throw new ApiException(
+                BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                'Invalid default type name (ACCOUNT_ACTION_TYPE).'
+            );
+        }
+
+        /** @var DefaultType $defaultType */
+        $defaultType = $defaultTypeName->defaultTypes()->where('name', $name)->first();
+
+        if (!$defaultType) {
+            throw new ApiException(
+                BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                'Invalid default type (' . $name . ').'
+            );
+        }
 
         /** @var AccountActionType $accountActionType */
-        $accountActionType = AccountActionType::where('name', $encryptedName)->first();
+        $accountActionType = $defaultType->accountActionType()->first();
 
         return $accountActionType ?? $accountActionType;
     }
 
     /**
-     * Pobranie id typu operacji na koncie
+     * Pobranie obiektu typu operacji na koncie
      * 
      * @param string $name nazwa typu operacji na koncie
      * 
@@ -56,26 +84,17 @@ class Validation
      */
     public static function getAccountOperationType(string $name): ?DefaultType {
 
-        $encrypter = new Encrypter;
-        $encryptedName = $encrypter->encrypt($name, 21);
+        $defaultTypeName = self::getDefaultTypeName('ACCOUNT_OPERATION_TYPE');
+
+        if (!$defaultTypeName) {
+            throw new ApiException(
+                BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                'Invalid default type name (ACCOUNT_OPERATION_TYPE).'
+            );
+        }
 
         /** @var DefaultType $accountOperationType */
-        $accountOperationType = DefaultType::where('name', $encryptedName)->first();
-
-        return $accountOperationType ?? $accountOperationType;
-    }
-
-    /**
-     * Pobranie id typu operacji na koncie
-     * 
-     * @param string $name nazwa typu operacji na koncie
-     * 
-     * @return DefaultTypeName|null
-     */
-    public static function getDefaultTypeName(string $name): ?DefaultTypeName {
-
-        /** @var DefaultTypeName $accountOperationType */
-        $accountOperationType = DefaultType::where('name', $name)->first();
+        $accountOperationType = $defaultTypeName->defaultTypes()->where('name', $name)->first();
 
         return $accountOperationType ?? $accountOperationType;
     }
@@ -83,7 +102,7 @@ class Validation
     /**
      * Sprawdzenie czy upłynął określony czas
      * 
-     * @param string $timeReferencePoint punkt odniesienia, względem którego liczony jest czas
+     * @param string $timeReferencePoint punkt odniesienia względem którego liczony jest czas
      * @param int $timeMarker wartość znacznika czasu przez jak długo jest aktywny
      * @param string $comparator jeden z symboli <, >, == lub ich kombinacja, liczone względem bieżącego czasu
      * @param string $unit jednostka w jakiej wyrażony jest $timeMarker

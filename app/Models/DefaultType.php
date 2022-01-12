@@ -77,7 +77,7 @@ class DefaultType extends BaseModel
         return $this->hasMany(User::class, 'role_id');
     }
 
-    public function accountActionTypes() {
+    public function accountActionType() {
         return $this->hasMany(AccountActionType::class, 'account_action_type_id');
     }
 
