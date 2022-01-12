@@ -36,35 +36,6 @@ class FieldConversion
     }
 
     /**
-     * Metoda pozwala wybrać ze stringa ciąg znaków pomiędzy innymi stringami
-     * 
-     * @param string $string cały ciąg znaków
-     * @param string $start rozpoczynający ciąg znaków
-     * @param string $end kończący ciąg znaków
-     * 
-     * @return string
-     */
-    public static function getStringBetweenOthers(string $string, string $start = '', string $end = ''): string {
-
-        $startCharCount = strpos($string, $start);
-        $endCharCount = strpos($string, $end);
-
-        if ($startCharCount !== false) {
-            $startCharCount += strlen($start);
-            $string = substr($string, $startCharCount, strlen($string));
-            $endCharCount = strpos($string, $end);
-        }
-
-        if ($endCharCount == 0) {
-            $endCharCount = strlen($string);
-        }
-
-        $result = substr($string, 0, $endCharCount);
-
-        return $result;
-    }
-
-    /**
      * Uniwersalna konwersja nazw pól
      * 
      * @param string $conversionType informacja o typie konwersji (camel, snake)
@@ -81,7 +52,7 @@ class FieldConversion
 
             $fieldNames = null;
 
-            if ($data && (isset($to) && $from <= $to || !isset($to))) {
+            if ($data && ($to !== null && $from <= $to || $to === null)) {
     
                 if ($current == 0) {
                     $data = json_encode($data);
@@ -89,35 +60,30 @@ class FieldConversion
                 }
     
                 foreach ($data as $key => $value) {
+
                     if (is_array($value)) {
-                        if (isset($to)) {
-                            if ($current >= $from && $current <= $to) {
-                                $fieldNames[Str::$conversionType($key)] = self::convertByDefault($conversionType, $value, $from, $to, $current+1);
-                            } else if ($current < $from) {
-                                $deep = self::convertByDefault($conversionType, $value, $from, $to, $current+1);
-    
-                                foreach ($deep as $k => $v) {
-                                    $fieldNames[Str::$conversionType($k)] = $v;
-                                }
-                            }
-                        } else {
-                            if ($current < $from) {
-                                $deep = self::convertByDefault($conversionType, $value, $from, $to, $current+1);
-    
-                                foreach ($deep as $k => $v) {
-                                    $fieldNames[Str::$conversionType($k)] = $v;
-                                }
-                            } else {
-                                $fieldNames[Str::$conversionType($key)] = self::convertByDefault($conversionType, $value, $from, $to, $current+1);
+
+                        if ($current >= $from && ($to !== null && $current <= $to || $to === null)) {
+                            $fieldNames[Str::$conversionType($key)] = self::convertByDefault($conversionType, $value, $from, $to, $current+1);
+                        } else if ($current < $from) {
+
+                            $deep = self::convertByDefault($conversionType, $value, $from, $to, $current+1);
+
+                            foreach ($deep as $k => $v) {
+                                $fieldNames[Str::$conversionType($k)] = $v;
                             }
                         }
+
                     } else {
+
                         if ($current >= $from) {
-                            if (isset($to) && $current <= $to || !isset($to)) {
+
+                            if ($to !== null && $current <= $to || $to === null) {
                                 $fieldNames[Str::$conversionType($key)] = $value;
                             } else {
                                 $fieldNames = null;
                             }
+
                         } else {
                             $fieldNames[] = chr(27);
                         }
@@ -125,7 +91,7 @@ class FieldConversion
                 }
             }
 
-            if ($current == 0 && $fieldNames != null) {
+            if ($current == 0 && $fieldNames !== null) {
 
                 $fN = null;
 

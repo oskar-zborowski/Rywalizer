@@ -4,7 +4,6 @@ namespace App\Http\Libraries\Validation;
 
 use App\Http\Libraries\Encrypter\Encrypter;
 use App\Models\AccountActionType;
-use App\Models\AccountOperationType;
 use App\Models\DefaultType;
 use App\Models\DefaultTypeName;
 use App\Models\User;
@@ -76,7 +75,7 @@ class Validation
     public static function getDefaultTypeName(string $name): ?DefaultTypeName {
 
         /** @var DefaultTypeName $accountOperationType */
-        $accountOperationType = AccountOperationType::where('name', $encryptedName)->first();
+        $accountOperationType = DefaultType::where('name', $name)->first();
 
         return $accountOperationType ?? $accountOperationType;
     }
