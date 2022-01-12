@@ -25,12 +25,8 @@ Route::middleware('before.user')->group(function () {
 
     Route::patch('/v1/user', [UserController::class, 'updateUser'])->name('user-updateUser');
     Route::put('/v1/user/email', [UserController::class, 'verifyEmail'])->name('user-verifyEmail');
-    Route::post('/v1/user/avatar', [UserController::class, 'uploadAvatar'])->name('user-uploadAvatar');
+    Route::post('/v1/user/avatar', [UserController::class, 'uploadAvatar'])->name('user-uploadAvatar')->middleware('throttle:uploadAvatarLimit');
     Route::put('/v1/user/avatar', [UserController::class, 'changeAvatar'])->name('user-changeAvatar');
-    Route::post('/v1/user/image', [UserController::class, 'uploadImage'])->name('user-uploadImage');
-
-    Route::post('/v1/users/{userId}/actions', [UserController::class, 'setUserAction'])->name('user-setUserActions');
-    Route::put('/v1/users/{userId}/actions/{actionId)', [UserController::class, 'setUserAction'])->name('user-setUserActions');
 });
 
 
@@ -56,7 +52,7 @@ Route::get('/v1/auth/{provider}/callback', [AuthController::class, 'handleProvid
 |-------------------------------------------------------------------------------------------------------
 */
 
-Route::delete('/v1/auth/logout', [AuthController::class, 'logout'])->name('auth-logout');
+Route::delete('/v1/auth/logout', [AuthController::class, 'logout'])->name('auth-logout')->withoutMiddleware('throttle:api');
 Route::delete('/v1/auth/logout/all', [AuthController::class, 'logoutAll'])->name('auth-logoutAll');
 
 Route::delete('/v1/account', [AccountController::class, 'deleteAccount'])->name('account-deleteAccount');
@@ -64,15 +60,7 @@ Route::delete('/v1/account', [AccountController::class, 'deleteAccount'])->name(
 Route::get('/v1/user', [UserController::class, 'getUser'])->name('user-getUser');
 Route::post('/v1/user/email', [UserController::class, 'sendVerificationEmail'])->name('user-sendVerificationEmail');
 Route::delete('/v1/user/avatar', [UserController::class, 'deleteAvatar'])->name('user-deleteAvatar');
-Route::delete('/v1/user/images', [UserController::class, 'deleteImages'])->name('user-deleteImages');
-Route::get('/v1/user/authentications', [UserController::class, 'getUserAuthentications'])->name('user-getUserAuthentications');
 
-Route::get('/v1/users', [UserController::class, 'getAllUsers'])->name('user-getAllUsers');
-Route::get('/v1/users/{userId}/authentications', [UserController::class, 'getUserAuthentications'])->name('user-getUserAuthentications');
-Route::get('/v1/users/{userId}/actions', [UserController::class, 'getUserActions'])->name('user-getUserActions');
-
-Route::get('/v1/default-type-names', [DefaultTypeController::class, 'getDefaultTypeNames'])->name('defaultType-getDefaultTypeNames');
-Route::get('/v1/default-types/{name}', [DefaultTypeController::class, 'getDefaultTypes'])->name('defaultType-getDefaultTypes');
 Route::get('/v1/providers', [DefaultTypeController::class, 'getProviders'])->name('defaultType-getProviders');
 Route::get('/v1/genders', [DefaultTypeController::class, 'getGenders'])->name('defaultType-getGenders');
 

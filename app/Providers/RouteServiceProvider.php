@@ -26,7 +26,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string|null
      */
-    // protected $namespace = 'App\\Http\\Controllers';
+    protected $namespace = 'App\\Http\\Controllers';
 
     /**
      * Define your route model bindings, pattern filters, etc.
@@ -68,11 +68,15 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('loginLimit', function (Request $request) {
-            return Limit::perDay(2*env('API_AUTH_RATE_LIMIT_PER_DAY'))->by($request->ip());
+            return Limit::perDay(3*env('API_AUTH_RATE_LIMIT_PER_DAY'))->by($request->ip());
         });
 
         RateLimiter::for('registerLimit', function (Request $request) {
             return Limit::perDay(env('API_AUTH_RATE_LIMIT_PER_DAY'))->by($request->ip());
+        });
+
+        RateLimiter::for('uploadAvatarLimit', function (Request $request) {
+            return Limit::perDay(env('API_UPLOADING_AVATAR_RATE_LIMIT_PER_DAY'))->by($request->user()->id);
         });
 
         RateLimiter::for('githubLimit', function (Request $request) {
