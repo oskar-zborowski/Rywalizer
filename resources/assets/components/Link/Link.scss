@@ -3,7 +3,7 @@
 .link {
     cursor: pointer;
 
-    &:hover {
+    &.fixedColor, &:hover {
         color: $color-primary;
         text-decoration: underline;
     }

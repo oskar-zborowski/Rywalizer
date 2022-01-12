@@ -45,10 +45,18 @@ const MainContainer: React.FC<{ store: UserStore }> = (props) => {
             <LoginModal
                 isOpen={isLoginModalActive}
                 onClose={() => setIsLoginModalActive(false)}
+                onClickRegisterButton={() => {
+                    setIsLoginModalActive(false);
+                    setIsRegisterModalActive(true);
+                }}
             />
             <RegisterModal
                 isOpen={isRegisterModalActive}
                 onClose={() => setIsRegisterModalActive(false)}
+                onClickLoginButton={() => {
+                    setIsLoginModalActive(true);
+                    setIsRegisterModalActive(false);
+                }}
             />
             <ResetPasswordModal
                 isOpen={isResetPasswordModalActive}

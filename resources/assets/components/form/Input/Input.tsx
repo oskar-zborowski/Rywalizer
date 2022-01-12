@@ -6,7 +6,7 @@ export interface IInputProps<T = string> {
     onChange: (value: T, e: ChangeEvent<HTMLInputElement>) => void;
     onEnter?: () => void;
     spellCheck?: boolean;
-    type?: 'text' | 'password';
+    type?: 'text' | 'password' | 'date';
     label?: string;
     placeholder?: string;
 }

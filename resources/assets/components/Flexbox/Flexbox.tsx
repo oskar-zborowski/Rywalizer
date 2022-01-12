@@ -5,6 +5,7 @@ export interface FlexboxProps {
     justifyContent?: React.CSSProperties['justifyContent'];
     flexDirection?: React.CSSProperties['flexDirection'];
     gap?: React.CSSProperties['gap'];
+    width?: React.CSSProperties['width'];
 }
 
 const Flexbox: React.FC<FlexboxProps> = (props) => {

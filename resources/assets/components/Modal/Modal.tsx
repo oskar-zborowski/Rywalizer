@@ -39,6 +39,7 @@ export interface ModalProps {
     closeButton?: boolean;
     closeOnEsc?: boolean;
     footerItems?: React.ReactNode[];
+    width?: React.CSSProperties['width'];
 }
 
 const Modal: React.FC<ModalProps> = props => {
@@ -49,10 +50,11 @@ const Modal: React.FC<ModalProps> = props => {
         placement,
         onClose,
         title,
+        width,
         closeOnClickOutside = true,
         closeButton = true,
         closeOnEsc = true,
-        footerItems = []
+        footerItems = [],
     } = props;
 
     const containerRef = useRef();
@@ -87,6 +89,7 @@ const Modal: React.FC<ModalProps> = props => {
                     ref={containerRef}
                     className={styles.container}
                     {...containerAnimation}
+                    style={{ width }}
                 >
                     <header className={styles.header}>
                         {title && <span className={styles.title}>{title}</span>}
