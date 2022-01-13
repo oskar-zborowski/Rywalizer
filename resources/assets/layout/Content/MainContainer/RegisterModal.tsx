@@ -43,9 +43,10 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onClickL
                 <Input label="Adres e-mail" value={email} onChange={(v) => setEmail(v)} />
                 <Input label="Hasło" type="password" value={password} onChange={(v) => setPassword(v)} />
                 <Input label="Potwierdź hasło" type="password" value={confirmPassword} onChange={(v) => setConfirmPassword(v)} />
-                <span style={{ fontSize: '12px', color: '#a1a1a1', textAlign: 'justify' }}>
-                    Rejestrując się, akceptujesz <Link fixedColor>Regulamin</Link> oraz <Link fixedColor>politykę prywatyności</Link> serwisu nasza-nazwa.pl
-                </span>
+                <div style={{ fontSize: '12px', color: '#a1a1a1'}}>
+                    Rejestrując się, akceptujesz&nbsp;<Link fixedColor>regulamin</Link> oraz&nbsp;
+                    <Link fixedColor>politykę prywatyności</Link> serwisu nasza-nazwa.pl.
+                </div>
             </Flexbox>
         </Modal>
     );

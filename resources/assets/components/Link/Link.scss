@@ -3,7 +3,15 @@
 .link {
     cursor: pointer;
 
-    &.fixedColor, &:hover {
+    &.fixedColor {
+        color: $color-primary;
+    }
+
+    &fixedUnderline {
+        text-decoration: underline;
+    }
+
+    &:hover {
         color: $color-primary;
         text-decoration: underline;
     }

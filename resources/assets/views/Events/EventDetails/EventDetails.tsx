@@ -11,6 +11,9 @@ import TelephoneSvg from '@/static/icons/telephone.svg';
 import MailSvg from '@/static/icons/mail.svg';
 import FacebookSvg from '@/static/icons/facebook.svg';
 import Link from '@/components/Link/Link';
+import faker from 'faker';
+
+faker.locale = 'pl';
 
 const EventDetails: React.FC = (props) => {
     return (
@@ -22,31 +25,74 @@ const EventDetails: React.FC = (props) => {
                     <img className={styles.userImage} src={prof} alt="" />
                     <div className={styles.userDetails}>
                         <div className={styles.userDetailsRow}>
-                            <span className={styles.detailsTitle}>Organizator:</span>
+                            <h1>Organizator:</h1>
                             <Icon svg={UserSvg}>Krystian Borowicz</Icon>
-                            {/* <div className={styles.detailsSeparator}></div> */}
-                            <StarRatings rating={67} />
+                            <StarRatings rating={90} />
                         </div>
 
                         <div className={styles.userDetailsRow + ' ' + styles.contact}>
-                            <span className={styles.detailsTitle}>Kontakt:</span>
+                            <h1>Kontakt:</h1>
                             <Icon svg={TelephoneSvg}>123 456 789</Icon>
-                            {/* <div className={styles.detailsSeparator}></div> */}
                             <Icon svg={MailSvg}>siatkowka@obiekt.pl</Icon>
-                            {/* <div className={styles.detailsSeparator}></div> */}
-                            <Icon svg={FacebookSvg}><Link href="https://www.facebook.com/groups/356092872309341">fb.jakis.profil.23</Link></Icon>
+                            <Icon svg={FacebookSvg}>
+                                <Link href="https://www.facebook.com/groups/356092872309341">
+                                    fb.jakis.profil.23
+                                </Link>
+                            </Icon>
                         </div>
                     </div>
                 </div>
             </header>
-            <div className={styles.userDetailsRow + ' ' + styles.contactSM}>
-                <span className={styles.detailsTitle}>Kontakt:</span>
+            <section className={styles.userDetailsRow + ' ' + styles.contactSM}>
+                <h1>Kontakt:</h1>
                 <Icon svg={MailSvg}>siatkowka@obiekt.pl</Icon>
-                {/* <div className={styles.detailsSeparator}></div> */}
                 <Icon svg={TelephoneSvg}>123 456 789</Icon>
-                {/* <div className={styles.detailsSeparator}></div> */}
                 <Icon svg={FacebookSvg}>fb.jakis.profil.23</Icon>
-            </div>
+            </section>
+            <div className={styles.separator}></div>
+            <section>
+                <h1>Lista zapisanych:</h1>
+                <div className={styles.participantsListWrapper}>
+                    <div className={styles.participantsList}>
+                        {[... new Array(11)].map((_v, i) => {
+                            return <div className={styles.participantCell} key={i}>
+                                {i + 1}. {faker.name.firstName()} {faker.name.lastName()}
+                            </div>;
+                        })}
+                        
+                        {/*TODO zamiana na <Link>??*/}
+
+                        <div className={styles.participantCell + ' ' + styles.signUpCell}>
+                            12.&nbsp;<span className={styles.signUp}>Zapisz się</span>
+                        </div>
+                        <div className={styles.participantCell + ' ' + styles.signUpCell}>
+                            13.&nbsp;<span className={styles.signUp}>Zapisz się</span>
+                        </div>
+                        <div className={styles.participantCell + ' ' + styles.signUpCell}>
+                            14.&nbsp;<span className={styles.signUp}>Zapisz się</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div className={styles.separator}></div>
+            <section>
+                <h1>Opis:</h1>
+                <div className={styles.description}>
+                    <b>TODO: jeżeli opis jest pusty to wywalać całą sekcje ??<br/></b>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+                    ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                    laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
+                    in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
+                    occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </div>
+            </section>
+            <div className={styles.separator}></div>
+            <section>
+                <h1>Komentarze:</h1>
+                <div className={styles.description}>
+                    brak komentarzy
+                </div>
+            </section>
         </div>
     );
 };

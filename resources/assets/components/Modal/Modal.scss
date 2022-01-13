@@ -10,8 +10,20 @@
     backdrop-filter: blur(10px);
     z-index: 999;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+    height: 100%;
+}
+
+.containerWrapper {
+    margin: auto;
+    padding: 15px;
+    transform: translateY(-50px);
+
+    @include respond-to(null, "sm") {
+        transform: none;
+    }
 }
 
 .container {
@@ -21,12 +33,14 @@
     border: 1px solid #29292e;
     overflow: hidden;
     width: 550px;
-    margin: 15px;
-    margin-top: -100px;
     position: relative;
     padding: 20px;
     display: flex;
     flex-direction: column;
+
+    @include respond-to(null, "sm") {
+        width: 100% !important;
+    }
 }
 
 .header {
@@ -46,7 +60,6 @@
 
 .body {
     padding-top: 10px;
-    min-height: 120px;
     flex: 1;
 }
 
@@ -63,104 +76,21 @@
     }
 }
 
-// .header {
-//     border-bottom: 1px solid #e0e1e5;
-//     padding: 8px;
-//     display: flex;
-//     align-items: center;
-//     justify-content: space-between;
+.loadingOverlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    background-color: #141417DD;
 
-//     .titleWrapper {
-//         display: flex;
-//         align-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-//         * > {
-//             float: left;
-//         }
-//     }
-
-//     $colors: (
-//         "success" : #56b35a,
-//         "info" : #2f9cf4,
-//         "warning" : #f3c93e,
-//         "error" : #f44e42,
-//     );
-
-//     .icon {
-//         @include flex;
-//         width: 30px;
-//         height: 30px;
-//         margin-right: 8px;
-//         border-radius: 3px;
-
-//         @each $name, $color in $colors {
-//             &.#{$name} {
-//                 background-color: $color;
-//             }
-//         }
-
-//         svg {
-//             width: 20px;
-//             height: 20px;
-//         }
-//     }
-
-//     .closeIcon {
-//         @include flex;
-//         width: 30px;
-//         height: 30px;
-//         cursor: pointer;
-
-//         &:hover {
-//             svg {
-//                 fill: #f57239;
-//             }
-//         }
-
-//         svg {
-//             width: 25px;
-//             height: 25px;
-//         }
-//     }
-
-//     .title {
-//         text-transform: uppercase;
-//         font-weight: 600;
-//         font-size: 16px;
-//         color: #212529;
-//         user-select: none;
-//     }
-// }
-
-// .content {
-//     padding: 8px;
-//     min-height: 100px;
-
-//     @include respond-to('md') {
-//         min-height: 80px;
-//     }
-// }
-
-// .footer {
-//     padding: 8px;
-//     border-top: 1px solid #e0e1e5;
-//     display: flex;
-
-//     button {
-//         min-width: 75px;
-//         margin-right: 8px;
-//         flex: 1;
-
-//         &:last-of-type {
-//             margin-right: 0;
-//         }
-//     }
-
-//     @include respond-to('md') {
-//         button {
-//             flex: none;
-//         }
-
-//         justify-content: flex-end;
-//     }
-// }
+    svg {
+        width: 70px;
+        height: 70px;
+    }
+}

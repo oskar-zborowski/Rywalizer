@@ -31,12 +31,12 @@ const SportFacilityDetails: React.FC = (props) => {
         <div className={styles.sportFacilityDetails} ref={containerRef}>
             <header className={styles.header}>
                 <div className={styles.logo}>
-                    <img src="https://posir.poznan.pl/images/layout/logo-posir.svg" />
+                    <img src="https://posir.poznan.pl/images/layout/logo-posir.svg" alt="Chwiałka Lorem Ipsum"/>
                 </div>
                 <div className={styles.details}>
                     <div className={styles.stars}><StarRatings rating={90} /></div>
-                    <span className={styles.name}>Chwiałka Lorem Ipsum</span>
-                    <span className={styles.location}>Poznań, Dolna Wilda Lorem Ipsum</span>
+                    <h1 className={styles.name}>Chwiałka Lorem Ipsum</h1>
+                    <span className={styles.location}>Poznań, <b>Dolna Wilda Lorem Ipsum</b></span>
                 </div>
                 <div className={styles.buttons}>
                     <OrangeButton onClick={() => scrollToElement(containerRef, 'calendarSection', 20)}>Zapisz się</OrangeButton>
@@ -44,17 +44,19 @@ const SportFacilityDetails: React.FC = (props) => {
                 </div>
             </header>
             <div className={styles.navButtonsWrapper}>
-                <nav className={styles.navButtons}>
-                    <GrayButton onClick={() => scrollToElement(containerRef, 'contactSection', 20)}>Kontakt</GrayButton>
-                    <GrayButton onClick={() => scrollToElement(containerRef, 'descriptionSection', 20)}>Opis</GrayButton>
-                    <GrayButton onClick={() => scrollToElement(containerRef, 'calendarSection', 20)}>Kalendarz</GrayButton>
-                    <GrayButton onClick={() => scrollToElement(containerRef, 'equipmentSection', 20)}>Wyposażenie</GrayButton>
-                    <GrayButton onClick={() => scrollToElement(containerRef, 'gallerySection', 20)}>Galeria</GrayButton>
-                    <GrayButton onClick={() => scrollToElement(containerRef, 'commentsSection', 20)}>Komentarze</GrayButton>
-                </nav>
+                <div className={styles.navButtonsInnerWrapper}>
+                    <nav className={styles.navButtons}>
+                        <GrayButton onClick={() => scrollToElement(containerRef, 'contactSection', 20)}>Kontakt</GrayButton>
+                        <GrayButton onClick={() => scrollToElement(containerRef, 'descriptionSection', 20)}>Opis</GrayButton>
+                        <GrayButton onClick={() => scrollToElement(containerRef, 'calendarSection', 20)}>Kalendarz</GrayButton>
+                        <GrayButton onClick={() => scrollToElement(containerRef, 'equipmentSection', 20)}>Wyposażenie</GrayButton>
+                        <GrayButton onClick={() => scrollToElement(containerRef, 'gallerySection', 20)}>Galeria</GrayButton>
+                        <GrayButton onClick={() => scrollToElement(containerRef, 'commentsSection', 20)}>Komentarze</GrayButton>
+                    </nav>
+                </div>
             </div>
             <div className={styles.contactSection} id="contactSection">
-                <span className={styles.sectionName}>Kontakt:</span>
+                <h1>Kontakt:</h1>
                 <Icon svg={UserSvg}>Krystian Borowicz</Icon>
                 <Icon svg={TelephoneSvg}>123 456 789</Icon>
                 <Icon svg={MailSvg}>siatkowka@obiekt.pl</Icon>
@@ -62,7 +64,7 @@ const SportFacilityDetails: React.FC = (props) => {
             </div>
             <div className={styles.separator}></div>
             <div className={styles.descriptionSection} id="descriptionSection">
-                <span className={styles.sectionName}>Opis obiektu:</span>
+                <h1>Opis obiektu:</h1>
                 <div className={styles.description}>
                     Na terenie Centrum  Rekreacyjno-Sportowego „Ukiel” zlokalizowano kilkanaście boisk sportowych i całoroczną halę do siatkówki plażowej.
                     Miłośnicy sportów zespołowych mają do swojej dyspozycji kompleks niżej wymienionych boisk:<br /><br />
@@ -80,13 +82,13 @@ const SportFacilityDetails: React.FC = (props) => {
             </div>
             <div className={styles.separator}></div>
             <div className={styles.calenadrSection} id="calendarSection">
-                <span className={styles.sectionName}>Kalendarz:</span>
+                <h1>Kalendarz:</h1>
                 <div className={styles.calendar}>
                     <Calendar></Calendar>
                 </div>
             </div>
             <div className={styles.equipmentSection} id="equipmentSection">
-                <span className={styles.sectionName}>Wyposażenie:</span>
+                <h1>Wyposażenie:</h1>
                 <div className={styles.equipmentGrid}>
                     <Icon svg={NetSvg} size={25} textPosition="bottom">Siatka</Icon>
                     <Icon svg={BallSvg} size={25} textPosition="bottom">Piłka</Icon>
@@ -102,7 +104,7 @@ const SportFacilityDetails: React.FC = (props) => {
             </div>
             <div className={styles.separator}></div>
             <div className={styles.gallerySection} id="gallerySection">
-                <span className={styles.sectionName}>Galeria:</span>
+                <h1>Galeria:</h1>
                 <div className={styles.gallery}>
                     <div className={styles.image}><img src="https://posir.poznan.pl/images/obiekty/Strzeszynek/K%C4%85pielisko/strzeszynek.jpg" alt="" /></div>
                     <div className={styles.image}><img src="https://upload.wikimedia.org/wikipedia/commons/f/f9/Klub_Sportowy_Wojskowy_GRUNWALD_3_boisko_do_hokeja_na_trawie_F.jpg" alt="" /></div>
@@ -115,7 +117,7 @@ const SportFacilityDetails: React.FC = (props) => {
             </div>
             <div className={styles.separator}></div>
             <div className={styles.contactSection} id="commentsSection">
-                <span className={styles.sectionName}>Komentarze:</span>
+                <h1>Komentarze:</h1>
             </div>
         </div>
     );

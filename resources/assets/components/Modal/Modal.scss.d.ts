@@ -3,8 +3,10 @@
 interface CssExports {
   'body': string;
   'container': string;
+  'containerWrapper': string;
   'footer': string;
   'header': string;
+  'loadingOverlay': string;
   'title': string;
   'wrapper': string;
 }

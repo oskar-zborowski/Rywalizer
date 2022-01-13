@@ -19,8 +19,8 @@ interface CssExports {
   'logo': string;
   'name': string;
   'navButtons': string;
+  'navButtonsInnerWrapper': string;
   'navButtonsWrapper': string;
-  'sectionName': string;
   'seeMoreButton': string;
   'separator': string;
   'sportFacilityDetails': string;

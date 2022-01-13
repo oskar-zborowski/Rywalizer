@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, runInAction } from 'mobx';
 
 export class UserStore {
 
@@ -10,12 +10,16 @@ export class UserStore {
     }
 
     public async login(login: string, password: string) {
-        await axios.post('/api/login', {
+        const user = await axios.post('/api/login', {
             email: login,
             password: password
         });
 
-        console.log(await axios.get('/api/user'));
+        runInAction(() => {
+            this.user = user.data as IUser;
+        });
+
+        console.log(user.data);
     }
 
     public register() {

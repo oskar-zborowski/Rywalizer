@@ -1,7 +1,7 @@
 @import "@/styles/bootstrap.scss";
 
 .eventDetails {
-    padding: 20px 20px 0px 20px;
+    padding: 20px;
 
     @include respond-to(null, "sm") {
         padding-top: 0;
@@ -87,22 +87,30 @@
             .userDetailsRow {
                 flex-direction: column;
                 align-items: flex-start;
-        
+
                 .detailsSeparator {
                     display: none;
                 }
-        
+
                 .detailsTitle {
                     margin-bottom: 10px;
                     margin-right: 0;
                 }
-        
+
                 &.contact {
                     display: none;
                 }
             }
         }
     }
+}
+
+.separator {
+    width: 100%;
+    height: 1px;
+    background-color: #141417;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .userDetailsRow {
@@ -117,13 +125,6 @@
         color: #a1a1a1;
     }
 
-    .detailsTitle {
-        font-size: 19px;
-        font-weight: bold;
-        color: #fff;
-        // margin-right: 20px;
-    }
-
     .detailsSeparator {
         margin: 0 20px;
         min-width: 1px;
@@ -134,8 +135,6 @@
 
     &.contactSM {
         margin-top: 20px;
-        padding-bottom: 20px;
-        border-bottom: 1px solid #141417;
 
         @include respond-to(null, "sm") {
             flex-direction: column;
@@ -143,7 +142,63 @@
         }
 
         @include respond-to("md", null) {
-            display: none
+            display: none;
         }
     }
+}
+
+.participantsListWrapper {
+    overflow: auto;
+    max-height: 300px;
+    margin-top: 10px;
+}
+
+.participantsList {
+    width: 100%;
+    display: grid;
+    column-gap: 40px;
+    grid-template-columns: 1fr 1fr;
+
+    .participantCell {
+        padding: 0 8px;
+        border-bottom: 1px solid #4c4c52;
+        height: 38px;
+        color: #a1a1a1;
+        display: flex;
+        align-items: center;
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        @include respond-to("md", null) {
+            &:nth-last-of-type(2) {
+                border-bottom: none;
+            }
+        }
+    }
+
+    .signUpCell {
+        cursor: pointer;
+
+        &:hover {
+            .signUp {
+                text-decoration: underline;
+            }
+        }
+    }
+
+    .signUp {
+        color: $color-primary;
+        font-weight: bold;
+    }
+
+    @include respond-to(null, "md") {
+        grid-template-columns: 1fr;
+    }
+}
+
+.description {
+    margin-top: 20px;
+    color: #a1a1a1;
 }

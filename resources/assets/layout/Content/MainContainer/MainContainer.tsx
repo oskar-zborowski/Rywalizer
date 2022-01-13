@@ -13,12 +13,14 @@ import { Scrollbar, ScrollbarProvider } from '../Scrollbar/Scrollbar';
 import LoginModal from './LoginModal';
 import styles from './MainContainer.scss';
 import RegisterModal from './RegisterModal';
+import RemindPasswordModal from './RemindPasswordModal';
 import ResetPasswordModal from './ResetPasswordModal';
 
 const MainContainer: React.FC<{ store: UserStore }> = (props) => {
     const [isLoginModalActive, setIsLoginModalActive] = useState(false);
     const [isRegisterModalActive, setIsRegisterModalActive] = useState(false);
     const [isResetPasswordModalActive, setIsResetPasswordModalActive] = useState(false);
+    const [isRemindPasswordModalActive, setIsRemindPasswordModalActive] = useState(false);
 
     const user = props.store.user;
 
@@ -49,6 +51,14 @@ const MainContainer: React.FC<{ store: UserStore }> = (props) => {
                     setIsLoginModalActive(false);
                     setIsRegisterModalActive(true);
                 }}
+                onClickRemindPassword={() => {
+                    setIsLoginModalActive(false);
+                    setIsRemindPasswordModalActive(true);
+                }}
+            />
+            <RemindPasswordModal
+                isOpen={isRemindPasswordModalActive}
+                onClose={() => setIsRemindPasswordModalActive(false)}
             />
             <RegisterModal
                 isOpen={isRegisterModalActive}

@@ -4,11 +4,18 @@ interface CssExports {
   'backgroundImage': string;
   'contact': string;
   'contactSM': string;
+  'description': string;
   'detailsSeparator': string;
   'detailsTitle': string;
   'eventDetails': string;
   'gradientOverlay': string;
   'header': string;
+  'participantCell': string;
+  'participantsList': string;
+  'participantsListWrapper': string;
+  'separator': string;
+  'signUp': string;
+  'signUpCell': string;
   'userData': string;
   'userDetails': string;
   'userDetailsRow': string;

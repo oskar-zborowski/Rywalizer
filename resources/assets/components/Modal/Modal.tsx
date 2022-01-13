@@ -5,6 +5,7 @@ import React, { useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { GrayButton, OrangeButton } from '../form/Button/Button';
 import styles from './Modal.scss';
+import Loader from '@/static/loader.svg';
 
 const transition = { duration: 0.25, type: 'tween', ease: [0.45, 0, 0.55, 1] };
 
@@ -51,7 +52,7 @@ const Modal: React.FC<ModalProps> = props => {
         onClose,
         title,
         width,
-        closeOnClickOutside = true,
+        closeOnClickOutside = false,
         closeButton = true,
         closeOnEsc = true,
         footerItems = [],
@@ -85,28 +86,30 @@ const Modal: React.FC<ModalProps> = props => {
                 className={styles.wrapper}
                 {...wrapperAnimation}
             >
-                <motion.div
-                    ref={containerRef}
-                    className={styles.container}
-                    {...containerAnimation}
-                    style={{ width }}
-                >
-                    <header className={styles.header}>
-                        {title && <span className={styles.title}>{title}</span>}
-                    </header>
-                    <main className={styles.body}>{children}</main>
-                    <footer className={styles.footer}>
-                        {...footerItems}
-                    </footer>
-                    {/* <AnimatePresence>
-                        {isLoading && <motion.div 
-                            className={styles.loadingOverlay}
-                            {...overlayAnimation}
-                        >
-                            <LoadingCircle/>
-                        </motion.div>}
-                    </AnimatePresence> */}
-                </motion.div>
+                <div className={styles.containerWrapper}>
+                    <motion.div
+                        ref={containerRef}
+                        className={styles.container}
+                        {...containerAnimation}
+                        style={{ width }}
+                    >
+                        <header className={styles.header}>
+                            {title && <span className={styles.title}>{title}</span>}
+                        </header>
+                        <main className={styles.body}>{children}</main>
+                        <footer className={styles.footer}>
+                            {...footerItems}
+                        </footer>
+                        <AnimatePresence>
+                            {isLoading && <motion.div
+                                className={styles.loadingOverlay}
+                                {...overlayAnimation}
+                            >
+                                <Loader />
+                            </motion.div>}
+                        </AnimatePresence>
+                    </motion.div>
+                </div>
             </motion.div>}
         </AnimatePresence>
     ), document.body);
