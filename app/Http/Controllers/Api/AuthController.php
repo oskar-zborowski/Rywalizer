@@ -43,9 +43,9 @@ class AuthController extends Controller
         /** @var User $user */
         $user = Auth::user();
         $user->checkDevice($request, 'LOGIN_FORM');
-        $user->checkAccess();
+        $user->checkAccess($request);
         $user->createTokens();
-        $user->getPrivateInformation();
+        $user->getUser('getPrivateInformation');
     }
 
     /**
@@ -62,18 +62,44 @@ class AuthController extends Controller
         $email = $encrypter->decrypt($request->email);
         $request->merge(['email' => $email]);
 
+        /** @var DefaultType $role */
+        $role = Validation::getDefaultType('USER', 'ROLE');
+
+        if (!$role->is_active) {
+            throw new ApiException(
+                BaseErrorCode::PERMISSION_DENIED(),
+                'Inactive role (USER).'
+            );
+        }
+
+        // select name, value 
+        // from( select name, value, ROW_NUMBER() OVER(PARTITION BY name ORDER BY value desc) as rn
+        // from out_pumptable ) as a
+        // where rn = 1
+
+        // Validation::checkRequiredAgreements($request);
+
         /** @var User $newUser */
-        $newUser = User::create($request->only('first_name', 'last_name', 'email', 'password', 'birth_date', 'gender_type_id'));
+        $newUser = new User;
+        $newUser->first_name = $request->first_name;
+        $newUser->last_name = $request->last_name;
+        $newUser->email = $request->email;
+        $newUser->password = $request->password;
+        $newUser->birth_date = $request->birth_date;
+        $newUser->gender_id = $request->gender_id;
+        $newUser->role_id = $role->id;
+        $newUser->save();
+        $newUser->userSetting()->create([]);
 
         Auth::loginUsingId($newUser->id);
 
         /** @var User $user */
         $user = Auth::user();
         $user->saveAcceptedAgreements($request);
-        $user->checkDevice($request->device_id, 'REGISTER_FORM');
+        $user->checkDevice($request, 'REGISTRATION_FORM');
         $user->createTokens();
         $user->sendVerificationEmail(true);
-        $user->getBasicInformation();
+        $user->getUser('getPrivateInformation');
     }
 
     /**

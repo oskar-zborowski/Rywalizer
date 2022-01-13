@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Http\Permissions\RolePermission;
-
 class DefaultType extends BaseModel
 {
     protected $fillable = [

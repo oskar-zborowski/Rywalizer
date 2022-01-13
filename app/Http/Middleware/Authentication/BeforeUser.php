@@ -2,7 +2,10 @@
 
 namespace App\Http\Middleware\Authentication;
 
+use App\Exceptions\ApiException;
+use App\Http\ErrorCodes\BaseErrorCode;
 use App\Http\Libraries\Encrypter\Encrypter;
+use App\Http\Libraries\Validation\Validation;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -110,6 +113,24 @@ class BeforeUser
             if ($request->token) {
                 $encryptedToken = $encrypter->encrypt($request->token);
                 $request->merge(['token' => $encryptedToken]);
+            }
+        }
+
+        if ($routeName == $register) {
+
+            if ($request->gender_id) {
+
+                $defaultTypeName = Validation::getDefaultTypeName('GENDER');
+
+                /** @var \App\Models\DefaultType $gender */
+                $gender = $defaultTypeName->defaultTypes()->where('id', $request->gender_id)->first();
+
+                if (!$gender) {
+                    throw new ApiException(
+                        BaseErrorCode::FAILED_VALIDATION(),
+                        'Wybrano nieprawidłową płeć.'
+                    );
+                }
             }
         }
 

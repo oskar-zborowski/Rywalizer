@@ -21,7 +21,7 @@ class CreateAuthenticationsTable extends Migration
         });
 
         Schema::table('authentications', function (Blueprint $table) {
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
+            $table->foreign('user_id')->references('id')->on('users'); //->cascadeOnDelete();
             $table->foreign('authentication_type_id')->references('id')->on('default_types');
             $table->foreign('device_id')->references('id')->on('devices')->nullOnDelete();
         });

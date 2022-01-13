@@ -48,7 +48,7 @@ class Authenticate extends Middleware
                 /** @var \App\Models\User $user */
                 $user = Auth::user();
                 $user->checkAccess();
-                $user->checkDevice($request->device_id, 'TOKEN_REFRESHING');
+                $user->checkDevice($request, 'TOKEN_REFRESHING');
                 $user->createTokens();
             }
         }

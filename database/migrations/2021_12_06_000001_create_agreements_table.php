@@ -14,7 +14,7 @@ class CreateAgreementsTable extends Migration
     public function up() {
         Schema::create('agreements', function (Blueprint $table) {
             $table->mediumIncrements('id');
-            $table->morphs('contractable');
+            $table->nullableMorphs('contractable');
             $table->char('filename', 64)->unique(); // Kodowane natywnie
             $table->char('description', 136); // Kodowane natywnie
             $table->char('signature', 40)->comment('Nazwa serii, do której należy regulamin'); // Kodowane natywnie

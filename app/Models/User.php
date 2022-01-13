@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\HasApiTokens;
 use Mehradsadeghi\FilterQueryString\FilterQueryString;
@@ -421,40 +422,61 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Zwrócenie informacji o płci użytkownika
      * 
-     * @return string|null
+     * @return array|null
      */
-    public function getGender(): ?string {
+    public function getGender(): ?array {
 
         /** @var DefaultType $gender */
         $gender = $this->gender()->first();
 
-        return $gender ?? $gender->description;
+        if ($gender) {
+            /** @var Icon $icon */
+            $icon = $gender->icon()->first();
+        }
+
+        // $result = [
+        //     'name' => $gender ?? $gender->name,
+        //     'description_simple' => $gender ?? $gender->description_simple,
+        //     'icon' => isset($icon) && $icon ?? $icon->filename
+        // ];
+
+        return $gender ?? null;
     }
 
     /**
      * Zwrócenie informacji o roli użytkownika
      * 
-     * @return string
+     * @return array
      */
-    public function getRole(): string {
+    public function getRole(): array {
 
         /** @var DefaultType $role */
         $role = $this->role()->first();
 
-        return $role ?? $role->description;
+        $result = [
+            'name' => $role->name,
+            'description_simple' =>$role->description_simple
+        ];
+
+        return $result;
     }
 
     /**
      * Zwrócenie informacji o mieście użytkownika
      * 
-     * @return string|null
+     * @return array|null
      */
-    public function getCity(): ?string {
+    public function getCity(): ?array {
 
         /** @var DefaultType $city */
         $city = $this->city()->first();
 
-        return $city ?? $city->name;
+        // $result = [
+        //     'name' => $city ?? $city->name,
+        //     'boundary' => $city ?? $city->boundary
+        // ];
+
+        return $city ?? null;
     }
 
     /**
@@ -481,7 +503,7 @@ class User extends Authenticatable implements MustVerifyEmail
             /** @var DefaultTypeName $defaultTypeName */
             $defaultTypeName = $permission->defaultTypeName()->first();
 
-            if ($defaultTypeName->name == 'CLIENT_PERMISSION') {
+            if ($permission->is_active && $defaultTypeName->name == 'CLIENT_PERMISSION') {
                 $result[] = $permission->name;
             }
         }
@@ -494,9 +516,9 @@ class User extends Authenticatable implements MustVerifyEmail
      * 
      * @param bool $all flaga z informacją czy mają zostać zwrócone wszystkie zdjęcia profilowe użytkownika
      * 
-     * @return array
+     * @return array|null
      */
-    public function getAvatars(bool $all = false): array {
+    public function getAvatars(bool $all = false): ?array {
 
         $defaultTypeName = Validation::getDefaultTypeName('IMAGE_TYPE');
 
@@ -538,13 +560,29 @@ class User extends Authenticatable implements MustVerifyEmail
             /** @var ImageAssignment $avatar */
             $avatar = $this->imageAssignments()->where('image_type_id', $defaultType->id)->orderBy('number', 'desc')->first();
 
-            /** @var Image $image */
-            $image = $avatar->image()->first();
+            if ($avatar) {
+                /** @var Image $image */
+                $image = $avatar->image()->first();
 
-            $result[] = $image->filename;
+                $result[] = $image->filename;
+            }
         }
 
         return $result;
+    }
+
+    /**
+     * Zwrócenie informacji czy użytkownik może zmienić imię i nazwisko
+     * 
+     * @return bool
+     */
+    public function canChangeName(): bool {
+        if ($this->last_time_name_changed_at) {
+            $canChangeName = Validation::timeComparison($this->last_time_name_changed_at, env('PAUSE_BEFORE_CHANGING_NAME'), '>');
+        } else {
+            $canChangeName = true;
+        }
+        return $canChangeName;
     }
 
     /**
@@ -554,11 +592,13 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function getBasicInformation(): array {
         return [
-            'id' => $this->id,
-            'first_name' => $this->first_name,
-            'last_name' => $this->last_name,
-            'avatars' => $this->getAvatars(),
-            'gender' => $this->getGender()
+            'user' => [
+                'id' => $this->id,
+                'first_name' => $this->first_name,
+                'last_name' => $this->last_name,
+                'avatars' => $this->getAvatars(),
+                'gender' => $this->getGender()
+            ]
         ];
     }
 
@@ -569,24 +609,28 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function getPrivateInformation(): array {
         return [
-            'id' => $this->id,
-            'first_name' => $this->first_name,
-            'last_name' => $this->last_name,
-            'avatars' => $this->getAvatars(true),
-            'email' => $this->email,
-            'telephone' => $this->telephone,
-            'birth_date' => $this->birth_date,
-            'gender' => $this->getGender(),
-            'role' => $this->getRole(),
-            'permission' => $this->getPermissions(),
-            'city' => $this->getCity(),
-            'address_coordinates' => $this->address_coordinates,
-            'facebook_profile' => $this->facebook_profile,
-            'instagram_profile' => $this->instagram_profile,
-            'website' => $this->website,
-            'is_verified' => (bool) $this->verified_at,
-            'last_time_name_changed_at' => $this->last_time_name_changed_at,
-            'last_time_password_changed_at' => $this->last_time_password_changed_at
+            'user' => [
+                'id' => $this->id,
+                'first_name' => $this->first_name,
+                'last_name' => $this->last_name,
+                'avatars' => $this->getAvatars(true),
+                'email' => $this->email,
+                'telephone' => $this->telephone,
+                'birth_date' => $this->birth_date,
+                'gender' => $this->getGender(),
+                'role' => $this->getRole(),
+                'city' => $this->getCity(),
+                'address_coordinates' => $this->address_coordinates,
+                'facebook_profile' => $this->facebook_profile,
+                'instagram_profile' => $this->instagram_profile,
+                'website' => $this->website,
+                'is_verified' => (bool) $this->verified_at,
+                'can_change_name' => $this->canChangeName(),
+                // 'permissions' => $this->getPermissions()
+            ],
+            'user_setting' => [
+                'is_visible_in_comments' => (bool) $this->userSetting()->first()->is_visible_in_comments
+            ]
         ];
     }
 
@@ -644,13 +688,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
         $accountOperationType = Validation::getAccountOperationType('EMAIL_VERIFICATION');
 
-        if (!$accountOperationType) {
-            throw new ApiException(
-                BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                'Invalid account operation type.'
-            );
-        }
-
         $emailSendingCounter = 1;
 
         if (!$afterRegistartion) {
@@ -677,7 +714,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_sending_counter' => $emailSendingCounter
         ]);
 
-        $url = env('APP_URL') . '/user/email?token=' . $token; // TODO Poprawić na prawidłowy URL
+        $url = env('APP_URL') . '/V1/user/email?token=' . $token; // TODO Poprawić na prawidłowy URL
         Mail::to($this)->send(new MailEmailVerification($url, $afterRegistartion));
 
         if (!$afterRegistartion) {
@@ -926,30 +963,14 @@ class User extends Authenticatable implements MustVerifyEmail
      * Zweryfikowanie urządzenia i stworzenie odpowiednich logów
      * 
      * @param Request $request
-     * @param string $activity nazwa aktywności, która wywołała daną metodę np. LOGIN
+     * @param string $activity nazwa aktywności, która wywołała daną metodę np. LOGIN_FORM
      * 
      * @return void
      */
     public function checkDevice(Request $request = null, string $activity): void {
 
-        $defaultTypeName = Validation::getDefaultTypeName('AUTHENTICATION_TYPE');
-
-        if (!$defaultTypeName) {
-            throw new ApiException(
-                BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                'Invalid default type name (AUTHENTICATION_TYPE).'
-            );
-        }
-
         /** @var DefaultType $authenticationType */
-        $authenticationType = $defaultTypeName->defaultTypes()->where('name', $activity)->first();
-
-        if (!$authenticationType) {
-            throw new ApiException(
-                BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                'Invalid default type (' . $activity . ').'
-            );
-        }
+        $authenticationType = Validation::getDefaultType($activity, 'AUTHENTICATION_TYPE');
 
         if ($request === null) {
 
@@ -961,27 +982,30 @@ class User extends Authenticatable implements MustVerifyEmail
             $device->save();
             $deviceId = $device->id;
 
+            JsonResponse::setCookie($tempUuid, 'TEMP_UUID');
+
         } else {
             $deviceId = $request->device_id;
         }
 
-        $authenticationType->authentications()->create([
-            'user_id' => $this->id,
-            'device_id' => $deviceId
-        ]);
-
-        JsonResponse::setCookie($tempUuid, 'TEMP_UUID');
+        $authentication = new Authentication;
+        $authentication->user_id = $this->id;
+        $authentication->authentication_type_id = $authenticationType->id;
+        $authentication->device_id = $deviceId;
+        $authentication->save();
     }
 
     /**
      * Sprawdzenie czy użytkownik może korzystać z serwisu
      * 
+     * @param Request $request
+     * 
      * @return void
      */
-    public function checkAccess(): void {
+    public function checkAccess(Request $request = null): void {
 
-        $accountDeleted = null;
         $accountBlocked = null;
+        $accountDeleted = null;
 
         /** @var AccountAction $accountActions */
         $accountActions = $this->actionables()->get();
@@ -992,17 +1016,31 @@ class User extends Authenticatable implements MustVerifyEmail
             /** @var AccountActionType $accountActionType */
             $accountActionType = $aA->accountActionType()->first();
 
-            if (strpos($accountActionType->name, 'ACCOUNT_DELETED') !== false) {
-                $accountDeleted = $aA;
-            } else if (strpos($accountActionType->name, 'ACCOUNT_BLOCKED') !== false) {
+            /** @var DefaultType $defaultType */
+            $defaultType = $accountActionType->accountActionType()->first();
+
+            if (strpos($defaultType->name, 'ACCOUNT_BLOCKED') !== false) {
                 $accountBlocked = $aA;
+            } else if (strpos($defaultType->name, 'ACCOUNT_DELETED') !== false) {
+                $accountDeleted = $aA;
             }
         }
 
         if ($accountBlocked || $accountDeleted) {
 
-            JsonResponse::deleteCookie('JWT');
-            JsonResponse::deleteCookie('REFRESH-TOKEN');
+            if ($request === null) {
+                JsonResponse::deleteCookie('JWT');
+                JsonResponse::deleteCookie('REFRESH-TOKEN');
+            } else {
+
+                if ($request->cookie(env('JWT_COOKIE_NAME'))) {
+                    JsonResponse::deleteCookie('JWT');
+                }
+
+                if ($request->cookie(env('REFRESH_TOKEN_COOKIE_NAME'))) {
+                    JsonResponse::deleteCookie('REFRESH_TOKEN');
+                }
+            }
 
             $this->tokenable()->delete();
 
@@ -1011,10 +1049,13 @@ class User extends Authenticatable implements MustVerifyEmail
                 /** @var AccountActionType $accountActionType */
                 $accountActionType = $accountBlocked->accountActionType()->first();
 
+                /** @var DefaultType $defaultType */
+                $defaultType = $accountActionType->accountActionType()->first();
+
                 throw new ApiException(
                     AuthErrorCode::ACOUNT_BLOCKED(),
                     [
-                        $accountActionType->description,
+                        $defaultType->description_perfect,
                         'Data zniesienia blokady: ' . $accountBlocked->expires_at
                     ]
                 );
@@ -1025,12 +1066,15 @@ class User extends Authenticatable implements MustVerifyEmail
                 /** @var AccountActionType $accountActionType */
                 $accountActionType = $accountDeleted->accountActionType()->first();
 
+                /** @var DefaultType $defaultType */
+                $defaultType = $accountActionType->accountActionType()->first();
+
                 $this->prepareEmail('ACCOUNT_RESTORATION', 'v1/account/restore', MailAccountRestoration::class);
 
                 throw new ApiException(
                     AuthErrorCode::ACOUNT_DELETED(),
                     [
-                        $accountActionType->description,
+                        $defaultType->description_perfect,
                         'Wysłaliśmy na Twojego maila link do przywrócenia konta'
                     ]
                 );
@@ -1053,8 +1097,9 @@ class User extends Authenticatable implements MustVerifyEmail
         $jwtToken = $jwt->plainTextToken;
         $jwtId = $jwt->accessToken->getKey();
 
-        $personalAccessToken = $this->personalAccessToken()->where('id', $jwtId)->first();
-        $personalAccessToken->update(['refresh_token' => $encryptedRefreshToken]);
+        $personalAccessToken = $this->tokenable()->where('id', $jwtId)->first();
+        $personalAccessToken->refresh_token = $encryptedRefreshToken;
+        $personalAccessToken->save();
 
         JsonResponse::setCookie($jwtToken, 'JWT');
         JsonResponse::setCookie($refreshToken, 'REFRESH-TOKEN');
@@ -1062,6 +1107,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Sprawdzenie brakujących informacji o użytkowniku i zwrócenie jego encji
+     * 
+     * @param string $modelMethodName nazwa metody, która ma zostać dołączona jako wykaz zwróconych pól użytkownika, np. getPrivateInformation
      * 
      * @return void
      */
@@ -1077,16 +1124,24 @@ class User extends Authenticatable implements MustVerifyEmail
             $missingInformation['required']['birth_date'] = [__('validation.custom.is-missing', ['attribute' => 'datę urodzenia'])];
         }
 
-        if (!$this->avatar) {
+        if (!$this->getAvatars()) {
             $missingInformation['optional']['avatar'] = [__('validation.custom.is-missing', ['attribute' => 'zdjęcie profilowe'])];
-        }
-
-        if (!$this->address_coordinates) {
-            $missingInformation['optional']['address_coordinates'] = [__('validation.custom.is-missing', ['attribute' => 'lokalizację'])];
         }
 
         if (!$this->telephone) {
             $missingInformation['optional']['telephone'] = [__('validation.custom.is-missing', ['attribute' => 'numer telefonu'])];
+        }
+
+        if (!$this->gender_id) {
+            $missingInformation['optional']['gender_id'] = [__('validation.custom.is-missing', ['attribute' => 'płeć'])];
+        }
+
+        if (!$this->city_id) {
+            $missingInformation['optional']['city_id'] = [__('validation.custom.is-missing', ['attribute' => 'miasto'])];
+        }
+
+        if (!$this->address_coordinates) {
+            $missingInformation['optional']['address_coordinates'] = [__('validation.custom.is-missing', ['attribute' => 'lokalizację'])];
         }
 
         if (!$this->facebook_profile) {
@@ -1101,22 +1156,34 @@ class User extends Authenticatable implements MustVerifyEmail
             $missingInformation['optional']['website'] = [__('validation.custom.is-missing', ['attribute' => 'adres strony internetowej'])];
         }
 
-        if (!$this->gender_id) {
-            $missingInformation['optional']['gender_id'] = [__('validation.custom.is-missing', ['attribute' => 'płeć'])];
-        }
-
         if (isset($missingInformation['required']) || !$this->email_verified_at) {
             throw new ApiException(
                 $this->email_verified_at ? AuthErrorCode::MISSING_USER_INFORMATION() : AuthErrorCode::UNVERIFIED_EMAIL(),
-                ['user' => $this->$modelMethodName()],
+                $this->$modelMethodName(),
                 ['missing_user_information' => $missingInformation]
             );
         }
 
         JsonResponse::sendSuccess(
-            ['user' => $this->$modelMethodName()],
+            $this->$modelMethodName(),
             ['missing_user_information' => $missingInformation]
         );
+    }
+
+    /**
+     * Zapisanie zaakceptowanych regulaminów przez użytkownika
+     * 
+     * @param Request $request
+     * 
+     * @return void
+     */
+    public function saveAcceptedAgreements(Request $request): void {
+
+        $acceptedAgreements = $request->accepted_agreements;
+
+        foreach ($acceptedAgreements as $aA) {
+            $this->userAgreements()->create(['agreement_id' => $aA]);
+        }
     }
 
     /**

@@ -11,7 +11,9 @@ use Error;
 use ErrorException;
 use Exception;
 use GuzzleHttp\Exception\ClientException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Eloquent\MassAssignmentException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
@@ -81,12 +83,14 @@ class Handler extends ExceptionHandler
                 break;
 
             case ArgumentCountError::class:
+            case AuthenticationException::class:
             case BadMethodCallException::class:
             case BindingResolutionException::class:
             case Error::class:
             case ErrorException::class:
             case Exception::class:
             case FatalError::class:
+            case MassAssignmentException::class:
             case MethodNotAllowedHttpException::class:
             case NotFoundHttpException::class:
             case TypeError::class:
@@ -143,6 +147,7 @@ class Handler extends ExceptionHandler
                 break;
 
             default:
+
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),
                     env('APP_DEBUG') ? $class : null
