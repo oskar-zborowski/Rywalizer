@@ -92,6 +92,11 @@ class JsonResponse
                 $expires = time()+env('UUID_LIFETIME')*60;
                 break;
 
+            case 'TEMP_UUID':
+                $name = env('TEMP_UUID_COOKIE_NAME');
+                $expires = time()+env('UUID_LIFETIME')*60;
+                break;
+
             default:
                 $expires = time()+env('DEFAULT_COOKIE_LIFETIME')*60;
                 break;
@@ -109,10 +114,23 @@ class JsonResponse
      */
     public static function deleteCookie(string $name): void {
 
-        if ($name == 'JWT') {
-            $name = env('JWT_COOKIE_NAME');
-        } else if ($name == 'REFRESH-TOKEN') {
-            $name = env('REFRESH_TOKEN_COOKIE_NAME');
+        switch ($name) {
+
+            case 'JWT':
+                $name = env('JWT_COOKIE_NAME');
+                break;
+
+            case 'REFRESH-TOKEN':
+                $name = env('REFRESH_TOKEN_COOKIE_NAME');
+                break;
+
+            case 'UUID':
+                $name = env('UUID_COOKIE_NAME');
+                break;
+
+            case 'TEMP_UUID':
+                $name = env('TEMP_UUID_COOKIE_NAME');
+                break;
         }
 
         setcookie($name, null, -1, '/', env('APP_DOMAIN'), true, true);

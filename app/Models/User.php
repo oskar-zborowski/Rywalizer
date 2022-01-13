@@ -7,7 +7,6 @@ use App\Http\ErrorCodes\AuthErrorCode;
 use App\Http\ErrorCodes\BaseErrorCode;
 use App\Http\Libraries\Encrypter\Encrypter;
 use App\Http\Libraries\Validation\Validation;
-use App\Http\Permissions\RolePermission;
 use App\Http\Responses\JsonResponse;
 use App\Http\Traits\Encryptable;
 use App\Mail\AccountRestoration as MailAccountRestoration;
@@ -420,6 +419,135 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Zwrócenie informacji o płci użytkownika
+     * 
+     * @return string|null
+     */
+    public function getGender(): ?string {
+
+        /** @var DefaultType $gender */
+        $gender = $this->gender()->first();
+
+        return $gender ?? $gender->description;
+    }
+
+    /**
+     * Zwrócenie informacji o roli użytkownika
+     * 
+     * @return string
+     */
+    public function getRole(): string {
+
+        /** @var DefaultType $role */
+        $role = $this->role()->first();
+
+        return $role ?? $role->description;
+    }
+
+    /**
+     * Zwrócenie informacji o mieście użytkownika
+     * 
+     * @return string|null
+     */
+    public function getCity(): ?string {
+
+        /** @var DefaultType $city */
+        $city = $this->city()->first();
+
+        return $city ?? $city->name;
+    }
+
+    /**
+     * Zwrócenie listy uprawnień
+     * 
+     * @return array|null
+     */
+    public function getPermissions(): ?array {
+
+        /** @var DefaultType $role */
+        $role = $this->role();
+
+        /** @var RolePermission $rolePermissions */
+        $rolePermissions = $role->rolePermissionsByRole()->get();
+
+        $result = null;
+
+        /** @var RolePermission $rP */
+        foreach ($rolePermissions as $rP) {
+
+            /** @var DefaultType $permission */
+            $permission = $rP->permission()->first();
+
+            /** @var DefaultTypeName $defaultTypeName */
+            $defaultTypeName = $permission->defaultTypeName()->first();
+
+            if ($defaultTypeName->name == 'CLIENT_PERMISSION') {
+                $result[] = $permission->name;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Zwrócenie listy lub pojedynczego zdjęcia profilowego
+     * 
+     * @param bool $all flaga z informacją czy mają zostać zwrócone wszystkie zdjęcia profilowe użytkownika
+     * 
+     * @return array
+     */
+    public function getAvatars(bool $all = false): array {
+
+        $defaultTypeName = Validation::getDefaultTypeName('IMAGE_TYPE');
+
+        if (!$defaultTypeName) {
+            throw new ApiException(
+                BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                'Invalid default type name (IMAGE_TYPE).'
+            );
+        }
+
+        /** @var DefaultType $defaultType */
+        $defaultType = $defaultTypeName->defaultTypes()->where('name', 'AVATAR')->first();
+
+        if (!$defaultType) {
+            throw new ApiException(
+                BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                'Invalid default type (AVATAR).'
+            );
+        }
+
+        $result = null;
+
+        if ($all) {
+
+            /** @var ImageAssignment $avatars */
+            $avatars = $this->imageAssignments()->where('image_type_id', $defaultType->id)->orderBy('number', 'desc')->get();
+
+            /** @var ImageAssignment $a */
+            foreach ($avatars as $a) {
+
+                /** @var Image $image */
+                $image = $a->image()->first();
+
+                $result[] = $image->filename;
+            }
+
+        } else {
+
+            /** @var ImageAssignment $avatar */
+            $avatar = $this->imageAssignments()->where('image_type_id', $defaultType->id)->orderBy('number', 'desc')->first();
+
+            /** @var Image $image */
+            $image = $avatar->image()->first();
+
+            $result[] = $image->filename;
+        }
+
+        return $result;
+    }
+
+    /**
      * Zwrócenie podstawowych informacji o użytkowniku
      * 
      * @return array
@@ -429,8 +557,8 @@ class User extends Authenticatable implements MustVerifyEmail
             'id' => $this->id,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
-            'avatar' => $this->avatar,
-            'gender_types' => $this->genderType()->first(['description', 'icon']) ?? null
+            'avatars' => $this->getAvatars(),
+            'gender' => $this->getGender()
         ];
     }
 
@@ -444,71 +572,21 @@ class User extends Authenticatable implements MustVerifyEmail
             'id' => $this->id,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
+            'avatars' => $this->getAvatars(true),
             'email' => $this->email,
-            'avatar' => $this->avatar,
-            'birth_date' => $this->birth_date,
-            'address_coordinates' => $this->address_coordinates,
             'telephone' => $this->telephone,
+            'birth_date' => $this->birth_date,
+            'gender' => $this->getGender(),
+            'role' => $this->getRole(),
+            'permission' => $this->getPermissions(),
+            'city' => $this->getCity(),
+            'address_coordinates' => $this->address_coordinates,
             'facebook_profile' => $this->facebook_profile,
             'instagram_profile' => $this->instagram_profile,
-            'gender_types' => $this->genderType()->first(['description', 'icon']) ?? null,
-            'role_types' => $this->roleType()->first(['name', 'access_level']),
-            'last_time_name_changed' => $this->last_time_name_changed,
-            'last_time_password_changed' => $this->last_time_password_changed
-        ];
-    }
-
-    /**
-     * Zwrócenie szczegółowych informacji o użytkowniku
-     * 
-     * @return array
-     */
-    public function getDetailedInformation(): array {
-
-        $accountDeleted = null;
-        $accountBlocked = null;
-
-        $accountAction = $this->accountAction()->get();
-
-        foreach ($accountAction as $aA) {
-            if (strpos($aA->accountActionType->name, 'ACCOUNT_DELETED') !== false) {
-                $accountDeleted = [
-                    'description' => $aA->accountActionType->description,
-                    'created_at' => $aA->created_at,
-                    'expires_at' => $aA->expires_at
-                ];
-            } else if (strpos($aA->accountActionType->name, 'ACCOUNT_BLOCKED') !== false) {
-                $accountBlocked = [
-                    'description' => $aA->accountActionType->description,
-                    'founder' => $aA->founder->basicInformation(),
-                    'created_at' => $aA->created_at,
-                    'expires_at' => $aA->expires_at
-                ];
-            }
-        }
-
-        return [
-            'id' => $this->id,
-            'first_name' => $this->first_name,
-            'last_name' => $this->last_name,
-            'email' => $this->email,
-            'avatar' => $this->avatar,
-            'birth_date' => $this->birth_date,
-            'address_coordinates' => $this->address_coordinates,
-            'telephone' => $this->telephone,
-            'facebook_profile' => $this->facebook_profile,
-            'instagram_profile' => $this->instagram_profile,
-            'gender_types' => $this->genderType()->first(['description', 'icon']) ?? null,
-            'role_types' => $this->roleType()->first('name'),
-            'standard_login' => $this->password ? true : false,
-            'external_authentiaction' => $this->externalAuthentication()->get(),
-            'is_email_verified' => (bool) $this->email_verified_at,
-            'account_deleted' => $accountDeleted,
-            'account_blocked' => $accountBlocked,
-            'last_time_name_changed' => $this->last_time_name_changed,
-            'last_time_password_changed' => $this->last_time_password_changed,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at
+            'website' => $this->website,
+            'is_verified' => (bool) $this->verified_at,
+            'last_time_name_changed_at' => $this->last_time_name_changed_at,
+            'last_time_password_changed_at' => $this->last_time_password_changed_at
         ];
     }
 
@@ -845,6 +923,144 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Zweryfikowanie urządzenia i stworzenie odpowiednich logów
+     * 
+     * @param Request $request
+     * @param string $activity nazwa aktywności, która wywołała daną metodę np. LOGIN
+     * 
+     * @return void
+     */
+    public function checkDevice(Request $request = null, string $activity): void {
+
+        $defaultTypeName = Validation::getDefaultTypeName('AUTHENTICATION_TYPE');
+
+        if (!$defaultTypeName) {
+            throw new ApiException(
+                BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                'Invalid default type name (AUTHENTICATION_TYPE).'
+            );
+        }
+
+        /** @var DefaultType $authenticationType */
+        $authenticationType = $defaultTypeName->defaultTypes()->where('name', $activity)->first();
+
+        if (!$authenticationType) {
+            throw new ApiException(
+                BaseErrorCode::INTERNAL_SERVER_ERROR(),
+                'Invalid default type (' . $activity . ').'
+            );
+        }
+
+        if ($request === null) {
+
+            $encrypter = new Encrypter;
+            $tempUuid = $encrypter->generateToken(64, Device::class, 'uuid');
+
+            $device = new Device;
+            $device->uuid = $tempUuid;
+            $device->save();
+            $deviceId = $device->id;
+
+        } else {
+            $deviceId = $request->device_id;
+        }
+
+        $authenticationType->authentications()->create([
+            'user_id' => $this->id,
+            'device_id' => $deviceId
+        ]);
+
+        JsonResponse::setCookie($tempUuid, 'TEMP_UUID');
+    }
+
+    /**
+     * Sprawdzenie czy użytkownik może korzystać z serwisu
+     * 
+     * @return void
+     */
+    public function checkAccess(): void {
+
+        $accountDeleted = null;
+        $accountBlocked = null;
+
+        /** @var AccountAction $accountActions */
+        $accountActions = $this->actionables()->get();
+
+        /** @var AccountAction $aA */
+        foreach ($accountActions as $aA) {
+
+            /** @var AccountActionType $accountActionType */
+            $accountActionType = $aA->accountActionType()->first();
+
+            if (strpos($accountActionType->name, 'ACCOUNT_DELETED') !== false) {
+                $accountDeleted = $aA;
+            } else if (strpos($accountActionType->name, 'ACCOUNT_BLOCKED') !== false) {
+                $accountBlocked = $aA;
+            }
+        }
+
+        if ($accountBlocked || $accountDeleted) {
+
+            JsonResponse::deleteCookie('JWT');
+            JsonResponse::deleteCookie('REFRESH-TOKEN');
+
+            $this->tokenable()->delete();
+
+            if ($accountBlocked) {
+
+                /** @var AccountActionType $accountActionType */
+                $accountActionType = $accountBlocked->accountActionType()->first();
+
+                throw new ApiException(
+                    AuthErrorCode::ACOUNT_BLOCKED(),
+                    [
+                        $accountActionType->description,
+                        'Data zniesienia blokady: ' . $accountBlocked->expires_at
+                    ]
+                );
+            }
+
+            if ($accountDeleted) {
+
+                /** @var AccountActionType $accountActionType */
+                $accountActionType = $accountDeleted->accountActionType()->first();
+
+                $this->prepareEmail('ACCOUNT_RESTORATION', 'v1/account/restore', MailAccountRestoration::class);
+
+                throw new ApiException(
+                    AuthErrorCode::ACOUNT_DELETED(),
+                    [
+                        $accountActionType->description,
+                        'Wysłaliśmy na Twojego maila link do przywrócenia konta'
+                    ]
+                );
+            }
+        }
+    }
+
+    /**
+     * Utworzenie tokenów uwierzytelniających
+     * 
+     * @return void
+     */
+    public function createTokens(): void {
+
+        $encrypter = new Encrypter;
+        $refreshToken = $encrypter->generateToken(64, PersonalAccessToken::class, 'refresh_token');
+        $encryptedRefreshToken = $encrypter->encrypt($refreshToken);
+
+        $jwt = $this->createToken('JWT');
+        $jwtToken = $jwt->plainTextToken;
+        $jwtId = $jwt->accessToken->getKey();
+
+        $personalAccessToken = $this->personalAccessToken()->where('id', $jwtId)->first();
+        $personalAccessToken->update(['refresh_token' => $encryptedRefreshToken]);
+
+        JsonResponse::setCookie($jwtToken, 'JWT');
+        JsonResponse::setCookie($refreshToken, 'REFRESH-TOKEN');
+    }
+
+    /**
      * Sprawdzenie brakujących informacji o użytkowniku i zwrócenie jego encji
      * 
      * @return void
@@ -901,119 +1117,6 @@ class User extends Authenticatable implements MustVerifyEmail
             ['user' => $this->$modelMethodName()],
             ['missing_user_information' => $missingInformation]
         );
-    }
-
-    /**
-     * Sprawdzenie czy użytkownik może korzystać z serwisu
-     * 
-     * @return void
-     */
-    public function checkAccess(): void {
-
-        $accountDeleted = null;
-        $accountBlocked = null;
-
-        /** @var AccountAction $accountAction */
-        $accountAction = $this->actionables()->get();
-
-        /** @var AccountAction $aA */
-        foreach ($accountAction as $aA) {
-            if (strpos($aA->accountActionType()->name, 'ACCOUNT_DELETED') !== false) {
-                $accountDeleted = $aA;
-            } else if (strpos($aA->accountActionType()->name, 'ACCOUNT_BLOCKED') !== false) {
-                $accountBlocked = $aA;
-            }
-        }
-
-        if ($accountBlocked || $accountDeleted) {
-
-            JsonResponse::deleteCookie('JWT');
-            JsonResponse::deleteCookie('REFRESH-TOKEN');
-
-            $this->tokenable()->delete();
-
-            if ($accountBlocked) {
-                throw new ApiException(
-                    AuthErrorCode::ACOUNT_BLOCKED(),
-                    [
-                        $accountBlocked->accountActionType()->description,
-                        'Data zniesienia blokady: ' . $accountBlocked->expires_at
-                    ]
-                );
-            }
-
-            if ($accountDeleted) {
-
-                $this->prepareEmail('ACCOUNT_RESTORATION', 'restore-account', MailAccountRestoration::class);
-
-                throw new ApiException(
-                    AuthErrorCode::ACOUNT_DELETED(),
-                    [
-                        $accountDeleted->accountActionType()->description,
-                        'Wysłaliśmy na Twojego maila link do przywrócenia konta'
-                    ]
-                );
-            }
-        }
-    }
-
-    /**
-     * Utworzenie tokenów uwierzytelniających
-     * 
-     * @return void
-     */
-    public function createTokens(): void {
-
-        $encrypter = new Encrypter;
-        $refreshToken = $encrypter->generateToken(64, PersonalAccessToken::class, 'refresh_token');
-        $encryptedRefreshToken = $encrypter->encrypt($refreshToken);
-
-        $jwtEncryptedName = $encrypter->encrypt('JWT', 3);
-        $jwt = $this->createToken($jwtEncryptedName);
-        $jwtToken = $jwt->plainTextToken;
-        $jwtId = $jwt->accessToken->getKey();
-
-        $this->personalAccessToken()->where('id', $jwtId)->update(['refresh_token' => $encryptedRefreshToken]);
-
-        JsonResponse::setCookie($jwtToken, 'JWT');
-        JsonResponse::setCookie($refreshToken, 'REFRESH-TOKEN');
-    }
-
-    /**
-     * Zweryfikowanie urządzenia i stworzenie odpowiednich logów
-     * 
-     * @param int|null $deviceId identyfikator urządzenia
-     * @param string $activity nazwa aktywności, która wywołała daną metodę np. LOGIN
-     * 
-     * @return void
-     */
-    public function checkDevice(int $deviceId = null, string $activity, Request $request = null): void {
-
-        $defaultTypeName = Validation::getDefaultTypeName('AUTHENTICATION_TYPE');
-
-        /** @var DefaultType $authenticationType */
-        $authenticationType = $defaultTypeName->defaultTypes()->where('name', $activity);
-
-        if (!$deviceId) {
-            if ($uuid = $request->cookie(env('UUID_COOKIE_NAME'))) {
-
-                $encrypter = new Encrypter;
-                $encryptedIp = $encrypter->encrypt($request->ip(), 15);
-                $encryptedUuid = $encrypter->encrypt($uuid);
-
-                /** @var Device $device */
-                $device = Device::where('uuid', $encryptedUuid)->first();
-
-                $device->update([
-                    'ip' => $encryptedIp
-                ]);
-            }
-        }
-
-        $authenticationType->authentications()->create([
-            'user_id' => $this->id,
-            'device_id' => $device->id,
-        ]);
     }
 
     /**

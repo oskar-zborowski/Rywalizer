@@ -42,10 +42,10 @@ class AuthController extends Controller
 
         /** @var User $user */
         $user = Auth::user();
-        $user->checkDevice($request->device_id, 'LOGIN_FORM');
+        $user->checkDevice($request, 'LOGIN_FORM');
         $user->checkAccess();
         $user->createTokens();
-        $user->getBasicInformation();
+        $user->getPrivateInformation();
     }
 
     /**

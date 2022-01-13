@@ -44,10 +44,7 @@ class DeviceRecognize
                 $device = Device::where([
                     'uuid' => $encryptedUuid,
                     'ip' => $encryptedIp
-                ])->orWhere([
-                    'uuid' => $encryptedUuid,
-                    'ip' => null
-                ])->latest()->first();
+                ])->first();
 
                 if ($device) {
                     $deviceOsName &= $request->os_name != $device->os_name;
@@ -55,9 +52,14 @@ class DeviceRecognize
                     $deviceBrowserName &= $request->browser_name != $device->browser_name;
                     $deviceBrowserVersion &= $request->browser_version != $device->browser_version;
                 }
+
+                /** @var Device $deviceWithOnlyUuid */
+                $deviceWithOnlyUuid = Device::where([
+                    'uuid' => $encryptedUuid
+                ])->first();
             }
 
-            if (!isset($device)) {
+            if (!isset($device) && !isset($deviceWithOnlyUuid)) {
                 $uuid = $encrypter->generateToken(64, Device::class, 'uuid');
             }
 
@@ -87,8 +89,6 @@ class DeviceRecognize
                 $device->save();
                 $device->update($updatedInformation);
             } else {
-                $device->ip = $request->ip();
-                $device->save();
                 $device->update($updatedInformation);
             }
 

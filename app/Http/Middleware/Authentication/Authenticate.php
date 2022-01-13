@@ -5,9 +5,11 @@ namespace App\Http\Middleware\Authentication;
 use App\Http\Libraries\Encrypter\Encrypter;
 use App\Http\Libraries\Validation\Validation;
 use App\Http\Responses\JsonResponse;
+use App\Models\Device;
 use App\Models\PersonalAccessToken;
 use Closure;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -16,9 +18,11 @@ use Illuminate\Support\Facades\Auth;
 class Authenticate extends Middleware
 {
     /**
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
+     * 
+     * @return void
      */
-    protected function redirectTo($request) {
+    protected function redirectTo($request): void {
 
         if ($request->cookie(env('JWT_COOKIE_NAME'))) {
             JsonResponse::deleteCookie('JWT');
@@ -51,13 +55,11 @@ class Authenticate extends Middleware
     }
 
     /**
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @param Closure $next
      * @param array $guards
      */
     public function handle($request, Closure $next, ...$guards) {
-
-        /** @var \Illuminate\Http\Request $request */
 
         if ($jwt = $request->cookie(env('JWT_COOKIE_NAME'))) {
             $request->headers->set('Authorization', 'Bearer ' . $jwt);
@@ -66,6 +68,43 @@ class Authenticate extends Middleware
             $this->redirectTo($request);
         }
 
+        $this->fillInDeviceData($request);
+
         return $next($request);
+    }
+
+    /**
+     * Uzupełnienie logów dla logowania, bądź rejestracji poprzez OAuth
+     * 
+     * @param Request $request
+     * 
+     * @return void
+     */
+    private function fillInDeviceData(Request $request): void {
+
+        if ($tempUuid = $request->cookie(env('TEMP_UUID_COOKIE_NAME'))) {
+
+            /** @var \App\Models\Device $device */
+            $device = Device::where('id', $request->device_id)->first();
+
+            /** @var \App\Models\Device $tempDevice */
+            $tempDevice = Device::where('uuid', $tempUuid)->first();
+
+            if ($device && $tempDevice) {
+
+                /** @var \App\Models\Authentication $autentications */
+                $autentications = $tempDevice->authentications()->get();
+
+                /** @var \App\Models\Authentication $a */
+                foreach ($autentications as $a) {
+                    $a->device_id = $device->id;
+                    $a->save();
+                }
+
+                $tempDevice->delete();
+
+                JsonResponse::deleteCookie('TEMP_UUID');
+            }
+        }
     }
 }
