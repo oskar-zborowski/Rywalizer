@@ -10,7 +10,7 @@ export class UserStore {
     }
 
     public async login(login: string, password: string) {
-        const user = await axios.post('v1/api/auth/login', {
+        const user = await axios.post('api/v1/auth/login', {
             email: login,
             password: password
         });
