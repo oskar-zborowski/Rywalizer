@@ -11,13 +11,16 @@ class AccountOperation extends BaseModel
 {
     use Encryptable;
 
+    protected $fillable = [
+        'account_operation_type_id',
+        'token',
+        'email_sending_counter'
+    ];
+
     protected $guarded = [
         'id',
         'operationable_type',
         'operationable_id',
-        'account_operation_type_id',
-        'token',
-        'email_sending_counter',
         'creator_id',
         'editor_id',
         'created_at',

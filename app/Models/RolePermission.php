@@ -16,7 +16,7 @@ class RolePermission extends BaseModel
     ];
 
     protected $hidden = [
-        'id',
+        // 'id',
         'role_id',
         'permission_id',
         'creator_id',

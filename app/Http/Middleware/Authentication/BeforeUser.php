@@ -116,8 +116,9 @@ class BeforeUser
             }
         }
 
-        if ($routeName == $register) {
-
+        if ($routeName == $register ||
+            $routeName == $updateUser)
+        {
             if ($request->gender_id) {
 
                 $defaultTypeName = Validation::getDefaultTypeName('GENDER');
@@ -132,17 +133,17 @@ class BeforeUser
                     );
                 }
             }
-        }
 
-        if ($routeName == $updateUser) {
+            if ($routeName == $updateUser) {
 
-            $request->validate([
-                'telephone' => 'nullable|string|max:24'
-            ]);
-
-            if ($request->telephone) {
-                $encryptedTelephone = $encrypter->encrypt($request->telephone, 24);
-                $request->merge(['telephone' => $encryptedTelephone]);
+                $request->validate([
+                    'telephone' => 'nullable|string|max:24'
+                ]);
+    
+                if ($request->telephone) {
+                    $encryptedTelephone = $encrypter->encrypt($request->telephone, 24);
+                    $request->merge(['telephone' => $encryptedTelephone]);
+                }
             }
         }
 

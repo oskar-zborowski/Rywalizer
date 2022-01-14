@@ -17,7 +17,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\HasApiTokens;
 use Mehradsadeghi\FilterQueryString\FilterQueryString;
@@ -97,6 +96,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'facebook_profile' => 255,
         'instagram_profile' => 255,
         'website' => 255
+    ];
+
+    protected $with = [
+        'gender'
     ];
 
     public function gender() {
@@ -434,13 +437,13 @@ class User extends Authenticatable implements MustVerifyEmail
             $icon = $gender->icon()->first();
         }
 
-        // $result = [
-        //     'name' => $gender ?? $gender->name,
-        //     'description_simple' => $gender ?? $gender->description_simple,
-        //     'icon' => isset($icon) && $icon ?? $icon->filename
-        // ];
+        $result = [
+            'name' => $gender ? $gender->name : null,
+            'description_simple' => $gender ? $gender->description_simple : null,
+            'icon' => isset($icon) && $icon ? $icon->filename : null
+        ];
 
-        return $gender ?? null;
+        return $gender ? $result : null;
     }
 
     /**
@@ -471,12 +474,12 @@ class User extends Authenticatable implements MustVerifyEmail
         /** @var DefaultType $city */
         $city = $this->city()->first();
 
-        // $result = [
-        //     'name' => $city ?? $city->name,
-        //     'boundary' => $city ?? $city->boundary
-        // ];
+        $result = [
+            'name' => $city ? $city->name : null,
+            'boundary' => $city ? $city->boundary : null
+        ];
 
-        return $city ?? null;
+        return $city ? $result : null;
     }
 
     /**
@@ -487,7 +490,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getPermissions(): ?array {
 
         /** @var DefaultType $role */
-        $role = $this->role();
+        $role = $this->role()->first();
 
         /** @var RolePermission $rolePermissions */
         $rolePermissions = $role->rolePermissionsByRole()->get();
@@ -520,24 +523,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function getAvatars(bool $all = false): ?array {
 
-        $defaultTypeName = Validation::getDefaultTypeName('IMAGE_TYPE');
-
-        if (!$defaultTypeName) {
-            throw new ApiException(
-                BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                'Invalid default type name (IMAGE_TYPE).'
-            );
-        }
-
-        /** @var DefaultType $defaultType */
-        $defaultType = $defaultTypeName->defaultTypes()->where('name', 'AVATAR')->first();
-
-        if (!$defaultType) {
-            throw new ApiException(
-                BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                'Invalid default type (AVATAR).'
-            );
-        }
+        $defaultType = Validation::getDefaultType('AVATAR', 'IMAGE_TYPE');
 
         $result = null;
 
@@ -626,7 +612,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 'website' => $this->website,
                 'is_verified' => (bool) $this->verified_at,
                 'can_change_name' => $this->canChangeName(),
-                // 'permissions' => $this->getPermissions()
+                'permissions' => $this->getPermissions()
             ],
             'user_setting' => [
                 'is_visible_in_comments' => (bool) $this->userSetting()->first()->is_visible_in_comments

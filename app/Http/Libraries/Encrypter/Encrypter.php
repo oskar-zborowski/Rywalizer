@@ -71,7 +71,7 @@ class Encrypter
      * Generowanie tokenu
      * 
      * @param int $maxSize maksymalny rozmiar pola w bazie danych
-     * @param $entity encja w której będzie następowało przeszukiwanie pod kątem już występującego tokena
+     * @param mixed $entity encja w której będzie następowało przeszukiwanie pod kątem już występującego tokena
      * @param string $field pole po którym będzie następowało przeszukiwanie
      * @param string $addition dodatkowy tekst który ma być uwzględniony przy generowaniu tokena (dopisany na końcu)
      * 

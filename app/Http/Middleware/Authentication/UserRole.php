@@ -30,7 +30,7 @@ class UserRole
         $user = Auth::user();
 
         if ($user) {
-            $role = $user->role();
+            $role = $user->role()->first();
         } else {
             /** @var \App\Models\DefaultType $role */
             $role = Validation::getDefaultType('GUEST', 'ROLE');

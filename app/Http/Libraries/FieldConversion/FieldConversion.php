@@ -25,7 +25,7 @@ class FieldConversion
     /**
      * Konwersja nazw pól na formę snake_case
      * 
-     * @param $data dane przychodzące
+     * @param mixed $data dane przychodzące
      * @param int $from rząd wielkości od którego pola mają być przetwarzane dane
      * @param int $to rząd wielkości do którego pola mają być przetwarzane dane
      * 
@@ -39,7 +39,7 @@ class FieldConversion
      * Uniwersalna konwersja nazw pól
      * 
      * @param string $conversionType informacja o typie konwersji (camel, snake)
-     * @param $data dane podlegające konwersji
+     * @param mixed $data dane podlegające konwersji
      * @param int $from rząd wielkości od którego pola mają być przetwarzane dane
      * @param int $to rząd wielkości do którego pola mają być przetwarzane dane
      * @param int $current bieżący rząd wielkości

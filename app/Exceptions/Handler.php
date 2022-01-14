@@ -22,6 +22,7 @@ use Symfony\Component\ErrorHandler\Error\FatalError;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Swift_TransportException;
 use Throwable;
 use TypeError;
 
@@ -66,7 +67,7 @@ class Handler extends ExceptionHandler
      * 
      * @return void
      */
-    public function render($request, Throwable $throwable) {
+    public function render($request, Throwable $throwable): void {
 
         $class = get_class($throwable);
 
@@ -94,6 +95,7 @@ class Handler extends ExceptionHandler
             case MethodNotAllowedHttpException::class:
             case NotFoundHttpException::class:
             case TypeError::class:
+            case Swift_TransportException::class:
 
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),

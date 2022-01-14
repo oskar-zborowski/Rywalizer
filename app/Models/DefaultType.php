@@ -43,6 +43,10 @@ class DefaultType extends BaseModel
         'updated_at' => 'string'
     ];
 
+    protected $with = [
+        'icon'
+    ];
+
     public function defaultTypeName() {
         return $this->belongsTo(DefaultTypeName::class);
     }

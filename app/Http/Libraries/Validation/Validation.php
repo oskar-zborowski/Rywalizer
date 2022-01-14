@@ -18,7 +18,7 @@ class Validation
      * Sprawdzenie czy dana wartość jest unikatowa w bazie danych
      * 
      * @param string $value wartość do sprawdzenia
-     * @param $entity encja w której będzie następowało przeszukiwanie pod kątem już występującej wartości
+     * @param mixed $entity encja w której będzie następowało przeszukiwanie pod kątem już występującej wartości
      * @param string $field pole po którym będzie następowało przeszukiwanie
      * 
      * @return bool
@@ -156,7 +156,7 @@ class Validation
     }
 
     /**
-     * Pobranie obiektu typu operacji na koncie
+     * Sprawdzenie czy wszystkie wymagane zgody zostały zaakceptowane
      * 
      * @param Request $request
      * 
