@@ -10,32 +10,95 @@ export class UserStore {
     }
 
     public async getUser() {
-        await axios.get('api/v1/user');
+        const response = await axios.get('api/v1/user');
+        const user = this.prepareUserData(response.data);
+        runInAction(() => this.user = user);
+
+        return user;
     }
 
     public async login(login: string, password: string) {
-        const user = await axios.post('api/v1/auth/login', {
+        const response = await axios.post('api/v1/auth/login', {
             email: login,
             password: password
         });
 
-        runInAction(() => {
-            this.user = user.data as IUser;
-        });
+        const user = this.prepareUserData(response.data);
+        runInAction(() => this.user = user);
 
-        console.log(user.data);
+        return user;
     }
 
     public async logout() {
         await axios.delete('api/v1/auth/logout');
+
+        runInAction(() => this.user = null);
     }
 
     public async register(data: IRegisterData) {
-        const user = await axios.post('api/v1/auth/register', data);
+        const response = await axios.post('api/v1/auth/register', data);
+        const user = this.prepareUserData(response.data);
+        runInAction(() => this.user = user);
 
-        console.log(user.data);
+        return user;
     }
 
+    private prepareUserData(responseData: any): IUser {
+        return {
+            id: responseData.user.id,
+            firstName: responseData.user.firstName,
+            lastName: responseData.user.lastName,
+            avatarUrls: responseData.user.avatars,
+            email: responseData.user.email,
+            phoneNumber: responseData.user.telephone,
+            birthDate: responseData.user.birthDate,
+            gender: responseData.user.gender,
+            role: responseData.user.role,
+            city: responseData.user.city,
+            addressCoordinates: responseData.user.addressCoordinates,
+            facebookProfile: responseData.user.facebookProfile,
+            instagramProfile: responseData.user.instagramProfile,
+            website: responseData.user.website,
+            isVerified: responseData.user.isVerified,
+            canChangeName: responseData.user.canChangeName,
+            permissions: responseData.user.permissions,
+            settings: responseData.userSettings
+        };
+    }
+
+}
+
+export enum Permission {
+    //TODO
+}
+
+export interface IGender {
+    name: string;
+    descriptionSimple: string;
+    iconUrl: string;
+}
+
+export interface IUser {
+    id: number;
+    firstName: string;
+    lastName: string;
+    avatarUrls: string[];
+    email: string;
+    phoneNumber: string;
+    birthDate: string;
+    gender: IGender;
+    role: 'USER',
+    city: string;
+    addressCoordinates: string;
+    facebookProfile: string;
+    instagramProfile: string;
+    website: string;
+    isVerified: boolean;
+    canChangeName: boolean;
+    permissions: Permission[];
+    settings: {
+        isVisibleInComments: boolean
+    }
 }
 
 export interface IRegisterData {
@@ -47,54 +110,6 @@ export interface IRegisterData {
     password: string;
     passwordConfirmation: string;
     acceptedAgreements: number[]
-}
-
-// "user": {
-//     "id": "1",
-//     "firstName": "Oskar",
-//     "lastName": "Zborowski",
-//     "avatars": null,
-//     "email": "oskarzborowski@gmail.com",
-//     "telephone": null,
-//     "birthDate": "02.11.1998",
-//     "gender": {
-//       "name": "MALE",
-//       "descriptionSimple": "Mężczyzna",
-//       "icon": "male-icon.png"
-//     },
-//     "role": "USER",
-//     "city": null,
-//     "addressCoordinates": null,
-//     "facebookProfile": null,
-//     "instagramProfile": null,
-//     "website": null,
-//     "isVerified": false,
-//     "canChangeName": true,
-//     "permissions": null
-//   },
-//   "userSetting": {
-//     "isVisibleInComments": true
-//   }
-
-interface IUser {
-    firstName: string,
-    lastName: string,
-    email: string,
-    avatar: string,
-    birthDate: string,
-    addressCoordinates: string,
-    telephone: string,
-    facebookProfile: string,
-    lastLoggedIn: string,
-    lastTimeNameChanged: string,
-    lastTimePasswordChanged: string,
-    genderType: {
-        name: 'MALE' | 'FEMALE'
-    },
-    roleType: {
-        name: 'ADMIN',
-        accessLevel: '4'
-    }
 }
 
 const userStore = new UserStore();

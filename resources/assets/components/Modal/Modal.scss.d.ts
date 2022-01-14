@@ -2,6 +2,7 @@
 // Please do not change this file!
 interface CssExports {
   'body': string;
+  'closeButton': string;
   'container': string;
   'containerWrapper': string;
   'footer': string;
