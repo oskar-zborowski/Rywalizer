@@ -22,47 +22,36 @@ class UserRole
     public function handle(Request $request, Closure $next) {
 
         $currentRootName = Route::currentRouteName();
-        $defaultTypeName = Validation::getDefaultTypeName('PERMISSION');
-
-        if (!$defaultTypeName) {
-            throw new ApiException(
-                BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                'Invalid default type name (PERMISSION).'
-            );
-        }
 
         /** @var \App\Models\DefaultType $permission */
-        $permission = $defaultTypeName->defaultTypes()->where('name', $currentRootName)->first();
+        $permission = Validation::getDefaultType($currentRootName, 'API_PERMISSION');
 
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
         if ($user) {
-            $role = $user->role();
+            $role = $user->role()->first();
         } else {
-
-            $defaultTypeName = Validation::getDefaultTypeName('ROLE');
-
-            if (!$defaultTypeName) {
-                throw new ApiException(
-                    BaseErrorCode::INTERNAL_SERVER_ERROR(),
-                    'Invalid default type name (ROLE).'
-                );
-            }
-
             /** @var \App\Models\DefaultType $role */
-            $role = $defaultTypeName->defaultTypes()->where('name', 'GUEST')->first();
+            $role = Validation::getDefaultType('GUEST', 'ROLE');
         }
 
-        if ($role && $permission) {
-            /** @var \App\Models\RolePermission $rolePermission */
-            $rolePermission = $role->rolePermissionsByRole()->where('permission_id', $permission->id)->first();
-        } else {
+        if (!$role->is_active) {
             throw new ApiException(
                 BaseErrorCode::PERMISSION_DENIED(),
-                'Missing role or permission.'
+                'Inactive role (' . $role->name . ').'
             );
         }
+
+        if (!$permission->is_active) {
+            throw new ApiException(
+                BaseErrorCode::PERMISSION_DENIED(),
+                'Inactive permission (' . $permission->name . ').'
+            );
+        }
+
+        /** @var \App\Models\RolePermission $rolePermission */
+        $rolePermission = $role->rolePermissionsByRole()->where('permission_id', $permission->id)->first();
 
         if (!$rolePermission) {
             throw new ApiException(BaseErrorCode::PERMISSION_DENIED());

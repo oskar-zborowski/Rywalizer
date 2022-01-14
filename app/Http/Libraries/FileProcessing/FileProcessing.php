@@ -60,7 +60,7 @@ class FileProcessing
             if (!Validation::checkUniqueness($filename, Image::class, 'filename')) {
                 throw new ApiException(
                     BaseErrorCode::FAILED_VALIDATION(),
-                    'The filename already exists.'
+                    'Taka nazwa pliku jest już zajęta'
                 );
             }
         }

@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Http\Permissions\RolePermission;
-
 class DefaultType extends BaseModel
 {
     protected $fillable = [
@@ -43,6 +41,10 @@ class DefaultType extends BaseModel
         'is_active' => 'boolean',
         'created_at' => 'string',
         'updated_at' => 'string'
+    ];
+
+    protected $with = [
+        'icon'
     ];
 
     public function defaultTypeName() {

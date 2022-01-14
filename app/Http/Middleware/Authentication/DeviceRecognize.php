@@ -59,7 +59,7 @@ class DeviceRecognize
                 ])->first();
             }
 
-            if (!isset($device) && !isset($deviceWithOnlyUuid)) {
+            if ((!isset($device) || !$device) && (!isset($deviceWithOnlyUuid) || !$deviceWithOnlyUuid)) {
                 $uuid = $encrypter->generateToken(64, Device::class, 'uuid');
             }
 

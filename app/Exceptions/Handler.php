@@ -11,7 +11,9 @@ use Error;
 use ErrorException;
 use Exception;
 use GuzzleHttp\Exception\ClientException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Eloquent\MassAssignmentException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
@@ -20,6 +22,7 @@ use Symfony\Component\ErrorHandler\Error\FatalError;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Swift_TransportException;
 use Throwable;
 use TypeError;
 
@@ -64,7 +67,7 @@ class Handler extends ExceptionHandler
      * 
      * @return void
      */
-    public function render($request, Throwable $throwable) {
+    public function render($request, Throwable $throwable): void {
 
         $class = get_class($throwable);
 
@@ -81,15 +84,18 @@ class Handler extends ExceptionHandler
                 break;
 
             case ArgumentCountError::class:
+            case AuthenticationException::class:
             case BadMethodCallException::class:
             case BindingResolutionException::class:
             case Error::class:
             case ErrorException::class:
             case Exception::class:
             case FatalError::class:
+            case MassAssignmentException::class:
             case MethodNotAllowedHttpException::class:
             case NotFoundHttpException::class:
             case TypeError::class:
+            case Swift_TransportException::class:
 
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),
@@ -143,6 +149,7 @@ class Handler extends ExceptionHandler
                 break;
 
             default:
+
                 JsonResponse::sendError(
                     BaseErrorCode::INTERNAL_SERVER_ERROR(),
                     env('APP_DEBUG') ? $class : null
