@@ -23,6 +23,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onClickRegiste
         
         try {
             await userStore.login(loginValue, passwordValue);
+
+            onClose();
         } catch (err) {
 
         } finally {

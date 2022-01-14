@@ -22,10 +22,20 @@ export class UserStore {
         console.log(user.data);
     }
 
-    public register() {
+    public async register(data: IRegisterData) {
         //TODO;
     }
 
+}
+
+export interface IRegisterData {
+    firstname: string;
+    lastname: string;
+    birthDate: string;
+    gender: string;
+    email: string
+    password: string
+    confirmPassword: string
 }
 
 interface IUser {

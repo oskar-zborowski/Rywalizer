@@ -35,6 +35,7 @@ export interface ModalProps {
     isLoading?: boolean;
     placement?: 'top' | 'middle' | 'bottom'
     onClose?: () => void,
+    onEnter?: (e: KeyboardEvent) => void,
     title?: string;
     closeOnClickOutside?: boolean;
     closeButton?: boolean;
@@ -50,6 +51,7 @@ const Modal: React.FC<ModalProps> = props => {
         isLoading,
         placement,
         onClose,
+        onEnter,
         title,
         width,
         closeOnClickOutside = false,
@@ -69,6 +71,22 @@ const Modal: React.FC<ModalProps> = props => {
             const listener = (e: KeyboardEvent) => {
                 if (e.key == 'Escape') {
                     onClose();
+                }
+            };
+
+            document.addEventListener('keydown', listener);
+
+            return () => {
+                document.removeEventListener('keydown', listener);
+            };
+        }, []);
+    }
+
+    if (onEnter) {
+        useEffect(() => {
+            const listener = (e: KeyboardEvent) => {
+                if (e.key == 'Enter') {
+                    onEnter && onEnter(e);
                 }
             };
 
