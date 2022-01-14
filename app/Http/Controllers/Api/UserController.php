@@ -40,7 +40,7 @@ class UserController extends Controller
         /** @var User $user */
         $user = Auth::user();
         $user->updateInformation($request);
-        $user->getDetailedInformation();
+        $user->getUser('getPrivateInformation');
     }
 
     /**
@@ -67,7 +67,7 @@ class UserController extends Controller
         /** @var User $user */
         $user = Auth::user();
         $user->verifyEmail($request);
-        $user->getBasicInformation();
+        $user->getUser('getPrivateInformation');
     }
 
     /**
@@ -90,7 +90,7 @@ class UserController extends Controller
         /** @var User $user */
         $user = Auth::user();
         $user->saveAvatar($request->avatar);
-        $user->getBasicInformation();
+        $user->getUser('getPrivateInformation');
     }
 
     /**
@@ -105,7 +105,7 @@ class UserController extends Controller
         /** @var User $user */
         $user = Auth::user();
         $user->changeAvatar($request);
-        $user->getBasicInformation();
+        $user->getUser('getPrivateInformation');
     }
 
     /**
@@ -120,7 +120,7 @@ class UserController extends Controller
         /** @var User $user */
         $user = Auth::user();
         $user->deleteAvatar($request);
-        $user->getBasicInformation();
+        $user->getUser('getPrivateInformation');
     }
 
     /**

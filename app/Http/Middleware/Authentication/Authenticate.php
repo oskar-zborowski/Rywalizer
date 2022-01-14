@@ -8,6 +8,7 @@ use App\Http\Responses\JsonResponse;
 use App\Models\Device;
 use App\Models\PersonalAccessToken;
 use Closure;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -63,7 +64,13 @@ class Authenticate extends Middleware
 
         if ($jwt = $request->cookie(env('JWT_COOKIE_NAME'))) {
             $request->headers->set('Authorization', 'Bearer ' . $jwt);
-            $this->authenticate($request, $guards);
+
+            try {
+                $this->authenticate($request, $guards);
+            } catch (AuthenticationException $e) {
+                $this->redirectTo($request);
+            }
+
         } else {
             $this->redirectTo($request);
         }

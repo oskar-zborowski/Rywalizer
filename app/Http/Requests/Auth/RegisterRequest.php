@@ -15,10 +15,10 @@ class RegisterRequest extends FormRequest
 
     public function rules(): array {
         return [
-            'first_name' => 'required|string|alpha|max:30',
-            'last_name' => 'required|string|alpha|max:30',
+            'first_name' => 'required|alpha|max:30',
+            'last_name' => 'required|alpha|max:30',
             'email' => 'unique:users',
-            'birth_date' => 'required|string|date|size:10',
+            'birth_date' => 'required|date_format:Y-m-d',
             'accepted_agreements' => 'required|array'
         ];
     }

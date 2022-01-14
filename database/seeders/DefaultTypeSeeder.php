@@ -115,8 +115,134 @@ class DefaultTypeSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
-                'default_type_name_id' => 1,
+                'default_type_name_id' => 8,
                 'name' => 'auth-test',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'auth-logout',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'user-sendVerificationEmail',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'user-verifyEmail',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'account-forgotPassword',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'account-resetPassword',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 7,
+                'name' => 'PASSWORD_RESET',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'user-getUser',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'auth-redirectToProvider',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'account-restoreAccount',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'auth-handleProviderCallback',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'auth-logoutAll',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 7,
+                'name' => 'ACCOUNT_RESTORATION',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 9,
+                'name' => 'FACEBOOK',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 9,
+                'name' => 'GOOGLE',
                 'description_simple' => null,
                 'icon_id' => null,
                 'is_active' => 1,

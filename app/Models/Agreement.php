@@ -30,21 +30,21 @@ class Agreement extends BaseModel
     ];
 
     protected $hidden = [
-        // 'id',
-        // 'contractable_type',
-        // 'contractable_id',
-        // 'filename',
-        // 'description',
-        // 'signature',
-        // 'version',
-        // 'agreement_type_id',
-        // 'effective_date',
-        // 'creator_id',
-        // 'editor_id',
-        // 'is_required',
-        // 'is_visible',
-        // 'created_at',
-        // 'updated_at'
+        'id',
+        'contractable_type',
+        'contractable_id',
+        'filename',
+        'description',
+        'signature',
+        'version',
+        'agreement_type_id',
+        'effective_date',
+        'creator_id',
+        'editor_id',
+        'is_required',
+        'is_visible',
+        'created_at',
+        'updated_at'
     ];
 
     protected $casts = [

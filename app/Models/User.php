@@ -695,7 +695,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_sending_counter' => $emailSendingCounter
         ]);
 
-        $url = env('APP_URL') . '/V1/user/email?token=' . $token; // TODO Poprawić na prawidłowy URL
+        $url = env('APP_URL') . '/potwierdzenie-maila?token=' . $token; // TODO Poprawić na prawidłowy URL
         Mail::to($this)->send(new MailEmailVerification($url, $afterRegistartion));
 
         if (!$afterRegistartion) {

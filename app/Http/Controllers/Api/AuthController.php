@@ -351,7 +351,7 @@ class AuthController extends Controller
         /** @var DefaultType $provider */
         $provider = $defaultTypeName->defaultTypes()->where([
             'name' => $providerName,
-            'is_enabled' => 1
+            'is_active' => 1
         ])->first();
 
         if (!$provider) {

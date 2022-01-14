@@ -36,7 +36,7 @@ return [
     'current_password'     => 'Hasło jest nieprawidłowe.',
     'date'                 => 'To pole nie jest prawidłową datą.', // Zmieniłem z 'Pole :attribute nie jest prawidłową datą.'
     'date_equals'          => 'Pole :attribute musi być datą równą :date.',
-    'date_format'          => 'Pole :attribute nie jest w formacie :format.',
+    'date_format'          => 'To pole nie jest w formacie :format.', // Zmieniłem z 'Pole :attribute nie jest w formacie :format.'
     'declined'             => 'Pole :attribute musi zostać odrzucony.',
     'declined_if'          => 'Pole :attribute musi zostać odrzucony, gdy :other ma wartość :value.',
     'different'            => 'Pole :attribute oraz :other muszą się różnić.',

@@ -49,6 +49,16 @@ class DefaultTypeNameSeeder extends Seeder
                 'name' => 'ACCOUNT_OPERATION_TYPE',
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'name' => 'CLIENT_PERMISSION',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'name' => 'PROVIDER',
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
     }
