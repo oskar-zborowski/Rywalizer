@@ -25,7 +25,7 @@ class UserController extends Controller
     public function getUser(): void {
         /** @var User $user */
         $user = Auth::user();
-        $user->getDetailedInformation();
+        $user->getUser('getPrivateInformation');
     }
 
     /**

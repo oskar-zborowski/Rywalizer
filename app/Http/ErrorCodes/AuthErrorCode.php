@@ -46,7 +46,7 @@ class AuthErrorCode
     }
 
     public static function UNVERIFIED_EMAIL(): ErrorCode {
-        return new ErrorCode('ATH10', 'UNVERIFIED EMAIL', Response::HTTP_UNAUTHORIZED);
+        return new ErrorCode('ATH10', 'UNVERIFIED EMAIL', Response::HTTP_OK);
     }
 
     public static function EMPTY_EMAIL(): ErrorCode {
@@ -90,7 +90,7 @@ class AuthErrorCode
     }
 
     public static function MISSING_USER_INFORMATION(): ErrorCode {
-        return new ErrorCode('ATH21', 'MISSING USER INFORMATION', Response::HTTP_UNAUTHORIZED);
+        return new ErrorCode('ATH21', 'MISSING USER INFORMATION', Response::HTTP_OK);
     }
 
     public static function WAIT_BEFORE_RETRYING(): ErrorCode {

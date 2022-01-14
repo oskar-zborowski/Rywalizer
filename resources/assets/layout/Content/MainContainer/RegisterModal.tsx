@@ -13,13 +13,13 @@ export interface RegisterModalProps {
 }
 
 const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onClickLoginButton }) => {
-    const [firstname, setFisrtname] = useState('');
-    const [lastname, setLastname] = useState('');
+    const [firstName, setFisrtname] = useState('');
+    const [lastName, setLastname] = useState('');
     const [birthDate, setBirthDate] = useState('');
-    const [gender, setGender] = useState('');
+    const [genderId, setGender] = useState<number>(9);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const [passwordConfirmation, setConfirmPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     const register = async () => {
@@ -27,13 +27,14 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onClickL
 
         try {
             await userStore.register({
-                firstname, 
-                lastname, 
+                firstName, 
+                lastName, 
                 birthDate, 
-                gender, 
+                genderId, 
                 email, 
                 password, 
-                confirmPassword
+                passwordConfirmation,
+                acceptedAgreements: [1, 2]
             });
 
             onClose();
@@ -54,21 +55,21 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onClickL
             isLoading={isLoading}
             footerItems={[
                 <Link key="1" onClick={() => onClickLoginButton()}>Zaloguj się</Link>,
-                <OrangeButton key="2">Zarejestruj się</OrangeButton>
+                <OrangeButton key="2" onClick={() => register()}>Zarejestruj się</OrangeButton>
             ]}
         >
             <Flexbox flexDirection="column" gap="10px">
                 <Flexbox gap="10px">
-                    <Input label="Imię" value={firstname} onChange={(v) => setFisrtname(v)} />
-                    <Input label="Nazwisko" value={lastname} onChange={(v) => setLastname(v)} />
+                    <Input label="Imię" value={firstName} onChange={(v) => setFisrtname(v)} />
+                    <Input label="Nazwisko" value={lastName} onChange={(v) => setLastname(v)} />
                 </Flexbox>
                 <Flexbox gap="10px">
                     <Input label="Data urodzenia" type="date" value={birthDate} onChange={(v) => setBirthDate(v)} />
-                    <Input label="Płeć" value={gender} onChange={(v) => setGender(v)} />
+                    <Input label="Płeć" value={genderId + ''} onChange={(v) => setGender(+v)} />
                 </Flexbox>
                 <Input label="Adres e-mail" value={email} onChange={(v) => setEmail(v)} />
                 <Input label="Hasło" type="password" value={password} onChange={(v) => setPassword(v)} />
-                <Input label="Potwierdź hasło" type="password" value={confirmPassword} onChange={(v) => setConfirmPassword(v)} />
+                <Input label="Potwierdź hasło" type="password" value={passwordConfirmation} onChange={(v) => setConfirmPassword(v)} />
                 <div style={{ fontSize: '12px', color: '#a1a1a1'}}>
                     Rejestrując się, akceptujesz&nbsp;<Link fixedColor>regulamin</Link> oraz&nbsp;
                     <Link fixedColor>politykę prywatyności</Link> serwisu nasza-nazwa.pl.

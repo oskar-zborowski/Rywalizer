@@ -9,6 +9,10 @@ export class UserStore {
         makeAutoObservable(this);
     }
 
+    public async getUser() {
+        await axios.get('api/v1/user');
+    }
+
     public async login(login: string, password: string) {
         const user = await axios.post('api/v1/auth/login', {
             email: login,
@@ -22,21 +26,55 @@ export class UserStore {
         console.log(user.data);
     }
 
+    public async logout() {
+        await axios.delete('api/v1/auth/logout');
+    }
+
     public async register(data: IRegisterData) {
-        //TODO;
+        const user = await axios.post('api/v1/auth/register', data);
+
+        console.log(user.data);
     }
 
 }
 
 export interface IRegisterData {
-    firstname: string;
-    lastname: string;
+    firstName: string;
+    lastName: string;
     birthDate: string;
-    gender: string;
-    email: string
-    password: string
-    confirmPassword: string
+    genderId: number;
+    email: string;
+    password: string;
+    passwordConfirmation: string;
+    acceptedAgreements: number[]
 }
+
+// "user": {
+//     "id": "1",
+//     "firstName": "Oskar",
+//     "lastName": "Zborowski",
+//     "avatars": null,
+//     "email": "oskarzborowski@gmail.com",
+//     "telephone": null,
+//     "birthDate": "02.11.1998",
+//     "gender": {
+//       "name": "MALE",
+//       "descriptionSimple": "Mężczyzna",
+//       "icon": "male-icon.png"
+//     },
+//     "role": "USER",
+//     "city": null,
+//     "addressCoordinates": null,
+//     "facebookProfile": null,
+//     "instagramProfile": null,
+//     "website": null,
+//     "isVerified": false,
+//     "canChangeName": true,
+//     "permissions": null
+//   },
+//   "userSetting": {
+//     "isVisibleInComments": true
+//   }
 
 interface IUser {
     firstName: string,
