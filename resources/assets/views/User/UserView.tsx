@@ -25,7 +25,7 @@ const UserView: React.FC<{ store: UserStore }> = (props) => {
                     <div className={styles.fieldValue}>{data?.firstName + ' ' + data?.lastName}</div>
 
                     <div className={styles.fieldName}>Płeć:</div>
-                    <div className={styles.fieldValue}>{data?.genderType.name}</div>
+                    <div className={styles.fieldValue}>{data?.gender.name}</div>
 
                     <div className={styles.fieldName}>Urodziny:</div>
                     <div className={styles.fieldValue}>{data?.birthDate}</div>
@@ -39,7 +39,7 @@ const UserView: React.FC<{ store: UserStore }> = (props) => {
                     <div className={styles.fieldValue}>{data?.email}</div>
 
                     <div className={styles.fieldName}>Telefon:</div>
-                    <div className={styles.fieldValue}>{data?.telephone}</div>
+                    <div className={styles.fieldValue}>{data?.phoneNumber}</div>
 
                     {/* SOCIAL MEDIA */}
                     <div className={styles.groupHeader}>Social media</div>

@@ -20,12 +20,13 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ isOpen, onClose
             title="Reset hasła"
             isOpen={isOpen}
             onClose={onClose}
+            closeOnEsc={false}
             footerItems={[
                 <OrangeButton key="2">Zapisz</OrangeButton>
             ]}
         >
             <Flexbox flexDirection="column" gap="10px">
-                <Input label="Hasło" type="password" value={password} onChange={(v) => setPassword(v)} />
+                <Input label="Nowe hasło" type="password" value={password} onChange={(v) => setPassword(v)} />
                 <Input label="Potwierdź hasło" type="password" value={confirmPassword} onChange={(v) => setConfirmPassword(v)} />
             </Flexbox>
         </Modal>

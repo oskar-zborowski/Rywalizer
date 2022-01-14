@@ -49,12 +49,34 @@
     border-bottom: 1px solid #141417;
     display: flex;
     align-items: center;
+    justify-content: space-between;
 
     .title {
         user-select: none;
         font-weight: bold;
         font-size: 19px;
         color: #fff;
+    }
+
+    .closeButton {
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 8px;
+
+        &:hover {
+            svg {
+                fill: $color-primary;
+            }
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
     }
 }
 
@@ -83,7 +105,7 @@
     bottom: 0;
     left: 0;
     z-index: 1;
-    background-color: #141417DD;
+    background-color: #141417dd;
 
     display: flex;
     align-items: center;

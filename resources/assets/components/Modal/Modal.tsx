@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom';
 import { GrayButton, OrangeButton } from '../form/Button/Button';
 import styles from './Modal.scss';
 import Loader from '@/static/loader.svg';
+import { AiOutlineClose } from 'react-icons/ai';
 
 const transition = { duration: 0.25, type: 'tween', ease: [0.45, 0, 0.55, 1] };
 
@@ -56,7 +57,7 @@ const Modal: React.FC<ModalProps> = props => {
         width,
         closeOnClickOutside = false,
         closeButton = true,
-        closeOnEsc = true,
+        closeOnEsc = false,
         footerItems = [],
     } = props;
 
@@ -113,6 +114,13 @@ const Modal: React.FC<ModalProps> = props => {
                     >
                         <header className={styles.header}>
                             {title && <span className={styles.title}>{title}</span>}
+                            {closeButton && <div
+                                className={styles.closeButton}
+                                onClick={onClose}
+                            >
+                                <AiOutlineClose />
+                            </div>
+                            }
                         </header>
                         <main className={styles.body}>{children}</main>
                         <footer className={styles.footer}>
