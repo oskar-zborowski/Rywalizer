@@ -72,12 +72,7 @@ class AuthController extends Controller
             );
         }
 
-        // select name, value 
-        // from( select name, value, ROW_NUMBER() OVER(PARTITION BY name ORDER BY value desc) as rn
-        // from out_pumptable ) as a
-        // where rn = 1
-
-        // Validation::checkRequiredAgreements($request);
+        Validation::checkRequiredAgreements($request);
 
         /** @var User $newUser */
         $newUser = new User;

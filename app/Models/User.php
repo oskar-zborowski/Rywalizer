@@ -449,19 +449,14 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Zwrócenie informacji o roli użytkownika
      * 
-     * @return array
+     * @return string
      */
-    public function getRole(): array {
+    public function getRole(): string {
 
         /** @var DefaultType $role */
         $role = $this->role()->first();
 
-        $result = [
-            'name' => $role->name,
-            'description_simple' =>$role->description_simple
-        ];
-
-        return $result;
+        return $role->name;
     }
 
     /**

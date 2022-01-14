@@ -28,6 +28,18 @@ class AgreementSeeder extends Seeder
                 'is_visible' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'filename' => $encrypter->encrypt($encrypter->generateToken(64, Agreement::class, 'filename', '.pdf')),
+                'description' => $encrypter->encrypt('Polityka Prywatności', 100),
+                'signature' => $encrypter->encrypt('POLITYKA_PRYWATNOSCI_SERWISU', 30),
+                'version' => 1,
+                'agreement_type_id' => 5,
+                'effective_date' => now(),
+                'is_required' => 1,
+                'is_visible' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
     }

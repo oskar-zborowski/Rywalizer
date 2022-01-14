@@ -167,20 +167,63 @@ class Validation
         $defaultType = self::getDefaultType('REGISTRATION_FORM', 'AGREEMENT_TYPE');
 
         /** @var \App\Models\Agreement $requiredAgreements */
-        $requiredAgreements = $defaultType->agreements()
-        ->selectRaw('*, MAX(version)')
-        ->where('effective_date', '<=', now())
-        ->groupBy('contractable_type', 'contractable_id', 'signature', 'agreement_type_id')
-        ->having('is_required', true)
-        ->toSql();
+        $requiredAgreements = $defaultType->agreements()->where('effective_date', '<=', now())->get();
 
-        echo json_encode($requiredAgreements);
-        die;
+        /** @var \App\Models\Agreement $lastServiceTerms */
+        $lastServiceTerms = null;
 
-        $acceptedAgreements = $request->accepted_agreements;
+        /** @var \App\Models\Agreement $lastPrivacyPolicy */
+        $lastPrivacyPolicy = null;
 
-        foreach ($acceptedAgreements as $aA) {
+        /** @var \App\Models\Agreement $rA */
+        foreach ($requiredAgreements as $rA) {
 
+            if ($rA->contractable_type == null &&
+                $rA->contractable_id == null &&
+                $rA->signature == 'REGULAMIN_SERWISU' &&
+                $rA->agreementType()->first()->name == 'REGISTRATION_FORM')
+            {
+                if (!$lastServiceTerms || $rA->version > $lastServiceTerms->version) {
+                    $lastServiceTerms = $rA;
+                }
+            }
+
+            if ($rA->contractable_type == null &&
+                $rA->contractable_id == null &&
+                $rA->signature == 'POLITYKA_PRYWATNOSCI_SERWISU' &&
+                $rA->agreementType()->first()->name == 'REGISTRATION_FORM')
+            {
+                if (!$lastPrivacyPolicy || $rA->version > $lastPrivacyPolicy->version) {
+                    $lastPrivacyPolicy = $rA;
+                }
+            }
+        }
+
+        $requiredAgreements = null;
+
+        if ($lastServiceTerms->is_required) {
+            $requiredAgreements[] = $lastServiceTerms;
+        }
+
+        if ($lastPrivacyPolicy->is_required) {
+            $requiredAgreements[] = $lastPrivacyPolicy;
+        }
+
+        /** @var \App\Models\Agreement $rA */
+        foreach ($requiredAgreements as $rA) {
+            if (!in_array($rA->id, $request->accepted_agreements)) {
+                if ($rA->signature == 'REGULAMIN_SERWISU') {
+                    throw new ApiException(
+                        BaseErrorCode::FAILED_VALIDATION(),
+                        'Wymagana akceptacja Regulaminu Serwisu'
+                    );
+                } else if ($rA->signature == 'POLITYKA_PRYWATNOSCI_SERWISU') {
+                    throw new ApiException(
+                        BaseErrorCode::FAILED_VALIDATION(),
+                        'Wymagana akceptacja Polityki Prywatności'
+                    );
+                }
+            }
         }
     }
 }

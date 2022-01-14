@@ -24,6 +24,11 @@ class RolePermissonSeeder extends Seeder
                 'role_id' => 2,
                 'permission_id' => 3,
                 'created_at' => now()
+            ],
+            [
+                'role_id' => 4,
+                'permission_id' => 12,
+                'created_at' => now()
             ]
         ]);
     }

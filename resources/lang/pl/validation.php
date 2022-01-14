@@ -21,7 +21,7 @@ return [
     'alpha'                => 'To pole może zawierać jedynie litery.', // Zmieniłem z 'Pole :attribute może zawierać jedynie litery.'
     'alpha_dash'           => 'Pole :attribute może zawierać jedynie litery, cyfry i myślniki.',
     'alpha_num'            => 'Pole :attribute może zawierać jedynie litery i cyfry.',
-    'array'                => 'Pole :attribute musi być tablicą.',
+    'array'                => 'To pole musi być tablicą.', // Zmieniłem z 'Pole :attribute może zawierać jedynie litery.'
     'attached'             => 'Ten :attribute jest już dołączony.',
     'before'               => 'Pole :attribute musi być datą wcześniejszą od :date.',
     'before_or_equal'      => 'Pole :attribute musi być datą nie późniejszą niż :date.',
