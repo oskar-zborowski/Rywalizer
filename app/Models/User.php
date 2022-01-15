@@ -6,6 +6,7 @@ use App\Exceptions\ApiException;
 use App\Http\ErrorCodes\AuthErrorCode;
 use App\Http\ErrorCodes\BaseErrorCode;
 use App\Http\Libraries\Encrypter\Encrypter;
+use App\Http\Libraries\FileProcessing\FileProcessing;
 use App\Http\Libraries\Validation\Validation;
 use App\Http\Responses\JsonResponse;
 use App\Http\Traits\Encryptable;
@@ -794,21 +795,6 @@ class User extends Authenticatable implements MustVerifyEmail
             $request->merge(['telephone' => $telephone]);
         }
 
-        if ($request->facebook_profile) {
-            $facebookProfile = $encrypter->decrypt($request->facebook_profile);
-            $request->merge(['facebook_profile' => $facebookProfile]);
-        }
-
-        if ($request->instagram_profile) {
-            $instagramProfile = $encrypter->decrypt($request->instagram_profile);
-            $request->merge(['instagram_profile' => $instagramProfile]);
-        }
-
-        if ($request->website) {
-            $website = $encrypter->decrypt($request->website);
-            $request->merge(['website' => $website]);
-        }
-
         $updatedInformation = null;
 
         $isFirstName = $request->first_name && $request->first_name != $this->first_name;
@@ -938,6 +924,46 @@ class User extends Authenticatable implements MustVerifyEmail
         if (isset($updatedInformation['email'])) {
             $this->sendVerificationEmail(false, true);
         }
+    }
+
+    /**
+     * Zapisanie zdjęcia profilowego użytkownika
+     * 
+     * @param string $avatarPath aktualna ścieżka do zdjęcia profilowego
+     * 
+     * @return void
+     */
+    public function saveAvatar(string $avatarPath): void {
+
+        $imageType = Validation::getDefaultType('AVATAR', 'IMAGE_TYPE');
+
+        $oldAvatars = $this->imageAssignments()->where('image_type_id', $imageType->id)->orderBy('number', 'desc')->get();
+
+        $counter = 0;
+
+        foreach ($oldAvatars as $oA) {
+            $counter++;
+        }
+
+        $newNumber = $counter + 1;
+
+        foreach ($oldAvatars as $oA) {
+            $oA->number = $counter;
+            $oA->save();
+            $counter--;
+        }
+
+        $image = FileProcessing::saveAvatar($avatarPath, true);
+
+        $imageAssignment = new ImageAssignment;
+        $imageAssignment->imageable_type = 'App\Models\User';
+        $imageAssignment->imageable_id = $this->id;
+        $imageAssignment->image_type_id = $imageType->id;
+        $imageAssignment->image_id = $image->id;
+        $imageAssignment->number = $newNumber;
+        $imageAssignment->creator_id = $this->id;
+        $imageAssignment->editor_id = $this->id;
+        $imageAssignment->save();
     }
 
     /**

@@ -42,7 +42,7 @@ class Image extends BaseModel
     ];
 
     protected $encryptable = [
-        'filename' => 64
+        'filename' => 48
     ];
 
     public function imageable() {

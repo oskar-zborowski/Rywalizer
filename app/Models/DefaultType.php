@@ -47,6 +47,23 @@ class DefaultType extends BaseModel
         'icon'
     ];
 
+    /**
+     * Zwrócenie podstawowych informacji
+     * 
+     * @return array
+     */
+    public function getBasicInformation(): array {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'description_simple' => $this->description_simple,
+            'description_perfect' => $this->description_perfect,
+            'description_future' => $this->description_future,
+            'icon' => $this->icon()->first() ? $this->icon()->first()->filename : null,
+            'is_active' => (bool) $this->is_active
+        ];
+    }
+
     public function defaultTypeName() {
         return $this->belongsTo(DefaultTypeName::class);
     }

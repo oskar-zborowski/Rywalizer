@@ -41,7 +41,7 @@ class Authenticate extends Middleware
                 'refresh_token' => $encryptedRefreshToken
             ])->first();
 
-            if ($personalAccessToken && Validation::timeComparison($personalAccessToken->created_at, env('REFRESH_TOKEN_LIFETIME'), '>=')) {
+            if ($personalAccessToken && Validation::timeComparison($personalAccessToken->created_at, env('REFRESH_TOKEN_LIFETIME'), '<=')) {
 
                 Auth::loginUsingId($personalAccessToken->tokenable_id);
                 $personalAccessToken->delete();

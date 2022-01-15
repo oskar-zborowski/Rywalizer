@@ -51,6 +51,8 @@ class FileProcessing
                 $fileExtensionsLength = count($fileExtensions);
                 $fileExtension = '.' . $fileExtensions[$fileExtensionsLength-1];
             }
+        } else {
+            $fileExtension = '.' . $fileExtension;
         }
 
         if ($filename === null) {
@@ -72,7 +74,7 @@ class FileProcessing
             Storage::put($fileDestination, $fileContents);
         } else {
             switch ($fileExtension) {
-                case 'jpeg':
+                case '.jpeg':
                     $uploadedImage = imagecreatefromstring($fileContents);
                     $imageWidth = imagesx($uploadedImage);
                     $imageHeight = imagesy($uploadedImage);
@@ -112,6 +114,6 @@ class FileProcessing
      * @return Image
      */
     public static function saveAvatar(string $avatarPath, bool $uploadedByForm): Image {
-        return self::saveFile('avatar', $avatarPath, 'avatars', false, $uploadedByForm, null, 'jpeg');
+        return self::saveFile('avatar', $avatarPath, 'user-pictures', false, $uploadedByForm, null, 'jpeg');
     }
 }

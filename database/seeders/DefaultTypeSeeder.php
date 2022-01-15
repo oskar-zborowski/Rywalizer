@@ -248,6 +248,51 @@ class DefaultTypeSeeder extends Seeder
                 'is_active' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'defaultType-getGenders',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'defaultType-getProviders',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'user-updateUser',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 4,
+                'name' => 'TOKEN_REFRESHING',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'user-uploadAvatar',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
     }

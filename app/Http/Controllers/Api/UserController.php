@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Http\ErrorCodes\BaseErrorCode;
+use App\Http\Libraries\Encrypter\Encrypter;
 use App\Http\Requests\Auth\UpdateUserRequest;
 use App\Http\Responses\JsonResponse;
 use App\Models\User;
