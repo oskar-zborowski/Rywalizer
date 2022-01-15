@@ -228,7 +228,9 @@ class AuthController extends Controller
                 $createdUser->first_name = $firstName;
                 $createdUser->last_name = $lastName;
                 $createdUser->email = isset($newUser['email']) ? $newUser['email'] : null;
+                $createdUser->email_verified_at = isset($newUser['email_verified_at']) ? $newUser['email_verified_at'] : null;
                 $createdUser->telephone = isset($newUser['telephone']) ? $newUser['telephone'] : null;
+                $createdUser->telephone_verified_at = isset($newUser['telephone_verified_at']) ? $newUser['telephone_verified_at'] : null;
                 $createdUser->role_id = $role->id;
                 $createdUser->save();
                 $createdUser->userSetting()->create([]);
@@ -261,7 +263,7 @@ class AuthController extends Controller
 
         $providerName = strtoupper($providerName);
 
-        if (!isset($foundUser) || $foundUser) {
+        if (!isset($foundUser) && !isset($names)) {
             $authenticationType = 'LOGIN_' . $providerName;
         } else {
             $authenticationType = 'REGISTRATION_' . $providerName;
