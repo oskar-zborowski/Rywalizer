@@ -64,7 +64,7 @@ return [
     'image'                => 'Pole :attribute musi być obrazkiem.',
     'in'                   => 'Zaznaczony element :attribute jest nieprawidłowy.',
     'in_array'             => 'Pole :attribute nie znajduje się w :other.',
-    'integer'              => 'Pole :attribute musi być liczbą całkowitą.',
+    'integer'              => 'To pole musi być liczbą całkowitą.', // Zmieniłem z 'Pole :attribute musi być liczbą całkowitą.'
     'ip'                   => 'Pole :attribute musi być prawidłowym adresem IP.',
     'ipv4'                 => 'Pole :attribute musi być prawidłowym adresem IPv4.',
     'ipv6'                 => 'Pole :attribute musi być prawidłowym adresem IPv6.',

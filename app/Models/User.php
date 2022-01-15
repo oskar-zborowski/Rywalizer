@@ -534,7 +534,10 @@ class User extends Authenticatable implements MustVerifyEmail
                 /** @var Image $image */
                 $image = $a->image()->first();
 
-                $result[] = $image->filename;
+                $result[] = [
+                    'id' => $a->id,
+                    'filename' => $image->filename
+                ];
             }
 
         } else {
@@ -546,7 +549,10 @@ class User extends Authenticatable implements MustVerifyEmail
                 /** @var Image $image */
                 $image = $avatar->image()->first();
 
-                $result[] = $image->filename;
+                $result[] = [
+                    'id' => $avatar->id,
+                    'filename' => $image->filename
+                ];
             }
         }
 
@@ -964,6 +970,64 @@ class User extends Authenticatable implements MustVerifyEmail
         $imageAssignment->creator_id = $this->id;
         $imageAssignment->editor_id = $this->id;
         $imageAssignment->save();
+    }
+
+    /**
+     * Zmiana zdjęcia profilowego użytkownika
+     * 
+     * @param int $avatarId id zdjęcia profilowego, które ma być teraz aktualnym
+     * 
+     * @return void
+     */
+    public function changeAvatar(int $avatarId): void {
+
+        $imageType = Validation::getDefaultType('AVATAR', 'IMAGE_TYPE');
+
+        /** @var ImageAssignment $oldAvatars */
+        $oldAvatars = $this->imageAssignments()->where('image_type_id', $imageType->id)->orderBy('number', 'desc')->get();
+
+        $counter = 0;
+
+        foreach ($oldAvatars as $oA) {
+            $counter++;
+        }
+
+        $newNumber = $counter;
+
+        /** @var ImageAssignment $oldAvatars */
+        $currentAvatar = $oldAvatars->where('id', $avatarId)->first();
+
+        if ($currentAvatar) {
+            $currentAvatar->number = $newNumber;
+            $currentAvatar->save();
+    
+            foreach ($oldAvatars as $oA) {
+                if ($oA->id != $currentAvatar->id) {
+                    $counter--;
+                    $oA->number = $counter;
+                    $oA->save();
+                }
+            }
+        } else {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Podano nieprawidłowy identyfikator avatara'
+            );
+        }
+    }
+
+    /**
+     * Usunięcie zdjęcia profilowego użytkownika
+     * 
+     * @return void
+     */
+    public function deleteAvatar(int $avatarId): void {
+
+        $imageType = Validation::getDefaultType('AVATAR', 'IMAGE_TYPE');
+
+        /** @var ImageAssignment $avatar */
+        $avatar = $this->imageAssignments()->where('image_type_id', $imageType->id)->where('id', $avatarId)->first();
+        $avatar->image()->first()->delete();
     }
 
     /**

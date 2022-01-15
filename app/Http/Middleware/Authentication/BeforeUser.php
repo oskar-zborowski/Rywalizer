@@ -34,6 +34,7 @@ class BeforeUser
         $verifyEmail = 'user-verifyEmail';
         $updateUser = 'user-updateUser';
         $uploadAvatar = 'user-uploadAvatar';
+        $changeAvatar = 'user-changeAvatar';
 
         $encrypter = new Encrypter;
 
@@ -150,6 +151,12 @@ class BeforeUser
         if ($routeName == $uploadAvatar) {
             $request->validate([
                 'avatar' => 'image|max:2048'
+            ]);
+        }
+
+        if ($routeName == $changeAvatar) {
+            $request->validate([
+                'avatar_id' => 'required|integer'
             ]);
         }
 

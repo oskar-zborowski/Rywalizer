@@ -98,14 +98,14 @@ class UserController extends Controller
      * #### `PUT` `/api/v1/user/avatar`
      * Zmiana zdjęcia profilowego
      * 
-     * @param Request $request
+     * @param int $id id avatara
      * 
      * @return void
      */
-    public function changeAvatar(Request $request): void {
+    public function changeAvatar(int $id): void {
         /** @var User $user */
         $user = Auth::user();
-        $user->changeAvatar($request);
+        $user->changeAvatar($id);
         $user->getUser('getPrivateInformation');
     }
 
@@ -113,14 +113,14 @@ class UserController extends Controller
      * #### `DELETE` `/api/v1/user/avatar`
      * Usunięcie zdjęcia profilowego
      * 
-     * @param Request $request
+     * @param int $id id avatara
      * 
      * @return void
      */
-    public function deleteAvatar(Request $request): void {
+    public function deleteAvatar(int $id): void {
         /** @var User $user */
         $user = Auth::user();
-        $user->deleteAvatar($request);
+        $user->deleteAvatar($id);
         $user->getUser('getPrivateInformation');
     }
 

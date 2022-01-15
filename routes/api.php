@@ -26,7 +26,7 @@ Route::middleware('before.user')->group(function () {
     Route::patch('/v1/user', [UserController::class, 'updateUser'])->name('user-updateUser');
     Route::put('/v1/user/email', [UserController::class, 'verifyEmail'])->name('user-verifyEmail');
     Route::post('/v1/user/avatar', [UserController::class, 'uploadAvatar'])->name('user-uploadAvatar')->middleware('throttle:uploadAvatarLimit');
-    Route::put('/v1/user/avatar', [UserController::class, 'changeAvatar'])->name('user-changeAvatar');
+    Route::put('/v1/user/avatar/{id}', [UserController::class, 'changeAvatar'])->name('user-changeAvatar');
 });
 
 
@@ -59,7 +59,7 @@ Route::delete('/v1/account', [AccountController::class, 'deleteAccount'])->name(
 
 Route::get('/v1/user', [UserController::class, 'getUser'])->name('user-getUser');
 Route::post('/v1/user/email', [UserController::class, 'sendVerificationEmail'])->name('user-sendVerificationEmail');
-Route::delete('/v1/user/avatar', [UserController::class, 'deleteAvatar'])->name('user-deleteAvatar');
+Route::delete('/v1/user/avatar/{id}', [UserController::class, 'deleteAvatar'])->name('user-deleteAvatar');
 
 Route::get('/v1/providers', [DefaultTypeController::class, 'getProviders'])->name('defaultType-getProviders');
 Route::get('/v1/genders', [DefaultTypeController::class, 'getGenders'])->name('defaultType-getGenders');
