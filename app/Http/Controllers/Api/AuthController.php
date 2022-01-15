@@ -237,7 +237,7 @@ class AuthController extends Controller
             $externalAuthentication = new ExternalAuthentication;
             $externalAuthentication->user_id = $createdUser->id;
             $externalAuthentication->external_authentication_id = $externalAuthenticationId;
-            $externalAuthentication->provider_type_id = $provider->id;
+            $externalAuthentication->provider_id = $provider->id;
             $externalAuthentication->save();
 
             Auth::loginUsingId($createdUser->id);
