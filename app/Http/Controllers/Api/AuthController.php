@@ -211,6 +211,18 @@ class AuthController extends Controller
 
                 $newUser['first_name'] = $firstName;
                 $newUser['last_name'] = $lastName;
+
+                /** @var DefaultType $role */
+                $role = Validation::getDefaultType('USER', 'ROLE');
+
+                if (!$role->is_active) {
+                    throw new ApiException(
+                        BaseErrorCode::PERMISSION_DENIED(),
+                        'Inactive role (USER).'
+                    );
+                }
+
+                $newUser['role_id'] = $role->id;
             }
 
             /** @var User $createdUser */
