@@ -311,6 +311,42 @@ class DefaultTypeSeeder extends Seeder
                 'is_active' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 4,
+                'name' => 'REGISTRATION_FACEBOOK',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 4,
+                'name' => 'REGISTRATION_GOOGLE',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 4,
+                'name' => 'LOGIN_FACEBOOK',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 4,
+                'name' => 'LOGIN_GOOGLE',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
     }

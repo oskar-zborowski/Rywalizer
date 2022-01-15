@@ -12,6 +12,7 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Responses\JsonResponse;
 use App\Mail\EmailVerification as MailEmailVerification;
 use App\Models\DefaultType;
+use App\Models\ExternalAuthentication;
 use App\Models\PersonalAccessToken;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -194,6 +195,9 @@ class AuthController extends Controller
                     $foundUser->operationable()->where('account_operation_type_id', $accountOperationType->id)->delete();
                 }
 
+                $createdUser = $foundUser->update($newUser);
+                $foundUser->userSetting()->create([]);
+
             } else {
 
                 $names = explode(' ', $user->getName());
@@ -209,9 +213,6 @@ class AuthController extends Controller
                     }
                 }
 
-                $newUser['first_name'] = $firstName;
-                $newUser['last_name'] = $lastName;
-
                 /** @var DefaultType $role */
                 $role = Validation::getDefaultType('USER', 'ROLE');
 
@@ -222,16 +223,22 @@ class AuthController extends Controller
                     );
                 }
 
-                $newUser['role_id'] = $role->id;
+                /** @var User $createdUser */
+                $createdUser = new User;
+                $createdUser->first_name = $firstName;
+                $createdUser->last_name = $lastName;
+                $createdUser->email = isset($newUser['email']) ? $newUser['email'] : null;
+                $createdUser->telephone = isset($newUser['telephone']) ? $newUser['telephone'] : null;
+                $createdUser->role_id = $role->id;
+                $createdUser->save();
+                $createdUser->userSetting()->create([]);
             }
 
-            /** @var User $createdUser */
-            $createdUser = User::updateOrCreate([], $newUser);
-
-            $createdUser->externalAuthentications()->create([
-                'external_authentication_id' => $externalAuthenticationId,
-                'provider_type_id' => $provider->id
-            ]);
+            $externalAuthentication = new ExternalAuthentication;
+            $externalAuthentication->user_id = $createdUser->id;
+            $externalAuthentication->external_authentication_id = $externalAuthenticationId;
+            $externalAuthentication->provider_type_id = $provider->id;
+            $externalAuthentication->save();
 
             Auth::loginUsingId($createdUser->id);
 
@@ -257,7 +264,7 @@ class AuthController extends Controller
         if (!isset($foundUser) || $foundUser) {
             $authenticationType = 'LOGIN_' . $providerName;
         } else {
-            $authenticationType = 'REGISTER_' . $providerName;
+            $authenticationType = 'REGISTRATION_' . $providerName;
         }
 
         /** @var User $user */
@@ -265,7 +272,7 @@ class AuthController extends Controller
         $user->checkDevice(null, $authenticationType);
         $user->checkAccess();
         $user->createTokens();
-        $user->getBasicInformation();
+        $user->getUser('getPrivateInformation');
     }
 
     /**
