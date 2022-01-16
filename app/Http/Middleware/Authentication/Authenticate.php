@@ -75,46 +75,6 @@ class Authenticate extends Middleware
             $this->redirectTo($request);
         }
 
-        $this->fillInDeviceData($request);
-
         return $next($request);
-    }
-
-    /**
-     * Uzupełnienie logów dla logowania, bądź rejestracji poprzez OAuth
-     * 
-     * @param Request $request
-     * 
-     * @return void
-     */
-    private function fillInDeviceData(Request $request): void {
-
-        if ($tempUuid = $request->cookie(env('TEMP_UUID_COOKIE_NAME'))) {
-
-            /** @var \App\Models\Device $device */
-            $device = Device::where('id', $request->device_id)->first();
-
-            $encrypter = new Encrypter;
-            $encryptedTempUuid = $encrypter->encrypt($tempUuid);
-
-            /** @var \App\Models\Device $tempDevice */
-            $tempDevice = Device::where('uuid', $encryptedTempUuid)->first();
-
-            if ($device && $tempDevice) {
-
-                /** @var \App\Models\Authentication $autentications */
-                $autentications = $tempDevice->authentications()->get();
-
-                /** @var \App\Models\Authentication $a */
-                foreach ($autentications as $a) {
-                    $a->device_id = $device->id;
-                    $a->save();
-                }
-
-                $tempDevice->delete();
-
-                JsonResponse::deleteCookie('TEMP_UUID');
-            }
-        }
     }
 }
