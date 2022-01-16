@@ -94,8 +94,11 @@ class Authenticate extends Middleware
             /** @var \App\Models\Device $device */
             $device = Device::where('id', $request->device_id)->first();
 
+            $encrypter = new Encrypter;
+            $encryptedTempUuid = $encrypter->encrypt($tempUuid);
+
             /** @var \App\Models\Device $tempDevice */
-            $tempDevice = Device::where('uuid', $tempUuid)->first();
+            $tempDevice = Device::where('uuid', $encryptedTempUuid)->first();
 
             if ($device && $tempDevice) {
 
