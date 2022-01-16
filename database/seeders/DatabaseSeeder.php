@@ -18,7 +18,8 @@ class DatabaseSeeder extends Seeder
             DefaultTypeNameSeeder::class,
             DefaultTypeSeeder::class,
             RolePermissonSeeder::class,
-            AgreementSeeder::class
+            AgreementSeeder::class,
+            AccountActionTypeSeeder::class
         ]);
 
         // \App\Models\User::factory(10)->create();

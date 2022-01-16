@@ -347,6 +347,24 @@ class DefaultTypeSeeder extends Seeder
                 'is_active' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'account-deleteAccount',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 10,
+                'name' => 'ACCOUNT_DELETION',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
     }

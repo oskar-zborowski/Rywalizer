@@ -762,7 +762,7 @@ class User extends Authenticatable implements MustVerifyEmail
             throw new ApiException(AuthErrorCode::RESTORE_ACCOUNT_TOKEN_HAS_EXPIRED());
         }
 
-        $accountActionType = Validation::getAccountActionType('ACCOUNT_DELETED');
+        $accountActionType = Validation::getAccountActionType('ACCOUNT_DELETION');
 
         if (!$accountActionType) {
             throw new ApiException(
@@ -772,7 +772,7 @@ class User extends Authenticatable implements MustVerifyEmail
         }
 
         /** @var AccountAction $accountDeleted */
-        $accountDeleted = $accountActionType->accountsActions()->where('user_id', $this->id)->first();
+        $accountDeleted = $accountActionType->accountsActions()->where('actionable_type', 'App\Models\User')->where('actionable_id', $this->id)->first();
 
         $accountOperation->delete();
         $accountDeleted->delete();
@@ -1092,7 +1092,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
             if (strpos($defaultType->name, 'ACCOUNT_BLOCKED') !== false) {
                 $accountBlocked = $aA;
-            } else if (strpos($defaultType->name, 'ACCOUNT_DELETED') !== false) {
+            } else if (strpos($defaultType->name, 'ACCOUNT_DELETION') !== false) {
                 $accountDeleted = $aA;
             }
         }
