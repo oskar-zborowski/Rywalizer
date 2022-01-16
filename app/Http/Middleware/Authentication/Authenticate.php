@@ -43,6 +43,21 @@ class Authenticate extends Middleware
 
             if ($personalAccessToken && Validation::timeComparison($personalAccessToken->created_at, env('REFRESH_TOKEN_LIFETIME'), '<=')) {
 
+                if ($uuid = $request->cookie(env('UUID_COOKIE_NAME'))) {
+                    $encryptedUuid = $encrypter->encrypt($uuid);
+                    $encryptedIp = $encrypter->encrypt($request->ip(), 15);
+    
+                    /** @var Device $device */
+                    $device = Device::where([
+                        'uuid' => $encryptedUuid,
+                        'ip' => $encryptedIp
+                    ])->first();
+
+                    if ($device) {
+                        $request->merge(['device_id' => $device->id]);
+                    }
+                }
+
                 Auth::loginUsingId($personalAccessToken->tokenable_id);
                 $personalAccessToken->delete();
 
