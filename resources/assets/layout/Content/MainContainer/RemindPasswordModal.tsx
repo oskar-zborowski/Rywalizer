@@ -2,6 +2,7 @@ import Flexbox from '@/components/Flexbox/Flexbox';
 import { OrangeButton } from '@/components/form/Button/Button';
 import Input from '@/components/form/Input/Input';
 import Modal from '@/components/Modal/Modal';
+import userStore from '@/store/UserStore';
 import React, { useState } from 'react';
 
 export interface RemindPasswordModalProps {
@@ -11,15 +12,31 @@ export interface RemindPasswordModalProps {
 
 const RemindPasswordModal: React.FC<RemindPasswordModalProps> = ({ isOpen, onClose }) => {
     const [email, setEmail] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+
+    const remindPassword = async () => {
+        setIsLoading(true);
+        
+        try {
+            await userStore.remindPassword(email);
+
+            onClose();
+        } catch (err) {
+
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <Modal
             title="Resetowanie hasła"
             isOpen={isOpen}
             onClose={onClose}
+            isLoading={isLoading}
             width="450px"
             footerItems={[
-                <OrangeButton key="2">Wyślij</OrangeButton>
+                <OrangeButton key="2" onClick={remindPassword}>Wyślij</OrangeButton>
             ]}
         >
             <Flexbox flexDirection="column" gap="10px">

@@ -7,7 +7,7 @@ import UserView from '@/views/User/UserView';
 import { observer } from 'mobx-react';
 import React, { Fragment, useState } from 'react';
 import {
-    Link, Route, Routes
+    Link, Route, Routes, Navigate
 } from 'react-router-dom';
 import { Scrollbar, ScrollbarProvider } from '../Scrollbar/Scrollbar';
 import LoginModal from './LoginModal';
@@ -55,6 +55,7 @@ const MainContainer: React.FC<{ store: UserStore }> = (props) => {
                     <Route path="/" element={<EventsView />} />
                     <Route path="/reset-hasla" element={
                         <Fragment>
+                            {user ? <Navigate to="/" /> : null}
                             <EventsView />
                             <ResetPasswordModal
                                 isOpen={isResetPasswordModalActive}

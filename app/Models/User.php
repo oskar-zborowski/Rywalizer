@@ -628,7 +628,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @return void
      */
     public function forgotPassword(): void {
-        $this->prepareEmail('PASSWORD_RESET', '/account/password', MailPasswordReset::class);
+        $this->prepareEmail('PASSWORD_RESET', 'reset-hasla', MailPasswordReset::class);
         JsonResponse::sendSuccess();
     }
 
