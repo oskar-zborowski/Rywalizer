@@ -64,6 +64,11 @@ class DefaultTypeNameSeeder extends Seeder
                 'name' => 'ACCOUNT_ACTION_TYPE',
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'name' => 'AREA_TYPE',
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
     }

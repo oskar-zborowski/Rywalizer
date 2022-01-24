@@ -921,6 +921,11 @@ class User extends Authenticatable implements MustVerifyEmail
             $updatedInformation['gender_id'] = $request->gender_id;
         }
 
+        if ($request->city_id || $request->city_name) {
+            $city = Validation::createArea($request);
+            $updatedInformation['city_id'] = $city->id;
+        }
+
         if ($updatedInformation) {
             $this->update($updatedInformation);
         }

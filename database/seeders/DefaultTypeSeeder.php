@@ -365,6 +365,51 @@ class DefaultTypeSeeder extends Seeder
                 'is_active' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 11,
+                'name' => 'COUNTRY',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 11,
+                'name' => 'VOIVODESHIP',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 11,
+                'name' => 'POVIAT',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 11,
+                'name' => 'COMMUNE',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 11,
+                'name' => 'CITY',
+                'description_simple' => null,
+                'icon_id' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
     }
