@@ -1,6 +1,6 @@
 import Flexbox from '@/components/Flexbox/Flexbox';
-import { FacebookButton, GoogleButton, OrangeButton } from '@/components/form/Button/Button';
-import Input from '@/components/form/Input/Input';
+import { FacebookButton, GoogleButton, OrangeButton } from '@/components/Form/Button/Button';
+import Input from '@/components/Form/Input/Input';
 import Link from '@/components/Link/Link';
 import Modal from '@/components/Modal/Modal';
 import userStore from '@/store/UserStore';

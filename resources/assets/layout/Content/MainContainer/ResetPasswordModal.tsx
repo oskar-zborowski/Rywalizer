@@ -1,6 +1,6 @@
 import Flexbox from '@/components/Flexbox/Flexbox';
-import { OrangeButton } from '@/components/form/Button/Button';
-import Input from '@/components/form/Input/Input';
+import { OrangeButton } from '@/components/Form/Button/Button';
+import Input from '@/components/Form/Input/Input';
 import Modal from '@/components/Modal/Modal';
 import useQuery from '@/hooks/useQuery';
 import userStore from '@/store/UserStore';

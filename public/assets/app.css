@@ -83,9 +83,9 @@
   }
 }
 /*!********************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/form/Button/Button.scss ***!
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Form/Button/Button.scss ***!
   \********************************************************************************************************************************************************************************************************************************/
-.Button_button__boOXn, .Button_googleButton__ucHKq, .Button_facebookButton__h3ay4, .Button_blackButton__yyGc0, .Button_grayButton__nvljN, .Button_orangeButton__EJ5Hq {
+.Button_button__kEP6o, .Button_googleButton__n4FiN, .Button_facebookButton__Fs1Dy, .Button_blackButton__WJceZ, .Button_grayButton__gDBax, .Button_orangeButton__i5tVN {
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -99,46 +99,46 @@
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
   transition: 0.2s ease-in-out;
 }
-.Button_button__boOXn:hover, .Button_googleButton__ucHKq:hover, .Button_facebookButton__h3ay4:hover, .Button_blackButton__yyGc0:hover, .Button_grayButton__nvljN:hover, .Button_orangeButton__EJ5Hq:hover {
+.Button_button__kEP6o:hover, .Button_googleButton__n4FiN:hover, .Button_facebookButton__Fs1Dy:hover, .Button_blackButton__WJceZ:hover, .Button_grayButton__gDBax:hover, .Button_orangeButton__i5tVN:hover {
   box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.2);
 }
-.Button_button__boOXn:active, .Button_googleButton__ucHKq:active, .Button_facebookButton__h3ay4:active, .Button_blackButton__yyGc0:active, .Button_grayButton__nvljN:active, .Button_orangeButton__EJ5Hq:active {
+.Button_button__kEP6o:active, .Button_googleButton__n4FiN:active, .Button_facebookButton__Fs1Dy:active, .Button_blackButton__WJceZ:active, .Button_grayButton__gDBax:active, .Button_orangeButton__i5tVN:active {
   border: 1px solid #141417 !important;
 }
-.Button_button__boOXn .Button_icon__haZQ6, .Button_googleButton__ucHKq .Button_icon__haZQ6, .Button_facebookButton__h3ay4 .Button_icon__haZQ6, .Button_blackButton__yyGc0 .Button_icon__haZQ6, .Button_grayButton__nvljN .Button_icon__haZQ6, .Button_orangeButton__EJ5Hq .Button_icon__haZQ6 {
+.Button_button__kEP6o .Button_icon__mKeXV, .Button_googleButton__n4FiN .Button_icon__mKeXV, .Button_facebookButton__Fs1Dy .Button_icon__mKeXV, .Button_blackButton__WJceZ .Button_icon__mKeXV, .Button_grayButton__gDBax .Button_icon__mKeXV, .Button_orangeButton__i5tVN .Button_icon__mKeXV {
   margin-right: 8px;
   height: 22px;
   width: auto;
 }
-.Button_button__boOXn .Button_text__aZlzu, .Button_googleButton__ucHKq .Button_text__aZlzu, .Button_facebookButton__h3ay4 .Button_text__aZlzu, .Button_blackButton__yyGc0 .Button_text__aZlzu, .Button_grayButton__nvljN .Button_text__aZlzu, .Button_orangeButton__EJ5Hq .Button_text__aZlzu {
+.Button_button__kEP6o .Button_text__WqPTk, .Button_googleButton__n4FiN .Button_text__WqPTk, .Button_facebookButton__Fs1Dy .Button_text__WqPTk, .Button_blackButton__WJceZ .Button_text__WqPTk, .Button_grayButton__gDBax .Button_text__WqPTk, .Button_orangeButton__i5tVN .Button_text__WqPTk {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.Button_orangeButton__EJ5Hq {
+.Button_orangeButton__i5tVN {
   color: #141417;
   background-color: #ce8f3e;
   font-weight: bold;
 }
 
-.Button_grayButton__nvljN {
+.Button_grayButton__gDBax {
   color: #fff;
   background-color: #29292e;
 }
 
-.Button_blackButton__yyGc0 {
+.Button_blackButton__WJceZ {
   color: #fff;
   background-color: #141417;
 }
 
-.Button_facebookButton__h3ay4 {
+.Button_facebookButton__Fs1Dy {
   background-color: #1877f2;
   color: #fff;
   height: 38px;
 }
 
-.Button_googleButton__ucHKq {
+.Button_googleButton__n4FiN {
   background-color: #fff;
   color: #808080;
   font-weight: 500;
@@ -397,6 +397,103 @@
   color: #ce8f3e;
   text-decoration: underline;
 }
+/*!******************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Form/Input/Input.scss ***!
+  \******************************************************************************************************************************************************************************************************************************/
+.Input_input__nFkS9 {
+  position: relative;
+  width: 100%;
+  flex: 1;
+}
+
+.Input_label__Z2x6C {
+  margin-bottom: 3px;
+  margin-left: 8px;
+  color: #a1a1a1;
+  display: block;
+}
+
+.Input_inputWrapper__IuVx8 {
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 8px;
+  border: 1px solid #29292E;
+  position: relative;
+  overflow: hidden;
+  background-color: #141417;
+  width: 100%;
+  flex: 1;
+}
+.Input_inputWrapper__IuVx8 input {
+  width: 100%;
+  height: 100%;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  color: #fff;
+}
+/*!**************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Form/SelectBox/SelectBox.scss ***!
+  \**************************************************************************************************************************************************************************************************************************************/
+.SelectBox_selectBoxWrapper__RgD0Z {
+  flex: 1;
+  position: relative;
+}
+
+.SelectBox_selectBox__fQomE {
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 14px;
+  white-space: nowrap;
+  border: 1px solid #141417;
+  cursor: pointer;
+  min-width: 0;
+  background-color: #29292E;
+  position: relative;
+}
+.SelectBox_selectBox__fQomE .SelectBox_chevronArrow__HDVWX {
+  transition: 0.2s ease-in-out;
+  position: absolute;
+  right: 14px;
+}
+.SelectBox_open__f3beT .SelectBox_selectBox__fQomE .SelectBox_chevronArrow__HDVWX {
+  transform: rotate(180deg);
+}
+.SelectBox_selectBox__fQomE.SelectBox_transparent__ndGUr {
+  padding: 0;
+  background-color: transparent;
+  border: none;
+}
+.SelectBox_selectBox__fQomE.SelectBox_transparent__ndGUr .SelectBox_chevronArrow__HDVWX {
+  right: 0;
+}
+
+.SelectBox_label__k4D1H {
+  margin-bottom: 3px;
+  margin-left: 8px;
+  color: #a1a1a1;
+  display: block;
+}
+
+.SelectBox_itemsContainer__XhSab {
+  position: absolute;
+  margin-top: 5px;
+  border-radius: 8px;
+  background-color: #222227;
+  border: 1px solid #29292E;
+  overflow: hidden;
+  min-height: 68px;
+  min-width: 200px;
+  max-width: 400px;
+  z-index: 9999;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.6);
+  width: 100%;
+  padding: 20px;
+}
 /*!*************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/layout/Content/Scrollbar/Scrollbar.scss ***!
   \*************************************************************************************************************************************************************************************************************************************/
@@ -429,9 +526,11 @@
 }
 
 .EventsView_filters__sQnRI {
-  height: 60px;
+  padding: 20px;
   width: 100%;
   flex: none;
+  display: flex;
+  gap: 20px;
 }
 
 .EventsView_containerWrapper__jZuPk {
@@ -1019,42 +1118,6 @@
 .UserView_userView__wD4e5 .UserView_rightColumn__qh0H1 .UserView_fieldValue__UZNLw {
   font-weight: bold;
   padding-left: 25px;
-}
-/*!******************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/form/Input/Input.scss ***!
-  \******************************************************************************************************************************************************************************************************************************/
-.Input_input__en9Yu {
-  position: relative;
-  width: 100%;
-}
-
-.Input_label__YFp2G {
-  margin-bottom: 3px;
-  margin-left: 8px;
-  color: #a1a1a1;
-  display: block;
-}
-
-.Input_inputWrapper__bIYHM {
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  height: 34px;
-  padding: 0 8px;
-  border: 1px solid #29292E;
-  position: relative;
-  overflow: hidden;
-  background-color: #141417;
-  width: 100%;
-  flex: 1;
-}
-.Input_inputWrapper__bIYHM input {
-  width: 100%;
-  height: 100%;
-  background-color: transparent !important;
-  border: none !important;
-  outline: none !important;
-  color: #fff;
 }
 /*!*************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Modal/Modal.scss ***!

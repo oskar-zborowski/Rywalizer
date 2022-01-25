@@ -1,4 +1,4 @@
-import { BlackButton, GrayButton, OrangeButton } from '@/components/form/Button/Button';
+import { BlackButton, GrayButton, OrangeButton } from '@/components/Form/Button/Button';
 import Icon from '@/components/Icon/Icon';
 import StarRatings from '@/components/StarRating/StarRating';
 import React, { useRef } from 'react';

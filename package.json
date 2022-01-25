@@ -1,8 +1,7 @@
 {
     "private": true,
     "scripts": {
-        "start": "npx webpack build --config ./webpack.config.js",
-        "watch": "npx webpack watch --config ./webpack.config.js"
+        "start": "npx webpack watch --config ./webpack.config.js"
     },
     "devDependencies": {
         "@svgr/webpack": "^6.1.2",

@@ -1,13 +1,17 @@
 import { useEffect } from 'react';
 
-export const useOnClickOutside = (ref: React.RefObject<any>, callback: (event: MouseEvent) => void) => {
+export const useOnClickOutside = (
+    ref: React.RefObject<any>, 
+    onClickOutside: (event: MouseEvent) => void,
+    onClickInside?: (event: MouseEvent) => void
+) => {
     useEffect(() => {
         const listener = (event: MouseEvent) => {
             if (!ref.current || ref.current.contains(event.target)) {
-                return;
+                onClickInside?.(event);
+            } else {
+                onClickOutside(event);
             }
-  
-            callback(event);
         };
   
         document.addEventListener('mousedown', listener);
@@ -17,5 +21,5 @@ export const useOnClickOutside = (ref: React.RefObject<any>, callback: (event: M
             document.removeEventListener('mousedown', listener);
             document.removeEventListener('touchstart', listener);
         };
-    }, [ref, callback]);
+    }, [ref, onClickOutside]);
 };

@@ -4,7 +4,7 @@ services:
         image: phpmyadmin/phpmyadmin:latest
         restart: always
         ports:
-            - 81:80
+            - 83:80
         depends_on:
             - mysql
         environment:
@@ -29,8 +29,8 @@ services:
             context: .
             dockerfile: docker/web/Dockerfile
         ports:
-            - 80:80
-            - 443:443
+            - 81:80
+            - 82:443
         volumes:
             - ./:/var/www
             - /var/www/vendor

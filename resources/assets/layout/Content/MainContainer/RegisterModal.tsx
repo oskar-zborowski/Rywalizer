@@ -1,6 +1,7 @@
 import Flexbox from '@/components/Flexbox/Flexbox';
-import { OrangeButton } from '@/components/form/Button/Button';
-import Input from '@/components/form/Input/Input';
+import { OrangeButton } from '@/components/Form/Button/Button';
+import Input from '@/components/Form/Input/Input';
+import Selectbox from '@/components/Form/SelectBox/SelectBox';
 import Link from '@/components/Link/Link';
 import Modal from '@/components/Modal/Modal';
 import userStore from '@/store/UserStore';
@@ -22,17 +23,19 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onClickL
     const [passwordConfirmation, setConfirmPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
+    const [isGenderSelectOpen, setIsGenderSelectOpen] = useState(false);
+
     const register = async () => {
         setIsLoading(true);
 
         try {
             await userStore.register({
-                firstName, 
-                lastName, 
-                birthDate, 
-                genderId, 
-                email, 
-                password, 
+                firstName,
+                lastName,
+                birthDate,
+                genderId,
+                email,
+                password,
                 passwordConfirmation,
                 acceptedAgreements: [1, 2]
             });
@@ -65,12 +68,19 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onClickL
                 </Flexbox>
                 <Flexbox gap="10px">
                     <Input label="Data urodzenia" type="date" value={birthDate} onChange={(v) => setBirthDate(v)} />
-                    <Input label="Płeć" value={genderId + ''} onChange={(v) => setGender(+v)} />
+                    <Selectbox
+                        isOpen={isGenderSelectOpen}
+                        onOpen={() => setIsGenderSelectOpen(true)}
+                        onClose={() => setIsGenderSelectOpen(false)}
+                        initialOptions={[]}
+                        label="Płeć"
+                        placeholder="Nie podano"
+                    />
                 </Flexbox>
                 <Input label="Adres e-mail" value={email} onChange={(v) => setEmail(v)} />
                 <Input label="Hasło" type="password" value={password} onChange={(v) => setPassword(v)} />
                 <Input label="Potwierdź hasło" type="password" value={passwordConfirmation} onChange={(v) => setConfirmPassword(v)} />
-                <div style={{ fontSize: '12px', color: '#a1a1a1'}}>
+                <div style={{ fontSize: '12px', color: '#a1a1a1' }}>
                     Rejestrując się, akceptujesz&nbsp;<Link fixedColor>regulamin</Link> oraz&nbsp;
                     <Link fixedColor>politykę prywatyności</Link> serwisu nasza-nazwa.pl.
                 </div>

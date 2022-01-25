@@ -1,4 +1,4 @@
-import { BlackButton } from '@/components/form/Button/Button';
+import { BlackButton } from '@/components/Form/Button/Button';
 import { UserStore } from '@/store/UserStore';
 import { observer } from 'mobx-react';
 import React from 'react';

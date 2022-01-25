@@ -3,7 +3,7 @@ import { useOnClickOutside } from '@/hooks/useOnClickOutside';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
-import { GrayButton, OrangeButton } from '../form/Button/Button';
+import { GrayButton, OrangeButton } from '../Form/Button/Button';
 import styles from './Modal.scss';
 import Loader from '@/static/loader.svg';
 import { AiOutlineClose } from 'react-icons/ai';

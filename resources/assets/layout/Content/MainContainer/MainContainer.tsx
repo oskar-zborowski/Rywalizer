@@ -1,4 +1,4 @@
-import { GrayButton, OrangeButton } from '@/components/form/Button/Button';
+import { GrayButton, OrangeButton } from '@/components/Form/Button/Button';
 import userStore, { UserStore } from '@/store/UserStore';
 import EventDetails from '@/views/Events/EventDetails/EventDetails';
 import EventsView from '@/views/Events/EventsView';
