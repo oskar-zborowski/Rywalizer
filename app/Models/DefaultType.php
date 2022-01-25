@@ -60,6 +60,7 @@ class DefaultType extends BaseModel
             'description_perfect' => $this->description_perfect,
             'description_future' => $this->description_future,
             'icon' => $this->icon()->first() ? $this->icon()->first()->filename : null,
+            'color' => $this->color,
             'is_active' => (bool) $this->is_active
         ];
     }

@@ -20,6 +20,7 @@ class CreateDefaultTypesTable extends Migration
             $table->string('description_perfect', 250)->nullable()->comment('Opis w czasie dokonanym');
             $table->string('description_future', 250)->nullable()->comment('Opis w czasie przyszłym');
             $table->unsignedSmallInteger('icon_id')->nullable();
+            $table->string('color', 50)->nullable();
             $table->unsignedMediumInteger('creator_id')->nullable();
             $table->unsignedMediumInteger('editor_id')->nullable();
             $table->boolean('is_active');

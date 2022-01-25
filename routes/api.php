@@ -63,6 +63,8 @@ Route::delete('/v1/user/avatar/{id}', [UserController::class, 'deleteAvatar'])->
 
 Route::get('/v1/providers', [DefaultTypeController::class, 'getProviders'])->name('defaultType-getProviders');
 Route::get('/v1/genders', [DefaultTypeController::class, 'getGenders'])->name('defaultType-getGenders');
+Route::get('/v1/sports', [DefaultTypeController::class, 'getSports'])->name('defaultType-getSports');
+Route::get('/v1/areas', [DefaultTypeController::class, 'getAreas'])->name('defaultType-getAreas');
 
 
 

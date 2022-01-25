@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use Mehradsadeghi\FilterQueryString\FilterQueryString;
+
 class Area extends BaseModel
 {
+    use FilterQueryString;
+
     protected $fillable = [
         'name',
         'area_type_id'
@@ -41,6 +45,11 @@ class Area extends BaseModel
         'updated_at' => 'string'
     ];
 
+    protected $filters = [
+        'sort',
+        'like'
+    ];
+
     public function areaType() {
         return $this->belongsTo(DefaultType::class, 'area_type_id');
     }
@@ -71,5 +80,20 @@ class Area extends BaseModel
 
     public function facilities() {
         return $this->hasMany(Facility::class, 'city_id');
+    }
+
+    public function getBasicInformation() {
+        return [
+            'area' => [
+                'id' => $this->id,
+                'name' => $this->name,
+                'boundary' => $this->boundary,
+                'area_type' => [
+                    'id' => $this->areaType->id,
+                    'name' => $this->areaType->name,
+                    'description' => $this->areaType->description_simple
+                ]
+            ]
+        ];
     }
 }

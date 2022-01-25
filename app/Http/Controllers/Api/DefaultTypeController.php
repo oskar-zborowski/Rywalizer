@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Libraries\Validation\Validation;
 use App\Http\Responses\JsonResponse;
+use App\Models\Area;
 use App\Models\DefaultTypeName;
 use Illuminate\Http\Request;
 
@@ -93,5 +94,34 @@ class DefaultTypeController extends Controller
      */
     public function getGenders(): void {
         $this->getDefaultTypes('GENDER');
+    }
+
+    /**
+     * #### `GET` `/api/v1/sports`
+     * Pobranie listy sportów
+     * 
+     * @return void
+     */
+    public function getSports(): void {
+        $this->getDefaultTypes('SPORT');
+    }
+
+    /**
+     * #### `GET` `/api/v1/areas`
+     * Pobranie listy pasujących miast, gmin, powiatów, województw
+     * 
+     * @param Request $request
+     * 
+     * @return void
+     */
+    public function getAreas(Request $request): void {
+        $paginationAttributes = $this->getPaginationAttributes($request);
+
+        /** @var Area $areas */
+        $areas = Area::where('visible_at', '<>', NULL)->filter()->paginate($paginationAttributes['perPage']);
+
+        $result = $this->preparePagination($areas, 'getBasicInformation');
+
+        JsonResponse::sendSuccess($result['data'], $result['metadata']);
     }
 }

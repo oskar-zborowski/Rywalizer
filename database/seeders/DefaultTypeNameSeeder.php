@@ -69,6 +69,11 @@ class DefaultTypeNameSeeder extends Seeder
                 'name' => 'AREA_TYPE',
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'name' => 'SPORT',
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
     }
