@@ -12,8 +12,39 @@ import MailSvg from '@/static/icons/mail.svg';
 import FacebookSvg from '@/static/icons/facebook.svg';
 import Link from '@/components/Link/Link';
 import faker from 'faker';
+import Comments, { IComment } from '@/components/Comments/Comments';
 
 faker.locale = 'pl';
+
+const comments: IComment[] = [
+    {
+        username: 'K. Borowicz',
+        createdAt: '2 dzień temu',
+        comment: 'Reasumując wszystkie aspekty kwintesencji tematu, dochodzę do fundamentalnej konkluzji, warto studiować.\n~ Mariusz pudzianowski',
+        comments: [
+            {
+                username: 'O. Zborowski',
+                createdAt: 'Przed chwilą',
+                comment: 'To nie dałoby nic, nic by nie dało.\nhttps://www.youtube.com/watch?v=8AwVRlXsxlA&ab_channel=CACACACACA',
+                comments: [
+                    {
+                        username: 'M. Pudzianowski',
+                        createdAt: 'Przed chwilą',
+                        comment: 'Odtworzyłem wczoraj po nocy oryginalną klasyfikację z tych zawodów. Policzyłem wszystko skrupulatnie i zrobiłem double check z regulaminem. Okazało się, że to i tak by nic nie dało.'
+                    }, {
+                        username: 'W. Mila',
+                        createdAt: 'Przed chwilą',
+                        comment: 'Skład rzeczy które i tak by nic nie dały:\n- wygrana bo on by musiał być 4 w kulach\n- mała różnica czasów\n- branie kuli od boku'
+                    }
+                ]
+            }
+        ]
+    }, {
+        username: 'B. Babiaczyk',
+        createdAt: '1 dni temu',
+        comment: 'Bez ryzyka nie ma gry.',
+    }
+];
 
 const EventDetails: React.FC = (props) => {
     return (
@@ -59,7 +90,7 @@ const EventDetails: React.FC = (props) => {
                                 {i + 1}. {faker.name.firstName()} {faker.name.lastName()}
                             </div>;
                         })}
-                        
+
                         {/*TODO zamiana na <Link>??*/}
 
                         <div className={styles.participantCell + ' ' + styles.signUpCell}>
@@ -78,7 +109,7 @@ const EventDetails: React.FC = (props) => {
             <section>
                 <h1>Opis:</h1>
                 <div className={styles.description}>
-                    <b>TODO: jeżeli opis jest pusty to wywalać całą sekcje ??<br/></b>
+                    <b>TODO: jeżeli opis jest pusty to wywalać całą sekcje ??<br /></b>
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
                     ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
                     laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
@@ -89,9 +120,10 @@ const EventDetails: React.FC = (props) => {
             <div className={styles.separator}></div>
             <section>
                 <h1>Komentarze:</h1>
-                <div className={styles.description}>
+                <Comments comments={comments} />
+                {/* <div className={styles.description}>
                     brak komentarzy
-                </div>
+                </div> */}
             </section>
         </div>
     );

@@ -6,6 +6,7 @@ import { autorun } from 'mobx';
 export default class EventPinsLayer {
 
     private readonly deckgl: DeckGL;
+    private map: google.maps.Map;
     private pointsLayer: ScatterplotLayer<IEventPin> = null;
 
     public constructor() {
@@ -33,6 +34,12 @@ export default class EventPinsLayer {
     }
 
     public initialize(map: google.maps.Map): void {
+        this.map = map;
+        this.map.setOptions({
+            draggableCursor: 'crosshair',
+            draggingCursor: 'crosshair'
+        });
+
         this.deckgl.setMap(map);
         this.render();
     }

@@ -19,7 +19,7 @@ html {
 body {
     overflow-x: hidden;
     background-color: $color-backgroud;
-    color: #fff;
+    color: #a1a1a1;
     font-size: 13px;
 
     @include respond-to(null, "sm") {

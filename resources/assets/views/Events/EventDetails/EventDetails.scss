@@ -1,7 +1,7 @@
 @import "@/styles/bootstrap.scss";
 
 .eventDetails {
-    padding: 20px;
+    padding: 20px 20px 40px 20px;
 
     @include respond-to(null, "sm") {
         padding-top: 0;

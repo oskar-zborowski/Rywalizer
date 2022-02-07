@@ -1,0 +1,53 @@
+@import "@/styles/bootstrap.scss";
+
+.comments {
+    position: relative;
+}
+
+.comment {
+    margin-top: 20px;
+    display: flex;
+    gap: 25px;
+
+    .contentContainer & {
+        margin-top: 10px;
+    }
+
+    .avatarContainer {
+        flex: 0;
+    }
+
+    .contentContainer {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .contentHeader {
+        color: $color-primary;
+
+        .username {
+            float: left;
+            font-weight: bold;
+        }
+
+        .createdAt {
+            float: right;
+        }
+    }
+
+    .content {
+        padding-right: 100px;
+    }
+}
+
+.commentAvatar {
+    width: 40px;
+    height: 40px;
+
+    .comment .comment & {
+        width: 30px;
+        height: 30px;
+    }
+}

@@ -16,7 +16,7 @@
   \*************************************************************************************************************************************************************************************************************************************/
 .MapViewer_mapViewer__PLqFb {
   flex: 30%;
-  min-width: 500px;
+  min-width: 600px;
 }
 
 .MapViewer_mapViewer__PLqFb {
@@ -177,7 +177,7 @@
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/Events/EventDetails/EventDetails.scss ***!
   \*****************************************************************************************************************************************************************************************************************************************/
 .EventDetails_eventDetails__ED288 {
-  padding: 20px;
+  padding: 20px 20px 40px 20px;
   height: 100%;
   overflow-y: auto;
 }
@@ -396,6 +396,63 @@
 .Link_link__DW2O2:hover {
   color: #ce8f3e;
   text-decoration: underline;
+}
+/*!***************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Avatar/Avatar.scss ***!
+  \***************************************************************************************************************************************************************************************************************************/
+.Avatar_avatar__bsCoS {
+  border: 1px solid #141417;
+  border-radius: 8px;
+  overflow: hidden;
+  object-fit: cover;
+  flex: none;
+  user-select: none;
+}
+/*!*******************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Comments/Comments.scss ***!
+  \*******************************************************************************************************************************************************************************************************************************/
+.Comments_comments__LvcU0 {
+  position: relative;
+}
+
+.Comments_comment__xiia5 {
+  margin-top: 20px;
+  display: flex;
+  gap: 25px;
+}
+.Comments_contentContainer__YR8fn .Comments_comment__xiia5 {
+  margin-top: 10px;
+}
+.Comments_comment__xiia5 .Comments_avatarContainer__FcuSe {
+  flex: 0;
+}
+.Comments_comment__xiia5 .Comments_contentContainer__YR8fn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.Comments_comment__xiia5 .Comments_contentHeader__iuvaH {
+  color: #ce8f3e;
+}
+.Comments_comment__xiia5 .Comments_contentHeader__iuvaH .Comments_username__dIoF5 {
+  float: left;
+  font-weight: bold;
+}
+.Comments_comment__xiia5 .Comments_contentHeader__iuvaH .Comments_createdAt__UhoQo {
+  float: right;
+}
+.Comments_comment__xiia5 .Comments_content__hMJxT {
+  padding-right: 100px;
+}
+
+.Comments_commentAvatar__fMR8z {
+  width: 40px;
+  height: 40px;
+}
+.Comments_comment__xiia5 .Comments_comment__xiia5 .Comments_commentAvatar__fMR8z {
+  width: 30px;
+  height: 30px;
 }
 /*!******************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Form/Input/Input.scss ***!
@@ -829,7 +886,7 @@
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/SportFacilities/SportFacilityDetails/SportFacilityDetails.scss ***!
   \******************************************************************************************************************************************************************************************************************************************************************/
 .SportFacilityDetails_sportFacilityDetails__oCz_1 {
-  padding: 20px 20px 0px 20px;
+  padding: 20px 20px 40px 20px;
   height: 100%;
   overflow-y: auto;
 }
@@ -1308,7 +1365,7 @@ html {
 body {
   overflow-x: hidden;
   background-color: #141417;
-  color: #fff;
+  color: #a1a1a1;
   font-size: 13px;
 }
 @media (max-width: 576px) {
