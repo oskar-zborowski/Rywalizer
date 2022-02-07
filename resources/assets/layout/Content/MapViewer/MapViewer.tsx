@@ -1,12 +1,18 @@
-import React, { memo, useCallback, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 import styles from './MapViewer.scss';
 import mapStyle from './mapStyle';
+import EventPinsLayer from './EventPinsLayer';
+import mapViewerStore, { IEventPin } from '@/store/MapViewerStore';
+import { IPoint } from '@/types/IPoint';
+import chroma from 'chroma-js';
 
-const center = {
-    lat: 52,
-    lng: 20
+const polandCenter: IPoint = {
+    lat: 51.919438,
+    lng: 19.145136
 };
+
+const eventPinsLayer = new EventPinsLayer();
 
 const MapViewer: React.FC = () => {
     const { isLoaded } = useJsApiLoader({
@@ -14,33 +20,35 @@ const MapViewer: React.FC = () => {
         googleMapsApiKey: 'AIzaSyCi0sAXQWFeT4T5E6jOLlD-V35S6nyrx5Y'
     });
 
-    const [map, setMap] = useState(null);
-
     const onLoad = useCallback((map) => {
-        // const bounds = new window.google.maps.LatLngBounds();
-        // map.fitBounds(bounds);
-        setMap(map);
-    }, []);
+        eventPinsLayer.initialize(map);
 
-    const onUnmount = useCallback((map) => {
-        setMap(null);
+        const pins: IEventPin[] = [];
+
+        for (let i = 0; i < 10000; i++) {
+            const angle = (Math.random() * 4 * 360) * Math.PI / 180;
+            const radius = angle ** 2 * 0.005;
+            const lat = polandCenter.lat + (radius * Math.sin(angle)) / 1.6;
+            const lng = polandCenter.lng + radius * Math.cos(angle);
+            const color = chroma.random();
+
+            pins.push({ lat, lng, color });
+        }
+
+        mapViewerStore.setEventPins(pins);
     }, []);
 
     return isLoaded ? (
         <div className={styles.mapViewer}>
             <GoogleMap
                 mapContainerStyle={{ width: '100%', height: '100%' }}
-                center={center}
+                center={polandCenter}
                 zoom={6}
                 onLoad={onLoad}
-                onUnmount={onUnmount}
                 options={{ disableDefaultUI: true, styles: mapStyle }}
-            >
-                { /* Child components, such as markers, info windows, etc. */}
-                <></>
-            </GoogleMap>
+            />
         </div>
-    ) : <></>;
+    ) : null;
 };
 
 export default memo(MapViewer);

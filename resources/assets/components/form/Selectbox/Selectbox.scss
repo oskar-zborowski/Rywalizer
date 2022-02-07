@@ -9,6 +9,7 @@
     border-radius: 8px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     height: 34px;
     padding: 0 14px;
     white-space: nowrap;
@@ -17,11 +18,10 @@
     min-width: 0;
     background-color: #29292E;
     position: relative;
+    gap: 8px;
 
     .chevronArrow {
         transition: .2s ease-in-out;
-        position: absolute;
-        right: 14px;
 
         .open & {
             transform: rotate(180deg);
