@@ -45,8 +45,19 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onClickRegiste
             ]}
         >
             <Flexbox flexDirection="column" gap="10px">
-                <FacebookButton key="1">Zaloguj się przez Facebooka</FacebookButton>
-                <GoogleButton key="2" style={{ marginTop: '5px' }}>Zaloguj się przez Google</GoogleButton>
+                <FacebookButton 
+                    key="1"
+                    onClick={() => {
+                        window.location.href = '/api/v1/auth/facebook/redirect'; 
+                    }}
+                >Zaloguj się przez Facebooka</FacebookButton>
+                <GoogleButton
+                    key="2" 
+                    style={{ marginTop: '5px' }}
+                    onClick={() => {
+                        window.location.href = '/api/v1/auth/google/redirect'; 
+                    }}
+                >Zaloguj się przez Google</GoogleButton>
                 <div style={{
                     textAlign: 'center',
                     marginTop: '10px',
