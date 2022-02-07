@@ -124,9 +124,8 @@ class AuthController extends Controller
      * @param string $providerName nazwa zewnętrznego serwisu uwierzytelniającego
      * @param Encrypter $encrypter
      * 
-     * @return void
      */
-    public function handleProviderCallback(string $providerName, Encrypter $encrypter): void {
+    public function handleProviderCallback(string $providerName, Encrypter $encrypter) {
 
         $providerName = strtolower($providerName);
         $provider = $this->validateProvider($providerName);
@@ -274,7 +273,8 @@ class AuthController extends Controller
         $user->checkDevice(null, $authenticationType);
         $user->checkAccess();
         $user->createTokens();
-        $user->getUser('getPrivateInformation');
+
+        return redirect()->route('home');
     }
 
     /**
