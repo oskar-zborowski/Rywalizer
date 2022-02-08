@@ -74,6 +74,16 @@ class DefaultTypeNameSeeder extends Seeder
                 'name' => 'SPORT',
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'name' => 'PARTNER_TYPE',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'name' => 'VISIBLE_FIELD',
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
     }

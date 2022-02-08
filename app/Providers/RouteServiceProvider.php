@@ -81,6 +81,12 @@ class RouteServiceProvider extends ServiceProvider
                 : Limit::perMinute(env('API_UPLOADING_AVATAR_RATE_LIMIT_PER_DAY'))->by($request->ip());
         });
 
+        RateLimiter::for('uploadLogoLimit', function (Request $request) {
+            return $request->user()
+                ? Limit::perMinute(env('API_UPLOADING_AVATAR_RATE_LIMIT_PER_DAY'))->by($request->user()->id)
+                : Limit::perMinute(env('API_UPLOADING_AVATAR_RATE_LIMIT_PER_DAY'))->by($request->ip());
+        });
+
         RateLimiter::for('githubLimit', function (Request $request) {
             return Limit::perMinute(env('API_GITHUB_RATE_LIMIT_PER_MINUTE'))->by($request->ip());
         });

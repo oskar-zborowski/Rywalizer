@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Http\ErrorCodes\BaseErrorCode;
-use App\Http\Libraries\Encrypter\Encrypter;
 use App\Http\Requests\Auth\UpdateUserRequest;
 use App\Http\Responses\JsonResponse;
 use App\Models\User;
@@ -95,7 +94,7 @@ class UserController extends Controller
     }
 
     /**
-     * #### `PUT` `/api/v1/user/avatar`
+     * #### `PUT` `/api/v1/user/avatar/{id}`
      * Zmiana zdjęcia profilowego
      * 
      * @param int $id id avatara
@@ -110,7 +109,7 @@ class UserController extends Controller
     }
 
     /**
-     * #### `DELETE` `/api/v1/user/avatar`
+     * #### `DELETE` `/api/v1/user/avatar/{id}`
      * Usunięcie zdjęcia profilowego
      * 
      * @param int $id id avatara

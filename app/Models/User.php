@@ -1032,7 +1032,15 @@ class User extends Authenticatable implements MustVerifyEmail
 
         /** @var ImageAssignment $avatar */
         $avatar = $this->imageAssignments()->where('image_type_id', $imageType->id)->where('id', $avatarId)->first();
-        $avatar->image()->first()->delete();
+
+        if ($avatar) {
+            $avatar->image()->first()->delete();
+        } else {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Podano nieprawidłowy identyfikator avatara'
+            );
+        }
     }
 
     /**

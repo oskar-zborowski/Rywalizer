@@ -154,12 +154,6 @@ class BeforeUser
             ]);
         }
 
-        if ($routeName == $changeAvatar) {
-            $request->validate([
-                'avatar_id' => 'required|integer'
-            ]);
-        }
-
         return $next($request);
     }
 }

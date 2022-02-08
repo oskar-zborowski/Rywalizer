@@ -19,7 +19,8 @@ class DatabaseSeeder extends Seeder
             DefaultTypeSeeder::class,
             RolePermissonSeeder::class,
             AgreementSeeder::class,
-            AccountActionTypeSeeder::class
+            AccountActionTypeSeeder::class,
+            CommissionSeeder::class
         ]);
 
         // \App\Models\User::factory(10)->create();

@@ -116,4 +116,15 @@ class FileProcessing
     public static function saveAvatar(string $avatarPath, bool $uploadedByForm): Image {
         return self::saveFile('avatar', $avatarPath, 'user-pictures', false, $uploadedByForm, null, 'jpeg');
     }
+
+    /**
+     * Proces zapisania zdjęcia profilowego na serwerze
+     * 
+     * @param string $avatarPath ścieżka do zdjęcia które ma zostać zapisane
+     * 
+     * @return Image
+     */
+    public static function saveLogo(string $avatarPath): Image {
+        return self::saveFile('logo', $avatarPath, 'partner-logos', false, true, null, 'jpeg');
+    }
 }

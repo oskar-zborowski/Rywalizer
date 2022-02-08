@@ -144,6 +144,51 @@ class RolePermissonSeeder extends Seeder
                 'role_id' => 4,
                 'permission_id' => 58,
                 'created_at' => now()
+            ],
+            [
+                'role_id' => 4,
+                'permission_id' => 63,
+                'created_at' => now()
+            ],
+            [
+                'role_id' => 4,
+                'permission_id' => 64,
+                'created_at' => now()
+            ],
+            [
+                'role_id' => 4,
+                'permission_id' => 65,
+                'created_at' => now()
+            ],
+            [
+                'role_id' => 4,
+                'permission_id' => 66,
+                'created_at' => now()
+            ],
+            [
+                'role_id' => 2,
+                'permission_id' => 68,
+                'created_at' => now()
+            ],
+            [
+                'role_id' => 4,
+                'permission_id' => 68,
+                'created_at' => now()
+            ],
+            [
+                'role_id' => 4,
+                'permission_id' => 69,
+                'created_at' => now()
+            ],
+            [
+                'role_id' => 4,
+                'permission_id' => 70,
+                'created_at' => now()
+            ],
+            [
+                'role_id' => 4,
+                'permission_id' => 71,
+                'created_at' => now()
             ]
         ]);
     }

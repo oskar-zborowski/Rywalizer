@@ -594,6 +594,136 @@ class DefaultTypeSeeder extends Seeder
                 'is_active' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 13,
+                'name' => 'ANNOUNCEMENT_PARTNER',
+                'description_simple' => 'Partner ogłoszeń',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 13,
+                'name' => 'FACILITY_PARTNER',
+                'description_simple' => 'Partner obiektów',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 14,
+                'name' => 'USER_FIELD',
+                'description_simple' => '',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 14,
+                'name' => 'PARTNER_FIELD',
+                'description_simple' => '',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'partner-getPartner',
+                'description_simple' => '',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'partner-createPartner',
+                'description_simple' => '',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'partner-updatePartner',
+                'description_simple' => '',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'partner-deletePartner',
+                'description_simple' => '',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 5,
+                'name' => 'LOGO',
+                'description_simple' => '',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'partner-getPartnerById',
+                'description_simple' => '',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'partner-uploadLogo',
+                'description_simple' => '',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'partner-changeLogo',
+                'description_simple' => '',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'partner-deleteLogo',
+                'description_simple' => '',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
     }

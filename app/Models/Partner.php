@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use App\Exceptions\ApiException;
+use App\Http\ErrorCodes\BaseErrorCode;
+use App\Http\Libraries\FileProcessing\FileProcessing;
+use App\Http\Libraries\Validation\Validation;
 use App\Http\Traits\Encryptable;
 
 class Partner extends BaseModel
@@ -160,5 +164,160 @@ class Partner extends BaseModel
 
     public function discountCode() {
         return $this->hasMany(DiscountCode::class, 'payer_id');
+    }
+
+    /**
+     * Zwrócenie listy lub pojedynczego loga partnera
+     * 
+     * @param bool $all flaga z informacją czy mają zostać zwrócone wszystkie loga partnera
+     * 
+     * @return array|null
+     */
+    public function getLogos(bool $all = false): ?array {
+
+        $defaultType = Validation::getDefaultType('LOGO', 'IMAGE_TYPE');
+
+        $result = null;
+
+        if ($all) {
+
+            /** @var ImageAssignment $logos */
+            $logos = $this->imageAssignments()->where('image_type_id', $defaultType->id)->orderBy('number', 'desc')->get();
+
+            /** @var ImageAssignment $a */
+            foreach ($logos as $l) {
+
+                /** @var Image $image */
+                $image = $l->image()->first();
+
+                $result[] = [
+                    'id' => $l->id,
+                    'filename' => $image->filename
+                ];
+            }
+
+        } else {
+
+            /** @var ImageAssignment $logo */
+            $logo = $this->imageAssignments()->where('image_type_id', $defaultType->id)->orderBy('number', 'desc')->first();
+
+            if ($logo) {
+                /** @var Image $image */
+                $image = $logo->image()->first();
+
+                $result[] = [
+                    'id' => $logo->id,
+                    'filename' => $image->filename
+                ];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Zapisanie loga partnera
+     * 
+     * @param string $logoPath aktualna ścieżka do loga
+     * 
+     * @return void
+     */
+    public function saveLogo(string $logoPath): void {
+
+        $imageType = Validation::getDefaultType('LOGO', 'IMAGE_TYPE');
+
+        $oldLogos = $this->imageAssignments()->where('image_type_id', $imageType->id)->orderBy('number', 'desc')->get();
+
+        $counter = 0;
+
+        foreach ($oldLogos as $oL) {
+            $counter++;
+        }
+
+        $newNumber = $counter + 1;
+
+        foreach ($oldLogos as $oL) {
+            $oL->number = $counter;
+            $oL->save();
+            $counter--;
+        }
+
+        $image = FileProcessing::saveLogo($logoPath);
+
+        $imageAssignment = new ImageAssignment;
+        $imageAssignment->imageable_type = 'App\Models\Partner';
+        $imageAssignment->imageable_id = $this->id;
+        $imageAssignment->image_type_id = $imageType->id;
+        $imageAssignment->image_id = $image->id;
+        $imageAssignment->number = $newNumber;
+        $imageAssignment->creator_id = $this->id;
+        $imageAssignment->editor_id = $this->id;
+        $imageAssignment->save();
+    }
+
+    /**
+     * Zmiana loga partnera
+     * 
+     * @param int $logoId id loga, które ma być teraz aktualnym
+     * 
+     * @return void
+     */
+    public function changeLogo(int $logoId): void {
+
+        $imageType = Validation::getDefaultType('LOGO', 'IMAGE_TYPE');
+
+        /** @var ImageAssignment $oldLogos */
+        $oldLogos = $this->imageAssignments()->where('image_type_id', $imageType->id)->orderBy('number', 'desc')->get();
+
+        $counter = 0;
+
+        foreach ($oldLogos as $oL) {
+            $counter++;
+        }
+
+        $newNumber = $counter;
+
+        /** @var ImageAssignment $oldLogos */
+        $currentLogo = $oldLogos->where('id', $logoId)->first();
+
+        if ($currentLogo) {
+            $currentLogo->number = $newNumber;
+            $currentLogo->save();
+    
+            foreach ($oldLogos as $oL) {
+                if ($oL->id != $currentLogo->id) {
+                    $counter--;
+                    $oL->number = $counter;
+                    $oL->save();
+                }
+            }
+        } else {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Podano nieprawidłowy identyfikator loga'
+            );
+        }
+    }
+
+    /**
+     * Usunięcie loga partnera
+     * 
+     * @return void
+     */
+    public function deleteLogo(int $logoId): void {
+
+        $imageType = Validation::getDefaultType('LOGO', 'IMAGE_TYPE');
+
+        /** @var ImageAssignment $logo */
+        $logo = $this->imageAssignments()->where('image_type_id', $imageType->id)->where('id', $logoId)->first();
+
+        if ($logo) {
+            $logo->image()->first()->delete();
+        } else {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Podano nieprawidłowy identyfikator loga'
+            );
+        }
     }
 }
