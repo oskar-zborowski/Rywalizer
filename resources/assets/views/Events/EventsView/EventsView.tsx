@@ -31,10 +31,6 @@ const EventsView: React.FC = () => {
     const { containerRef } = useScrollbar();
 
     const [queryString, setQueryString] = useState('');
-    const [isLocationSelectOpen, setIsLocationSelectOpen] = useState(false);
-    const [isSportsSelectOpen, setIsSportsSelectOpen] = useState(false);
-    const [isFiltersSelectOpen, setIsFiltersSelectOpen] = useState(false);
-    const [isOrderSelectOpen, setIsOrderSelectOpen] = useState(false);
 
     const options: IOption<number>[] = [
         { text: 'Poznań', value: 1 },
@@ -51,30 +47,18 @@ const EventsView: React.FC = () => {
                     onChange={(v) => setQueryString(v)}
                 />
                 <Selectbox
-                    isOpen={isLocationSelectOpen}
-                    onOpen={() => setIsLocationSelectOpen(true)}
-                    onClose={() => setIsLocationSelectOpen(false)}
                     initialOptions={options}
                     placeholder="Lokalizacja"
                 />
                 <Selectbox
-                    isOpen={isSportsSelectOpen}
-                    onOpen={() => setIsSportsSelectOpen(true)}
-                    onClose={() => setIsSportsSelectOpen(false)}
                     initialOptions={options}
                     placeholder="Sporty"
                 />
                 <Selectbox
-                    isOpen={isFiltersSelectOpen}
-                    onOpen={() => setIsFiltersSelectOpen(true)}
-                    onClose={() => setIsFiltersSelectOpen(false)}
                     initialOptions={options}
                     placeholder="Więcej filtrów"
                 />
                 <Selectbox
-                    isOpen={isOrderSelectOpen}
-                    onOpen={() => setIsOrderSelectOpen(true)}
-                    onClose={() => setIsOrderSelectOpen(false)}
                     initialOptions={options}
                     placeholder="Sortuj wg: Najlepsze"
                     transparent={true}

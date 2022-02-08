@@ -2,12 +2,13 @@
 // Please do not change this file!
 interface CssExports {
   'chevronArrow': string;
+  'dark': string;
+  'dropdown': string;
+  'dropdownWrapper': string;
   'itemsContainer': string;
   'label': string;
   'open': string;
   'placeholder': string;
-  'selectBox': string;
-  'selectBoxWrapper': string;
   'transparent': string;
 }
 export const cssExports: CssExports;

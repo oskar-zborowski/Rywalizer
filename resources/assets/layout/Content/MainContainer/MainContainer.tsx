@@ -1,13 +1,12 @@
 import { GrayButton, OrangeButton } from '@/components/Form/Button/Button';
 import userStore, { UserStore } from '@/store/UserStore';
 import EventDetails from '@/views/Events/EventDetails/EventDetails';
-import EventsView from '@/views/Events/EventsView';
 import SportFacilityDetails from '@/views/SportFacilities/SportFacilityDetails/SportFacilityDetails';
 import UserView from '@/views/User/UserView';
 import { observer } from 'mobx-react';
 import React, { Fragment, useState } from 'react';
 import {
-    Link, Route, Routes, Navigate
+    Link as RouterLink, Route, Routes, Navigate
 } from 'react-router-dom';
 import { Scrollbar, ScrollbarProvider } from '../Scrollbar/Scrollbar';
 import LoginModal from './LoginModal';
@@ -16,22 +15,28 @@ import RegisterModal from './RegisterModal';
 import RemindPasswordModal from './RemindPasswordModal';
 import ResetPasswordModal from './ResetPasswordModal';
 import prof from '@/static/images/prof.png';
+import CreateEventView from '@/views/Events/CreateEventView';
+import Dropdown from '@/components/Form/Dropdown/Dropdown';
+import EventsView from '@/views/Events/EventsView/EventsView';
+import Link from '@/components/Link/Link';
 
-const MainContainer: React.FC<{ store: UserStore }> = (props) => {
+const MainContainer: React.FC = (props) => {
     const [isLoginModalActive, setIsLoginModalActive] = useState(false);
     const [isRegisterModalActive, setIsRegisterModalActive] = useState(false);
     const [isResetPasswordModalActive, setIsResetPasswordModalActive] = useState(true);
     const [isRemindPasswordModalActive, setIsRemindPasswordModalActive] = useState(false);
 
-    const user = props.store.user;
+    const user = userStore.user;
     let Buttons = null;
 
     if (user) { //TODO user
         Buttons = (
             <div className={styles.userButton}>
-                {/* TODO zamiana na selecta */}
-                <img src={prof} alt="" className={styles.avatar}/>
-                Krystian Borowicz
+                <img src={prof} alt="" className={styles.avatar} />
+                <Dropdown transparent placeholder={user.firstName + ' ' + user.lastName}>
+                    <RouterLink to="/konto">Konto</RouterLink>
+                    <Link onClick={() => userStore.logout()}>Wyloguj</Link>
+                </Dropdown>
             </div>
         );
     } else {
@@ -63,9 +68,10 @@ const MainContainer: React.FC<{ store: UserStore }> = (props) => {
                             />
                         </Fragment>
                     } />
-                    <Route path="/konto" element={<UserView store={props.store} />} />
+                    <Route path="/konto" element={<UserView/>} />
                     <Route path="/obiekty/1" element={<SportFacilityDetails />} />
                     <Route path="/ogloszenia/1" element={<EventDetails />} />
+                    <Route path="/ogloszenia/dodaj" element={<CreateEventView />} />
                     <Route path="/test" element={<EventDetails />} />
                 </Routes>
             </main>

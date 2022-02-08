@@ -5,12 +5,14 @@ import Topbar from '@/layout/Topbar/Topbar';
 import React, { Fragment, useEffect } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import MainContainer from './layout/Content/MainContainer/MainContainer';
+import appStore from './store/AppStore';
 import userStore from './store/UserStore';
 
 const App: React.FC = () => {
     useEffect(() => {
         try {
             userStore.getUser();
+            appStore.fetchData();
         } catch (_e) {
             console.log(_e);
             // Ignore error
@@ -22,7 +24,7 @@ const App: React.FC = () => {
             <Fragment>
                 <Topbar />
                 <Content>
-                    <MainContainer store={userStore}/>
+                    <MainContainer/>
                     <MapViewer />
                 </Content>
                 <Footer />

@@ -1,0 +1,31 @@
+@import "@/styles/bootstrap.scss";
+
+.locationSection {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(4, 1fr);
+
+    @include respond-to(null, "md") {
+        grid-template-columns: 1fr;
+
+        & > * {
+            grid-column: initial !important;
+        }
+    }
+
+    @include respond-to("md", "lg") {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    @include respond-to("lg", "xl") {
+        grid-template-columns: 1fr;
+
+        & > * {
+            grid-column: initial !important;
+        }
+    }
+
+    @include respond-to("xl", "2xl") {
+        grid-template-columns: 1fr 1fr;
+    }
+}

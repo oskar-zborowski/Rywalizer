@@ -1,16 +1,19 @@
+import { IGender } from '@/types/IGender';
+import { IUser } from '@/types/IUser';
+import { getApiUrl } from '@/utils/api';
 import axios from 'axios';
 import { makeAutoObservable, runInAction } from 'mobx';
 
 export class UserStore {
 
-    public user: IUser = null;
+    public user: IUser;
 
     public constructor() {
         makeAutoObservable(this);
     }
 
     public async getUser() {
-        const response = await axios.get('api/v1/user');
+        const response = await axios.get(getApiUrl('api/v1/user'));
         const user = this.prepareUserData(response.data.data);
         runInAction(() => this.user = user);
 
@@ -18,7 +21,7 @@ export class UserStore {
     }
 
     public async login(login: string, password: string) {
-        const response = await axios.post('api/v1/auth/login', {
+        const response = await axios.post(getApiUrl('api/v1/auth/login'), {
             email: login,
             password: password
         });
@@ -30,13 +33,13 @@ export class UserStore {
     }
 
     public async logout() {
-        await axios.delete('api/v1/auth/logout');
+        await axios.delete(getApiUrl('api/v1/auth/logout'));
 
         runInAction(() => this.user = null);
     }
 
     public async register(data: IRegisterData) {
-        const response = await axios.post('api/v1/auth/register', data);
+        const response = await axios.post(getApiUrl('api/v1/auth/register'), data);
         const user = this.prepareUserData(response.data.data);
         runInAction(() => this.user = user);
 
@@ -44,13 +47,13 @@ export class UserStore {
     }
 
     public async remindPassword(email: string) {
-        const response = await axios.post('api/v1/account/password', {email});
+        const response = await axios.post(getApiUrl('api/v1/account/password'), {email});
 
         console.log(response);
     }
 
     public async resetPassword(password: string, passwordConfirmation: string, token: string) {
-        const response = await axios.put('api/v1/account/password', {
+        const response = await axios.put(getApiUrl('api/v1/account/password'), {
             password,
             passwordConfirmation,
             token
@@ -83,39 +86,6 @@ export class UserStore {
         };
     }
 
-}
-
-export enum Permission {
-    //TODO
-}
-
-export interface IGender {
-    name: string;
-    descriptionSimple: string;
-    iconUrl: string;
-}
-
-export interface IUser {
-    id: number;
-    firstName: string;
-    lastName: string;
-    avatarUrls: string[];
-    email: string;
-    phoneNumber: string;
-    birthDate: string;
-    gender: IGender;
-    role: 'USER',
-    city: string;
-    addressCoordinates: string;
-    facebookProfile: string;
-    instagramProfile: string;
-    website: string;
-    isVerified: boolean;
-    canChangeName: boolean;
-    permissions: Permission[];
-    settings: {
-        isVisibleInComments: boolean
-    }
 }
 
 export interface IRegisterData {

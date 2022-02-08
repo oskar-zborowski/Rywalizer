@@ -5,6 +5,7 @@ import React, { CSSProperties, Fragment, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import styles from './SelectBox.scss';
 import { BsChevronDown } from 'react-icons/bs';
+import Dropdown, { IDropdownProps } from '../Dropdown/Dropdown';
 
 export interface IOption<T = any> {
     value: T;
@@ -12,13 +13,7 @@ export interface IOption<T = any> {
     isSelected?: boolean;
 }
 
-export interface SelectboxProps<T = any> {
-    isOpen: boolean;
-    onClose: () => void;
-    onOpen: () => void;
-    placeholder?: string;
-    transparent?: boolean;
-    label?: string;
+export interface SelectboxProps<T = any> extends IDropdownProps {
     multiselect?: boolean;
     initialOptions?: IOption<T>[];
     onChange?: (selectedOptions: IOption<T>[]) => void;
@@ -37,18 +32,13 @@ const itemsContainerAnimation = {
     transition
 };
 
-function Selectbox<T = number>(props: SelectboxProps<T>) {
+function Selectbox<T = any>(props: SelectboxProps<T>) {
     const {
-        isOpen,
-        onClose,
-        onOpen,
-        placeholder,
-        label,
-        transparent,
         multiselect = false,
         initialOptions = [],
         onChange,
-        searchBar
+        searchBar,
+        ...dropdownProps
     } = props;
 
     const [options, setOptions] = useState<IOption<T>[]>(initialOptions);
@@ -57,44 +47,14 @@ function Selectbox<T = number>(props: SelectboxProps<T>) {
 
     }
 
-    const handleClickInside = (_e: MouseEvent) => {
-        if (isOpen) {
-            onClose();
-        } else {
-            onOpen();
-        }
-    };
-
-    const ref = useRef<HTMLDivElement>();
-    useOnClickOutside(ref, () => onClose(), handleClickInside);
-
-    const ItemsContainer = (
-        <AnimatePresence>
-            {isOpen && <motion.div
-                className={styles.itemsContainer}
-                {...itemsContainerAnimation}
-            >
-                {options.map((op, i) => {
-                    return (
-                        <li key={i}>{op.text}</li>
-                    );
-                })}
-            </motion.div>}
-        </AnimatePresence>
-    );
-
     return (
-        <div className={styles.selectBoxWrapper + ' ' + (isOpen ? styles.open : '')}>
-            {label && <label className={styles.label}>{label}</label>}
-            <div
-                className={styles.selectBox + ' ' + (transparent ? styles.transparent : '')}
-                ref={ref}
-            >
-                {placeholder}
-                <BsChevronDown className={styles.chevronArrow} />
-            </div>
-            {ItemsContainer}
-        </div>
+        <Dropdown {...dropdownProps}>
+            {options.map((op, i) => {
+                return (
+                    <li key={i}>{op.text}</li>
+                );
+            })}
+        </Dropdown>
     );
 }
 

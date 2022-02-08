@@ -5,6 +5,8 @@ import styles from './EventDetails.scss';
 import prof from '@/static/images/prof.png';
 import Icon from '@/components/Icon/Icon';
 
+import LocationSvg from '@/static/icons/location.svg';
+import CalendarSvg from '@/static/icons/calendar.svg';
 import UserSvg from '@/static/icons/my-account.svg';
 import ContactSvg from '@/static/icons/food.svg';
 import TelephoneSvg from '@/static/icons/telephone.svg';
@@ -13,6 +15,8 @@ import FacebookSvg from '@/static/icons/facebook.svg';
 import Link from '@/components/Link/Link';
 import faker from 'faker';
 import Comments, { IComment } from '@/components/Comments/Comments';
+import ProgressBar from '@/components/ProgressBar/ProgressBar';
+import StackPanel from '@/components/StackPanel/StackPanel';
 
 faker.locale = 'pl';
 
@@ -83,6 +87,14 @@ const EventDetails: React.FC = (props) => {
             <div className={styles.separator}></div>
             <section>
                 <h1>Lista zapisanych:</h1>
+                <StackPanel padding="20px 0 20px 0" vertical>
+                    <StackPanel>
+                        <Icon svg={LocationSvg}>Poznań, <b>Dolna Wilda</b></Icon>
+                        <Icon svg={CalendarSvg}>28.10.2022, 15:00 - 16:30</Icon>
+                    </StackPanel>
+                    <ProgressBar progress={25} />
+                </StackPanel>
+
                 <div className={styles.participantsListWrapper}>
                     <div className={styles.participantsList}>
                         {[... new Array(11)].map((_v, i) => {

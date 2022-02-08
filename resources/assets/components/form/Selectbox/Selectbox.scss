@@ -47,6 +47,10 @@
     display: block;
 }
 
+.placeholder {
+    user-select: none;
+}
+
 .itemsContainer {
     position: absolute;
     margin-top: 5px;

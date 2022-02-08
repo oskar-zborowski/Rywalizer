@@ -1,12 +1,17 @@
 import { BlackButton } from '@/components/Form/Button/Button';
-import { UserStore } from '@/store/UserStore';
+import prof from '@/static/images/prof.png';
+import userStore from '@/store/UserStore';
 import { observer } from 'mobx-react';
 import React from 'react';
+import { Navigate } from 'react-router-dom';
 import styles from './UserView.scss';
-import prof from '@/static/images/prof.png';
 
-const UserView: React.FC<{ store: UserStore }> = (props) => {
-    const data = props.store.user;
+const UserView: React.FC = () => {
+    const user = userStore.user;
+
+    if (!user) {
+        return <Navigate to="/" />;
+    }
 
     return (
         <div className={styles.userView}>
@@ -22,13 +27,13 @@ const UserView: React.FC<{ store: UserStore }> = (props) => {
                     {/* DANE PODSTAWOWE */}
                     <div className={styles.groupHeader}>Dane podstawowe</div>
                     <div className={styles.fieldName}>Imię i Nazwisko:</div>
-                    <div className={styles.fieldValue}>{data?.firstName + ' ' + data?.lastName}</div>
+                    <div className={styles.fieldValue}>{user?.firstName + ' ' + user?.lastName}</div>
 
                     <div className={styles.fieldName}>Płeć:</div>
-                    <div className={styles.fieldValue}>{data?.gender.name}</div>
+                    <div className={styles.fieldValue}>{user?.gender.name}</div>
 
                     <div className={styles.fieldName}>Urodziny:</div>
-                    <div className={styles.fieldValue}>{data?.birthDate}</div>
+                    <div className={styles.fieldValue}>{user?.birthDate}</div>
 
                     <div className={styles.fieldName}>Lokalizacja:</div>
                     <div className={styles.fieldValue}>52.3567, 18.2341</div>
@@ -36,10 +41,10 @@ const UserView: React.FC<{ store: UserStore }> = (props) => {
                     {/* KONTAKT */}
                     <div className={styles.groupHeader}>Kontakt</div>
                     <div className={styles.fieldName}>E-mail:</div>
-                    <div className={styles.fieldValue}>{data?.email}</div>
+                    <div className={styles.fieldValue}>{user?.email}</div>
 
                     <div className={styles.fieldName}>Telefon:</div>
-                    <div className={styles.fieldValue}>{data?.phoneNumber}</div>
+                    <div className={styles.fieldValue}>{user?.phoneNumber}</div>
 
                     {/* SOCIAL MEDIA */}
                     <div className={styles.groupHeader}>Social media</div>

@@ -1,10 +1,12 @@
 import Flexbox from '@/components/Flexbox/Flexbox';
 import { OrangeButton } from '@/components/Form/Button/Button';
 import Input from '@/components/Form/Input/Input';
-import Selectbox from '@/components/Form/SelectBox/SelectBox';
+import Selectbox, { IOption } from '@/components/Form/SelectBox/SelectBox';
 import Link from '@/components/Link/Link';
 import Modal from '@/components/Modal/Modal';
+import appStore from '@/store/AppStore';
 import userStore from '@/store/UserStore';
+import { IGender } from '@/types/IGender';
 import React, { useEffect, useState } from 'react';
 
 export interface RegisterModalProps {
@@ -22,8 +24,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onClickL
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setConfirmPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-
-    const [isGenderSelectOpen, setIsGenderSelectOpen] = useState(false);
 
     const register = async () => {
         setIsLoading(true);
@@ -48,6 +48,13 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onClickL
         }
     };
 
+    const genderOptions: IOption<IGender>[] = appStore.genders?.map(g => {
+        return {
+            value: g,
+            text: g.name
+        } as IOption<IGender>;
+    });
+
     return (
         <Modal
             onEnter={() => register()}
@@ -69,10 +76,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onClickL
                 <Flexbox gap="10px">
                     <Input label="Data urodzenia" type="date" value={birthDate} onChange={(v) => setBirthDate(v)} />
                     <Selectbox
-                        isOpen={isGenderSelectOpen}
-                        onOpen={() => setIsGenderSelectOpen(true)}
-                        onClose={() => setIsGenderSelectOpen(false)}
-                        initialOptions={[]}
+                        initialOptions={genderOptions}
                         label="Płeć"
                         placeholder="Nie podano"
                     />

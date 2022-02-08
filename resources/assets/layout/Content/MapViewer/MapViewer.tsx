@@ -27,7 +27,7 @@ const MapViewer: React.FC = () => {
 
         for (let i = 0; i < 10000; i++) {
             const angle = (Math.random() * 4 * 360) * Math.PI / 180;
-            const radius = angle ** 2 * 0.005;
+            const radius = Math.random() * 3;
             const lat = polandCenter.lat + (radius * Math.sin(angle)) / 1.6;
             const lng = polandCenter.lng + radius * Math.cos(angle);
             const color = chroma.random();
