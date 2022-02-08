@@ -18,7 +18,7 @@ export default class EventPinsLayer {
             this.pointsLayer = new ScatterplotLayer<IEventPin>({
                 id: 'scatter-plot',
                 data: eventPins,
-                radiusMinPixels: 15,
+                radiusMinPixels: 5,
                 radiusMaxPixels: 15,
                 getRadius: 15,
                 pickable: true,

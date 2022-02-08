@@ -19,6 +19,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 use Mehradsadeghi\FilterQueryString\FilterQueryString;
 
@@ -1034,6 +1035,7 @@ class User extends Authenticatable implements MustVerifyEmail
         $avatar = $this->imageAssignments()->where('image_type_id', $imageType->id)->where('id', $avatarId)->first();
 
         if ($avatar) {
+            Storage::delete('user-pictures/' . $avatar->image()->first()->filename);
             $avatar->image()->first()->delete();
         } else {
             throw new ApiException(

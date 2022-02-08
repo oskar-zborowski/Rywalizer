@@ -255,11 +255,18 @@ class PartnerController extends Controller
         /** @var Partner $partner */
         $partner = $user->partners()->first();
 
-        $partner->saveLogo($request->logo);
+        if ($partner) {
+            $partner->saveLogo($request->logo);
 
-        /** @var PartnerSetting $partnerSetting */
-        $partnerSetting = $partner->partnerSettings()->first();
-        $partnerSetting->getPartner('getPrivateInformation');
+            /** @var PartnerSetting $partnerSetting */
+            $partnerSetting = $partner->partnerSettings()->first();
+            $partnerSetting->getPartner('getPrivateInformation');
+        } else {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Logo does not exist.'
+            );
+        }
     }
 
     /**

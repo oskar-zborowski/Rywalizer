@@ -7,6 +7,7 @@ use App\Http\ErrorCodes\BaseErrorCode;
 use App\Http\Libraries\FileProcessing\FileProcessing;
 use App\Http\Libraries\Validation\Validation;
 use App\Http\Traits\Encryptable;
+use Illuminate\Support\Facades\Storage;
 
 class Partner extends BaseModel
 {
@@ -242,7 +243,7 @@ class Partner extends BaseModel
             $counter--;
         }
 
-        $image = FileProcessing::saveLogo($logoPath);
+        $image = FileProcessing::saveLogo($logoPath, $this);
 
         $imageAssignment = new ImageAssignment;
         $imageAssignment->imageable_type = 'App\Models\Partner';
@@ -312,6 +313,7 @@ class Partner extends BaseModel
         $logo = $this->imageAssignments()->where('image_type_id', $imageType->id)->where('id', $logoId)->first();
 
         if ($logo) {
+            Storage::delete('partner-pictures/' . $logo->image()->first()->filename);
             $logo->image()->first()->delete();
         } else {
             throw new ApiException(

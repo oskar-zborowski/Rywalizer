@@ -52,6 +52,75 @@
   display: flex;
   gap: 20px;
 }
+/*!************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Form/Dropdown/Dropdown.scss ***!
+  \************************************************************************************************************************************************************************************************************************************/
+.Dropdown_dropdownWrapper__WUU4T {
+  flex: 1;
+  position: relative;
+}
+
+.Dropdown_dropdown__Rc0eW {
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 34px;
+  padding: 0 14px;
+  white-space: nowrap;
+  border: 1px solid #141417;
+  cursor: pointer;
+  min-width: 0;
+  background-color: #29292E;
+  position: relative;
+  gap: 8px;
+}
+.Dropdown_dropdown__Rc0eW .Dropdown_chevronArrow__eyzmD {
+  transition: 0.2s ease-in-out;
+}
+.Dropdown_open__tkV0c .Dropdown_dropdown__Rc0eW .Dropdown_chevronArrow__eyzmD {
+  transform: rotate(180deg);
+}
+.Dropdown_dropdown__Rc0eW.Dropdown_transparent__JTvtS {
+  padding: 0;
+  background-color: transparent;
+  border: none;
+}
+.Dropdown_dropdown__Rc0eW.Dropdown_transparent__JTvtS .Dropdown_chevronArrow__eyzmD {
+  right: 0;
+}
+
+.Dropdown_label__vwIae {
+  margin-bottom: 3px;
+  margin-left: 8px;
+  color: #a1a1a1;
+  display: block;
+}
+
+.Dropdown_placeholder__WWqjK {
+  user-select: none;
+}
+
+.Dropdown_itemsContainer__FuLoD {
+  position: absolute;
+  margin-top: 5px;
+  border-radius: 8px;
+  background-color: #222227;
+  border: 1px solid #29292E;
+  overflow: hidden;
+  min-height: 68px;
+  min-width: 150px;
+  max-width: 400px;
+  z-index: 9999;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.6);
+  width: 100%;
+  padding: 15px;
+}
+
+.Dropdown_dark__froLS {
+  border: 1px solid #29292E;
+  background-color: #141417;
+}
 /*!***********************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/layout/Topbar/Topbar.scss ***!
   \***********************************************************************************************************************************************************************************************************************/
@@ -454,308 +523,6 @@
   width: 30px;
   height: 30px;
 }
-/*!******************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Form/Input/Input.scss ***!
-  \******************************************************************************************************************************************************************************************************************************/
-.Input_input__nFkS9 {
-  position: relative;
-  width: 100%;
-  flex: 1;
-}
-
-.Input_label__Z2x6C {
-  margin-bottom: 3px;
-  margin-left: 8px;
-  color: #a1a1a1;
-  display: block;
-}
-
-.Input_inputWrapper__IuVx8 {
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  height: 34px;
-  padding: 0 8px;
-  border: 1px solid #29292E;
-  position: relative;
-  overflow: hidden;
-  background-color: #141417;
-  width: 100%;
-  flex: 1;
-}
-.Input_inputWrapper__IuVx8 input {
-  width: 100%;
-  height: 100%;
-  background-color: transparent !important;
-  border: none !important;
-  outline: none !important;
-  color: #fff;
-}
-/*!**************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Form/SelectBox/SelectBox.scss ***!
-  \**************************************************************************************************************************************************************************************************************************************/
-.SelectBox_selectBoxWrapper__RgD0Z {
-  flex: 1;
-  position: relative;
-}
-
-.SelectBox_selectBox__fQomE {
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 34px;
-  padding: 0 14px;
-  white-space: nowrap;
-  border: 1px solid #141417;
-  cursor: pointer;
-  min-width: 0;
-  background-color: #29292E;
-  position: relative;
-  gap: 8px;
-}
-.SelectBox_selectBox__fQomE .SelectBox_chevronArrow__HDVWX {
-  transition: 0.2s ease-in-out;
-}
-.SelectBox_open__f3beT .SelectBox_selectBox__fQomE .SelectBox_chevronArrow__HDVWX {
-  transform: rotate(180deg);
-}
-.SelectBox_selectBox__fQomE.SelectBox_transparent__ndGUr {
-  padding: 0;
-  background-color: transparent;
-  border: none;
-}
-.SelectBox_selectBox__fQomE.SelectBox_transparent__ndGUr .SelectBox_chevronArrow__HDVWX {
-  right: 0;
-}
-
-.SelectBox_label__k4D1H {
-  margin-bottom: 3px;
-  margin-left: 8px;
-  color: #a1a1a1;
-  display: block;
-}
-
-.SelectBox_itemsContainer__XhSab {
-  position: absolute;
-  margin-top: 5px;
-  border-radius: 8px;
-  background-color: #222227;
-  border: 1px solid #29292E;
-  overflow: hidden;
-  min-height: 68px;
-  min-width: 200px;
-  max-width: 400px;
-  z-index: 9999;
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.6);
-  width: 100%;
-  padding: 20px;
-}
-/*!*************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/layout/Content/Scrollbar/Scrollbar.scss ***!
-  \*************************************************************************************************************************************************************************************************************************************/
-.Scrollbar_scrollbar__BNjtG {
-  margin: 15px 2px 15px 2px;
-  border-radius: 4px;
-  width: 10px;
-  flex: none;
-  position: relative;
-  overflow: hidden;
-}
-@media (max-width: 992px) {
-  .Scrollbar_scrollbar__BNjtG {
-    display: none;
-  }
-}
-.Scrollbar_scrollbar__BNjtG .Scrollbar_thumb__PYWQO {
-  background-color: #ce8f3e;
-  border-radius: 3px;
-  width: 100%;
-  position: absolute;
-}
-/*!**************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/Events/EventsView.scss ***!
-  \**************************************************************************************************************************************************************************************************************************/
-.EventsView_eventsView__xZBdE {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.EventsView_filters__sQnRI {
-  padding: 20px;
-  width: 100%;
-  flex: none;
-  display: flex;
-  gap: 20px;
-}
-
-.EventsView_containerWrapper__jZuPk {
-  min-height: 0;
-  flex: 1;
-  overflow: auto;
-}
-.EventsView_containerWrapper__jZuPk::-webkit-scrollbar {
-  display: none;
-}
-
-.EventsView_eventTilesContainer__t4uoR {
-  display: grid;
-  gap: 20px;
-  padding: 0 20px 20px 20px;
-  grid-template-columns: repeat(4, 1fr);
-  transition: padding 0.2s, gap 0.2s;
-}
-@media (max-width: 576px) {
-  .EventsView_eventTilesContainer__t4uoR {
-    grid-template-columns: 1fr;
-    padding: 0;
-    gap: 15px;
-  }
-}
-@media (min-width: 577px) and (max-width: 992px) {
-  .EventsView_eventTilesContainer__t4uoR {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (min-width: 993px) and (max-width: 1200px) {
-  .EventsView_eventTilesContainer__t4uoR {
-    grid-template-columns: 1fr;
-  }
-}
-@media (min-width: 1201px) and (max-width: 1400px) {
-  .EventsView_eventTilesContainer__t4uoR {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (min-width: 1401px) and (max-width: 1600px) {
-  .EventsView_eventTilesContainer__t4uoR {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-/*!*************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/Events/EventTile.scss ***!
-  \*************************************************************************************************************************************************************************************************************************/
-@charset "UTF-8";
-.EventTile_eventTile__lIMZH {
-  position: relative;
-  min-width: 0;
-  /* POD ŻADNYM POZOREM NIE USUWAĆ TEJ LINII !!! */
-  cursor: pointer;
-}
-.EventTile_eventTile__lIMZH:hover .EventTile_tile__B_5Ul {
-  background-color: #29292e;
-}
-.EventTile_eventTile__lIMZH:hover .EventTile_border__ZbEgf {
-  opacity: 0.5;
-}
-.EventTile_eventTile__lIMZH:hover .EventTile_imageWrapper__cWQ7Y {
-  filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.7));
-}
-.EventTile_eventTile__lIMZH:hover .EventTile_imageWrapper__cWQ7Y .EventTile_image__C_uhR {
-  transform: scale(1.07);
-}
-.EventTile_eventTile__lIMZH .EventTile_border__ZbEgf {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-color: #29292e;
-  z-index: 1;
-  opacity: 0.15;
-  border-radius: 8px;
-  transition: opacity 0.2s;
-}
-.EventTile_eventTile__lIMZH .EventTile_tile__B_5Ul {
-  position: relative;
-  border-radius: 7px;
-  overflow: hidden;
-  margin: 1px;
-  z-index: 2;
-  padding: 10px;
-  background-color: #18181c;
-  transition: background-color 0.2s;
-  opacity: 0.85;
-}
-.EventTile_eventTile__lIMZH .EventTile_icon__Or7KI {
-  position: absolute;
-  z-index: 3;
-  top: -2px;
-  left: 20px;
-  height: 36px;
-  width: 31px;
-  border: 1px solid #000;
-  border-top: none;
-  border-bottom-left-radius: 17px;
-  border-bottom-right-radius: 17px;
-  border-top-left-radius: 4px;
-  padding: 10px 5px 5px 5px;
-  filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.4));
-}
-.EventTile_eventTile__lIMZH .EventTile_icon__Or7KI svg {
-  fill: #000;
-  width: 100%;
-  height: auto;
-}
-.EventTile_eventTile__lIMZH .EventTile_imageWrapper__cWQ7Y {
-  border-radius: 8px;
-  height: 180px;
-  width: 100%;
-  overflow: hidden;
-  margin-bottom: 10px;
-  transition: 0.2s;
-}
-.EventTile_eventTile__lIMZH .EventTile_image__C_uhR {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: 0.2s;
-}
-.EventTile_eventTile__lIMZH .EventTile_detailsRow__OsKXy {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-width: 0;
-  gap: 10px;
-}
-.EventTile_eventTile__lIMZH .EventTile_locationName__k5oB4 {
-  font-weight: 500;
-  font-size: 14px;
-}
-.EventTile_eventTile__lIMZH .EventTile_address__x8wPk {
-  color: gray;
-}
-.EventTile_eventTile__lIMZH .EventTile_locationName__k5oB4,
-.EventTile_eventTile__lIMZH .EventTile_address__x8wPk {
-  flex: 1;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
-.EventTile_eventTile__lIMZH .EventTile_price__g4GKz {
-  font-weight: 500;
-  font-size: 14px;
-}
-.EventTile_eventTile__lIMZH .EventTile_date__oiwCO {
-  color: gray;
-}
-.EventTile_eventTile__lIMZH .EventTile_divider__BLTA5 {
-  height: 1px;
-  background-color: #353538;
-  margin: 10px 0;
-}
-.EventTile_eventTile__lIMZH .EventTile_busyBar__YcRW1 {
-  height: 8px;
-  border-radius: 4px;
-  flex-grow: 1;
-  background-color: #353538;
-  max-width: 130px;
-  overflow: hidden;
-}
-.EventTile_eventTile__lIMZH .EventTile_busyBar__YcRW1 .EventTile_innerBar__EiWn0 {
-  border-radius: 4px;
-  height: 100%;
-  background-color: #7ab661;
-}
 /*!*************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/ProgressBar/ProgressBar.scss ***!
   \*************************************************************************************************************************************************************************************************************************************/
@@ -770,6 +537,12 @@
   border-radius: 4px;
   height: 100%;
   background-color: #7ab661;
+}
+/*!***********************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/StackPanel/StackPanel.scss ***!
+  \***********************************************************************************************************************************************************************************************************************************/
+.StackPanel_stackPanel__u6xJj {
+  display: flex;
 }
 /*!***************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/SportFacilities/SportFacilityDetails/Calendar/Calendar.scss ***!
@@ -1176,6 +949,65 @@
   font-weight: bold;
   padding-left: 25px;
 }
+/*!*************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/layout/Content/Scrollbar/Scrollbar.scss ***!
+  \*************************************************************************************************************************************************************************************************************************************/
+.Scrollbar_scrollbar__BNjtG {
+  margin: 15px 2px 15px 2px;
+  border-radius: 4px;
+  width: 10px;
+  flex: none;
+  position: relative;
+  overflow: hidden;
+}
+@media (max-width: 992px) {
+  .Scrollbar_scrollbar__BNjtG {
+    display: none;
+  }
+}
+.Scrollbar_scrollbar__BNjtG .Scrollbar_thumb__PYWQO {
+  background-color: #ce8f3e;
+  border-radius: 3px;
+  width: 100%;
+  position: absolute;
+}
+/*!******************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Form/Input/Input.scss ***!
+  \******************************************************************************************************************************************************************************************************************************/
+.Input_input__nFkS9 {
+  position: relative;
+  width: 100%;
+  flex: 1;
+}
+
+.Input_label__Z2x6C {
+  margin-bottom: 3px;
+  margin-left: 8px;
+  color: #a1a1a1;
+  display: block;
+}
+
+.Input_inputWrapper__IuVx8 {
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 8px;
+  border: 1px solid #29292E;
+  position: relative;
+  overflow: hidden;
+  background-color: #141417;
+  width: 100%;
+  flex: 1;
+}
+.Input_inputWrapper__IuVx8 input {
+  width: 100%;
+  height: 100%;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  color: #fff;
+}
 /*!*************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Modal/Modal.scss ***!
   \*************************************************************************************************************************************************************************************************************************/
@@ -1344,6 +1176,276 @@
     right: 20px;
   }
 }
+/*!*****************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Section/Section.scss ***!
+  \*****************************************************************************************************************************************************************************************************************************/
+.Section_sectionTitle__xBaYI {
+  width: 100%;
+  padding-bottom: 10px;
+}
+/*!*********************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Separator/Separator.scss ***!
+  \*********************************************************************************************************************************************************************************************************************************/
+.Separator_separator__x7oHR {
+  width: 100%;
+  height: 1px;
+  background-color: #141417;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+/*!******************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/View/View.scss ***!
+  \******************************************************************************************************************************************************************************************************************/
+.View_view___zuqU {
+  padding: 20px;
+  height: 100%;
+  width: 100%;
+}
+@media (max-width: 576px) {
+  .View_view___zuqU {
+    padding-top: 0;
+  }
+}
+.View_view___zuqU::-webkit-scrollbar {
+  display: none;
+}
+
+.View_grayPane__oA6Xd {
+  width: 100%;
+  height: 100%;
+  background-color: #29292e;
+  border-radius: 8px;
+  border: 1px solid #141417;
+  padding: 20px;
+  overflow: auto;
+}
+.View_grayPane__oA6Xd::-webkit-scrollbar {
+  display: none;
+}
+
+.View_header__TeHwp {
+  flex: none;
+  border-bottom: 1px solid #4c4c52;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+/*!*******************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/Events/CreateEventView.scss ***!
+  \*******************************************************************************************************************************************************************************************************************************/
+.CreateEventView_locationSection__Ldd23 {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
+}
+@media (max-width: 767px) {
+  .CreateEventView_locationSection__Ldd23 {
+    grid-template-columns: 1fr;
+  }
+  .CreateEventView_locationSection__Ldd23 > * {
+    grid-column: initial !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 992px) {
+  .CreateEventView_locationSection__Ldd23 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (min-width: 993px) and (max-width: 1200px) {
+  .CreateEventView_locationSection__Ldd23 {
+    grid-template-columns: 1fr;
+  }
+  .CreateEventView_locationSection__Ldd23 > * {
+    grid-column: initial !important;
+  }
+}
+@media (min-width: 1201px) and (max-width: 1400px) {
+  .CreateEventView_locationSection__Ldd23 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+/*!*************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/Events/EventsView/EventsView.scss ***!
+  \*************************************************************************************************************************************************************************************************************************************/
+.EventsView_eventsView__oHfEP {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.EventsView_filters__BZvQI {
+  padding: 20px;
+  width: 100%;
+  flex: none;
+  display: flex;
+  gap: 20px;
+}
+
+.EventsView_containerWrapper__AA6EY {
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+}
+.EventsView_containerWrapper__AA6EY::-webkit-scrollbar {
+  display: none;
+}
+
+.EventsView_eventTilesContainer__fISOG {
+  display: grid;
+  gap: 20px;
+  padding: 0 20px 20px 20px;
+  grid-template-columns: repeat(4, 1fr);
+  transition: padding 0.2s, gap 0.2s;
+}
+@media (max-width: 576px) {
+  .EventsView_eventTilesContainer__fISOG {
+    grid-template-columns: 1fr;
+    padding: 0;
+    gap: 15px;
+  }
+}
+@media (min-width: 577px) and (max-width: 992px) {
+  .EventsView_eventTilesContainer__fISOG {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 993px) and (max-width: 1200px) {
+  .EventsView_eventTilesContainer__fISOG {
+    grid-template-columns: 1fr;
+  }
+}
+@media (min-width: 1201px) and (max-width: 1400px) {
+  .EventsView_eventTilesContainer__fISOG {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1401px) and (max-width: 1600px) {
+  .EventsView_eventTilesContainer__fISOG {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+/*!************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/Events/EventsView/EventTile.scss ***!
+  \************************************************************************************************************************************************************************************************************************************/
+@charset "UTF-8";
+.EventTile_eventTile__eBys7 {
+  position: relative;
+  min-width: 0;
+  /* POD ŻADNYM POZOREM NIE USUWAĆ TEJ LINII !!! */
+  cursor: pointer;
+}
+.EventTile_eventTile__eBys7:hover .EventTile_tile__jn2bj {
+  background-color: #29292e;
+}
+.EventTile_eventTile__eBys7:hover .EventTile_border__vZtCT {
+  opacity: 0.5;
+}
+.EventTile_eventTile__eBys7:hover .EventTile_imageWrapper__Czl1I {
+  filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.7));
+}
+.EventTile_eventTile__eBys7:hover .EventTile_imageWrapper__Czl1I .EventTile_image__zRM0t {
+  transform: scale(1.07);
+}
+.EventTile_eventTile__eBys7 .EventTile_border__vZtCT {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #29292e;
+  z-index: 1;
+  opacity: 0.15;
+  border-radius: 8px;
+  transition: opacity 0.2s;
+}
+.EventTile_eventTile__eBys7 .EventTile_tile__jn2bj {
+  position: relative;
+  border-radius: 7px;
+  overflow: hidden;
+  margin: 1px;
+  z-index: 2;
+  padding: 10px;
+  background-color: #18181c;
+  transition: background-color 0.2s;
+  opacity: 0.85;
+}
+.EventTile_eventTile__eBys7 .EventTile_icon__f1G0w {
+  position: absolute;
+  z-index: 3;
+  top: -2px;
+  left: 20px;
+  height: 36px;
+  width: 31px;
+  border: 1px solid #000;
+  border-top: none;
+  border-bottom-left-radius: 17px;
+  border-bottom-right-radius: 17px;
+  border-top-left-radius: 4px;
+  padding: 10px 5px 5px 5px;
+  filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.4));
+}
+.EventTile_eventTile__eBys7 .EventTile_icon__f1G0w svg {
+  fill: #000;
+  width: 100%;
+  height: auto;
+}
+.EventTile_eventTile__eBys7 .EventTile_imageWrapper__Czl1I {
+  border-radius: 8px;
+  height: 180px;
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 10px;
+  transition: 0.2s;
+}
+.EventTile_eventTile__eBys7 .EventTile_image__zRM0t {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: 0.2s;
+}
+.EventTile_eventTile__eBys7 .EventTile_detailsRow__p1drI {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  gap: 10px;
+}
+.EventTile_eventTile__eBys7 .EventTile_locationName__ptlNr {
+  font-weight: 500;
+  font-size: 14px;
+}
+.EventTile_eventTile__eBys7 .EventTile_address__LDF5C {
+  color: gray;
+}
+.EventTile_eventTile__eBys7 .EventTile_locationName__ptlNr,
+.EventTile_eventTile__eBys7 .EventTile_address__LDF5C {
+  flex: 1;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.EventTile_eventTile__eBys7 .EventTile_price__fMrZZ {
+  font-weight: 500;
+  font-size: 14px;
+}
+.EventTile_eventTile__eBys7 .EventTile_date__slLFi {
+  color: gray;
+}
+.EventTile_eventTile__eBys7 .EventTile_divider__MvAzi {
+  height: 1px;
+  background-color: #353538;
+  margin: 10px 0;
+}
+.EventTile_eventTile__eBys7 .EventTile_busyBar__R0Hdl {
+  height: 8px;
+  border-radius: 4px;
+  flex-grow: 1;
+  background-color: #353538;
+  max-width: 130px;
+  overflow: hidden;
+}
+.EventTile_eventTile__eBys7 .EventTile_busyBar__R0Hdl .EventTile_innerBar__xMXy2 {
+  border-radius: 4px;
+  height: 100%;
+  background-color: #7ab661;
+}
 /*!***********************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/main.scss (1) ***!
   \***********************************************************************************************************************************************************************************************************/
@@ -1395,11 +1497,19 @@ button:focus {
   outline: none;
 }
 
-h1 {
-  font-size: 19px;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: bold;
   color: #fff !important;
   margin: 0;
+}
+
+h1 {
+  font-size: 19px;
 }
 
 #app {

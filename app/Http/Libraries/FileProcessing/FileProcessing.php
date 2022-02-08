@@ -28,10 +28,11 @@ class FileProcessing
      * @param bool $uploadedByForm flaga określająca czy plik został wgrany poprzez formularz
      * @param string|null $filename nazwa pliku pod jaką ma zostać zapisany plik
      * @param string|null $fileExtension rozszerzenie zapisanego pliku
+     * @param mixed $partner encja partnera
      * 
      * @return Agreement|Icon|Image|ReportFile
      */
-    public static function saveFile(string $entity, string $filePath, string $folder, bool $originalSource, bool $uploadedByForm, ?string $filename = null, ?string $fileExtension = null) {
+    public static function saveFile(string $entity, string $filePath, string $folder, bool $originalSource, bool $uploadedByForm, ?string $filename = null, ?string $fileExtension = null, $partner = null) {
 
         if ($fileExtension === null) {
 
@@ -100,6 +101,17 @@ class FileProcessing
                 $image->save();
                 $file = $image;
                 break;
+            case 'logo':
+                /** @var Image $image */
+                $image = new Image;
+                $image->imageable_type = 'App\Models\Partner';
+                $image->imageable_id = $partner->id;
+                $image->filename = $filename;
+                $image->creator_id = $user->id;
+                $image->visible_at = now();
+                $image->save();
+                $file = $image;
+                break;
         }
 
         return $file;
@@ -121,10 +133,11 @@ class FileProcessing
      * Proces zapisania zdjęcia profilowego na serwerze
      * 
      * @param string $avatarPath ścieżka do zdjęcia które ma zostać zapisane
+     * @param mixed $partner encja partnera
      * 
      * @return Image
      */
-    public static function saveLogo(string $avatarPath): Image {
-        return self::saveFile('logo', $avatarPath, 'partner-logos', false, true, null, 'jpeg');
+    public static function saveLogo(string $avatarPath, $partner): Image {
+        return self::saveFile('logo', $avatarPath, 'partner-pictures', false, true, null, 'jpeg', $partner);
     }
 }
