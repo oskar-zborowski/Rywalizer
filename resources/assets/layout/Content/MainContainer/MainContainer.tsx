@@ -1,7 +1,7 @@
 import { GrayButton, OrangeButton } from '@/components/Form/Button/Button';
 import userStore, { UserStore } from '@/store/UserStore';
-import EventDetails from '@/views/Events/EventDetails/EventDetails';
-import SportFacilityDetails from '@/views/SportFacilities/SportFacilityDetails/SportFacilityDetails';
+import EventDetails from '@/views/Events/EventDetailsView/EventDetailsView';
+import SportFacilityDetails from '@/views/Facilities/FacilityDetailsView/SportFacilityDetails';
 import UserView from '@/views/User/UserView';
 import { observer } from 'mobx-react';
 import React, { Fragment, useState } from 'react';
@@ -70,9 +70,8 @@ const MainContainer: React.FC = (props) => {
                     } />
                     <Route path="/konto" element={<UserView/>} />
                     <Route path="/obiekty/1" element={<SportFacilityDetails />} />
-                    <Route path="/ogloszenia/1" element={<EventDetails />} />
                     <Route path="/ogloszenia/dodaj" element={<CreateEventView />} />
-                    <Route path="/test" element={<EventDetails />} />
+                    <Route path="/ogloszenia/:id" element={<EventDetails />} />
                 </Routes>
             </main>
             <Scrollbar />

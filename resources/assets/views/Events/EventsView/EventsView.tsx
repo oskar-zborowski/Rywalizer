@@ -1,36 +1,15 @@
+import getEvents, { IEvent } from '@/api/getEvents';
 import Input from '@/components/Form/Input/Input';
 import Selectbox, { IOption } from '@/components/Form/SelectBox/SelectBox';
 import useScrollbar from '@/layout/Content/Scrollbar/Scrollbar';
-import faker from 'faker';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './EventsView.scss';
-import EventTile, { EventTileProps } from './EventTile';
-
-faker.locale = 'pl';
-const fakeData: EventTileProps[] = [];
-
-const tilesCount = Math.trunc(Math.random() * 40) + 5;
-
-for (let i = 0; i < tilesCount; i++) {
-    const availableTickets = Math.round(Math.random() * 100) + 10;
-    const soldTickets = Math.round(Math.random() * availableTickets);
-
-    fakeData.push({
-        availableTickets,
-        soldTickets,
-        price: 3500,
-        address: faker.address.cityName(),
-        locationName: faker.address.cityName(),
-        imageSrc: faker.image.image(),
-        date: new Date(),
-        color: ['#FFD653', '#FF5E44', '#5CD3E6', '#7AB661'][Math.round(Math.random() * 3)]
-    });
-}
+import EventTile from './EventTile';
 
 const EventsView: React.FC = () => {
     const { containerRef } = useScrollbar();
-
     const [queryString, setQueryString] = useState('');
+    const [events, setEvents] = useState<IEvent[]>([]);
 
     const options: IOption<number>[] = [
         { text: 'Poznań', value: 1 },
@@ -38,6 +17,10 @@ const EventsView: React.FC = () => {
         { text: 'Gdańsk', value: 1 },
         { text: 'Luboń', value: 1 }
     ];
+
+    useEffect(() => {
+        getEvents().then(setEvents);
+    }, []);
 
     return (
         <div className={styles.eventsView}>
@@ -66,7 +49,7 @@ const EventsView: React.FC = () => {
             </div>
             <div className={styles.containerWrapper} ref={containerRef}>
                 <div className={styles.eventTilesContainer}>
-                    {fakeData.map((d, i) => <EventTile {...d} key={i} />)}
+                    {events.map((event, i) => <EventTile {...event} key={i} />)}
                 </div>
             </div>
         </div>
