@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use App\Http\Traits\Encryptable;
+
 class Facility extends BaseModel
 {
+    use Encryptable;
+
     protected $fillable = [
         'name',
         'street',
@@ -88,6 +92,10 @@ class Facility extends BaseModel
         'visible_at' => 'string',
         'created_at' => 'string',
         'updated_at' => 'string'
+    ];
+
+    protected $encryptable = [
+        'address_coordinates' => 30
     ];
 
     public function city() {

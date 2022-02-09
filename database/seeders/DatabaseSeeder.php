@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\ImageAssignment;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -31,7 +32,9 @@ class DatabaseSeeder extends Seeder
             FacilitySeeder::class,
             AnnouncementSeeder::class,
             AnnouncementPaymentSeeder::class,
-            AnnouncementSeatSeeder::class
+            AnnouncementSeatSeeder::class,
+            ImageSeeder::class,
+            ImageAssignmentSeeder::class
         ]);
 
         // \App\Models\User::factory(10)->create();

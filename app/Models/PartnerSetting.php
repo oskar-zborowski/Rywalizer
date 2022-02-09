@@ -195,7 +195,7 @@ class PartnerSetting extends BaseModel
 
         return [
             'partner' => [
-                'id' => $partner->id,
+                'id' => (int) $partner->id,
                 'name' => $name,
                 'logos' => $images,
                 'contact_email' => $email,
@@ -204,13 +204,13 @@ class PartnerSetting extends BaseModel
                 'instagram' => $instagram,
                 'website' => $website,
                 'verified' => (bool) $partner->verified_at,
-                'avarage_rating' => $partner->avarage_rating,
-                'rating_counter' => $partner->rating_counter,
+                'avarage_rating' => (float) $partner->avarage_rating,
+                'rating_counter' => (int) $partner->rating_counter,
             ],
             'partnerSetting' => [
-                'id' => $this->id,
+                'id' => (int) $this->id,
                 'partner_type' => [
-                    'id' => $this->partnerType()->first()->id,
+                    'id' => (int) $this->partnerType()->first()->id,
                     'name' => $this->partnerType()->first()->name
                 ]
             ]
@@ -229,7 +229,7 @@ class PartnerSetting extends BaseModel
 
         return [
             'partner' => [
-                'id' => $partner->id,
+                'id' => (int) $partner->id,
                 'business_name' => $partner->business_name,
                 'logos' => $partner->getLogos(true),
                 'contact_email' => $partner->contact_email,
@@ -240,37 +240,37 @@ class PartnerSetting extends BaseModel
                 'verified' => (bool) $partner->verified_at
             ],
             'partnerSetting' => [
-                'id' => $this->id,
+                'id' => (int) $this->id,
                 'partner_type' => [
                     'id' => $this->partnerType()->first()->id,
                     'name' => $this->partnerType()->first()->name
                 ],
                 'visible_name' => [
-                    'id' => $this->visibleName()->first()->id,
+                    'id' => (int) $this->visibleName()->first()->id,
                     'name' => $this->visibleName()->first()->name
                 ],
                 'visible_image' => [
-                    'id' => $this->visibleImage()->first()->id,
+                    'id' => (int) $this->visibleImage()->first()->id,
                     'name' => $this->visibleImage()->first()->name
                 ],
                 'visible_email' => [
-                    'id' => $this->visibleEmail()->first()->id,
+                    'id' => (int) $this->visibleEmail()->first()->id,
                     'name' => $this->visibleEmail()->first()->name
                 ],
                 'visible_telephone' => [
-                    'id' => $this->visibleTelephone()->first()->id,
+                    'id' => (int) $this->visibleTelephone()->first()->id,
                     'name' => $this->visibleTelephone()->first()->name
                 ],
                 'visible_facebook' => [
-                    'id' => $this->visibleFacebook()->first()->id,
+                    'id' => (int) $this->visibleFacebook()->first()->id,
                     'name' => $this->visibleFacebook()->first()->name
                 ],
                 'visible_instagram' => [
-                    'id' => $this->visibleInstagram()->first()->id,
+                    'id' => (int) $this->visibleInstagram()->first()->id,
                     'name' => $this->visibleInstagram()->first()->name
                 ],
                 'visible_website' => [
-                    'id' => $this->visibleWebsite()->first()->id,
+                    'id' => (int) $this->visibleWebsite()->first()->id,
                     'name' => $this->visibleWebsite()->first()->name
                 ]
             ]

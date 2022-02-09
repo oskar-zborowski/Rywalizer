@@ -186,7 +186,7 @@ class Announcement extends BaseModel
             $image = $announcementImage->image()->first();
 
             $result[] = [
-                'id' => $announcementImage->id,
+                'id' => (int) $announcementImage->id,
                 'filename' => $image->filename
             ];
         }
@@ -275,24 +275,24 @@ class Announcement extends BaseModel
         $announcementParticipants = [];
 
         /** @var AnnouncementSeat $aS */
-        foreach ($this->announcementSeats() as $aS) {
+        foreach ($this->announcementSeats()->get() as $aS) {
             $announcementSeats[] = [
-                'id' => $aS->id,
+                'id' => (int) $aS->id,
                 'sports_position' => [
-                    'id' => $aS->sportsPosition()->first()->id,
+                    'id' => (int) $aS->sportsPosition()->first()->id,
                     'name' => $aS->sportsPosition()->first()->name,
                 ],
-                'occupied_seats_counter' => $aS->occupied_seats_counter,
-                'maximum_seats_number' => $aS->maximum_seats_number,
-                'is_active' => $aS->is_active
+                'occupied_seats_counter' => (int) $aS->occupied_seats_counter,
+                'maximum_seats_number' => (int) $aS->maximum_seats_number,
+                'is_active' => (bool) $aS->is_active
             ];
 
             /** @var AnnouncementParticipant $aP */
-            foreach ($aS->announcementParticipants() as $aP) {
+            foreach ($aS->announcementParticipants()->get() as $aP) {
                 /** @var User $user */
                 $user = $aP->user()->first();
                 $announcementParticipants[] = [
-                    'id' => $user->id,
+                    'id' => (int) $user->id,
                     'name' => $user->first_name . ' ' . $user->last_name,
                     'gender' => $user->getGender(),
                     'avatar' => $user->getAvatars()
@@ -301,72 +301,74 @@ class Announcement extends BaseModel
         }
 
         /** @var AnnouncementPayment $aP */
-        foreach ($this->announcementPayments() as $aP) {
+        foreach ($this->announcementPayments()->get() as $aP) {
             $announcementPayments[] = [
-                'id' => $aP->id,
+                'id' => (int) $aP->id,
                 'payment_type' => [
-                    'id' => $aP->paymentType()->first()->id,
+                    'id' => (int) $aP->paymentType()->first()->id,
                     'name' => $aP->paymentType()->first()->name,
+                    'description' => $aP->paymentType()->first()->description_simple
                 ],
-                'is_active' => $aP->is_active
+                'is_active' => (bool) $aP->is_active
             ];
         }
 
         return [
             'partner' => $partner->getPartner('getBasicInformation', true),
             'announcement' => [
-                'id' => $this->id,
+                'id' => (int) $this->id,
                 'sport' => [
-                    'id' => $this->sport()->first()->id,
+                    'id' => (int) $this->sport()->first()->id,
                     'name' => $this->sport()->first()->name,
                 ],
                 'start_date' => $this->start_date,
                 'end_date' => $this->end_date,
-                'ticket_price' => $this->ticket_price,
+                'ticket_price' => (int) $this->ticket_price,
                 'game_variant' => [
-                    'id' => $this->gameVariant()->first()->id,
+                    'id' => (int) $this->gameVariant()->first()->id,
                     'name' => $this->gameVariant()->first()->name,
                 ],
                 'minimum_skill_level' => $this->minimumSkillLevel()->first() ? [
-                    'id' => $this->minimumSkillLevel()->first()->id,
+                    'id' => (int) $this->minimumSkillLevel()->first()->id,
                     'name' => $this->minimumSkillLevel()->first()->name,
                 ] : null,
                 'gender' => $this->gender()->first() ? [
-                    'id' => $this->gender()->first()->id,
+                    'id' => (int) $this->gender()->first()->id,
                     'name' => $this->gender()->first()->name,
                 ] : null,
                 'age_category' => $this->ageCategory()->first() ? [
-                    'id' => $this->ageCategory()->first()->id,
+                    'id' => (int) $this->ageCategory()->first()->id,
                     'name' => $this->ageCategory()->first()->name,
                 ] : null,
-                'minimal_age' => $this->minimal_age,
-                'maximum_age' => $this->maximum_age,
+                'minimal_age' => (int) $this->minimal_age,
+                'maximum_age' => (int) $this->maximum_age,
                 'description' => $this->description,
-                'participants_counter' => $this->participants_counter,
-                'maximum_participants_number' => $this->maximum_participants_number,
+                'participants_counter' => (int) $this->participants_counter,
+                'maximum_participants_number' => (int) $this->maximum_participants_number,
                 'announcement_type' => $this->announcementType()->first() ? [
-                    'id' => $this->announcementType()->first()->id,
+                    'id' => (int) $this->announcementType()->first()->id,
                     'name' => $this->announcementType()->first()->name,
                 ] : null,
                 'announcement_status' => $this->announcementStatus()->first() ? [
-                    'id' => $this->announcementStatus()->first()->id,
+                    'id' => (int) $this->announcementStatus()->first()->id,
                     'name' => $this->announcementStatus()->first()->name,
                 ] : null,
-                'is_automatically_approved' => $this->is_automatically_approved,
-                'is_public' => $this->is_public,
-                'image' => $this->getImage()
+                'is_automatically_approved' => (bool) $this->is_automatically_approved,
+                'is_public' => (bool) $this->is_public,
+                'image' => $this->getImage(),
+                'announcement_seats' => $announcementSeats,
+                'announcement_payments' => $announcementPayments,
+                'announcement_participants' => $announcementParticipants,
             ],
-            'announcement_seats' => $announcementSeats,
-            'announcement_payments' => $announcementPayments,
-            'announcement_participants' => $announcementParticipants,
             'facility' => $facility ? [
-                'id' => $facility->id,
+                'id' => (int) $facility->id,
                 'name' => $facility->name,
                 'street' => $facility->street,
                 'city' => [
-                    'id' => $facility->city()->first()->id,
+                    'id' => (int) $facility->city()->first()->id,
                     'name' => $facility->city()->first()->name,
                 ],
+                'address_coordinates' => $facility->address_coordinates
             ]: null
         ];
     }

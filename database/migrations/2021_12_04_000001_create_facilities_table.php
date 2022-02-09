@@ -18,7 +18,7 @@ class CreateFacilitiesTable extends Migration
             $table->string('street', 80)->nullable();
             $table->char('post_code', 5)->nullable();
             $table->unsignedMediumInteger('city_id')->nullable();
-            $table->point('address_coordinates')->nullable();
+            $table->char('address_coordinates', 28)->nullable()->comment('Struktura: 12.3456789;12.3456789'); // Kodowane natywnie
             $table->string('contact_email', 254)->nullable();
             $table->string('telephone', 24)->nullable();
             $table->string('facebook_profile', 255)->nullable();
