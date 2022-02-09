@@ -8,6 +8,7 @@ use App\Http\ErrorCodes\BaseErrorCode;
 use App\Http\Libraries\Encrypter\Encrypter;
 use App\Http\Libraries\Validation\Validation;
 use App\Http\Requests\AnnouncementRequest;
+use App\Http\Requests\UpdateAnnouncementRequest;
 use App\Http\Responses\JsonResponse;
 use App\Models\Announcement;
 use App\Models\AnnouncementPayment;
@@ -124,6 +125,8 @@ class AnnouncementController extends Controller
                 $announcementPayment->save();
             }
 
+            $announcement->getAnnouncement('getBasicInformation');
+
         } else {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
@@ -137,11 +140,11 @@ class AnnouncementController extends Controller
      * Edycja danych ogłoszenia
      * 
      * @param int $id id ogłoszenia
-     * @param AnnouncementRequest $request
+     * @param UpdateAnnouncementRequest $request
      * 
      * @return void
      */
-    public function updateAnnouncement($id, AnnouncementRequest $request): void {
+    public function updateAnnouncement($id, UpdateAnnouncementRequest $request): void {
 
         /** @var User $user */
         $user = Auth::user();
@@ -160,7 +163,7 @@ class AnnouncementController extends Controller
         }
 
         /** @var Announcement $announcement */
-        $announcement = Announcement::where('id', $id);
+        $announcement = Announcement::where('id', $id)->first();
 
         if ($partnerSetting->partner_type_id = 59 && $announcement->announcement_partner_id == $partnerSetting->id) {
 
@@ -183,12 +186,6 @@ class AnnouncementController extends Controller
                 $announcement->facility_id = $facility->id;
             }
 
-            $maximumParticipantsNumber = 0;
-
-            foreach ($request->sport_positions as $sP) {
-                $maximumParticipantsNumber += $sP->maximum_seats_number;
-            }
-
             $announcement->start_date = $request->start_date;
             $announcement->end_date = $request->end_date;
             $announcement->visible_at = $request->visible_at;
@@ -199,11 +196,13 @@ class AnnouncementController extends Controller
             $announcement->minimal_age = $request->minimal_age;
             $announcement->maximum_age = $request->maximum_age;
             $announcement->description = $request->description;
-            $announcement->announcement_status_id = 'cos tam';
+            $announcement->announcement_status_id = 85;
             $announcement->editor_id = $user->id;
             $announcement->is_automatically_approved = $request->is_automatically_approved;
             $announcement->is_public = $request->is_public;
             $announcement->save();
+
+            $announcement->getAnnouncement('getBasicInformation');
 
         } else {
             throw new ApiException(
@@ -323,5 +322,24 @@ class AnnouncementController extends Controller
                 'Photo does not exist.'
             );
         }
+    }
+
+    /**
+     * #### `GET` `/api/v1/announcements`
+     * Pobranie listy wydarzeń
+     * 
+     * @param Request $request
+     * 
+     * @return void
+     */
+    public function getAnnouncements(Request $request): void {
+        $paginationAttributes = $this->getPaginationAttributes($request);
+
+        /** @var Announcement $announcements */
+        $announcements = Announcement::where('visible_at', '<=', now())->where('start_date', '>', now())->filter()->paginate($paginationAttributes['perPage']);
+
+        $result = $this->preparePagination($announcements, 'getBasicInformation');
+
+        JsonResponse::sendSuccess($result['data'], $result['metadata']);
     }
 }

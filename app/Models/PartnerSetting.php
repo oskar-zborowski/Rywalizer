@@ -281,16 +281,18 @@ class PartnerSetting extends BaseModel
      * Zwrócenie informacji o partnerze
      * 
      * @param string $modelMethodName nazwa metody, która ma zostać dołączona jako wykaz zwróconych pól partnera, np. getPrivateInformation
-     * 
-     * @return void
      */
-    public function getPartner($modelMethodName): void {
+    public function getPartner($modelMethodName, $withReturn = false) {
 
         /** @var Partner $partner */
         $partner = $this->partner()->first();
 
         if (!$partner->deleted_at) {
-            JsonResponse::sendSuccess($this->$modelMethodName());
+            if ($withReturn) {
+                return $this->$modelMethodName();
+            } else {
+                JsonResponse::sendSuccess($this->$modelMethodName());
+            }
         } else {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),

@@ -70,6 +70,7 @@ Route::get('/v1/areas', [DefaultTypeController::class, 'getAreas'])->name('defau
 
 Route::get('/v1/partner/{id}', [PartnerController::class, 'getPartnerById'])->name('partner-getPartnerById');
 Route::get('/v1/announcement/{id}', [AnnouncementController::class, 'getAnnouncementById'])->name('announcement-getAnnouncementById');
+Route::get('/v1/announcements', [AnnouncementController::class, 'getAnnouncements'])->name('announcement-getAnnouncements');
 
 
 

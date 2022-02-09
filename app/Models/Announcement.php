@@ -265,7 +265,7 @@ class Announcement extends BaseModel
     public function getBasicInformation(): array {
 
         /** @var PartnerSetting $partner */
-        $partner = $this->announcementPartner()->fisrt();
+        $partner = $this->announcementPartner()->first();
 
         /** @var Facility $facility */
         $facility = $this->facility()->first();
@@ -313,7 +313,7 @@ class Announcement extends BaseModel
         }
 
         return [
-            'partner' => $partner->getPartner('getBasicInformation'),
+            'partner' => $partner->getPartner('getBasicInformation', true),
             'announcement' => [
                 'id' => $this->id,
                 'sport' => [
@@ -327,38 +327,39 @@ class Announcement extends BaseModel
                     'id' => $this->gameVariant()->first()->id,
                     'name' => $this->gameVariant()->first()->name,
                 ],
-                'minimum_skill_level' => [
+                'minimum_skill_level' => $this->minimumSkillLevel()->first() ? [
                     'id' => $this->minimumSkillLevel()->first()->id,
                     'name' => $this->minimumSkillLevel()->first()->name,
-                ],
-                'gender' => [
+                ] : null,
+                'gender' => $this->gender()->first() ? [
                     'id' => $this->gender()->first()->id,
                     'name' => $this->gender()->first()->name,
-                ],
-                'age_category' => [
+                ] : null,
+                'age_category' => $this->ageCategory()->first() ? [
                     'id' => $this->ageCategory()->first()->id,
                     'name' => $this->ageCategory()->first()->name,
-                ],
+                ] : null,
                 'minimal_age' => $this->minimal_age,
                 'maximum_age' => $this->maximum_age,
                 'description' => $this->description,
                 'participants_counter' => $this->participants_counter,
                 'maximum_participants_number' => $this->maximum_participants_number,
-                'announcement_type' => [
+                'announcement_type' => $this->announcementType()->first() ? [
                     'id' => $this->announcementType()->first()->id,
                     'name' => $this->announcementType()->first()->name,
-                ],
-                'announcement_status' => [
+                ] : null,
+                'announcement_status' => $this->announcementStatus()->first() ? [
                     'id' => $this->announcementStatus()->first()->id,
                     'name' => $this->announcementStatus()->first()->name,
-                ],
+                ] : null,
                 'is_automatically_approved' => $this->is_automatically_approved,
-                'is_public' => $this->is_public
+                'is_public' => $this->is_public,
+                'image' => $this->getImage()
             ],
             'announcement_seats' => $announcementSeats,
             'announcement_payments' => $announcementPayments,
             'announcement_participants' => $announcementParticipants,
-            'facility' => [
+            'facility' => $facility ? [
                 'id' => $facility->id,
                 'name' => $facility->name,
                 'street' => $facility->street,
@@ -366,7 +367,7 @@ class Announcement extends BaseModel
                     'id' => $facility->city()->first()->id,
                     'name' => $facility->city()->first()->name,
                 ],
-            ]
+            ]: null
         ];
     }
 
