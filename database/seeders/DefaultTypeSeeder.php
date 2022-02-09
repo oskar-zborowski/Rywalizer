@@ -470,7 +470,7 @@ class DefaultTypeSeeder extends Seeder
                 'name' => 'VOLLEYBALL',
                 'description_simple' => 'Siatkówka',
                 'icon_id' => null,
-                'color' => '#ABCDEF',
+                'color' => '#FFD653',
                 'is_active' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -480,7 +480,7 @@ class DefaultTypeSeeder extends Seeder
                 'name' => 'BEACH-VOLLEYBALL',
                 'description_simple' => 'Siatkówka Plażowa',
                 'icon_id' => null,
-                'color' => '#ABCDEF',
+                'color' => '#FFD653',
                 'is_active' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -490,7 +490,7 @@ class DefaultTypeSeeder extends Seeder
                 'name' => 'FOOTBALL',
                 'description_simple' => 'Piłka Nożna',
                 'icon_id' => null,
-                'color' => '#ABCDEF',
+                'color' => '#7AB661',
                 'is_active' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -500,7 +500,7 @@ class DefaultTypeSeeder extends Seeder
                 'name' => 'TENNIS',
                 'description_simple' => 'Tenis',
                 'icon_id' => null,
-                'color' => '#ABCDEF',
+                'color' => '#5CD3E6',
                 'is_active' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -510,7 +510,7 @@ class DefaultTypeSeeder extends Seeder
                 'name' => 'BASKETBALL',
                 'description_simple' => 'Koszykówka',
                 'icon_id' => null,
-                'color' => '#ABCDEF',
+                'color' => '#FF5E44',
                 'is_active' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -540,7 +540,7 @@ class DefaultTypeSeeder extends Seeder
                 'name' => 'TABLE-TENNIS',
                 'description_simple' => 'Tenis Stołowy',
                 'icon_id' => null,
-                'color' => '#ABCDEF',
+                'color' => '#5CD3E6',
                 'is_active' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -580,7 +580,7 @@ class DefaultTypeSeeder extends Seeder
                 'name' => 'FUTSAL',
                 'description_simple' => 'Futsal',
                 'icon_id' => null,
-                'color' => '#ABCDEF',
+                'color' => '#7AB661',
                 'is_active' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
