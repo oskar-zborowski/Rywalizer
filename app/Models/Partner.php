@@ -193,7 +193,7 @@ class Partner extends BaseModel
 
                 $result[] = [
                     'id' => $l->id,
-                    'filename' => $image->filename
+                    'filename' => '/storage/partner-pictures/' . $image->filename
                 ];
             }
 
@@ -208,7 +208,7 @@ class Partner extends BaseModel
 
                 $result[] = [
                     'id' => $logo->id,
-                    'filename' => $image->filename
+                    'filename' => '/storage/partner-pictures/' . $image->filename
                 ];
             }
         }

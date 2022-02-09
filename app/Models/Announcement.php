@@ -187,7 +187,7 @@ class Announcement extends BaseModel
 
             $result[] = [
                 'id' => (int) $announcementImage->id,
-                'filename' => $image->filename
+                'filename' => '/storage/partner-pictures/' . $image->filename
             ];
         }
 
@@ -313,6 +313,9 @@ class Announcement extends BaseModel
             ];
         }
 
+        $addressCoordinates = $facility->address_coordinates;
+        $addressCoordinates = explode(';', $addressCoordinates);
+
         return [
             'partner' => $partner->getPartner('getBasicInformation', true),
             'announcement' => [
@@ -368,7 +371,10 @@ class Announcement extends BaseModel
                     'id' => (int) $facility->city()->first()->id,
                     'name' => $facility->city()->first()->name,
                 ],
-                'address_coordinates' => $facility->address_coordinates
+                'address_coordinates' => [
+                    'lat' => $addressCoordinates ? $addressCoordinates[1] : null,
+                    'lng' => $addressCoordinates ? $addressCoordinates[0] : null
+                ]
             ]: null
         ];
     }

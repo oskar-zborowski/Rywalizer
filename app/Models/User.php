@@ -537,7 +537,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
                 $result[] = [
                     'id' => $a->id,
-                    'filename' => $image->filename
+                    'filename' => '/storage/user-pictures/' . $image->filename
                 ];
             }
 
@@ -552,7 +552,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
                 $result[] = [
                     'id' => $avatar->id,
-                    'filename' => $image->filename
+                    'filename' => '/storage/user-pictures/' . $image->filename
                 ];
             }
         }
@@ -597,6 +597,13 @@ class User extends Authenticatable implements MustVerifyEmail
      * @return array
      */
     public function getPrivateInformation(): array {
+
+        $addressCoordinates = $this->address_coordinates;
+
+        if ($addressCoordinates) {
+            $addressCoordinates = explode(';', $addressCoordinates);
+        }
+
         return [
             'user' => [
                 'id' => $this->id,
@@ -609,7 +616,10 @@ class User extends Authenticatable implements MustVerifyEmail
                 'gender' => $this->getGender(),
                 'role' => $this->getRole(),
                 'city' => $this->getCity(),
-                'address_coordinates' => $this->address_coordinates,
+                'address_coordinates' => [
+                    'lat' => $addressCoordinates ? $addressCoordinates[1] : null,
+                    'lng' => $addressCoordinates ? $addressCoordinates[0] : null
+                ],
                 'facebook_profile' => $this->facebook_profile,
                 'instagram_profile' => $this->instagram_profile,
                 'website' => $this->website,
