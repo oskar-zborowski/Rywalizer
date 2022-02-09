@@ -724,6 +724,166 @@ class DefaultTypeSeeder extends Seeder
                 'is_active' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'announcement-createAnnouncement',
+                'description_simple' => '',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'announcement-updateAnnouncement',
+                'description_simple' => '',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'announcement-getAnnouncementById',
+                'description_simple' => '',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'announcement-uploadPhoto',
+                'description_simple' => '',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'announcement-deletePhoto',
+                'description_simple' => '',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 15,
+                'name' => 'STANDARD',
+                'description_simple' => 'Podstawowy',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 15,
+                'name' => 'ADVANCED',
+                'description_simple' => 'Zaawansowany',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 16,
+                'name' => 'KID',
+                'description_simple' => 'Dzieci',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 16,
+                'name' => 'YOUTH',
+                'description_simple' => 'Młodzież',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 16,
+                'name' => 'ADULT',
+                'description_simple' => 'Dorośli',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 16,
+                'name' => 'SENIOR',
+                'description_simple' => 'Seniorzy',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 17,
+                'name' => 'PEOPLE',
+                'description_simple' => 'Osoby',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 17,
+                'name' => 'TEAM',
+                'description_simple' => 'Drużyny',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 18,
+                'name' => 'ACTIVE',
+                'description_simple' => 'Aktywne',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 18,
+                'name' => 'CANCELED',
+                'description_simple' => 'Anulowane',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 19,
+                'name' => 'CASH',
+                'description_simple' => 'Gotówka',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
     }

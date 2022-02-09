@@ -20,7 +20,8 @@ class DatabaseSeeder extends Seeder
             RolePermissonSeeder::class,
             AgreementSeeder::class,
             AccountActionTypeSeeder::class,
-            CommissionSeeder::class
+            CommissionSeeder::class,
+            SportsPositionSeeder::class
         ]);
 
         // \App\Models\User::factory(10)->create();

@@ -112,6 +112,17 @@ class FileProcessing
                 $image->save();
                 $file = $image;
                 break;
+            case 'announcementImage':
+                /** @var Image $image */
+                $image = new Image;
+                $image->imageable_type = 'App\Models\Announcement';
+                $image->imageable_id = $partner->id;
+                $image->filename = $filename;
+                $image->creator_id = $user->id;
+                $image->visible_at = now();
+                $image->save();
+                $file = $image;
+                break;
         }
 
         return $file;
@@ -139,5 +150,17 @@ class FileProcessing
      */
     public static function saveLogo(string $avatarPath, $partner): Image {
         return self::saveFile('logo', $avatarPath, 'partner-pictures', false, true, null, 'jpeg', $partner);
+    }
+
+    /**
+     * Proces zapisania zdjęcia w tle dla wydarzenia
+     * 
+     * @param string $avatarPath ścieżka do zdjęcia które ma zostać zapisane
+     * @param mixed $announcement encja wydarzenia
+     * 
+     * @return Image
+     */
+    public static function saveAnnouncementImage(string $avatarPath, $announcement): Image {
+        return self::saveFile('announcementImage', $avatarPath, 'partner-pictures', false, true, null, 'jpeg', $announcement);
     }
 }

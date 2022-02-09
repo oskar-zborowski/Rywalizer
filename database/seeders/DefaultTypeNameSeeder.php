@@ -84,6 +84,31 @@ class DefaultTypeNameSeeder extends Seeder
                 'name' => 'VISIBLE_FIELD',
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'name' => 'GAME_VARIANT',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'name' => 'AGE_CATEGORY',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'name' => 'ANNOUNCEMENT_TYPE',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'name' => 'ANNOUNCEMENT_STATUS',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'name' => 'PAYMENT_TYPE',
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
     }

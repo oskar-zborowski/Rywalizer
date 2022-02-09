@@ -2,7 +2,13 @@
 
 namespace App\Models;
 
+use App\Exceptions\ApiException;
+use App\Http\ErrorCodes\BaseErrorCode;
+use App\Http\Libraries\FileProcessing\FileProcessing;
+use App\Http\Libraries\Validation\Validation;
+use App\Http\Responses\JsonResponse;
 use App\Http\Traits\Encryptable;
+use Illuminate\Support\Facades\Storage;
 
 class Announcement extends BaseModel
 {
@@ -85,7 +91,7 @@ class Announcement extends BaseModel
     ];
 
     protected $encryptable = [
-        'code' => 8,
+        'code' => 9,
         'description' => 1500
     ];
 
@@ -159,5 +165,219 @@ class Announcement extends BaseModel
 
     public function announcementSeats() {
         return $this->hasMany(AnnouncementSeat::class);
+    }
+
+    /**
+     * Zwrócenie zdjęcia w tle wydarzenia
+     * 
+     * @return array|null
+     */
+    public function getImage(): ?array {
+
+        $defaultType = Validation::getDefaultType('ANNOUNCEMENT_IMAGE', 'IMAGE_TYPE');
+
+        $result = null;
+
+        /** @var ImageAssignment $announcementImage */
+        $announcementImage = $this->imageAssignments()->where('image_type_id', $defaultType->id)->orderBy('number', 'desc')->first();
+
+        if ($announcementImage) {
+            /** @var Image $image */
+            $image = $announcementImage->image()->first();
+
+            $result[] = [
+                'id' => $announcementImage->id,
+                'filename' => $image->filename
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Zapisanie zdjęcia w tle
+     * 
+     * @param string $imagePath aktualna ścieżka do loga
+     * 
+     * @return void
+     */
+    public function savePhoto(string $imagePath): void {
+
+        $imageType = Validation::getDefaultType('ANNOUNCEMENT_IMAGE', 'IMAGE_TYPE');
+
+        $oldImages = $this->imageAssignments()->where('image_type_id', $imageType->id)->orderBy('number', 'desc')->get();
+
+        $counter = 0;
+
+        foreach ($oldImages as $oI) {
+            $counter++;
+        }
+
+        $newNumber = $counter + 1;
+
+        foreach ($oldImages as $oI) {
+            $oI->number = $counter;
+            $oI->save();
+            $counter--;
+        }
+
+        $image = FileProcessing::saveAnnouncementImage($imagePath, $this);
+
+        $imageAssignment = new ImageAssignment;
+        $imageAssignment->imageable_type = 'App\Models\Announcement';
+        $imageAssignment->imageable_id = $this->id;
+        $imageAssignment->image_type_id = $imageType->id;
+        $imageAssignment->image_id = $image->id;
+        $imageAssignment->number = $newNumber;
+        $imageAssignment->creator_id = $this->id;
+        $imageAssignment->editor_id = $this->id;
+        $imageAssignment->save();
+    }
+
+    /**
+     * Usunięcie loga partnera
+     * 
+     * @return void
+     */
+    public function deletePhoto(int $imageId): void {
+
+        $imageType = Validation::getDefaultType('ANNOUNCEMENT_IMAGE', 'IMAGE_TYPE');
+
+        /** @var ImageAssignment $imageAssignment */
+        $imageAssignment = $this->imageAssignments()->where('image_type_id', $imageType->id)->where('id', $imageId)->first();
+
+        if ($imageAssignment) {
+            Storage::delete('partner-pictures/' . $imageAssignment->image()->first()->filename);
+            $imageAssignment->image()->first()->delete();
+        } else {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Podano nieprawidłowy identyfikator zdjęcia'
+            );
+        }
+    }
+
+    /**
+     * Zwrócenie podstawowych informacji o partnerze
+     * 
+     * @return array
+     */
+    public function getBasicInformation(): array {
+
+        /** @var PartnerSetting $partner */
+        $partner = $this->announcementPartner()->fisrt();
+
+        /** @var Facility $facility */
+        $facility = $this->facility()->first();
+
+        $announcementSeats = [];
+        $announcementPayments = [];
+        $announcementParticipants = [];
+
+        /** @var AnnouncementSeat $aS */
+        foreach ($this->announcementSeats() as $aS) {
+            $announcementSeats[] = [
+                'id' => $aS->id,
+                'sports_position' => [
+                    'id' => $aS->sportsPosition()->first()->id,
+                    'name' => $aS->sportsPosition()->first()->name,
+                ],
+                'occupied_seats_counter' => $aS->occupied_seats_counter,
+                'maximum_seats_number' => $aS->maximum_seats_number,
+                'is_active' => $aS->is_active
+            ];
+
+            /** @var AnnouncementParticipant $aP */
+            foreach ($aS->announcementParticipants() as $aP) {
+                /** @var User $user */
+                $user = $aP->user()->first();
+                $announcementParticipants[] = [
+                    'id' => $user->id,
+                    'name' => $user->first_name . ' ' . $user->last_name,
+                    'gender' => $user->getGender(),
+                    'avatar' => $user->getAvatars()
+                ];
+            }
+        }
+
+        /** @var AnnouncementPayment $aP */
+        foreach ($this->announcementPayments() as $aP) {
+            $announcementPayments[] = [
+                'id' => $aP->id,
+                'payment_type' => [
+                    'id' => $aP->paymentType()->first()->id,
+                    'name' => $aP->paymentType()->first()->name,
+                ],
+                'is_active' => $aP->is_active
+            ];
+        }
+
+        return [
+            'partner' => $partner->getPartner('getBasicInformation'),
+            'announcement' => [
+                'id' => $this->id,
+                'sport' => [
+                    'id' => $this->sport()->first()->id,
+                    'name' => $this->sport()->first()->name,
+                ],
+                'start_date' => $this->start_date,
+                'end_date' => $this->end_date,
+                'ticket_price' => $this->ticket_price,
+                'game_variant' => [
+                    'id' => $this->gameVariant()->first()->id,
+                    'name' => $this->gameVariant()->first()->name,
+                ],
+                'minimum_skill_level' => [
+                    'id' => $this->minimumSkillLevel()->first()->id,
+                    'name' => $this->minimumSkillLevel()->first()->name,
+                ],
+                'gender' => [
+                    'id' => $this->gender()->first()->id,
+                    'name' => $this->gender()->first()->name,
+                ],
+                'age_category' => [
+                    'id' => $this->ageCategory()->first()->id,
+                    'name' => $this->ageCategory()->first()->name,
+                ],
+                'minimal_age' => $this->minimal_age,
+                'maximum_age' => $this->maximum_age,
+                'description' => $this->description,
+                'participants_counter' => $this->participants_counter,
+                'maximum_participants_number' => $this->maximum_participants_number,
+                'announcement_type' => [
+                    'id' => $this->announcementType()->first()->id,
+                    'name' => $this->announcementType()->first()->name,
+                ],
+                'announcement_status' => [
+                    'id' => $this->announcementStatus()->first()->id,
+                    'name' => $this->announcementStatus()->first()->name,
+                ],
+                'is_automatically_approved' => $this->is_automatically_approved,
+                'is_public' => $this->is_public
+            ],
+            'announcement_seats' => $announcementSeats,
+            'announcement_payments' => $announcementPayments,
+            'announcement_participants' => $announcementParticipants,
+            'facility' => [
+                'id' => $facility->id,
+                'name' => $facility->name,
+                'street' => $facility->street,
+                'city' => [
+                    'id' => $facility->city()->first()->id,
+                    'name' => $facility->city()->first()->name,
+                ],
+            ]
+        ];
+    }
+
+    /**
+     * Zwrócenie informacji o wydarzeniu
+     * 
+     * @param string $modelMethodName nazwa metody, która ma zostać dołączona jako wykaz zwróconych pól wydarzenia, np. getPrivateInformation
+     * 
+     * @return void
+     */
+    public function getAnnouncement($modelMethodName): void {
+        JsonResponse::sendSuccess($this->$modelMethodName());
     }
 }

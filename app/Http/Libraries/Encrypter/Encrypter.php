@@ -74,10 +74,11 @@ class Encrypter
      * @param mixed $entity encja w której będzie następowało przeszukiwanie pod kątem już występującego tokena
      * @param string $field pole po którym będzie następowało przeszukiwanie
      * @param string $addition dodatkowy tekst który ma być uwzględniony przy generowaniu tokena (dopisany na końcu)
+     * @param bool $onlyBigLetters flaga określająca, czy wygenerowany token ma się składać wyłącznie z cyfr i dużych liter
      * 
      * @return string|null
      */
-    public function generateToken(int $maxSize = 64, $entity = null, string $field = 'token', string $addition = ''): ?string {
+    public function generateToken(int $maxSize = 64, $entity = null, string $field = 'token', string $addition = '', $onlyBigLetters = false): ?string {
 
         $additionLength = strlen($addition);
         $maxSize = floor($maxSize * 0.75);
@@ -86,7 +87,7 @@ class Encrypter
 
         if ($maxSize > 0) {
             do {
-                $token = $this->fillWithRandomCharacters('', $maxSize, true) . $addition;
+                $token = $this->fillWithRandomCharacters('', $maxSize, true, $onlyBigLetters) . $addition;
                 $encryptedToken = $this->encrypt($token);
             } while ($entity && !Validation::checkUniqueness($encryptedToken, $entity, $field));
         } else {
@@ -102,13 +103,17 @@ class Encrypter
      * @param string $text pole do wypełnienia losowymi znakami
      * @param int $maxSize maksymalny rozmiar pola
      * @param bool $rand flaga określająca czy dodawane znaki mają być losowe czy według kolejności
+     * @param bool $onlyBigLetters flaga określająca, czy wygenerowany token ma się składać wyłącznie z cyfr i dużych liter
      * 
      * @return string
      */
-    private function fillWithRandomCharacters(string $text = '', int $maxSize = null, bool $rand = false): string {
+    private function fillWithRandomCharacters(string $text = '', int $maxSize = null, bool $rand = false, $onlyBigLetters = false): string {
 
         $characters = 'M9w4RimKrF8fJGuTEBpC36gUNDzebW7ZaVSnqdYcXhoQjILv21ltPkAHx5O0sy';
         $charactersLength = strlen($characters);
+
+        $characters2 = 'M94RKF8JGTEBC36UNDW7ZVSYXQIL21PAH5O0';
+        $charactersLength2 = strlen($characters2);
 
         if (!isset($maxSize)) {
             $maxSize = strlen($text);
@@ -132,7 +137,11 @@ class Encrypter
 
             } else {
                 for ($i=0; $i<$length; $i++) {
-                    $text .= $characters[rand(0, $charactersLength-1)];
+                    if ($onlyBigLetters) {
+                        $text .= $characters2[rand(0, $charactersLength2-1)];
+                    } else {
+                        $text .= $characters[rand(0, $charactersLength-1)];
+                    }
                 }
             }
         }
