@@ -1,0 +1,133 @@
+@import "@/styles/bootstrap.scss";
+
+.wrapper {
+    // border: 1px solid #29292e;
+    overflow-x: auto;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    @include respond-to(null, "sm") {
+        margin: 0 -20px;
+    }
+}
+
+.calendar {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+
+    th,
+    td {
+        border-top: 1px solid #29292e;
+        border-left: 1px solid #29292e;
+        margin: 0;
+        padding: 0;
+    }
+
+    th {
+        padding: 0 15px;
+    }
+
+    tr {
+        td:last-child,
+        th:last-child {
+            color: #ce8f3e;
+        }
+    }
+
+    tr:last-child {
+        td {
+            border-bottom: 1px solid #29292e;
+        }
+
+        td:first-child {
+            border-bottom-left-radius: 8px;
+        }
+
+        td:last-child {
+            border-bottom-right-radius: 8px;
+        }
+    }
+
+    td:last-child,
+    th:last-child {
+        border-right: 1px solid #29292e;
+    }
+
+    thead {
+        font-weight: bold;
+        text-align: left;
+
+        tr {
+            height: 50px;
+
+            th {
+                user-select: none;
+            }
+
+            th:first-child {
+                border-top-left-radius: 8px;
+            }
+
+            th:last-child {
+                border-top-right-radius: 8px;
+            }
+        }
+    }
+
+    .cell {
+        user-select: none;
+        padding: 15px;
+        min-width: 100px;
+        height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: background-color 0.2s;
+        cursor: pointer;
+
+        &:not(.disabled):hover {
+            background-color: #29292e;
+        }
+
+        &.disabled {
+            cursor: default;
+            opacity: 0.2;
+        }
+    }
+
+    @include respond-to(null, "sm") {
+        margin: 0 20px; //FIXME na mobilce nie działa margin-right
+
+        th {
+            padding: 0 10px;
+        }
+
+        thead tr {
+            height: 35px;
+        }
+
+        .cell {
+            padding: 10px;
+            height: 80px;
+        }
+    }
+}
+
+.tooltip {
+    background-color: #{$color-primary}55 !important;
+    border-radius: 8px !important;
+    opacity: 1 !important;
+    color: #fff !important;
+    text-align: center !important;
+    padding: 5px !important;
+    margin: 5px !important;
+    border: 1px solid $color-primary !important;
+    backdrop-filter: blur(5px);
+
+    &::after, &::before {
+        content: none !important;
+    }
+}

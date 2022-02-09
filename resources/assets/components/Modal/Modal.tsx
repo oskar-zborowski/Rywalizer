@@ -1,12 +1,11 @@
 
 import { useOnClickOutside } from '@/hooks/useOnClickOutside';
+import Loader from '@/static/loader.svg';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
-import { GrayButton, OrangeButton } from '../Form/Button/Button';
-import styles from './Modal.scss';
-import Loader from '@/static/loader.svg';
 import { AiOutlineClose } from 'react-icons/ai';
+import styles from './Modal.scss';
 
 const transition = { duration: 0.25, type: 'tween', ease: [0.45, 0, 0.55, 1] };
 
@@ -64,7 +63,7 @@ const Modal: React.FC<ModalProps> = props => {
     const containerRef = useRef();
 
     if (closeOnClickOutside) {
-        useOnClickOutside(containerRef, () => onClose());
+        useOnClickOutside([containerRef], () => onClose());
     }
 
     if (closeOnEsc) {

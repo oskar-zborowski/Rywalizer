@@ -2,58 +2,52 @@ import React from 'react';
 import styles from './EventTile.scss';
 import chroma from 'chroma-js';
 import BallSvg from '@/static/icons/ball.svg';
+import { IEvent } from '@/api/getEvents';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-export interface EventTileProps {
-    imageSrc: string;
-    price: number;
-    date: Date;
-    locationName: string;
-    address: string;
-    soldTickets: number;
-    availableTickets: number;
-    color: string;
-}
+const colors = chroma.scale(['#7ab661', '#7ab661', '#ffd653', '#bb2121']);
 
-//TODO nieliniowa funckja, patrz nizej
-const colors = chroma.scale(['#7ab661', '#7ab661', '#ffd653', '#bb2121']).colors(20);
-
-const EventTile: React.FC<EventTileProps> = (props) => {
-    //TODO zmiana nazwy percent na coś sensowniejszego
-    const ratio = props.soldTickets / props.availableTickets;
+const EventTile: React.FC<IEvent> = (props) => {
+    const ratio = props.soldTicketsCount / props.availableTicketsCount;
     const percent = ratio * 100;
+    const progressBarColor = colors(ratio).hex();
+    const sportColor = props.sport.color.hex();
 
-    //TODO nieliniowa funckja - powinno być znacznie więcej zielonego ??
-    const color = colors[Math.trunc(ratio * (colors.length - 1))];
+    const navigateTo = useNavigate();
 
     return (
-        <div className={styles.eventTile}>
-            <div className={styles.border} style={{ backgroundColor: props.color }}></div>
+        <div
+            className={styles.eventTile}
+            onClick={() => navigateTo(`/ogloszenia/${props.id}`)}
+        >
+            <div className={styles.border} style={{ backgroundColor: sportColor }}></div>
             <div className={styles.tile}>
                 <div className={styles.imageWrapper}>
-                    <img src={props.imageSrc} className={styles.image} />
+                    <img src={props.imageUrl} className={styles.image} />
                 </div>
                 <div className={styles.detailsRow}>
-                    <span className={styles.locationName} style={{ color: props.color }}>
-                        {props.locationName}
+                    <span className={styles.locationName} style={{ color: sportColor }}>
+                        {props.facility.name}
                     </span>
-                    <span className={styles.price}>{(props.price / 100).toFixed(2)} zł</span>
+                    <span className={styles.price}>{(props.ticketPrice / 100).toFixed(2)} zł</span>
                 </div>
                 <div className={styles.detailsRow}>
-                    <span className={styles.address}>{props.address}</span>
-                    <span className={styles.date}>{props.date.toLocaleDateString()}</span>
+                    <span className={styles.address}>{props.facility.street}</span>
+                    <span className={styles.date}>{props.startDate.toLocaleDateString()}</span>
                 </div>
                 <div className={styles.divider}></div>
                 <div className={styles.detailsRow}>
                     <div className={styles.busyBar}>
                         <div className={styles.innerBar} style={{
                             width: percent + '%',
-                            backgroundColor: color
+                            backgroundColor: progressBarColor
                         }}></div>
                     </div>
-                    <span className={styles.date}>{props.soldTickets} / {props.availableTickets}</span>
+                    <span className={styles.date}>{props.soldTicketsCount} / {props.availableTicketsCount}</span>
                 </div>
             </div>
-            <div className={styles.icon} style={{ backgroundColor: props.color }}>
+            <div className={styles.icon} style={{ backgroundColor: sportColor }}>
                 <BallSvg />
             </div>
         </div>

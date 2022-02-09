@@ -1,5 +1,5 @@
-import { IGender } from '@/types/IGender';
-import { ISport } from '@/types/ISport';
+import getGenders, { IGender } from '@/api/getGenders';
+import getSports, { ISport } from '@/api/getSports';
 import { getApiUrl } from '@/utils/api';
 import axios from 'axios';
 import chroma from 'chroma-js';
@@ -20,33 +20,18 @@ export class AppStore {
     }
 
     public async fetchGenders() {
-        const response = await axios.get(getApiUrl('api/v1/genders'));
-        const genders = response?.data?.data?.gender;
+        const genders = await getGenders();
 
         runInAction(() => {
-            this.genders = genders?.map((g: any) => {
-                return {
-                    id: g.id,
-                    name: g.descriptionSimple,
-                    icon: g.icon
-                } as IGender;
-            });
+            this.genders = genders;
         });
     }
 
     public async fetchSports() {
-        const response = await axios.get(getApiUrl('api/v1/sports'));
-        const sports = response?.data?.data?.sport;
+        const sports = await getSports();
 
         runInAction(() => {
-            this.sports = sports.map((s: any) => {
-                return {
-                    id: s.id,
-                    name: s.descriptionSimple,
-                    icon: s.icon,
-                    color: chroma(chroma.valid(s.color) ? s.color : '#000')
-                } as ISport;
-            });
+            this.sports = sports;
         });
     }
 

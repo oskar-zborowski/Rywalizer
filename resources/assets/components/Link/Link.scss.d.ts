@@ -2,8 +2,8 @@
 // Please do not change this file!
 interface CssExports {
   'fixedColor': string;
+  'fixedUnderline': string;
   'link': string;
-  'linkfixedUnderline': string;
 }
 export const cssExports: CssExports;
 export default cssExports;
