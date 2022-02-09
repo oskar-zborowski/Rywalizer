@@ -21,7 +21,17 @@ class DatabaseSeeder extends Seeder
             AgreementSeeder::class,
             AccountActionTypeSeeder::class,
             CommissionSeeder::class,
-            SportsPositionSeeder::class
+            SportsPositionSeeder::class,
+            UserSeeder::class,
+            UserSettingSeeder::class,
+            UserAgreementSeeder::class,
+            PartnerSeeder::class,
+            PartnerSettingSeeder::class,
+            AreaSeeder::class,
+            FacilitySeeder::class,
+            AnnouncementSeeder::class,
+            AnnouncementPaymentSeeder::class,
+            AnnouncementSeatSeeder::class
         ]);
 
         // \App\Models\User::factory(10)->create();

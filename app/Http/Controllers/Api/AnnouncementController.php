@@ -64,6 +64,8 @@ class AnnouncementController extends Controller
                 $facility = new Facility;
                 $facility->name = $request->facility_name;
                 $facility->street = $request->facility_street;
+                $facility->creator_id = $user->id;
+                $facility->editor_id = $user->id;
 
                 if (isset($city) && $city) {
                     $facility->city_id = $city->id;
@@ -177,6 +179,8 @@ class AnnouncementController extends Controller
                 $facility = new Facility;
                 $facility->name = $request->facility_name;
                 $facility->street = $request->facility_street;
+                $facility->creator_id = $user->id;
+                $facility->editor_id = $user->id;
 
                 if (isset($city) && $city) {
                     $facility->city_id = $city->id;
