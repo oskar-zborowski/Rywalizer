@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback } from 'react';
 import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 import styles from './MapViewer.scss';
 import mapStyle from './mapStyle';
@@ -6,6 +6,7 @@ import EventPinsLayer from './EventPinsLayer';
 import mapViewerStore, { IEventPin } from '@/store/MapViewerStore';
 import { IPoint } from '@/types/IPoint';
 import chroma from 'chroma-js';
+import { useNavigate } from 'react-router-dom';
 
 const polandCenter: IPoint = {
     lat: 51.919438,
@@ -20,22 +21,24 @@ const MapViewer: React.FC = () => {
         googleMapsApiKey: 'AIzaSyCi0sAXQWFeT4T5E6jOLlD-V35S6nyrx5Y'
     });
 
+    const navigateTo = useNavigate();
+
     const onLoad = useCallback((map) => {
-        eventPinsLayer.initialize(map);
+        eventPinsLayer.initialize(map, (pin) => navigateTo(`/ogloszenia/${pin.id}`));
 
-        const pins: IEventPin[] = [];
+        // const pins: IEventPin[] = [];
 
-        for (let i = 0; i < 10000; i++) {
-            const angle = (Math.random() * 4 * 360) * Math.PI / 180;
-            const radius = Math.random() * 3;
-            const lat = polandCenter.lat + (radius * Math.sin(angle)) / 1.6;
-            const lng = polandCenter.lng + radius * Math.cos(angle);
-            const color = chroma.random();
+        // for (let i = 0; i < 10000; i++) {
+        //     const angle = (Math.random() * 4 * 360) * Math.PI / 180;
+        //     const radius = Math.random() * 3;
+        //     const lat = polandCenter.lat + (radius * Math.sin(angle)) / 1.6;
+        //     const lng = polandCenter.lng + radius * Math.cos(angle);
+        //     const color = chroma.random();
 
-            pins.push({ lat, lng, color });
-        }
+        //     pins.push({ id: 1, lat, lng, color });
+        // }
 
-        mapViewerStore.setEventPins(pins);
+        // mapViewerStore.setEventPins(pins);
     }, []);
 
     return isLoaded ? (

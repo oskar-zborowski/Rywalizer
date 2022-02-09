@@ -3,6 +3,7 @@ import chroma from 'chroma-js';
 import { makeAutoObservable } from 'mobx';
 
 export interface IEventPin extends IPoint {
+    id: number;
     color: chroma.Color;
 }
 

@@ -1,4 +1,3 @@
-import { IGender } from '@/types/IGender';
 import { IUser } from '@/types/IUser';
 import { getApiUrl } from '@/utils/api';
 import axios from 'axios';

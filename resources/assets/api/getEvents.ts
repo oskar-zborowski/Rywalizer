@@ -1,4 +1,5 @@
 import appStore from '@/store/AppStore';
+import { IPoint } from '@/types/IPoint';
 import { getApiUrl } from '@/utils/api';
 import axios from 'axios';
 import { when } from 'mobx';
@@ -39,8 +40,7 @@ const getEvents = async (params?: IGetEventsParams) => {
             soldTicketsCount: +announcement.participantsCounter,
             availableTicketsCount: +announcement.maximumParticipantsNumber,
             isPublic: !!announcement.isPublic,
-            // imageUrl: announcement.image,
-            imageUrl: 'https://s4.tvp.pl/images2/4/f/1/uid_4f11ef64aa8450c6ab80d4409732bf131631783889434_width_1200_play_0_pos_0_gs_0_height_678_polska-slowenia-polfinal-me-siatkarzy-transmisja-na-zywo-online-fot-pap.jpg',
+            imageUrl: announcement.image[0].filename,
             facility: {
                 id: +facility.id,
                 name: facility.name,
@@ -48,6 +48,10 @@ const getEvents = async (params?: IGetEventsParams) => {
                 city: {
                     id: +facility.city.id,
                     name: facility.city.name
+                },
+                location: {
+                    lat: +facility.addressCoordinates.lat + Math.random() - 0.5,
+                    lng: +facility.addressCoordinates.lng + Math.random() - 0.5
                 }
             }
         };
@@ -91,7 +95,8 @@ export interface IEvent {
         city: {
             id: number;
             name: string;
-        }
+        },
+        location: IPoint;
     };
     //TODO reszta pól
 }
