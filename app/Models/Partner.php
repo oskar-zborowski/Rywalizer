@@ -192,7 +192,7 @@ class Partner extends BaseModel
                 $image = $l->image()->first();
 
                 $result[] = [
-                    'id' => $l->id,
+                    'id' => (int) $l->id,
                     'filename' => '/storage/partner-pictures/' . $image->filename
                 ];
             }
@@ -207,7 +207,7 @@ class Partner extends BaseModel
                 $image = $logo->image()->first();
 
                 $result[] = [
-                    'id' => $logo->id,
+                    'id' => (int) $logo->id,
                     'filename' => '/storage/partner-pictures/' . $image->filename
                 ];
             }

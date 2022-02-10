@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Auth;
 class PartnerController extends Controller
 {
     /**
-     * #### `POST` `/api/v1/partner`
+     * #### `POST` `/api/v1/partners`
      * Utworzenie nowego partnera
      * 
      * @param PartnerRequest $request
@@ -63,7 +63,7 @@ class PartnerController extends Controller
             $partnerSetting = new PartnerSetting();
             $partnerSetting->partner_id = $partner->id;
             $partnerSetting->commission_id = 1;
-            $partnerSetting->partner_type_id = $request->partner_type_id;
+            $partnerSetting->partner_type_id = 59;
             $partnerSetting->visible_name_id = $request->visible_name_id;
             $partnerSetting->visible_image_id = $request->visible_image_id;
             $partnerSetting->visible_email_id = $request->visible_email_id;
@@ -75,11 +75,6 @@ class PartnerController extends Controller
             $partnerSetting->editor_id = $user->id;
             $partnerSetting->save();
 
-            /** @var Partner $partner */
-            $partner = $user->partners()->first();
-
-            /** @var PartnerSetting $partnerSetting */
-            $partnerSetting = $partner->partnerSettings()->first();
             $partnerSetting->getPartner('getPrivateInformation');
         } else {
             /** @var Partner $partner */
@@ -92,7 +87,7 @@ class PartnerController extends Controller
     }
 
     /**
-     * #### `PATCH` `/api/v1/partner`
+     * #### `PATCH` `/api/v1/partners`
      * Edycja danych partnera
      * 
      * @param PartnerRequest $request
@@ -155,7 +150,7 @@ class PartnerController extends Controller
     }
 
     /**
-     * #### `GET` `/api/v1/partner`
+     * #### `GET` `/api/v1/partners`
      * Pobranie prywatnych informacji o partnerze
      * 
      * @return void
@@ -180,7 +175,7 @@ class PartnerController extends Controller
     }
 
     /**
-     * #### `GET` `/api/v1/partner/{id}`
+     * #### `GET` `/api/v1/partners/{id}`
      * Pobranie podstawowych informacji o partnerze
      * 
      * @return void
@@ -203,7 +198,7 @@ class PartnerController extends Controller
     }
 
     /**
-     * #### `DELETE` `/api/v1/partner`
+     * #### `DELETE` `/api/v1/partners`
      * Usunięcie partnera
      * 
      * @return void
@@ -229,7 +224,7 @@ class PartnerController extends Controller
     }
 
     /**
-     * #### `POST` `/api/v1/partner/logo`
+     * #### `POST` `/api/v1/partners/logo`
      * Wgranie loga partnera
      * 
      * @param Request $request
@@ -270,7 +265,7 @@ class PartnerController extends Controller
     }
 
     /**
-     * #### `PUT` `/api/v1/partner/logo`
+     * #### `PUT` `/api/v1/partners/logo`
      * Zmiana loga partnera
      * 
      * @param int $id id loga
@@ -300,7 +295,7 @@ class PartnerController extends Controller
     }
 
     /**
-     * #### `DELETE` `/api/v1/partner/logo`
+     * #### `DELETE` `/api/v1/partners/logo`
      * Usunięcie loga partnera
      * 
      * @param int $id id loga

@@ -138,9 +138,9 @@ class PartnerSetting extends BaseModel
         }
 
         if ($visibleImage == 61) {
-            $images = $user->getAvatars(true);
+            $images = $user->getAvatars(false);
         } else if ($visibleImage == 62) {
-            $images = $partner->getLogos(true);
+            $images = $partner->getLogos(false);
         } else {
             $images = [];
         }
@@ -151,14 +151,6 @@ class PartnerSetting extends BaseModel
             $email = $partner->contact_email;
         } else {
             $email = '';
-        }
-
-        if ($visibleTelephone == 61) {
-            $telephone = $user->telephone;
-        } else if ($visibleTelephone == 62) {
-            $telephone = $partner->telephone;
-        } else {
-            $telephone = '';
         }
 
         if ($visibleTelephone == 61) {
@@ -242,7 +234,7 @@ class PartnerSetting extends BaseModel
             'partnerSetting' => [
                 'id' => (int) $this->id,
                 'partner_type' => [
-                    'id' => $this->partnerType()->first()->id,
+                    'id' => (int) $this->partnerType()->first()->id,
                     'name' => $this->partnerType()->first()->name
                 ],
                 'visible_name' => [

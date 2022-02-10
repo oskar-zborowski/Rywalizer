@@ -205,21 +205,11 @@ class Announcement extends BaseModel
 
         $imageType = Validation::getDefaultType('ANNOUNCEMENT_IMAGE', 'IMAGE_TYPE');
 
-        $oldImages = $this->imageAssignments()->where('image_type_id', $imageType->id)->orderBy('number', 'desc')->get();
+        /** @var ImageAssignment $oldImage */
+        $oldImage = $this->imageAssignments()->where('image_type_id', $imageType->id)->first();
 
-        $counter = 0;
-
-        foreach ($oldImages as $oI) {
-            $counter++;
-        }
-
-        $newNumber = $counter + 1;
-
-        foreach ($oldImages as $oI) {
-            $oI->number = $counter;
-            $oI->save();
-            $counter--;
-        }
+        Storage::delete('partner-pictures/' . $oldImage->image()->first()->filename);
+        $oldImage->image()->first()->delete();
 
         $image = FileProcessing::saveAnnouncementImage($imagePath, $this);
 
@@ -228,7 +218,7 @@ class Announcement extends BaseModel
         $imageAssignment->imageable_id = $this->id;
         $imageAssignment->image_type_id = $imageType->id;
         $imageAssignment->image_id = $image->id;
-        $imageAssignment->number = $newNumber;
+        $imageAssignment->number = 1;
         $imageAssignment->creator_id = $this->id;
         $imageAssignment->editor_id = $this->id;
         $imageAssignment->save();
@@ -258,7 +248,7 @@ class Announcement extends BaseModel
     }
 
     /**
-     * Zwrócenie podstawowych informacji o partnerze
+     * Zwrócenie podstawowych informacji o wydarzeniu
      * 
      * @return array
      */
@@ -313,16 +303,24 @@ class Announcement extends BaseModel
             ];
         }
 
-        $addressCoordinates = $facility->address_coordinates;
-        $addressCoordinates = explode(';', $addressCoordinates);
+        if ($facility) {
+            $addressCoordinates = $facility->address_coordinates;
+            $addressCoordinates = explode(';', $addressCoordinates);
+        }
+
+        /** @var DefaultType $sport */
+        $sport = $this->sport()->first();
 
         return [
             'partner' => $partner->getPartner('getBasicInformation', true),
             'announcement' => [
                 'id' => (int) $this->id,
                 'sport' => [
-                    'id' => (int) $this->sport()->first()->id,
-                    'name' => $this->sport()->first()->name,
+                    'id' => (int) $sport->id,
+                    'name' => $sport->name,
+                    'description' => $sport->description_simple,
+                    'icon' => $sport->icon()->first() ? $sport->icon()->first()->filename : null,
+                    'color' => $sport->color,
                 ],
                 'start_date' => $this->start_date,
                 'end_date' => $this->end_date,
@@ -339,26 +337,27 @@ class Announcement extends BaseModel
                     'id' => (int) $this->gender()->first()->id,
                     'name' => $this->gender()->first()->name,
                 ] : null,
-                'age_category' => $this->ageCategory()->first() ? [
-                    'id' => (int) $this->ageCategory()->first()->id,
-                    'name' => $this->ageCategory()->first()->name,
-                ] : null,
-                'minimal_age' => (int) $this->minimal_age,
-                'maximum_age' => (int) $this->maximum_age,
+                // 'age_category' => $this->ageCategory()->first() ? [
+                //     'id' => (int) $this->ageCategory()->first()->id,
+                //     'name' => $this->ageCategory()->first()->name,
+                // ] : null,
+                // 'minimal_age' => (int) $this->minimal_age,
+                // 'maximum_age' => (int) $this->maximum_age,
                 'description' => $this->description,
                 'participants_counter' => (int) $this->participants_counter,
                 'maximum_participants_number' => (int) $this->maximum_participants_number,
-                'announcement_type' => $this->announcementType()->first() ? [
-                    'id' => (int) $this->announcementType()->first()->id,
-                    'name' => $this->announcementType()->first()->name,
-                ] : null,
+                // 'announcement_type' => $this->announcementType()->first() ? [
+                //     'id' => (int) $this->announcementType()->first()->id,
+                //     'name' => $this->announcementType()->first()->name,
+                // ] : null,
                 'announcement_status' => $this->announcementStatus()->first() ? [
                     'id' => (int) $this->announcementStatus()->first()->id,
                     'name' => $this->announcementStatus()->first()->name,
                 ] : null,
-                'is_automatically_approved' => (bool) $this->is_automatically_approved,
+                // 'is_automatically_approved' => (bool) $this->is_automatically_approved,
                 'is_public' => (bool) $this->is_public,
-                'image' => $this->getImage(),
+                'front_image' => $this->getImage(),
+                'background_image' => '/storage/partner-pictures/volleyball-background.jpeg',
                 'announcement_seats' => $announcementSeats,
                 'announcement_payments' => $announcementPayments,
                 'announcement_participants' => $announcementParticipants,
