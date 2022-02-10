@@ -22,6 +22,7 @@ const EventsView: React.FC = () => {
     ];
 
     useEffect(() => {
+        mapViewerStore.reset();
         getEvents().then(setEvents);
     }, []);
 
@@ -43,19 +44,19 @@ const EventsView: React.FC = () => {
                             onChange={(v) => setQueryString(v)}
                         />
                         <Selectbox
-                            initialOptions={options}
+                            options={options}
                             placeholder="Lokalizacja"
                         />
                         <Selectbox
-                            initialOptions={options}
+                            options={options}
                             placeholder="Sporty"
                         />
                         <Selectbox
-                            initialOptions={options}
+                            options={options}
                             placeholder="Więcej filtrów"
                         />
                         <Selectbox
-                            initialOptions={options}
+                            options={options}
                             placeholder="Sortuj wg: Najlepsze"
                             transparent={true}
                         />

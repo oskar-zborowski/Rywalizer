@@ -40,12 +40,6 @@ export default class EventPinsLayer {
     public initialize(map: google.maps.Map, onClick: (IEventPin: IEventPin) => void): void {
         this.map = map;
         this.onClick = onClick;
-
-        this.map.setOptions({
-            draggableCursor: 'crosshair',
-            draggingCursor: 'crosshair'
-        });
-
         this.deckgl.setMap(map);
         this.render();
     }

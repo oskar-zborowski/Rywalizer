@@ -6,12 +6,23 @@ import Section from '@/components/Section/Section';
 import Separator from '@/components/Separator/Separator';
 import appStore from '@/store/AppStore';
 import mapViewerStore from '@/store/MapViewerStore';
-import chroma from 'chroma-js';
-import React, { createRef, forwardRef, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import View from '../View/View';
 import styles from './CreateEventView.scss';
 
 const CreateEventView: React.FC = () => {
+    useEffect(() => {
+        findAddressCoords('Poznań');
+        mapViewerStore.reset();
+    }, []);
+
+    const [administrativeAreas, setAdministrativeAreas] = useState<string[]>([]);
+    const startDateRef = useRef<HTMLInputElement>();
+    const endDateRef = useRef<HTMLInputElement>();
+    const priceRef = useRef<HTMLInputElement>();
+    const objectNameRef = useRef<HTMLInputElement>();
+    const addressRef = useRef<HTMLInputElement>();
+
     const sportOptions: IOption<ISport>[] = appStore.sports.map(s => {
         return {
             value: s,
@@ -19,65 +30,62 @@ const CreateEventView: React.FC = () => {
         } as IOption<ISport>;
     });
 
-    const addressRef = useRef<HTMLInputElement>();
     const findAddressCoords = async (address: string) => {
-        const { location } = await geocode(address);
+        const { location, formattedAddress, administrativeAreas, viewport } = await geocode(address);
+        addressRef.current.value = formattedAddress;
+        const marker = new google.maps.Marker({
+            position: location,
+            draggable: true,
+        });
 
-        mapViewerStore.setEventPins([{
-            ...location, id: 0, color: chroma('pink')
-        }]);
+        const { sw, ne } = viewport;
+        mapViewerStore.setBounds(sw, ne);
+
+        marker.addListener('dragend', async () => {
+            const { formattedAddress, administrativeAreas } = await geocode(
+                marker.getPosition().toJSON()
+            );
+
+            addressRef.current.value = formattedAddress;
+            setAdministrativeAreas(administrativeAreas);
+        });
+
+        marker.addListener('click', () => {
+            const markerPos = marker.getPosition().toJSON();
+            mapViewerStore.setBounds(markerPos, markerPos);
+        });
+
+        mapViewerStore.setMarkers([marker]);
+        setAdministrativeAreas(administrativeAreas);
     };
 
     return (
         <View withBackground title="Dodaj Ogłoszenie">
-            <Section title="Dane podstawowe">
+            <Section title="Dane podstawowe" titleAlign="right" titleSize={15}>
                 <div className={styles.locationSection}>
-                    <Selectbox dark label="Sport" initialOptions={sportOptions} />
-                    <Input type="date" label="Data rozpoczęcia" />
-                    <Input type="date" label="Data zakończenia" />
-                    <Input label="Cena" />
-                    <Selectbox dark label="Rodzaj płatności" />
+                    <Selectbox dark label="Sport" options={sportOptions} />
+                    <Input ref={startDateRef} type="date" label="Data rozpoczęcia" />
+                    <Input ref={endDateRef} type="date" label="Data zakończenia" />
+                    <Input ref={priceRef} label="Cena" />
                     <Selectbox dark label="Wariant gry" />
-                    <Selectbox dark label="Typ ogłoszenia" />
                     <Selectbox dark label="Ogłoszenie publiczne" />
-                </div>
-            </Section>
-            <Separator />
-            <Section title="Lokalizacja">
-                <div className={styles.locationSection}>
-                    <Input label="Nazwa obiektu" style={{ gridColumn: 'span 2' }} />
+                    <Selectbox dark label="Minimalny poziom" />
+                    <Selectbox dark label="Płeć" />
+                    <Input ref={objectNameRef} label="Nazwa obiektu" style={{ gridColumn: 'span 2' }} />
                     <Input
                         ref={addressRef}
                         label="Adres"
                         style={{ gridColumn: 'span 2' }}
                         onBlur={() => findAddressCoords(addressRef.current.value)}
                     />
-                    <Selectbox dark label="Miasto" />
-                    <Selectbox dark label="Gmina" />
-                    <Selectbox dark label="Powiat" />
-                    <Selectbox dark label="Województwo" />
                 </div>
             </Section>
             <Separator />
-            <Section title="Wymagania">
-                <div className={styles.locationSection}>
-                    <Selectbox dark label="Minimalny poziom" />
-                    <Selectbox dark label="Płeć" />
-                    <Selectbox dark label="Kategoria wiekowa" />
-                    <Input label="Minimalny wiek" />
-                    <Input label="Maksymalny wiek" />
-                </div>
-            </Section>
-            <Separator />
-            <Section title="Uczestnicy">
+            <Section title="Uczestnicy" titleAlign="right" titleSize={15}>
                 uczestnicy
             </Section>
             <Separator />
-            <Section title="Pozostałe">
-                TODO wyjaśnić<br />
-                * od kiedy widoczne w serwisie: datetime<br />
-                * automatyczne zatwierdzanie: select<br />
-                * publiczne: select<br />
+            <Section title="Pozostałe" titleAlign="right" titleSize={15}>
                 * zdjęcie w tle: file<br />
                 * opis: textarea
             </Section>

@@ -7,13 +7,13 @@ export interface IViewContext {
     hideLoader?: () => void;
 }
 
+const ViewContext = createContext<IViewContext>({});
+
 export interface IViewProps {
     withBackground?: boolean;
     title?: string;
     isLoaderVisible?: boolean;
 }
-
-const ViewContext = createContext<IViewContext>({});
 
 const View: React.FC<IViewProps> = ({ withBackground, children, title, isLoaderVisible }) => {
     const [isLoaderVisibleInner, setIsLoaderVisibleInner] = useState(false);

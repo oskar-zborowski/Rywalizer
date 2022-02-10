@@ -60,6 +60,7 @@ const EventDetailsView: React.FC = (props) => {
     const isEventLoaded = event !== null;
 
     useEffect(() => {
+        mapViewerStore.reset();
         getEvents({ id: +id }).then(events => {
             const event = events[0];
             setEvent(event);

@@ -1,4 +1,4 @@
-import Dropdown from '@/components/Form/Dropdown/Dropdown';
+import Dropdown, { DropdownRow } from '@/components/Form/Dropdown/Dropdown';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Topbar.scss';
@@ -10,15 +10,15 @@ const Topbar = () => {
             <nav className={styles.links}>
                 <span>Obiekty sportowe</span>
                 <Dropdown transparent placeholder="Ogłoszenia">
-                    <Link to="/"><span>Lista ogłoszeń</span></Link><br/>
-                    <Link to="/ogloszenia/dodaj"><span>Dodaj ogłoszenie</span></Link><br/>
-                    <Link to="/ogloszenia/1"><span>TEST</span></Link>
+                    <Link to="/"><DropdownRow><span>Lista ogłoszeń</span></DropdownRow></Link>
+                    <Link to="/ogloszenia/dodaj"><DropdownRow><span>Dodaj ogłoszenie</span></DropdownRow></Link>
+                    <Link to="/ogloszenia/1"><DropdownRow><span>TEST</span></DropdownRow></Link>
                 </Dropdown>
                 <Dropdown transparent placeholder="Współpraca">
-                    <Link to="/obiekty/1"><span>TEST</span></Link>
+                    <Link to="/obiekty/1"><DropdownRow><span>TEST</span></DropdownRow></Link>
                 </Dropdown>
-            </nav>
-        </div>
+            </nav >
+        </div >
     );
 };
 

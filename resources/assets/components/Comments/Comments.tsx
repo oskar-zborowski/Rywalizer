@@ -6,9 +6,9 @@ import ReactHtmlParser from 'html-react-parser';
 
 export interface IComment {
     username: string;
+    userAvatarUrl?: string;
     createdAt: string;
     comment: string;
-    userAvatarUrl?: string;
     comments?: IComment[];
 }
 

@@ -1,12 +1,11 @@
-import React, { memo, useCallback } from 'react';
-import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
-import styles from './MapViewer.scss';
-import mapStyle from './mapStyle';
-import EventPinsLayer from './EventPinsLayer';
-import mapViewerStore, { IEventPin } from '@/store/MapViewerStore';
+import mapViewerStore from '@/store/MapViewerStore';
 import { IPoint } from '@/types/IPoint';
-import chroma from 'chroma-js';
+import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import React, { memo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import EventPinsLayer from './EventPinsLayer';
+import mapStyle from './mapStyle';
+import styles from './MapViewer.scss';
 
 const polandCenter: IPoint = {
     lat: 51.919438,
@@ -24,8 +23,9 @@ const MapViewer: React.FC = () => {
     const navigateTo = useNavigate();
 
     const onLoad = useCallback((map) => {
-        eventPinsLayer.initialize(map, (pin) => navigateTo(`/ogloszenia/${pin.id}`));
-
+        mapViewerStore.setMap(map);
+        eventPinsLayer.initialize(map, pin => navigateTo(`/ogloszenia/${pin.id}`));
+        // markersLayer.initialize(map);
         // const pins: IEventPin[] = [];
 
         // for (let i = 0; i < 10000; i++) {
@@ -48,7 +48,12 @@ const MapViewer: React.FC = () => {
                 center={polandCenter}
                 zoom={6}
                 onLoad={onLoad}
-                options={{ disableDefaultUI: true, styles: mapStyle }}
+                options={{ 
+                    disableDefaultUI: true, 
+                    styles: mapStyle,
+                    draggableCursor: 'crosshair',
+                    draggingCursor: 'crosshair'
+                }}
             />
         </div>
     ) : null;

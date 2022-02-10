@@ -1,11 +1,7 @@
-import useBoundingBox from '@/hooks/useBoundingBox';
-import { useOnClickOutside } from '@/hooks/useOnClickOutside';
-import { AnimatePresence, motion } from 'framer-motion';
-import React, { CSSProperties, Fragment, useRef, useState } from 'react';
-import ReactDOM from 'react-dom';
+import React, { useState } from 'react';
+import Dropdown, { DropdownRow, IDropdownProps } from '../Dropdown/Dropdown';
 import styles from './SelectBox.scss';
-import { BsChevronDown } from 'react-icons/bs';
-import Dropdown, { IDropdownProps } from '../Dropdown/Dropdown';
+import dropdownStyles from '../Dropdown/Dropdown.scss';
 
 export interface IOption<T = any> {
     value: T;
@@ -15,33 +11,24 @@ export interface IOption<T = any> {
 
 export interface SelectboxProps<T = any> extends IDropdownProps {
     multiselect?: boolean;
-    initialOptions?: IOption<T>[];
-    onChange?: (selectedOptions: IOption<T>[]) => void;
+    options?: IOption<T>[];
+    onChange?: (options: IOption<T>[], selectedOptions: IOption<T>[]) => void;
+    rowFactory?: (option: IOption<T>) => React.ReactNode,
     searchBar?: {
         getOptions: (searchString: string) => IOption<T>[] | Promise<IOption<T>[]>
         debounceTimeMs?: number;
     }
 }
 
-const transition = { duration: 0.25, type: 'tween', ease: [0.45, 0, 0.55, 1] };
-
-const itemsContainerAnimation = {
-    initial: { transform: 'translateY(-15px)', opacity: 0 },
-    animate: { transform: 'translateY(0px)', opacity: 1 },
-    exit: { transform: 'translateY(15px)', opacity: 0 },
-    transition
-};
-
 function Selectbox<T = any>(props: SelectboxProps<T>) {
     const {
         multiselect = false,
-        initialOptions = [],
+        options = [],
         onChange,
         searchBar,
+        rowFactory = op => (<span>{op.text}</span>),
         ...dropdownProps
     } = props;
-
-    const [options, setOptions] = useState<IOption<T>[]>(initialOptions);
 
     if (multiselect) {
 
@@ -50,8 +37,13 @@ function Selectbox<T = any>(props: SelectboxProps<T>) {
     return (
         <Dropdown {...dropdownProps}>
             {options.map((op, i) => {
+                const checkboxClass = styles.checkbox + ' ' + (op.isSelected ? styles.checked : '');
+
                 return (
-                    <li key={i}>{op.text}</li>
+                    <DropdownRow>
+                        <div className={styles.rowContent}>{rowFactory(op)}</div>
+                        <div className={checkboxClass}></div>
+                    </DropdownRow>
                 );
             })}
         </Dropdown>
