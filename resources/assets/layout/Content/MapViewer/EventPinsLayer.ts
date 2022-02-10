@@ -8,6 +8,7 @@ export default class EventPinsLayer {
     private readonly deckgl: DeckGL;
     private map: google.maps.Map;
     private pointsLayer: ScatterplotLayer<IEventPin> = null;
+    private onClick: (IEventPin: IEventPin) => void;
 
     public constructor() {
         this.deckgl = new DeckGL({});
@@ -18,28 +19,27 @@ export default class EventPinsLayer {
             this.pointsLayer = new ScatterplotLayer<IEventPin>({
                 id: 'scatter-plot',
                 data: eventPins,
-                radiusMinPixels: 5,
-                radiusMaxPixels: 15,
-                getRadius: 15,
+                radiusMinPixels: 10,
+                radiusMaxPixels: 10,
+                getRadius: 10,
                 pickable: true,
+                stroked: true,
+                lineWidthMinPixels: 1,
+                lineWidthMaxPixels: 1,
+                getLineWidth: 1,
+                getLineColor: [0, 0, 0, 128],
                 getPosition: p => [p.lng, p.lat],
                 getFillColor: p => p.color.rgb(),
-                onClick: (e) => {
-                    alert(JSON.stringify(e.object));
-                }
+                onClick: (e) => this.onClick?.(e.object)
             });
 
             this.render();
         });
     }
 
-    public initialize(map: google.maps.Map): void {
+    public initialize(map: google.maps.Map, onClick: (IEventPin: IEventPin) => void): void {
         this.map = map;
-        this.map.setOptions({
-            draggableCursor: 'crosshair',
-            draggingCursor: 'crosshair'
-        });
-
+        this.onClick = onClick;
         this.deckgl.setMap(map);
         this.render();
     }

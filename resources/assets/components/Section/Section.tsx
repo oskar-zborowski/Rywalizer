@@ -3,12 +3,22 @@ import styles from './Section.scss';
 
 export interface ISectionProps {
     title: string;
+    titleAlign?: 'left' | 'right';
+    titleSize?: number;
 }
 
-const Section: React.FC<ISectionProps> = ({ children, title }) => {
+const Section: React.FC<ISectionProps> = ({ children, title, titleSize, titleAlign = 'left' }) => {
     return (
         <section>
-            <h1 className={styles.sectionTitle}>{title}</h1>
+            <h1 
+                className={styles.sectionTitle} 
+                style={{
+                    textAlign: titleAlign,
+                    fontSize: titleSize + 'px',
+                }}
+            >
+                {title}
+            </h1>
             {children}
         </section>
     );

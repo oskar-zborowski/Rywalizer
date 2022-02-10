@@ -1,12 +1,26 @@
-import React from 'react';
+import LoaderOverlay from '@/components/LoaderOverlay/LoaderOverlay';
+import React, { createContext, useContext, useState } from 'react';
 import styles from './View.scss';
+
+export interface IViewContext {
+    showLoader?: () => void;
+    hideLoader?: () => void;
+}
+
+const ViewContext = createContext<IViewContext>({});
 
 export interface IViewProps {
     withBackground?: boolean;
     title?: string;
+    isLoaderVisible?: boolean;
 }
 
-const View: React.FC<IViewProps> = ({ withBackground, children, title }) => {
+const View: React.FC<IViewProps> = ({ withBackground, children, title, isLoaderVisible }) => {
+    const [isLoaderVisibleInner, setIsLoaderVisibleInner] = useState(false);
+
+    const showLoader = () => setIsLoaderVisibleInner(true);
+    const hideLoader = () => setIsLoaderVisibleInner(false);
+
     const content = !withBackground ? children : (
         <div className={styles.grayPane}>
             {title && <header className={styles.header}>
@@ -17,8 +31,17 @@ const View: React.FC<IViewProps> = ({ withBackground, children, title }) => {
     );
 
     return (
-        <div className={styles.view}>{content}</div>
+        <ViewContext.Provider value={{ showLoader, hideLoader }}>
+            <div className={styles.view}>
+                {content}
+            </div>
+            <LoaderOverlay isVisible={isLoaderVisibleInner || isLoaderVisible} />
+        </ViewContext.Provider>
     );
 };
 
 export default View;
+
+export const useView = () => {
+    return useContext(ViewContext);
+};

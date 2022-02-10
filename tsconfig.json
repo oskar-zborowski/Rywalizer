@@ -17,9 +17,5 @@
                 "resources/assets/*"
             ]
         }
-    },
-    "include": [
-        "resources/assets/**/*",
-        "types.d.ts"
-    ]
+    }
 }

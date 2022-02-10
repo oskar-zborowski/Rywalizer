@@ -72,3 +72,9 @@ const Selectbox: React.FC<IDropdownProps> = props => {
 };
 
 export default Selectbox;
+
+export const DropdownRow: React.FC = ({ children }) => {
+    return (
+        <div className={styles.row}>{children}</div>
+    );
+};

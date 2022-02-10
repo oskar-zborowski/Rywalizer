@@ -1,3 +1,4 @@
+import { IGender } from '@/api/getGenders';
 import Flexbox from '@/components/Flexbox/Flexbox';
 import { OrangeButton } from '@/components/Form/Button/Button';
 import Input from '@/components/Form/Input/Input';
@@ -6,8 +7,7 @@ import Link from '@/components/Link/Link';
 import Modal from '@/components/Modal/Modal';
 import appStore from '@/store/AppStore';
 import userStore from '@/store/UserStore';
-import { IGender } from '@/types/IGender';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 export interface RegisterModalProps {
     isOpen: boolean;
@@ -76,7 +76,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onClickL
                 <Flexbox gap="10px">
                     <Input label="Data urodzenia" type="date" value={birthDate} onChange={(v) => setBirthDate(v)} />
                     <Selectbox
-                        initialOptions={genderOptions}
+                        options={genderOptions}
                         label="Płeć"
                         placeholder="Nie podano"
                     />

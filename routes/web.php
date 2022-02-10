@@ -15,4 +15,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/{path?}', function () {
     return view('index');
-})->where('path', '^(?!api).*$')->name('home');
+})->where('path', '^(?!(api|storage)).*$')->name('home');

@@ -9,6 +9,7 @@ interface CssExports {
   'label': string;
   'open': string;
   'placeholder': string;
+  'row': string;
   'transparent': string;
 }
 export const cssExports: CssExports;
