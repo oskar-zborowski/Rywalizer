@@ -68,8 +68,8 @@ Route::get('/v1/genders', [DefaultTypeController::class, 'getGenders'])->name('d
 Route::get('/v1/sports', [DefaultTypeController::class, 'getSports'])->name('defaultType-getSports');
 Route::get('/v1/areas', [DefaultTypeController::class, 'getAreas'])->name('defaultType-getAreas');
 
-Route::get('/v1/partner/{id}', [PartnerController::class, 'getPartnerById'])->name('partner-getPartnerById');
-Route::get('/v1/announcement/{id}', [AnnouncementController::class, 'getAnnouncementById'])->name('announcement-getAnnouncementById');
+Route::get('/v1/partners/{id}', [PartnerController::class, 'getPartnerById'])->name('partner-getPartnerById');
+Route::get('/v1/announcements/{id}', [AnnouncementController::class, 'getAnnouncementById'])->name('announcement-getAnnouncementById');
 Route::get('/v1/announcements', [AnnouncementController::class, 'getAnnouncements'])->name('announcement-getAnnouncements');
 
 
@@ -83,20 +83,20 @@ Route::get('/v1/announcements', [AnnouncementController::class, 'getAnnouncement
 */
 
 Route::middleware('verified')->group(function () {
-    Route::post('/v1/partner', [PartnerController::class, 'createPartner'])->name('partner-createPartner');
-    Route::patch('/v1/partner', [PartnerController::class, 'updatePartner'])->name('partner-updatePartner');
-    Route::get('/v1/partner', [PartnerController::class, 'getPartner'])->name('partner-getPartner');
-    Route::delete('/v1/partner', [PartnerController::class, 'deletePartner'])->name('partner-deletePartner');
+    Route::post('/v1/partners', [PartnerController::class, 'createPartner'])->name('partner-createPartner');
+    Route::patch('/v1/partners', [PartnerController::class, 'updatePartner'])->name('partner-updatePartner');
+    Route::get('/v1/partners', [PartnerController::class, 'getPartner'])->name('partner-getPartner');
+    Route::delete('/v1/partners', [PartnerController::class, 'deletePartner'])->name('partner-deletePartner');
 
-    Route::post('/v1/partner/logo', [PartnerController::class, 'uploadLogo'])->name('partner-uploadLogo')->middleware('throttle:uploadLogoLimit');
-    Route::put('/v1/partner/logo/{id}', [PartnerController::class, 'changeLogo'])->name('partner-changeLogo');
-    Route::delete('/v1/partner/logo/{id}', [PartnerController::class, 'deleteLogo'])->name('partner-deleteLogo');
+    Route::post('/v1/partners/logo', [PartnerController::class, 'uploadLogo'])->name('partner-uploadLogo')->middleware('throttle:uploadLogoLimit');
+    Route::put('/v1/partners/logo/{id}', [PartnerController::class, 'changeLogo'])->name('partner-changeLogo');
+    Route::delete('/v1/partners/logo/{id}', [PartnerController::class, 'deleteLogo'])->name('partner-deleteLogo');
 
-    Route::post('/v1/announcement', [AnnouncementController::class, 'createAnnouncement'])->name('announcement-createAnnouncement');
-    Route::patch('/v1/announcement/{id}', [AnnouncementController::class, 'updateAnnouncement'])->name('announcement-updateAnnouncement');
+    Route::post('/v1/announcements', [AnnouncementController::class, 'createAnnouncement'])->name('announcement-createAnnouncement');
+    Route::patch('/v1/announcements/{id}', [AnnouncementController::class, 'updateAnnouncement'])->name('announcement-updateAnnouncement');
 
-    Route::post('/v1/announcement/{id}/photo', [AnnouncementController::class, 'uploadPhoto'])->name('announcement-uploadPhoto')->middleware('throttle:uploadPhotoLimit');
-    Route::delete('/v1/announcement/{id}/photo/{photoId}', [AnnouncementController::class, 'deletePhoto'])->name('announcement-deletePhoto');
+    Route::post('/v1/announcements/{id}/photos', [AnnouncementController::class, 'uploadPhoto'])->name('announcement-uploadPhoto')->middleware('throttle:uploadPhotoLimit');
+    Route::delete('/v1/announcements/{id}/photos/{photoId}', [AnnouncementController::class, 'deletePhoto'])->name('announcement-deletePhoto');
 });
 
 

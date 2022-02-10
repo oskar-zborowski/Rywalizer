@@ -8,11 +8,11 @@ use App\Http\ErrorCodes\BaseErrorCode;
 use App\Http\Libraries\Encrypter\Encrypter;
 use App\Http\Libraries\Validation\Validation;
 use App\Http\Requests\AnnouncementRequest;
-use App\Http\Requests\UpdateAnnouncementRequest;
 use App\Http\Responses\JsonResponse;
 use App\Models\Announcement;
 use App\Models\AnnouncementPayment;
 use App\Models\AnnouncementSeat;
+use App\Models\AnnouncementParticipant;
 use App\Models\Facility;
 use App\Models\User;
 use App\Models\Partner;
@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Auth;
 class AnnouncementController extends Controller
 {
     /**
-     * #### `POST` `/api/v1/announcement`
+     * #### `POST` `/api/v1/announcements`
      * Utworzenie nowego ogłoszenia
      * 
      * @param AnnouncementRequest $request
@@ -48,6 +48,32 @@ class AnnouncementController extends Controller
             );
         }
 
+        if ($request->start_date > $request->start_date) {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'The end date cannot be earlier than the start date.'
+            );
+        }
+
+        if ($request->start_date < now()) {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'The start date cannot be in the past.'
+            );
+        }
+
+        $maximumParticipantsNumber = 0;
+
+        foreach ($request->sports_positions as $sP) {
+            if (!isset($sP['maximum_seats_number']) || !isset($sP['sports_position_id'])) {
+                throw new ApiException(
+                    BaseErrorCode::FAILED_VALIDATION(),
+                    'Missing field of array.'
+                );
+            }
+            $maximumParticipantsNumber += $sP['maximum_seats_number'];
+        }
+
         if ($partnerSetting->partner_type_id = 59) {
 
             /** @var Announcement $announcement */
@@ -56,7 +82,7 @@ class AnnouncementController extends Controller
 
             if ($request->facility_id) {
                 $announcement->facility_id = $request->facility_id;
-            } else if ($request->facility_name || $request->facility_street || $request->city_id || $request->city_name) {
+            } else if ($request->facility_name || $request->facility_street || $request->facility_address_coordinates || $request->city_id || $request->city_name) {
                 if ($request->city_id || $request->city_name) {
                     $city = Validation::createArea($request);
                 }
@@ -64,6 +90,7 @@ class AnnouncementController extends Controller
                 $facility = new Facility;
                 $facility->name = $request->facility_name;
                 $facility->street = $request->facility_street;
+                $facility->address_coordinates = $request->facility_address_coordinates;
                 $facility->creator_id = $user->id;
                 $facility->editor_id = $user->id;
 
@@ -75,57 +102,104 @@ class AnnouncementController extends Controller
                 $announcement->facility_id = $facility->id;
             }
 
+            $result = [];
+
+            foreach ($request->sports_positions as $a) {
+                $keyExist = false;
+                foreach ($result as &$r) {
+                    if (isset($r['sports_position_id']) && $r['sports_position_id'] == $a['sports_position_id']) {
+                        $r['maximum_seats_number'] += $a['maximum_seats_number'];
+                        $keyExist = true;
+                        break;
+                    }
+                }
+
+                if (!$keyExist) {
+                    $result[] = [
+                        'sports_position_id' => $a['sports_position_id'],
+                        'maximum_seats_number' => $a['maximum_seats_number']
+                    ];
+                }
+            }
+    
+            if ($request->game_variant_id != $announcement->game_variant_id) {
+                if ($request->game_variant_id == 77) {
+
+                    $arrayKeyExists = false;
+
+                    foreach ($result as $r) {
+                        if ($r['sports_position_id'] == 6) {
+                            $arrayKeyExists = true;
+                        }
+                    }
+
+                    if (count($result) != 1 || !$arrayKeyExists) {
+                        throw new ApiException(
+                            BaseErrorCode::FAILED_VALIDATION(),
+                            'Wrong game variant.'
+                        );
+                    }
+                }
+
+                $arrayKeyExists = false;
+
+                foreach ($result as $r) {
+                    if ($r['sports_position_id'] == 6) {
+                        $arrayKeyExists = true;
+                    }
+                }
+    
+                if ($request->game_variant_id == 78 && $arrayKeyExists) {
+                    throw new ApiException(
+                        BaseErrorCode::FAILED_VALIDATION(),
+                        'Wrong game variant.'
+                    );
+                }
+            }
+
             $encrypter = new Encrypter;
             $code = $encrypter->generateToken(12, Announcement::class, 'code', '', true);
-
-            $maximumParticipantsNumber = 0;
-
-            foreach ($request->sport_positions as $sP) {
-                $maximumParticipantsNumber += $sP['maximum_seats_number'];
-            }
 
             $announcement->sport_id = $request->sport_id;
             $announcement->start_date = $request->start_date;
             $announcement->end_date = $request->end_date;
-            $announcement->visible_at = $request->visible_at;
+            $announcement->visible_at = now();
             $announcement->ticket_price = $request->ticket_price;
             $announcement->game_variant_id = $request->game_variant_id;
             $announcement->minimum_skill_level_id = $request->minimum_skill_level_id;
             $announcement->gender_id = $request->gender_id;
-            $announcement->age_category_id = $request->age_category_id;
-            $announcement->minimal_age = $request->minimal_age;
-            $announcement->maximum_age = $request->maximum_age;
+            // $announcement->age_category_id = $request->age_category_id;
+            // $announcement->minimal_age = $request->minimal_age;
+            // $announcement->maximum_age = $request->maximum_age;
             $announcement->code = $code;
             $announcement->description = $request->description;
             $announcement->maximum_participants_number = $maximumParticipantsNumber;
-            $announcement->announcement_type_id = $request->announcement_type_id;
+            $announcement->announcement_type_id = 83;
             $announcement->announcement_status_id = 85;
             $announcement->creator_id = $user->id;
             $announcement->editor_id = $user->id;
-            $announcement->is_automatically_approved = $request->is_automatically_approved;
+            $announcement->is_automatically_approved = true;
             $announcement->is_public = $request->is_public;
             $announcement->save();
 
-            foreach ($request->sport_positions as $sP) {
+            foreach ($result as $sP) {
                 /** @var AnnouncementSeat $announcementSeat */
                 $announcementSeat = new AnnouncementSeat;
                 $announcementSeat->announcement_id = $announcement->id;
-                $announcementSeat->sports_position_id = $sP['sport_position_id'];
+                $announcementSeat->sports_position_id = $sP['sports_position_id'];
                 $announcementSeat->maximum_seats_number	= $sP['maximum_seats_number'];
                 $announcementSeat->creator_id = $user->id;
                 $announcementSeat->editor_id = $user->id;
                 $announcementSeat->save();
             }
 
-            foreach ($request->payment_type_ids as $pTI) {
-                /** @var AnnouncementPayment $announcementPayment */
-                $announcementPayment = new AnnouncementPayment;
-                $announcementPayment->announcement_id = $announcement->id;
-                $announcementPayment->payment_type_id = $pTI;
-                $announcementPayment->creator_id = $user->id;
-                $announcementPayment->editor_id = $user->id;
-                $announcementPayment->save();
-            }
+            /** @var AnnouncementPayment $announcementPayment */
+            $announcementPayment = new AnnouncementPayment;
+            $announcementPayment->announcement_id = $announcement->id;
+            $announcementPayment->payment_type_id = 87;
+            $announcementPayment->creator_id = $user->id;
+            $announcementPayment->editor_id = $user->id;
+            $announcementPayment->save();
 
             $announcement->getAnnouncement('getBasicInformation');
 
@@ -138,15 +212,19 @@ class AnnouncementController extends Controller
     }
 
     /**
-     * #### `PATCH` `/api/v1/announcement/{id}`
+     * #### `PATCH` `/api/v1/announcements/{id}`
      * Edycja danych ogłoszenia
      * 
      * @param int $id id ogłoszenia
-     * @param UpdateAnnouncementRequest $request
+     * @param AnnouncementRequest $request
      * 
      * @return void
      */
-    public function updateAnnouncement($id, UpdateAnnouncementRequest $request): void {
+    public function updateAnnouncement($id, AnnouncementRequest $request): void {
+
+        $request->validate([
+            'announcement_status_id' => 'required|integer|between:85,86',
+        ]);
 
         /** @var User $user */
         $user = Auth::user();
@@ -164,14 +242,28 @@ class AnnouncementController extends Controller
             );
         }
 
+        if ($request->start_date > $request->start_date) {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'The end date cannot be earlier than the start date.'
+            );
+        }
+
+        if ($request->start_date < now()) {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'The start date cannot be in the past.'
+            );
+        }
+
         /** @var Announcement $announcement */
         $announcement = Announcement::where('id', $id)->first();
 
-        if ($partnerSetting->partner_type_id = 59 && $announcement->announcement_partner_id == $partnerSetting->id) {
+        if ($partnerSetting->partner_type_id = 59 && $announcement && $announcement->announcement_partner_id == $partnerSetting->id) {
 
             if ($request->facility_id) {
                 $announcement->facility_id = $request->facility_id;
-            } else if ($request->facility_name || $request->facility_street || $request->city_id || $request->city_name) {
+            } else if ($request->facility_name || $request->facility_street || $request->facility_address_coordinates || $request->city_id || $request->city_name) {
                 if ($request->city_id || $request->city_name) {
                     $city = Validation::createArea($request);
                 }
@@ -179,6 +271,7 @@ class AnnouncementController extends Controller
                 $facility = new Facility;
                 $facility->name = $request->facility_name;
                 $facility->street = $request->facility_street;
+                $facility->address_coordinates = $request->facility_address_coordinates;
                 $facility->creator_id = $user->id;
                 $facility->editor_id = $user->id;
 
@@ -190,20 +283,168 @@ class AnnouncementController extends Controller
                 $announcement->facility_id = $facility->id;
             }
 
-            $announcement->start_date = $request->start_date;
-            $announcement->end_date = $request->end_date;
-            $announcement->visible_at = $request->visible_at;
+            $maximumParticipantsNumber = 0;
+
+            foreach ($request->sports_positions as $sP) {
+                if (!isset($sP['maximum_seats_number']) || !isset($sP['sports_position_id'])) {
+                    throw new ApiException(
+                        BaseErrorCode::FAILED_VALIDATION(),
+                        'Missing field of array.'
+                    );
+                }
+                $maximumParticipantsNumber += $sP['maximum_seats_number'];
+            }
+
             $announcement->ticket_price = $request->ticket_price;
             $announcement->minimum_skill_level_id = $request->minimum_skill_level_id;
             $announcement->gender_id = $request->gender_id;
-            $announcement->age_category_id = $request->age_category_id;
-            $announcement->minimal_age = $request->minimal_age;
-            $announcement->maximum_age = $request->maximum_age;
+            // $announcement->age_category_id = $request->age_category_id;
+            // $announcement->minimal_age = $request->minimal_age;
+            // $announcement->maximum_age = $request->maximum_age;
             $announcement->description = $request->description;
-            $announcement->announcement_status_id = 85;
+            $announcement->announcement_status_id = $request->announcement_status_id;
             $announcement->editor_id = $user->id;
-            $announcement->is_automatically_approved = $request->is_automatically_approved;
             $announcement->is_public = $request->is_public;
+            $announcement->start_date = $request->start_date;
+            $announcement->end_date = $request->end_date;
+
+            /** @var AnnouncementPayment $announcementPayment */
+            $announcementPayment = $announcement->announcementPayments()->first();
+
+            /** @var AnnouncementParticipant $announcementParticipant */
+            $announcementParticipants = $announcementPayment->announcementParticipants()->get();
+
+            $sportPositions = [];
+
+            /** @var AnnouncementParticipant $aP */
+            foreach ($announcementParticipants as $aP) {
+                /** @var AnnouncementSeat $announcementSeat */
+                $announcementSeat = $aP->announcementSeat()->first();
+
+                if (!array_key_exists($announcementSeat->sportsPosition()->first()->id, $sportPositions)) {
+                    $sportPositions[$announcementSeat->sportsPosition()->first()->id] = 1;
+                } else {
+                    $sportPositions[$announcementSeat->sportsPosition()->first()->id]++;
+                }
+            }
+
+            $result = [];
+
+            foreach ($request->sports_positions as $a) {
+                $keyExist = false;
+                foreach ($result as $i => $r) {
+                    if (isset($r['sports_position_id']) && $r['sports_position_id'] == $a['sports_position_id']) {
+                        $result[$i]['maximum_seats_number'] += $a['maximum_seats_number'];
+                        $keyExist = true;
+                        break;
+                    }
+                }
+
+                if (!$keyExist) {
+                    $result[] = [
+                        'sports_position_id' => $a['sports_position_id'],
+                        'maximum_seats_number' => $a['maximum_seats_number']
+                    ];
+                }
+            }
+
+            foreach ($result as $sP) {
+                if (isset($sportPositions[$sP['sports_position_id']]) && $sportPositions[$sP['sports_position_id']] > $sP['maximum_seats_number']) {
+                    throw new ApiException(
+                        BaseErrorCode::FAILED_VALIDATION(),
+                        'The number of players cannot be reduced as the sports positions are already taken.'
+                    );
+                }
+            }
+
+            foreach ($sportPositions as $k => $v) {
+                $arrayKeyExists = false;
+                foreach ($result as $r) {
+                    if ($r['sports_position_id'] == $k) {
+                        $arrayKeyExists = true;
+                    }
+                }
+                if (!$arrayKeyExists) {
+                    throw new ApiException(
+                        BaseErrorCode::FAILED_VALIDATION(),
+                        'The number of players cannot be reduced as the sports positions are already taken.'
+                    );
+                }
+            }
+
+            if ($request->game_variant_id != $announcement->game_variant_id) {
+                if ($request->game_variant_id == 77) {
+
+                    $arrayKeyExists = false;
+
+                    foreach ($result as $r) {
+                        if ($r['sports_position_id'] == 6) {
+                            $arrayKeyExists = true;
+                        }
+                    }
+
+                    if (count($result) != 1 || !$arrayKeyExists) {
+                        throw new ApiException(
+                            BaseErrorCode::FAILED_VALIDATION(),
+                            'Wrong game variant.'
+                        );
+                    }
+                }
+
+                $arrayKeyExists = false;
+
+                foreach ($result as $r) {
+                    if ($r['sports_position_id'] == 6) {
+                        $arrayKeyExists = true;
+                    }
+                }
+    
+                if ($request->game_variant_id == 78 && $arrayKeyExists) {
+                    throw new ApiException(
+                        BaseErrorCode::FAILED_VALIDATION(),
+                        'Wrong game variant.'
+                    );
+                }
+            }
+
+            /** @var AnnouncementSeat $announcementSeats */
+            $announcementSeats = $announcement->announcementSeats()->get();
+
+            /** @var AnnouncementSeat $aS */
+            foreach ($announcementSeats as $aS) {
+                $arrayKeyExists = false;
+                foreach ($result as $r) {
+                    if ($r['sports_position_id'] == $aS->sports_position_id) {
+                        $arrayKeyExists = true;
+                    }
+                }
+                if (!$arrayKeyExists) {
+                    $aS->delete();
+                }
+            }
+
+            // echo json_encode($result);
+            // die;
+
+            foreach ($result as $sP) {
+
+                /** @var AnnouncementSeat $announcementSeat */
+                $announcementSeat = $announcement->announcementSeats()->where('sports_position_id', $sP['sports_position_id'])->first();
+
+                if (!$announcementSeat) {
+                    $announcementSeat = new AnnouncementSeat;
+                    $announcementSeat->announcement_id = $announcement->id;
+                    $announcementSeat->sports_position_id = $sP['sports_position_id'];
+                    $announcementSeat->creator_id = $user->id;
+                }
+
+                $announcementSeat->maximum_seats_number	= $sP['maximum_seats_number'];
+                $announcementSeat->editor_id = $user->id;
+                $announcementSeat->save();
+            }
+
+            $announcement->game_variant_id = $request->game_variant_id;
+            $announcement->maximum_participants_number = $maximumParticipantsNumber;
             $announcement->save();
 
             $announcement->getAnnouncement('getBasicInformation');
@@ -217,7 +458,7 @@ class AnnouncementController extends Controller
     }
 
     /**
-     * #### `GET` `/api/v1/announcement/{id}`
+     * #### `GET` `/api/v1/announcements/{id}`
      * Pobranie informacji o wydarzeniu
      * 
      * @return void
@@ -237,7 +478,7 @@ class AnnouncementController extends Controller
     }
 
     /**
-     * #### `POST` `/api/v1/announcement/{id}/photo`
+     * #### `POST` `/api/v1/announcements/{id}/photos`
      * Wgranie zdjęcia w tle
      * 
      * @param Request $request
@@ -288,7 +529,7 @@ class AnnouncementController extends Controller
     }
 
     /**
-     * #### `DELETE` `/api/v1/announcement/{id}/photo/{id}`
+     * #### `DELETE` `/api/v1/announcements/{id}/photos/{id}`
      * Usunięcie zdjęcia w tle dla wydarzenia
      * 
      * @param int $id id wydarzenia
@@ -340,7 +581,7 @@ class AnnouncementController extends Controller
         $paginationAttributes = $this->getPaginationAttributes($request);
 
         /** @var Announcement $announcements */
-        $announcements = Announcement::where('visible_at', '<=', now())->where('start_date', '>', now())->filter()->paginate($paginationAttributes['perPage']);
+        $announcements = Announcement::where('visible_at', '<=', now())->filter()->paginate($paginationAttributes['perPage']);
 
         $result = $this->preparePagination($announcements, 'getBasicInformation');
 

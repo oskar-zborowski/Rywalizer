@@ -28,7 +28,7 @@ class PartnerRequest extends FormRequest
             'facebook_profile' => 'nullable|url|max:255',
             'instagram_profile' => 'nullable|url|max:255',
             'website' => 'nullable|url|max:255',
-            'partner_type_id' => 'required|integer|size:59',
+            // 'partner_type_id' => 'required|integer|size:59',
             'visible_name_id' => 'required|integer|between:61,62',
             'visible_image_id' => 'required|integer|between:61,62',
             'visible_email_id' => 'required|integer|between:61,62',
