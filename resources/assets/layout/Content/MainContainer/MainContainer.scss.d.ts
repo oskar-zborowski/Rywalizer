@@ -2,9 +2,7 @@
 // Please do not change this file!
 interface CssExports {
   'authButtons': string;
-  'avatar': string;
   'mainContainer': string;
-  'userButton': string;
 }
 export const cssExports: CssExports;
 export default cssExports;

@@ -12,12 +12,11 @@ const Topbar = () => {
                 <Dropdown transparent placeholder="Ogłoszenia">
                     <Link to="/"><DropdownRow><span>Lista ogłoszeń</span></DropdownRow></Link>
                     <Link to="/ogloszenia/dodaj"><DropdownRow><span>Dodaj ogłoszenie</span></DropdownRow></Link>
-                    <Link to="/ogloszenia/1"><DropdownRow><span>TEST</span></DropdownRow></Link>
                 </Dropdown>
                 <Dropdown transparent placeholder="Współpraca">
                     <Link to="/obiekty/1"><DropdownRow><span>TEST</span></DropdownRow></Link>
                 </Dropdown>
-            </nav >
+            </nav>
         </div >
     );
 };
