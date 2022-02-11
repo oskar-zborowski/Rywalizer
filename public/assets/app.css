@@ -264,6 +264,7 @@
   right: 0;
   top: -30px;
   transform: translateY(-50%);
+  z-index: 999;
 }
 
 .AuthButtons_authButtons__OCzBI {

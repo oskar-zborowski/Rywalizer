@@ -68,8 +68,20 @@ const EventDetailsView: React.FC = (props) => {
             mapViewerStore.setEventPins([{
                 id: event.id,
                 color: event.sport.color,
-                ...event.facility.location
+                ...event.facility?.location
             }]);
+
+            if (event.facility?.location) {
+                const { lat, lng } = event.facility?.location;
+
+                mapViewerStore.setBounds({
+                    lat: lat - 0.1,
+                    lng: lng - 0.1
+                }, {
+                    lat: lat + 0.1,
+                    lng: lng + 0.1
+                });
+            }
         });
     }, []);
 
@@ -102,7 +114,7 @@ const EventDetailsView: React.FC = (props) => {
             {isEventLoaded && (
                 <Fragment>
                     <header className={styles.header}>
-                        <img className={styles.backgroundImage} src={event.imageUrl} alt="" />
+                        {event.imageUrl && <img className={styles.backgroundImage} src={event.imageUrl} alt="" />}
                         <div className={styles.gradientOverlay}></div>
                         <div className={styles.userData}>
                             <img className={styles.userImage} src={prof} alt="" />
@@ -150,8 +162,8 @@ const EventDetailsView: React.FC = (props) => {
                         <StackPanel padding="20px 0 20px 0" vertical>
                             <StackPanel>
                                 <Icon svg={LocationSvg}>
-                                    <b>{event.facility.name}</b>,&nbsp;
-                                    {event.facility.city.name}&nbsp;{event.facility.street}
+                                    <b>{event.facility?.name}</b>,&nbsp;
+                                    {event.facility?.city.name}&nbsp;{event.facility?.street}
                                 </Icon>
                                 <Icon svg={CalendarSvg}>28.10.2022, 15:00 - 16:30</Icon>
                             </StackPanel>

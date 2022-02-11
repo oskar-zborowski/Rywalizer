@@ -1,9 +1,8 @@
+import createEvent from '@/api/createEvent';
 import geocode from '@/api/geocode';
-import { ISport } from '@/api/getSports';
 import { OrangeButton } from '@/components/Form/Button/Button';
 import Input from '@/components/Form/Input/Input';
-import GenderSelectBox from '@/components/Form/SelectBox/GenderSelectBox';
-import SelectBox, { IOption } from '@/components/Form/SelectBox/SelectBox';
+import SelectBox from '@/components/Form/SelectBox/SelectBox';
 import SportsSelectBox from '@/components/Form/SelectBox/SportSelectbox';
 import Textarea from '@/components/Form/Textarea/Textarea';
 import Section from '@/components/Section/Section';
@@ -12,6 +11,7 @@ import appStore from '@/store/AppStore';
 import mapViewerStore from '@/store/MapViewerStore';
 import { observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import View from '../View/View';
 import styles from './CreateEventView.scss';
 
@@ -21,20 +21,23 @@ const CreateEventView: React.FC = observer(() => {
         mapViewerStore.reset();
     }, []);
 
+    const navigateTo = useNavigate();
+
     const [administrativeAreas, setAdministrativeAreas] = useState<string[]>([]);
     const [sportId, setSportId] = useState<number>(null);
     const startDateRef = useRef<HTMLInputElement>();
     const endDateRef = useRef<HTMLInputElement>();
     const priceRef = useRef<HTMLInputElement>();
     const [eventType, setEventType] = useState<number>(null);
-    const [isPublic, setIsPublic] = useState<boolean>(null);
-    const [minimalLevel, setMinimalLevel] = useState<number>(null);
+    const [isPublic, setIsPublic] = useState<boolean>(true);
+    const [minSkillLevel, setMinSkillLevel] = useState<number>(null);
     const [genderId, setGenderId] = useState<number>(null);
     const objectNameRef = useRef<HTMLInputElement>();
     const addressRef = useRef<HTMLInputElement>();
 
     const findAddressCoords = async (address: string) => {
         const { location, formattedAddress, administrativeAreas, viewport } = await geocode(address);
+        setAdministrativeAreas(administrativeAreas);
         addressRef.current.value = formattedAddress;
         const marker = new google.maps.Marker({
             position: location,
@@ -49,8 +52,8 @@ const CreateEventView: React.FC = observer(() => {
                 marker.getPosition().toJSON()
             );
 
-            addressRef.current.value = formattedAddress;
             setAdministrativeAreas(administrativeAreas);
+            addressRef.current.value = formattedAddress;
         });
 
         marker.addListener('click', () => {
@@ -59,7 +62,6 @@ const CreateEventView: React.FC = observer(() => {
         });
 
         mapViewerStore.setMarkers([marker]);
-        setAdministrativeAreas(administrativeAreas);
     };
 
     return (
@@ -71,7 +73,7 @@ const CreateEventView: React.FC = observer(() => {
                         searchBar
                         label="Sport"
                         sports={appStore.sports}
-                        onChange={([option]) => setEventType(option.value.id)}
+                        onChange={([option]) => setSportId(option.value.id)}
                     />
                     <Input ref={startDateRef} type="date" label="Data rozpoczęcia" />
                     <Input ref={endDateRef} type="date" label="Data zakończenia" />
@@ -110,17 +112,17 @@ const CreateEventView: React.FC = observer(() => {
                                 };
                             })
                         ]}
-                        onChange={([option]) => setMinimalLevel(option.value)}
+                        onChange={([option]) => setMinSkillLevel(option.value)}
                     />
                     <SelectBox
                         dark
                         label="Płeć"
                         options={[
-                            { text: 'Brak podziału', value: 0, isSelected: true },
-                            { text: 'Kobiety', value: 1 },
-                            { text: 'Mężczyźni', value: 2 }
+                            { text: 'Brak podziału', value: null, isSelected: true },
+                            { text: 'Kobiety', value: 10 },
+                            { text: 'Mężczyźni', value: 9 }
                         ]}
-                        onChange={([option]) => setEventType(option.value)}
+                        onChange={([option]) => setGenderId(option.value)}
                     />
                     <Input ref={objectNameRef} label="Nazwa obiektu" style={{ gridColumn: 'span 2' }} />
                     <Input
@@ -131,21 +133,47 @@ const CreateEventView: React.FC = observer(() => {
                     />
                 </div>
             </Section>
-            <Separator />
+            {/* <Separator />
             <Section title="Uczestnicy" titleAlign="right" titleSize={15}>
                 uczestnicy
-            </Section>
+            </Section> */}
             <Separator />
             <Section title="Pozostałe" titleAlign="right" titleSize={15}>
                 <div className={styles.restSection}>
-                    <Input ref={startDateRef} type="file" label="Zdjęcie wydarzenia" />
-                    <Input ref={startDateRef} type="file" label="Zdjęcie w tle" />
+                    <Input type="file" label="Zdjęcie wydarzenia" />
+                    <div></div>
+                    {/* <Input ref={startDateRef} type="file" label="Zdjęcie w tle" /> */}
                     <Textarea label="Opis" value="opis" style={{ gridColumn: 'span 2' }} />
                 </div>
             </Section>
             <div style={{ marginTop: '20px', float: 'right' }}>
                 <OrangeButton
-                    onClick={() => { console.log('create'); }}
+                    onClick={async () => {
+                        const eventId = await createEvent({
+                            administrativeAreas,
+                            sportId,
+                            startDate: new Date(startDateRef.current.value),
+                            endDate: new Date(endDateRef.current.value),
+                            ticketPrice: +priceRef.current.value,
+                            description: '',
+                            isPublic,
+                            minimumSkillLevelId: minSkillLevel,
+                            gameVariantId: 77,
+                            genderId,
+                            availableTicketsCount: 15,
+                            facility: {
+                                name: 'jakis obiekt',
+                                coords: {
+                                    lat: 50, lng: 20
+                                },
+                                street: 'Nagietkowa 45'
+                            }
+                        });
+
+                        if (eventId) {
+                            navigateTo('/ogloszenia/' + eventId);
+                        }
+                    }}
                 >
                     Dodaj ogłoszenie
                 </OrangeButton>

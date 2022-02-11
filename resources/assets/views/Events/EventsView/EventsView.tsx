@@ -32,7 +32,7 @@ const EventsView: React.FC = () => {
         return {
             id: event.id,
             color: event.sport.color,
-            ...event.facility.location
+            ...event.facility?.location
         };
     }));
 

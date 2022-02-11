@@ -2,6 +2,7 @@ import { IPoint } from '@/types/IPoint';
 import axios from 'axios';
 
 export interface IGeocodeResults {
+    street: string;
     administrativeAreas: string[]
     formattedAddress: string;
     location: IPoint,
@@ -39,6 +40,7 @@ export default async function geocode(arg: string | IPoint) {
     const results = response.data.results[0];
     const geometry = results.geometry;
     const administrativeAreas: string[] = [null, null, null, null];
+    let street: string;
 
     results.address_components.forEach((component: any) => {
         if (component.types.includes('administrative_area_level_1')) {
@@ -60,6 +62,8 @@ export default async function geocode(arg: string | IPoint) {
         } else if (component.types.includes('locality')) {
             // Miasto
             administrativeAreas[3] = (component.long_name as string).toLowerCase();
+        } else if (component.types.includes('route')) {
+            street = component.long_name; 
         }
     });
 
@@ -69,6 +73,7 @@ export default async function geocode(arg: string | IPoint) {
     }
 
     const geocodeResults: IGeocodeResults = {
+        street,
         administrativeAreas,
         formattedAddress: results.formatted_address,
         location: geometry.location,
