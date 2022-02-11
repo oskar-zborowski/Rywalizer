@@ -47,7 +47,8 @@ class Area extends BaseModel
 
     protected $filters = [
         'sort',
-        'like'
+        'like',
+        'in'
     ];
 
     public function areaType() {
