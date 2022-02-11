@@ -98,7 +98,7 @@ class AnnouncementController extends Controller
                     $facility->city_id = $city->id;
                 }
 
-                $facility->save;
+                $facility->save();
                 $announcement->facility_id = $facility->id;
             }
 
@@ -279,7 +279,7 @@ class AnnouncementController extends Controller
                     $facility->city_id = $city->id;
                 }
 
-                $facility->save;
+                $facility->save();
                 $announcement->facility_id = $facility->id;
             }
 

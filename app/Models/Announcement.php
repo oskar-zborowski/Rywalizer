@@ -314,7 +314,7 @@ class Announcement extends BaseModel
             ];
         }
 
-        if ($facility) {
+        if ($facility && $facility->address_coordinates) {
             $addressCoordinates = $facility->address_coordinates;
             $addressCoordinates = explode(';', $addressCoordinates);
         }
@@ -377,13 +377,13 @@ class Announcement extends BaseModel
                 'id' => (int) $facility->id,
                 'name' => $facility->name,
                 'street' => $facility->street,
-                'city' => [
+                'city' => $facility->city()->first() ? [
                     'id' => (int) $facility->city()->first()->id,
                     'name' => $facility->city()->first()->name,
-                ],
+                ] : null,
                 'address_coordinates' => [
-                    'lat' => $addressCoordinates ? $addressCoordinates[1] : null,
-                    'lng' => $addressCoordinates ? $addressCoordinates[0] : null
+                    'lat' => isset($addressCoordinates) ? $addressCoordinates[1] : null,
+                    'lng' => isset($addressCoordinates) ? $addressCoordinates[0] : null
                 ]
             ]: null
         ];
