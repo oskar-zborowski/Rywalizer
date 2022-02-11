@@ -587,4 +587,77 @@ class AnnouncementController extends Controller
 
         JsonResponse::sendSuccess($result['data'], $result['metadata']);
     }
+
+    /**
+     * #### `POST` `/api/v1/announcements/join`
+     * Zapisanie się na wydarzenie
+     * 
+     * @param Request $request
+     * 
+     * @return void
+     */
+    public function joinToAnnouncement(Request $request): void {
+
+        $request->validate([
+            'announcement_id' => 'required|integer|exists:announcements,id',
+            'announcement_seat_id' => 'required|integer|exists:announcement_seats,id'
+        ]);
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        /** @var Announcement $announcement */
+        $announcement = Announcement::where('id', $request->announcement_id)->where('start_date', '>=', now())->where('visible_at', '<=', now())->where('announcement_status_id', 85)->first();
+
+        if (!$announcement) {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Announcement does not exist.'
+            );
+        }
+
+        /** @var AnnouncementSeat $announcementSeat */
+        $announcementSeat = $announcement->announcementSeats()->where('id', $request->announcement_seat_id)->where('is_active', true)->first();
+
+        if (!$announcementSeat) {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Announcement does not exist.'
+            );
+        }
+
+        if ($announcementSeat->occupied_seats_counter >= $announcementSeat->maximum_seats_number) {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Place limit exceeded.'
+            );
+        }
+
+        $userExists = $announcementSeat->announcementParticipants()->where('user_id', $user->id)->first();
+
+        if ($userExists) {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'You have already signed up.'
+            );
+        }
+
+        /** @var AnnouncementPayment $announcementPayment */
+        $announcementPayment = $announcement->announcementPayments()->first();
+
+        $announcementParticipant = new AnnouncementParticipant;
+        $announcementParticipant->user_id = $user->id;
+        $announcementParticipant->announcement_seat_id = $announcementSeat->id;
+        $announcementParticipant->announcement_payment_id = $announcementPayment->id;
+        $announcementParticipant->joining_status_id = 91;
+        $announcementParticipant->save();
+
+        $announcementSeat->occupied_seats_counter = $announcementSeat->occupied_seats_counter+1;
+        $announcementSeat->save();
+
+        $announcement->participants_counter = $announcement->participants_counter+1;
+        $announcement->save();
+
+        JsonResponse::sendSuccess();
+    }
 }

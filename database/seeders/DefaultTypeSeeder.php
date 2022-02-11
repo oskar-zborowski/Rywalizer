@@ -904,6 +904,36 @@ class DefaultTypeSeeder extends Seeder
                 'is_active' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'announcement-joinToAnnouncement',
+                'description_simple' => '',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 20,
+                'name' => 'CONFIRM',
+                'description_simple' => 'Zatwierdzony',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 20,
+                'name' => 'REJECT',
+                'description_simple' => 'Odrzucony',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
     }

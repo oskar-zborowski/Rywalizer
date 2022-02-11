@@ -109,6 +109,11 @@ class DefaultTypeNameSeeder extends Seeder
                 'name' => 'PAYMENT_TYPE',
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'name' => 'JOINING_STATUS',
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
     }
