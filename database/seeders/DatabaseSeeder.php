@@ -34,7 +34,8 @@ class DatabaseSeeder extends Seeder
             AnnouncementPaymentSeeder::class,
             AnnouncementSeatSeeder::class,
             ImageSeeder::class,
-            ImageAssignmentSeeder::class
+            ImageAssignmentSeeder::class,
+            MinimumSkillLevelSeeder::class
         ]);
 
         // \App\Models\User::factory(10)->create();

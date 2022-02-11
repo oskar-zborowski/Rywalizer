@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Libraries\Validation\Validation;
 use App\Http\Responses\JsonResponse;
 use App\Models\Area;
+use App\Models\DefaultType;
 use App\Models\DefaultTypeName;
+use App\Models\MinimumSkillLevel;
+use App\Models\SportsPosition;
 use Illuminate\Http\Request;
 
 /**
@@ -41,10 +44,8 @@ class DefaultTypeController extends Controller
      * @param string $name nazwa jednego z domyślnych typów trzymanych w bazie danych
      * @param Request $request
      * @param string $modelMethodName nazwa metody wywołanej po stronie modelu
-     * 
-     * @return void
      */
-    public function getDefaultTypes(string $name, Request $request = null, string $modelMethodName = 'getBasicInformation'): void {
+    public function getDefaultTypes(string $name, Request $request = null, string $modelMethodName = 'getBasicInformation', $onlyReturn = false) {
 
         $name = strtoupper($name);
         $defaultTypeName = Validation::getDefaultTypeName($name);
@@ -58,7 +59,11 @@ class DefaultTypeController extends Controller
 
             $result = $this->preparePagination($defaultTypes, 'getDetailedInformation');
 
-            JsonResponse::sendSuccess($result['data'], $result['metadata']);
+            if (!$onlyReturn) {
+                JsonResponse::sendSuccess($result['data'], $result['metadata']);
+            } else {
+                return $result;
+            }
         }
 
         $result = null;
@@ -73,7 +78,11 @@ class DefaultTypeController extends Controller
 
         $name = strtolower($name);
 
-        JsonResponse::sendSuccess([$name => $result]);
+        if (!$onlyReturn) {
+            JsonResponse::sendSuccess([$name => $result]);
+        } else {
+            return [$name => $result];
+        }
     }
 
     /**
@@ -103,7 +112,48 @@ class DefaultTypeController extends Controller
      * @return void
      */
     public function getSports(): void {
-        $this->getDefaultTypes('SPORT');
+
+        $return = $this->getDefaultTypes('SPORT', null, 'getBasicInformation', true);
+
+        foreach ($return['sport'] as &$r) {
+            
+            /** @var SportsPosition[] $sportsPositions */
+            $sportsPositions = SportsPosition::where('sport_id', $r['id'])->get();
+
+            /** @var SportsPosition $sP */
+            foreach ($sportsPositions as $sP) {
+                if ($sP->visible_at) {
+                    $r['sports_positions'][] = [
+                        'id' => $sP->id,
+                        'name' => $sP->name,
+                    ];
+                }
+            }
+
+            if (sizeof($sportsPositions) == 0) {
+                $r['sports_positions'] = null;
+            }
+
+            /** @var MinimumSkillLevel[] $minSkillLevels */
+            $minSkillLevels = MinimumSkillLevel::where('sport_id', $r['id'])->get();
+
+            /** @var MinimumSkillLevel $mSL */
+            foreach ($minSkillLevels as $mSL) {
+                if ($mSL->visible_at) {
+                    $r['minimum_skill_levels'][] = [
+                        'id' => $mSL->id,
+                        'name' => $mSL->name,
+                        'description' => $mSL->description
+                    ];
+                }
+            }
+
+            if (sizeof($minSkillLevels) == 0) {
+                $r['minimum_skill_levels'] = null;
+            }
+        }
+
+        JsonResponse::sendSuccess($return);
     }
 
     /**
