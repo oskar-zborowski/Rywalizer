@@ -934,6 +934,16 @@ class DefaultTypeSeeder extends Seeder
                 'is_active' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'default_type_name_id' => 1,
+                'name' => 'announcement-leaveAnnouncement',
+                'description_simple' => '',
+                'icon_id' => null,
+                'color' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
     }

@@ -99,6 +99,7 @@ Route::middleware('verified')->group(function () {
     Route::delete('/v1/announcements/{id}/photos/{photoId}', [AnnouncementController::class, 'deletePhoto'])->name('announcement-deletePhoto');
 
     Route::post('/v1/announcements/join', [AnnouncementController::class, 'joinToAnnouncement'])->name('announcement-joinToAnnouncement');
+    Route::delete('/v1/announcements/leave', [AnnouncementController::class, 'leaveAnnouncement'])->name('announcement-leaveAnnouncement');
 });
 
 

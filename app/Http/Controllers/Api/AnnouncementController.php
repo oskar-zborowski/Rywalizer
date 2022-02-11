@@ -660,4 +660,87 @@ class AnnouncementController extends Controller
 
         JsonResponse::sendSuccess();
     }
+
+    /**
+     * #### `DELETE` `/api/v1/announcements/leave`
+     * Zapisanie się na wydarzenie
+     * 
+     * @param Request $request
+     * 
+     * @return void
+     */
+    public function leaveAnnouncement(Request $request): void {
+
+        $request->validate([
+            'announcement_id' => 'required|integer|exists:announcements,id',
+            'announcement_seat_id' => 'required|integer|exists:announcement_seats,id',
+            'user_id' => 'required|integer|exists:users,id',
+        ]);
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        /** @var Announcement $announcement */
+        $announcement = Announcement::where('id', $request->announcement_id)->first();
+
+        if (!$announcement) {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Announcement does not exist.'
+            );
+        }
+
+        /** @var Partner $partner */
+        $partner = $user->partners()->first();
+
+        $partnerSetting = null;
+
+        if ($partner) {
+            /** @var PartnerSetting $partnerSetting */
+            $partnerSetting = $partner->partnerSettings()->first();
+        }
+
+        /** @var AnnouncementSeat $announcementSeat */
+        $announcementSeat = $announcement->announcementSeats()->where('id', $request->announcement_seat_id)->first();
+
+        if (!$announcementSeat) {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Announcement does not exist.'
+            );
+        }
+
+        /** @var AnnouncementParticipant $userExists */
+        $userExists = $announcementSeat->announcementParticipants()->where('user_id', $request->user_id)->first();
+
+        if (!$userExists) {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Announcement does not exist.'
+            );
+        }
+
+        if ($userExists->user_id == $user->id || ($partnerSetting && $announcement->announcement_partner_id == $partnerSetting->id)) {
+
+            if ($userExists->user_id == $user->id) {
+                $userExists->delete();
+            } else {
+                $userExists->joining_status_id = 92;
+                $userExists->save();
+            }
+
+            $announcementSeat->occupied_seats_counter = $announcementSeat->occupied_seats_counter-1;
+            $announcementSeat->save();
+
+            $announcement->participants_counter = $announcement->participants_counter-1;
+            $announcement->save();
+
+            JsonResponse::sendSuccess();
+        } else {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Announcement does not exist.'
+            );
+        }
+    }
 }
