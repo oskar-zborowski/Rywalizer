@@ -35,6 +35,44 @@ class AnnouncementController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
+        if ($request->facility_address_coordinates) {
+
+            $addressCoordinates = explode(';', $request->facility_address_coordinates);
+
+            if (count($addressCoordinates) != 2) {
+                throw new ApiException(
+                    BaseErrorCode::FAILED_VALIDATION(),
+                    ['address_coordinates' => [__('validation.regex')]]
+                );
+            }
+
+            $latitudeLength = strlen($addressCoordinates[0]);
+            $longitudeLength = strlen($addressCoordinates[1]);
+
+            if ($latitudeLength != 10 ||
+                $longitudeLength != 10 ||
+                $addressCoordinates[0][2] != '.' ||
+                $addressCoordinates[1][2] != '.')
+            {
+                throw new ApiException(
+                    BaseErrorCode::FAILED_VALIDATION(),
+                    ['address_coordinates' => [__('validation.regex')]]
+                );
+            }
+
+            for ($i=0; $i<$latitudeLength; $i++) {
+                if ((!is_numeric($addressCoordinates[0][$i]) ||
+                    !is_numeric($addressCoordinates[1][$i])) &&
+                    $i != 2)
+                {
+                    throw new ApiException(
+                        BaseErrorCode::FAILED_VALIDATION(),
+                        ['address_coordinates' => [__('validation.regex')]]
+                    );
+                }
+            }
+        }
+
         /** @var Partner $partnerExists */
         $partnerExists = $user->partners()->first();
 
@@ -225,6 +263,44 @@ class AnnouncementController extends Controller
         $request->validate([
             'announcement_status_id' => 'required|integer|between:85,86',
         ]);
+
+        if ($request->facility_address_coordinates) {
+
+            $addressCoordinates = explode(';', $request->facility_address_coordinates);
+
+            if (count($addressCoordinates) != 2) {
+                throw new ApiException(
+                    BaseErrorCode::FAILED_VALIDATION(),
+                    ['address_coordinates' => [__('validation.regex')]]
+                );
+            }
+
+            $latitudeLength = strlen($addressCoordinates[0]);
+            $longitudeLength = strlen($addressCoordinates[1]);
+
+            if ($latitudeLength != 10 ||
+                $longitudeLength != 10 ||
+                $addressCoordinates[0][2] != '.' ||
+                $addressCoordinates[1][2] != '.')
+            {
+                throw new ApiException(
+                    BaseErrorCode::FAILED_VALIDATION(),
+                    ['address_coordinates' => [__('validation.regex')]]
+                );
+            }
+
+            for ($i=0; $i<$latitudeLength; $i++) {
+                if ((!is_numeric($addressCoordinates[0][$i]) ||
+                    !is_numeric($addressCoordinates[1][$i])) &&
+                    $i != 2)
+                {
+                    throw new ApiException(
+                        BaseErrorCode::FAILED_VALIDATION(),
+                        ['address_coordinates' => [__('validation.regex')]]
+                    );
+                }
+            }
+        }
 
         /** @var User $user */
         $user = Auth::user();

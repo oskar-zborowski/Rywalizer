@@ -95,7 +95,7 @@ class Facility extends BaseModel
     ];
 
     protected $encryptable = [
-        'address_coordinates' => 30
+        'address_coordinates' => 21
     ];
 
     public function city() {
