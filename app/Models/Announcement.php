@@ -8,6 +8,7 @@ use App\Http\Libraries\FileProcessing\FileProcessing;
 use App\Http\Libraries\Validation\Validation;
 use App\Http\Responses\JsonResponse;
 use App\Http\Traits\Encryptable;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class Announcement extends BaseModel
@@ -277,16 +278,26 @@ class Announcement extends BaseModel
                 'is_active' => (bool) $aS->is_active
             ];
 
+            /** @var User $itsMe */
+            $itsMe = Auth::user();
+
             /** @var AnnouncementParticipant $aP */
             foreach ($aS->announcementParticipants()->get() as $aP) {
                 /** @var User $user */
                 $user = $aP->user()->first();
-                $announcementParticipants[] = [
-                    'id' => (int) $user->id,
-                    'name' => $user->first_name . ' ' . $user->last_name,
-                    'gender' => $user->getGender(),
-                    'avatar' => $user->getAvatars()
-                ];
+                if ($aP->joiningStatus()->first()->id == 91) {
+                    $announcementParticipants[] = [
+                        'id' => (int) $user->id,
+                        'name' => $user->first_name . ' ' . $user->last_name,
+                        'gender' => $user->getGender(),
+                        'avatar' => $user->getAvatars(),
+                        'its_me' => $itsMe->id == $user->id ? true : false,
+                        'status' => [
+                            'id' => (int) $aP->joiningStatus()->first()->id,
+                            'name' => $aP->joiningStatus()->first()->name,
+                        ]
+                    ];
+                }
             }
         }
 
@@ -312,7 +323,7 @@ class Announcement extends BaseModel
         $sport = $this->sport()->first();
 
         return [
-            'partner' => $partner->getPartner('getBasicInformation', true),
+            'partner' => $partner->getPartner('getBasicInformation', true, $this),
             'announcement' => [
                 'id' => (int) $this->id,
                 'sport' => [
