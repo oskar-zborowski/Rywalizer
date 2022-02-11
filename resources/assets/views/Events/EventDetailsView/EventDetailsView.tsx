@@ -150,8 +150,8 @@ const EventDetailsView: React.FC = (props) => {
                             <OrangeButton
                                 style={{
                                     position: 'absolute',
-                                    bottom: '20px',
                                     right: '20px',
+                                    top: '20px',
                                     zIndex: '999'
                                 }}
                                 onClick={() => navigateTo(`/ogloszenia/edytuj/${event.id}`)}

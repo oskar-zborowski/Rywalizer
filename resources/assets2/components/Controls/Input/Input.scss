@@ -1,0 +1,27 @@
+.wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.label {
+    margin-bottom: 3px;
+    margin-left: 8px;
+    color: #a1a1a1;
+    display: block;
+}
+
+.inputWrapper {
+    border-radius: 8px;
+    align-items: center;
+    height: 34px;
+    padding: 0 8px;
+    border: 1px solid #29292E;
+    position: relative;
+    overflow: hidden;
+    background-color: #141417;
+    width: 100%;
+
+    &.light {
+        background-color: #222227;
+    }
+}

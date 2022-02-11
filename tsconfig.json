@@ -5,7 +5,6 @@
         "noImplicitAny": false,
         "sourceMap": true,
         "baseUrl": ".",
-        "outDir": "electron",
         "moduleResolution": "node",
         "resolveJsonModule": true,
         "experimentalDecorators": true,
