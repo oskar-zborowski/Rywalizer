@@ -30,6 +30,7 @@ const MainContainer: React.FC = () => {
                     <Route path="/konto" element={<UserView />} />
                     <Route path="/obiekty/1" element={<SportFacilityDetails />} />
                     <Route path="/ogloszenia/dodaj" element={<CreateEventView />} />
+                    <Route path="/ogloszenia/edytuj/:id" element={<CreateEventView />} />
                     <Route path="/ogloszenia/:id" element={<EventDetailsView />} />
                 </Routes>
                 <AuthButtons/>

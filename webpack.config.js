@@ -2,6 +2,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
     mode: 'development',
@@ -14,11 +15,6 @@ module.exports = {
         filename: '[name].js',
         //filename: '[name].[hash].js', // Produkcja
         publicPath: '/assets/'
-    },
-    optimization: {
-        removeAvailableModules: false,
-        removeEmptyChunks: false,
-        splitChunks: false
     },
     devtool: 'source-map',
     module: {
@@ -79,6 +75,9 @@ module.exports = {
         new MiniCssExtractPlugin({
             filename: 'app.css',
             //filename: 'app.[hash].css' //Produkcja
+        }),
+        new webpack.ProvidePlugin({
+            $: 'jquery'
         }),
         new WebpackManifestPlugin({
             basePath: '/assets/',

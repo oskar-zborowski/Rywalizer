@@ -14,9 +14,9 @@ export class AppStore {
         makeAutoObservable(this);
     }
 
-    public fetchData() {
-        this.fetchGenders();
-        this.fetchSports();
+    public async fetchData() {
+        await this.fetchGenders();
+        await this.fetchSports();
     }
 
     public async fetchGenders() {
