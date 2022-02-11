@@ -323,7 +323,7 @@ class Announcement extends BaseModel
         $sport = $this->sport()->first();
 
         return [
-            'partner' => $partner->getPartner('getBasicInformation', true),
+            'partner' => $partner->getPartner('getBasicInformation', true, $this),
             'announcement' => [
                 'id' => (int) $this->id,
                 'sport' => [

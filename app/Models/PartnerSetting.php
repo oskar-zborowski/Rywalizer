@@ -113,7 +113,7 @@ class PartnerSetting extends BaseModel
      * 
      * @return array
      */
-    public function getBasicInformation(): array {
+    public function getBasicInformation($announcement = null): array {
 
         $visibleName = $this->visible_name_id;
         $visibleImage = $this->visible_image_id;
@@ -198,6 +198,7 @@ class PartnerSetting extends BaseModel
                 'verified' => (bool) $partner->verified_at,
                 'avarage_rating' => (float) $partner->avarage_rating,
                 'rating_counter' => (int) $partner->rating_counter,
+                'its_me' => $announcement->announcement_partner_id == $this->id ? true : false,
             ],
             'partnerSetting' => [
                 'id' => (int) $this->id,
@@ -274,14 +275,14 @@ class PartnerSetting extends BaseModel
      * 
      * @param string $modelMethodName nazwa metody, która ma zostać dołączona jako wykaz zwróconych pól partnera, np. getPrivateInformation
      */
-    public function getPartner($modelMethodName, $withReturn = false) {
+    public function getPartner($modelMethodName, $withReturn = false, $announcement = null) {
 
         /** @var Partner $partner */
         $partner = $this->partner()->first();
 
         if (!$partner->deleted_at) {
             if ($withReturn) {
-                return $this->$modelMethodName();
+                return $this->$modelMethodName($announcement);
             } else {
                 JsonResponse::sendSuccess($this->$modelMethodName());
             }
