@@ -1,0 +1,36 @@
+@import "@/styles/bootstrap.scss";
+
+%buttons {
+    position: absolute;
+    right: 0;
+    top: -$topbar-height / 2;
+    transform: translateY(-50%);
+}
+
+.authButtons {
+    @extend %buttons;
+    display: flex;
+    gap: 10px;
+
+    button {
+        width: 120px;
+        float: left;
+        display: block;
+    }
+}
+
+.userButton {
+    @extend %buttons;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .avatar {
+        width: 34px;
+        height: 34px;
+        object-fit: cover;
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid #141417
+    }
+}

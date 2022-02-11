@@ -1,0 +1,37 @@
+.textArea {
+    position: relative;
+    width: 100%;
+    flex: 1;
+}
+
+.label {
+    // font-size: 11px;
+    margin-bottom: 3px;
+    margin-left: 8px;
+    color: #a1a1a1;
+    display: block;
+}
+
+.wrapper {
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    border: 1px solid #29292E;
+    position: relative;
+    overflow: hidden;
+    background-color: #141417;
+    width: 100%;
+
+    textarea {
+        padding: 8px;
+        width: 100%;
+        min-height: 3 * 34px;
+        max-height: 300px;
+        background-color: transparent !important;
+        border: none !important;
+        outline: none !important;
+        color: #fff;
+        resize: vertical;
+        -webkit-appearance: none !important;
+    }
+}

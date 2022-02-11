@@ -38,6 +38,7 @@
     "dependencies": {
         "@deck.gl/google-maps": "^8.6.8",
         "@react-google-maps/api": "^2.5.0",
+        "@react-hook/resize-observer": "^1.2.5",
         "chroma-js": "^2.1.2",
         "deck.gl": "^8.6.8",
         "html-react-parser": "^1.4.8",

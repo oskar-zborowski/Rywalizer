@@ -1,6 +1,8 @@
+import useBounds from '@/hooks/useBounds';
 import { useOnClickOutside } from '@/hooks/useOnClickOutside';
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { useRef, useState } from 'react';
+import React, { Fragment, useRef, useState } from 'react';
+import ReactDOM from 'react-dom';
 import { BsChevronDown } from 'react-icons/bs';
 import styles from './Dropdown.scss';
 
@@ -29,25 +31,24 @@ const Selectbox: React.FC<IDropdownProps> = props => {
         dark
     } = props;
 
-    const [isOpen, setIsOpen] = useState(false);
-
-    const handleClickInside = (_e: MouseEvent) => {
-        setIsOpen(!isOpen);
-    };
-
     const barRef = useRef<HTMLDivElement>();
     const containerRef = useRef<HTMLDivElement>();
+    const [isOpen, setIsOpen] = useState(false);
+
     useOnClickOutside([barRef, containerRef], () => setIsOpen(false));
+    useBounds(containerRef, (b, abs) => console.log(b, abs));
 
     const ItemsContainer = (
         <AnimatePresence>
-            {isOpen && <motion.div
-                ref={containerRef}
-                className={styles.itemsContainer}
-                {...itemsContainerAnimation}
-            >
-                {children}
-            </motion.div>}
+            {isOpen && (
+                <motion.div
+                    ref={containerRef}
+                    className={styles.itemsContainer}
+                    {...itemsContainerAnimation}
+                >
+                    {children}
+                </motion.div>
+            )}
         </AnimatePresence>
     );
 
@@ -56,25 +57,32 @@ const Selectbox: React.FC<IDropdownProps> = props => {
     if (dark) dropdownClass += ' ' + styles.dark;
 
     return (
-        <div className={styles.dropdownWrapper + ' ' + (isOpen ? styles.open : '')}>
-            {label && <label className={styles.label}>{label}</label>}
-            <div
-                onClick={() => setIsOpen(isOpen => !isOpen)}
-                className={dropdownClass}
-                ref={barRef}
-            >
-                <span className={styles.placeholder}>{placeholder}</span>
-                <BsChevronDown className={styles.chevronArrow} />
+        <Fragment>
+            <div className={styles.dropdownWrapper + ' ' + (isOpen ? styles.open : '')}>
+                {label && <label className={styles.label}>{label}</label>}
+                <div
+                    onClick={() => setIsOpen(isOpen => !isOpen)}
+                    className={dropdownClass}
+                    ref={barRef}
+                >
+                    <span className={styles.placeholder}>{placeholder}</span>
+                    <BsChevronDown className={styles.chevronArrow} />
+                </div>
+                {ItemsContainer}
             </div>
-            {ItemsContainer}
-        </div>
+            {/* {ReactDOM.createPortal(ItemsContainer, document.body)} */}
+        </Fragment>
     );
 };
 
 export default Selectbox;
 
-export const DropdownRow: React.FC = ({ children }) => {
+export interface IDropdownRowProps extends React.HTMLAttributes<HTMLDivElement> {
+
+}
+
+export const DropdownRow: React.FC<IDropdownRowProps> = ({ children, ...props }) => {
     return (
-        <div className={styles.row}>{children}</div>
+        <div className={styles.row} {...props}>{children}</div>
     );
 };

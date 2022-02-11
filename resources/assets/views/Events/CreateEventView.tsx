@@ -1,7 +1,9 @@
 import geocode from '@/api/geocode';
 import { ISport } from '@/api/getSports';
+import { OrangeButton } from '@/components/Form/Button/Button';
 import Input from '@/components/Form/Input/Input';
 import Selectbox, { IOption } from '@/components/Form/SelectBox/SelectBox';
+import Textarea from '@/components/Form/Textarea/Textarea';
 import Section from '@/components/Section/Section';
 import Separator from '@/components/Separator/Separator';
 import appStore from '@/store/AppStore';
@@ -86,9 +88,15 @@ const CreateEventView: React.FC = () => {
             </Section>
             <Separator />
             <Section title="Pozostałe" titleAlign="right" titleSize={15}>
-                * zdjęcie w tle: file<br />
-                * opis: textarea
+                <div className={styles.restSection}>
+                    <Input ref={startDateRef} type="file" label="Zdjęcie wydarzenia" />
+                    <Input ref={startDateRef} type="file" label="Zdjęcie w tle" />
+                    <Textarea label="Opis" value="opis" style={{ gridColumn: 'span 2' }} />
+                </div>
             </Section>
+            <div style={{ marginTop: '20px', float: 'right' }}>
+                <OrangeButton>Dodaj ogłoszenie</OrangeButton>
+            </div>
         </View>
     );
 };

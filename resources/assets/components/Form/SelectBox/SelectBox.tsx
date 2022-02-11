@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Dropdown, { DropdownRow, IDropdownProps } from '../Dropdown/Dropdown';
 import styles from './SelectBox.scss';
-import dropdownStyles from '../Dropdown/Dropdown.scss';
 
 export interface IOption<T = any> {
     value: T;
@@ -40,7 +39,7 @@ function Selectbox<T = any>(props: SelectboxProps<T>) {
                 const checkboxClass = styles.checkbox + ' ' + (op.isSelected ? styles.checked : '');
 
                 return (
-                    <DropdownRow>
+                    <DropdownRow key={i}>
                         <div className={styles.rowContent}>{rowFactory(op)}</div>
                         <div className={checkboxClass}></div>
                     </DropdownRow>

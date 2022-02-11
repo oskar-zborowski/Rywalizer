@@ -1,4 +1,4 @@
-import useResize from '@/hooks/useResize';
+import useBounds from '@/hooks/useBounds';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import styles from './Scrollbar.scss';
 
@@ -21,8 +21,11 @@ export const ScrollbarProvider: React.FC = (props) => {
     const [thumbLength, setThumbLength] = useState(0);
     const [thumbPosition, setThumbPosition] = useState(0);
 
-    const scrollbarHeight = useResize(scrollbarRef).height;
-    const containerHeight = useResize(containerRef as React.MutableRefObject<any>).height;
+    // const scrollbarHeight = useResize(scrollbarRef).height;
+    // const containerHeight = useResize(containerRef as React.MutableRefObject<any>).height;
+
+    const scrollbarHeight = 0;
+    const containerHeight = 0;
 
     const updateScroll = () => {
         const scrollHeight = containerRef?.current?.scrollHeight;
