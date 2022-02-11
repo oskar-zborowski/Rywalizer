@@ -17,10 +17,12 @@ import faker from 'faker';
 import Comments, { IComment } from '@/components/Comments/Comments';
 import ProgressBar from '@/components/ProgressBar/ProgressBar';
 import StackPanel from '@/components/StackPanel/StackPanel';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import getEvents, { IEvent } from '@/api/getEvents';
 import mapViewerStore from '@/store/MapViewerStore';
 import View, { useView } from '@/views/View/View';
+import userStore from '@/store/UserStore';
+import { OrangeButton } from '@/components/Form/Button/Button';
 
 faker.locale = 'pl';
 
@@ -58,6 +60,9 @@ const EventDetailsView: React.FC = (props) => {
     const { id } = useParams();
     const [event, setEvent] = useState<IEvent>(null);
     const isEventLoaded = event !== null;
+    const userHasAccess = event?.partner.id == userStore.user?.id;
+
+    const navigateTo = useNavigate();
 
     useEffect(() => {
         mapViewerStore.reset();
@@ -141,6 +146,19 @@ const EventDetailsView: React.FC = (props) => {
                                 </div>
                             </div>
                         </div>
+                        {userHasAccess && (
+                            <OrangeButton
+                                style={{
+                                    position: 'absolute',
+                                    bottom: '20px',
+                                    right: '20px',
+                                    zIndex: '999'
+                                }}
+                                onClick={() => navigateTo(`/ogloszenia/edytuj/${event.id}`)}
+                            >
+                                Edytuj ogłoszenie
+                            </OrangeButton>
+                        )}
                     </header>
                     <section className={styles.userDetailsRow + ' ' + styles.contactSM}>
                         <h1>Kontakt:</h1>

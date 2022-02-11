@@ -2,7 +2,8 @@ import Content from '@/layout/Content/Content';
 import MapViewer from '@/layout/Content/MapViewer/MapViewer';
 import Footer from '@/layout/Footer/Footer';
 import Topbar from '@/layout/Topbar/Topbar';
-import React, { Fragment, useEffect } from 'react';
+import { observer } from 'mobx-react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import MainContainer from './layout/Content/MainContainer/MainContainer';
 import Modals from './modals/Modals';
@@ -10,14 +11,21 @@ import appStore from './store/AppStore';
 import userStore from './store/UserStore';
 
 const App: React.FC = () => {
-    useEffect(() => {
+    const [dataLoaded, setDataLoaded] = useState(false);
+
+    const fetchData = async () => {
         try {
-            userStore.getUser();
-            appStore.fetchData();
+            await userStore.getUser();
+            await appStore.fetchData();
         } catch (_e) {
             console.log(_e);
-            // Ignore error
+        } finally {
+            setDataLoaded(true);
         }
+    };
+
+    useEffect(() => {
+        fetchData();
     }, []);
 
     return (
@@ -25,12 +33,16 @@ const App: React.FC = () => {
             <Fragment>
                 <Topbar />
                 <Content>
-                    <MainContainer/>
-                    <MapViewer />
+                    {dataLoaded && (
+                        <Fragment>
+                            <MainContainer />
+                            <MapViewer />
+                        </Fragment>
+                    )}
                 </Content>
                 <Footer />
             </Fragment>
-            <Modals/>
+            <Modals />
         </Router>
     );
 };
