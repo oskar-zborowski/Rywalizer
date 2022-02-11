@@ -1,7 +1,9 @@
 import getEvents, { IEvent } from '@/api/getEvents';
 import Input from '@/components/Form/Input/Input';
-import Selectbox, { IOption } from '@/components/Form/SelectBox/SelectBox';
+import SelectBox, { IOption } from '@/components/Form/SelectBox/SelectBox';
+import SportsSelectBox from '@/components/Form/SelectBox/SportSelectbox';
 import useScrollbar from '@/layout/Content/Scrollbar/Scrollbar';
+import appStore from '@/store/AppStore';
 import mapViewerStore from '@/store/MapViewerStore';
 import View from '@/views/View/View';
 import React, { Fragment, useEffect, useState } from 'react';
@@ -43,19 +45,20 @@ const EventsView: React.FC = () => {
                             value={queryString}
                             onChange={(v) => setQueryString(v)}
                         />
-                        <Selectbox
+                        <SelectBox
                             options={options}
                             placeholder="Lokalizacja"
                         />
-                        <Selectbox
-                            options={options}
+                        <SportsSelectBox
+                            searchBar
+                            sports={appStore.sports}
                             placeholder="Sporty"
                         />
-                        <Selectbox
+                        <SelectBox
                             options={options}
                             placeholder="Więcej filtrów"
                         />
-                        <Selectbox
+                        <SelectBox
                             options={options}
                             placeholder="Sortuj wg: Najlepsze"
                             transparent={true}

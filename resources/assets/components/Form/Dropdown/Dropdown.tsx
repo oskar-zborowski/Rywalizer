@@ -7,10 +7,13 @@ import { BsChevronDown } from 'react-icons/bs';
 import styles from './Dropdown.scss';
 
 export interface IDropdownProps {
+    isOpen: boolean;
+    handleIsOpenChange: (isOpen: boolean) => void;
     placeholder?: string;
     transparent?: boolean;
     label?: string;
     dark?: boolean;
+    minWidth?: number;
 }
 
 const transition = { duration: 0.25, type: 'tween', ease: [0.45, 0, 0.55, 1] };
@@ -28,15 +31,16 @@ const Selectbox: React.FC<IDropdownProps> = props => {
         placeholder,
         label,
         transparent,
-        dark
+        dark,
+        isOpen,
+        handleIsOpenChange,
+        minWidth,
     } = props;
 
     const barRef = useRef<HTMLDivElement>();
     const containerRef = useRef<HTMLDivElement>();
-    const [isOpen, setIsOpen] = useState(false);
 
-    useOnClickOutside([barRef, containerRef], () => setIsOpen(false));
-    useBounds(containerRef, (b, abs) => console.log(b, abs));
+    useOnClickOutside([barRef, containerRef], () => handleIsOpenChange(false));
 
     const ItemsContainer = (
         <AnimatePresence>
@@ -44,6 +48,9 @@ const Selectbox: React.FC<IDropdownProps> = props => {
                 <motion.div
                     ref={containerRef}
                     className={styles.itemsContainer}
+                    style={{
+                        minWidth: minWidth + 'px'
+                    }}
                     {...itemsContainerAnimation}
                 >
                     {children}
@@ -61,7 +68,7 @@ const Selectbox: React.FC<IDropdownProps> = props => {
             <div className={styles.dropdownWrapper + ' ' + (isOpen ? styles.open : '')}>
                 {label && <label className={styles.label}>{label}</label>}
                 <div
-                    onClick={() => setIsOpen(isOpen => !isOpen)}
+                    onClick={() => handleIsOpenChange(!isOpen)}
                     className={dropdownClass}
                     ref={barRef}
                 >

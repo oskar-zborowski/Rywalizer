@@ -3,6 +3,8 @@ import { IPoint } from '@/types/IPoint';
 import { getApiUrl } from '@/utils/api';
 import axios from 'axios';
 import { when } from 'mobx';
+import { IGender } from './getGenders';
+import { IPartner } from './getPartners';
 import { ISport } from './getSports';
 
 export interface IGetEventsParams {
@@ -17,7 +19,7 @@ const getEvents = async (params?: IGetEventsParams) => {
     let entries: any[];
 
     if (!isNaN(id)) {
-        const response = await axios.get(getApiUrl(`api/v1/announcement/${id}`));
+        const response = await axios.get(getApiUrl(`api/v1/announcements/${id}`));
         entries = [response?.data?.data];
     } else {
         const response = await axios.get(getApiUrl('api/v1/announcements'), { params: queryParams });
@@ -27,6 +29,8 @@ const getEvents = async (params?: IGetEventsParams) => {
     return entries.map((entry: any) => {
         const announcement = entry.announcement;
         const facility = entry.facility;
+        const partner = entry.partner.partner;
+
         const event: IEvent = {
             id: +announcement.id,
             sport: appStore.sports.find(s => s.id == +announcement.sport.id),
@@ -40,7 +44,8 @@ const getEvents = async (params?: IGetEventsParams) => {
             soldTicketsCount: +announcement.participantsCounter,
             availableTicketsCount: +announcement.maximumParticipantsNumber,
             isPublic: !!announcement.isPublic,
-            imageUrl: announcement.image[0].filename,
+            imageUrl: announcement.frontImage[0]?.filename,
+            backgroundImageUrl: announcement.backgroundImage,
             facility: {
                 id: +facility.id,
                 name: facility.name,
@@ -53,7 +58,28 @@ const getEvents = async (params?: IGetEventsParams) => {
                     lat: +facility.addressCoordinates.lat + Math.random() - 0.5,
                     lng: +facility.addressCoordinates.lng + Math.random() - 0.5
                 }
-            }
+            },
+            partner: {
+                id: partner.id,
+                fullName: partner.name,
+                logos: [],
+                contactEmail: partner.contactEmail,
+                telephone: partner.telephone,
+                facebook: partner.facebook,
+                instagram: partner.instagram,
+                website: partner.website,
+                isVerified: partner.verified,
+                avarageRating: partner.avarageRating,
+                ratingCounter: partner.ratingCounter
+            },
+            participants: announcement.announcementParticipants?.map((participant: any) => {
+                return {
+                    id: participant.id,
+                    fullName: participant.name,
+                    // gender: appStore.genders.find(s => s.id == +participant.gender.id),
+                    avatarUrl: participant.avatar
+                };
+            })
         };
 
         return event;
@@ -65,6 +91,7 @@ export default getEvents;
 export interface IEvent {
     id: number,
     sport: ISport,
+    partner: IPartner;
     startDate: Date,
     endDate: Date,
     ticketPrice: number,
@@ -88,6 +115,7 @@ export interface IEvent {
     // isAutomaticallyApproved: '1',
     isPublic: boolean,
     imageUrl: string,
+    backgroundImageUrl: string;
     facility: {
         id: number;
         name: string;
@@ -98,5 +126,13 @@ export interface IEvent {
         },
         location: IPoint;
     };
+    participants: {
+        id: number;
+        fullName: string;
+        // gender: IGender; //TODO potrzebny idk
+        avatarUrl: string;
+        //itsme
+        //status
+    }[]
     //TODO reszta pól
 }

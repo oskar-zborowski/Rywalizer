@@ -2,7 +2,7 @@ import { IGender } from '@/api/getGenders';
 import Flexbox from '@/components/Flexbox/Flexbox';
 import { OrangeButton } from '@/components/Form/Button/Button';
 import Input from '@/components/Form/Input/Input';
-import Selectbox, { IOption } from '@/components/Form/SelectBox/SelectBox';
+import SelectBox, { IOption } from '@/components/Form/SelectBox/SelectBox';
 import Link from '@/components/Link/Link';
 import Modal from '@/components/Modal/Modal';
 import appStore from '@/store/AppStore';
@@ -44,13 +44,6 @@ const RegisterModal: React.FC = observer(() => {
         }
     };
 
-    const genderOptions: IOption<IGender>[] = appStore.genders?.map(g => {
-        return {
-            value: g,
-            text: g.name
-        } as IOption<IGender>;
-    });
-
     return (
         <Modal
             onEnter={() => register()}
@@ -71,10 +64,21 @@ const RegisterModal: React.FC = observer(() => {
                 </Flexbox>
                 <Flexbox gap="10px">
                     <Input label="Data urodzenia" type="date" value={birthDate} onChange={(v) => setBirthDate(v)} />
-                    <Selectbox
-                        options={genderOptions}
+                    <SelectBox
                         label="Płeć"
-                        placeholder="Nie podano"
+                        options={[
+                            {
+                                text: 'Nie chcę podawać',
+                                value: null
+                            },
+                            ...appStore.genders.map(gender => {
+                                return {
+                                    text: gender.name,
+                                    value: gender
+                                };
+                            })
+                        ]}
+                        onChange={([gender]) => setGender(gender.value?.id)}
                     />
                 </Flexbox>
                 <Input label="Adres e-mail" value={email} onChange={(v) => setEmail(v)} />

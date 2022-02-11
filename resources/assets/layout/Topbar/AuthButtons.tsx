@@ -4,18 +4,24 @@ import prof from '@/static/images/prof.png';
 import modalsStore from '@/store/ModalsStore';
 import userStore from '@/store/UserStore';
 import { observer } from 'mobx-react';
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './AuthButtons.scss';
 
 const AuthButtons: React.FC = observer(() => {
     const user = userStore.user;
+    const [dropdownOpen, setDropdownOpen] = useState(false);
 
     if (user) {
         return (
             <div className={styles.userButton} id="js-auth-buttons">
                 <img src={prof} alt="" className={styles.avatar} />
-                <Dropdown transparent placeholder={user.firstName + ' ' + user.lastName}>
+                <Dropdown 
+                    transparent 
+                    placeholder={user.firstName + ' ' + user.lastName}
+                    isOpen={dropdownOpen}
+                    handleIsOpenChange={(isOpen) => setDropdownOpen(isOpen)}
+                >
                     <Link to="/konto"><DropdownRow>Konto</DropdownRow></Link>
                     <DropdownRow onClick={() => userStore.logout()}>Wyloguj</DropdownRow>
                 </Dropdown>
