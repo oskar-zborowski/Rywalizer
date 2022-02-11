@@ -8,18 +8,13 @@ module.exports = {
     mode: 'development',
     stats: 'minimal',
     entry: {
-        app: path.resolve(__dirname, 'resources/assets2/main.ts')
+        app: path.resolve(__dirname, 'resources/assets/main.tsx')
     },
     output: {
         path: path.resolve(__dirname, 'public/assets'),
         filename: '[name].js',
         //filename: '[name].[hash].js', // Produkcja
         publicPath: '/assets/'
-    },
-    optimization: {
-        removeAvailableModules: false,
-        removeEmptyChunks: false,
-        splitChunks: false
     },
     devtool: 'source-map',
     module: {
