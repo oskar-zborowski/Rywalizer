@@ -617,8 +617,8 @@ class User extends Authenticatable implements MustVerifyEmail
                 'role' => $this->getRole(),
                 'city' => $this->getCity(),
                 'address_coordinates' => [
-                    'lat' => $addressCoordinates ? $addressCoordinates[1] : null,
-                    'lng' => $addressCoordinates ? $addressCoordinates[0] : null
+                    'lat' => $addressCoordinates ? (float) $addressCoordinates[0] : null,
+                    'lng' => $addressCoordinates ? (float) $addressCoordinates[1] : null
                 ],
                 'facebook_profile' => $this->facebook_profile,
                 'instagram_profile' => $this->instagram_profile,
