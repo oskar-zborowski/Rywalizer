@@ -382,8 +382,8 @@ class Announcement extends BaseModel
                     'name' => $facility->city()->first()->name,
                 ] : null,
                 'address_coordinates' => [
-                    'lat' => isset($addressCoordinates) ? $addressCoordinates[1] : null,
-                    'lng' => isset($addressCoordinates) ? $addressCoordinates[0] : null
+                    'lat' => isset($addressCoordinates) ? (float) $addressCoordinates[0] : null,
+                    'lng' => isset($addressCoordinates) ? (float) $addressCoordinates[1] : null
                 ]
             ]: null
         ];
