@@ -24,16 +24,16 @@ const EventTile: React.FC<IEvent> = (props) => {
             <div className={styles.border} style={{ backgroundColor: sportColor }}></div>
             <div className={styles.tile}>
                 <div className={styles.imageWrapper}>
-                    <img src={props.imageUrl} className={styles.image} />
+                    {props.imageUrl && <img src={props.imageUrl} className={styles.image} />}
                 </div>
                 <div className={styles.detailsRow}>
                     <span className={styles.locationName} style={{ color: sportColor }}>
-                        {props.facility.name}
+                        {props.facility?.name}
                     </span>
                     <span className={styles.price}>{(props.ticketPrice / 100).toFixed(2)} zł</span>
                 </div>
                 <div className={styles.detailsRow}>
-                    <span className={styles.address}>{props.facility.street}</span>
+                    <span className={styles.address}>{props.facility?.street}</span>
                     <span className={styles.date}>{props.startDate.toLocaleDateString()}</span>
                 </div>
                 <div className={styles.divider}></div>

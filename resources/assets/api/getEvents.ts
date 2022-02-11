@@ -44,9 +44,9 @@ const getEvents = async (params?: IGetEventsParams) => {
             soldTicketsCount: +announcement.participantsCounter,
             availableTicketsCount: +announcement.maximumParticipantsNumber,
             isPublic: !!announcement.isPublic,
-            imageUrl: announcement.frontImage[0]?.filename,
+            imageUrl: announcement.frontImage?.[0]?.filename,
             backgroundImageUrl: announcement.backgroundImage,
-            facility: {
+            facility: facility ? {
                 id: +facility.id,
                 name: facility.name,
                 street: facility.street,
@@ -58,7 +58,7 @@ const getEvents = async (params?: IGetEventsParams) => {
                     lat: +facility.addressCoordinates.lat + Math.random() - 0.5,
                     lng: +facility.addressCoordinates.lng + Math.random() - 0.5
                 }
-            },
+            } : null,
             partner: {
                 id: partner.id,
                 fullName: partner.name,
