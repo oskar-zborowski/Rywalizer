@@ -658,7 +658,7 @@ class AnnouncementController extends Controller
         $paginationAttributes = $this->getPaginationAttributes($request);
 
         /** @var Announcement $announcements */
-        $announcements = Announcement::where('visible_at', '<=', now())->filter()->paginate($paginationAttributes['perPage']);
+        $announcements = Announcement::where('visible_at', '<=', now())->where('is_public', true)->filter()->paginate($paginationAttributes['perPage']);
 
         $result = $this->preparePagination($announcements, 'getMinInformation');
 
@@ -690,6 +690,13 @@ class AnnouncementController extends Controller
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
                 'Announcement does not exist.'
+            );
+        }
+
+        if ($announcement->start_date <= now()) {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Announcement has already begun.'
             );
         }
 
@@ -764,6 +771,13 @@ class AnnouncementController extends Controller
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
                 'Announcement does not exist.'
+            );
+        }
+
+        if ($announcement->start_date <= now()) {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Announcement has already begun.'
             );
         }
 
