@@ -11,10 +11,10 @@ export interface IOption<T = any> {
 }
 
 export interface ISelectBoxProps<T = any> extends Omit<IDropdownProps, 'isOpen' | 'handleIsOpenChange'> {
+    options: IOption<T>[];
+    handleOptionsChange: (options: IOption<T>[]) => void;
+    handleSelectedOptionsChange: (selectedOptions: IOption<T>[]) => void;
     multiselect?: boolean;
-    options?: IOption<T>[];
-    handleOptionsChange?: (options: IOption<T>[]) => void;
-    onChange?: (selectedOptions: IOption<T>[]) => void;
     rowFactory?: (option: IOption<T>) => React.ReactNode,
     searchBar?: boolean;
     // searchBar?: {
@@ -27,7 +27,8 @@ function SelectBox<T = any>(props: ISelectBoxProps<T>) {
     const {
         multiselect = false,
         options = [],
-        onChange,
+        handleOptionsChange,
+        handleSelectedOptionsChange,
         searchBar,
         rowFactory = op => (<span>{op.text}</span>),
         placeholder,
@@ -40,23 +41,17 @@ function SelectBox<T = any>(props: ISelectBoxProps<T>) {
 
     const [isOpen, setIsOpen] = useState(false);
     const [hiddenOptionsIds, setHiddenOptionsIds] = useState<number[]>([]);
-    const [selectedOptionsIds, setSelectedOptionsIds] = useState<number[]>(() => {
-        const selectedOptions = [];
-
-        options.forEach((option, i) => {
-            if (option.isSelected === true) selectedOptions.push(i);
-        });
-
-        return selectedOptions;
-    });
 
     const onClick = (i: number) => {
-        setSelectedOptionsIds([i]);
-        onChange?.([options[i]]);
+        const isSelected = !options[i].isSelected;
+        options.forEach(option => option.isSelected = false);
+        options[i].isSelected = isSelected;
+
+        handleOptionsChange(options);
+        handleSelectedOptionsChange(isSelected ? [options[i]] : []);
+
         setIsOpen(false);
     };
-
-    // const { getOptions, debounceTimeMs } = searchBar ?? {};
 
     const onSearchQueryChange = async (query: string) => {
         const hiddenOptions = [];
@@ -68,6 +63,8 @@ function SelectBox<T = any>(props: ISelectBoxProps<T>) {
         setHiddenOptionsIds(hiddenOptions);
     };
 
+    const selectedOptions = options.filter(option => option.isSelected);
+
     return (
         <Dropdown
             isOpen={isOpen}
@@ -75,7 +72,7 @@ function SelectBox<T = any>(props: ISelectBoxProps<T>) {
                 setIsOpen(isOpen);
                 setHiddenOptionsIds([]);
             }}
-            placeholder={placeholder || (options[selectedOptionsIds[0]]?.text ?? '- Wybierz -')}
+            placeholder={placeholder || (selectedOptions[0]?.text ?? '- Wybierz -')}
             {...dropdownProps}
         >
             {searchBar && <Input
@@ -87,8 +84,7 @@ function SelectBox<T = any>(props: ISelectBoxProps<T>) {
                     return null;
                 }
 
-                const isSelected = selectedOptionsIds.includes(i);
-                const checkboxClass = styles.checkbox + ' ' + (isSelected ? styles.checked : '');
+                const checkboxClass = styles.checkbox + ' ' + (op.isSelected ? styles.checked : '');
 
                 return (
                     <DropdownRow key={i} onClick={() => onClick(i)}>
@@ -102,3 +98,48 @@ function SelectBox<T = any>(props: ISelectBoxProps<T>) {
 }
 
 export default SelectBox;
+
+export function useSelectBox<T = any>(
+    initialOptions: IOption<T>[] = [],
+    onSelectedOptionsChange?: (selectedOptions: T[]) => void
+) {
+    const [options, setOptions] = useState<IOption<T>[]>(initialOptions);
+    const [selectedOptions, setSelectedOptions] = useState<IOption<T>[]>(initialOptions);
+
+    return {
+        options,
+        setOptions,
+        selectedOptions,
+        handleOptionsChange: (options: IOption<T>[]) => setOptions(options),
+        handleSelectedOptionsChange: (selectedOptions: IOption<T>[]) => {
+            setSelectedOptions(selectedOptions);
+            onSelectedOptionsChange?.(selectedOptions.map(opt => opt.value));
+        },
+        select: (predicate: number | ((optionValue: T) => boolean)) => {
+            if (predicate === null || predicate === undefined) {
+                setOptions(options => {
+                    options.forEach(opt => {
+                        opt.isSelected = false;
+                    });
+
+                    return [...options];
+                });
+            } else if (typeof predicate === 'number') {
+                setOptions(options => {
+                    if (options[predicate]) {
+                        options[predicate].isSelected = true;
+                    }
+
+                    return [...options];
+                });
+            } else {
+                setOptions(options => {
+                    return options.map(opt => {
+                        opt.isSelected = predicate(opt.value);
+                        return opt;
+                    });
+                });
+            }
+        }
+    };
+}

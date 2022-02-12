@@ -20,19 +20,27 @@ export class AppStore {
     }
 
     public async fetchGenders() {
-        const genders = await getGenders();
+        try {
+            const genders = await getGenders();
 
-        runInAction(() => {
-            this.genders = genders;
-        });
+            runInAction(() => {
+                this.genders = genders;
+            });
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     public async fetchSports() {
-        const sports = await getSports();
+        try {
+            const sports = await getSports();
 
-        runInAction(() => {
-            this.sports = sports;
-        });
+            runInAction(() => {
+                this.sports = sports;
+            });
+        } catch (e) {
+            console.error(e);
+        }
     }
 
 }

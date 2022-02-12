@@ -1,4 +1,4 @@
-import { IGender } from './IGender';
+import { IGender } from '@/api/getGenders';
 import { Permission } from './Permission';
 
 export interface IUser {

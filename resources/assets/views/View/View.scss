@@ -35,4 +35,13 @@
     border-bottom: 1px solid #4c4c52;
     padding-bottom: 15px;
     margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+
+    @include respond-to(null, "xl") {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
