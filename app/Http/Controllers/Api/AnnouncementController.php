@@ -500,9 +500,6 @@ class AnnouncementController extends Controller
                 }
             }
 
-            // echo json_encode($result);
-            // die;
-
             foreach ($result as $sP) {
 
                 /** @var AnnouncementSeat $announcementSeat */
@@ -658,7 +655,7 @@ class AnnouncementController extends Controller
         $paginationAttributes = $this->getPaginationAttributes($request);
 
         /** @var Announcement $announcements */
-        $announcements = Announcement::where('visible_at', '<=', now())->filter()->paginate($paginationAttributes['perPage']);
+        $announcements = Announcement::where('visible_at', '<=', now())->where('is_public', true)->filter()->paginate($paginationAttributes['perPage']);
 
         $result = $this->preparePagination($announcements, 'getMinInformation');
 
@@ -690,6 +687,13 @@ class AnnouncementController extends Controller
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
                 'Announcement does not exist.'
+            );
+        }
+
+        if ($announcement->start_date <= now()) {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Announcement has already begun.'
             );
         }
 
@@ -764,6 +768,13 @@ class AnnouncementController extends Controller
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
                 'Announcement does not exist.'
+            );
+        }
+
+        if ($announcement->start_date <= now()) {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Announcement has already begun.'
             );
         }
 
@@ -927,5 +938,33 @@ class AnnouncementController extends Controller
         $rating->delete();
 
         JsonResponse::sendSuccess();
+    }
+
+    /**
+     * #### `GET` `/api/v1/announcement/alias`
+     * Pobranie listy wydarzeń
+     * 
+     * @param Request $request
+     * 
+     * @return void
+     */
+    public function getAnnouncementsByAlias(Request $request): void {
+
+        $request->validate([
+            'partner_alias' => 'required|string'
+        ]);
+
+        $paginationAttributes = $this->getPaginationAttributes($request);
+
+        /** @var Announcement $announcements */
+        $announcements = Announcement::where('visible_at', '<=', now())->whereHas('announcementPartner', function ($q) use ($request) {
+            $q->whereHas('partner', function ($q2) use ($request) {
+                $q2->where('alias', $request->partner_alias);
+            });
+        })->filter()->paginate($paginationAttributes['perPage']);
+
+        $result = $this->preparePagination($announcements, 'getMinInformation');
+
+        JsonResponse::sendSuccess($result['data'], $result['metadata']);
     }
 }

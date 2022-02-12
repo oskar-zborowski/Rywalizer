@@ -105,7 +105,8 @@ class Announcement extends BaseModel
         'less',
         'less_or_equal',
         'date_from',
-        'date_to'
+        'date_to',
+        'search'
     ];
 
     public function date_from($query, $value) {
@@ -114,6 +115,27 @@ class Announcement extends BaseModel
 
     public function date_to($query, $value) {
         $query->where('start_date', '<=', $value . ' 23:59:59');
+    }
+
+    public function search($query, $value) {
+        $query->whereHas('facility', function ($q) use ($value) {
+            $q->where('name', 'like', '%' . $value . '%')
+                ->orWhereHas('city', function ($q2) use ($value) {
+                    $q2->where('name', 'like', '%' . $value . '%')
+                        ->orWhereHas('parent', function ($q3) use ($value) {
+                            $q3->where('name', 'like', '%' . $value . '%')
+                                ->orWhereHas('parent', function ($q4) use ($value) {
+                                    $q4->where('name', 'like', '%' . $value . '%')
+                                        ->orWhereHas('parent', function ($q5) use ($value) {
+                                            $q5->where('name', 'like', '%' . $value . '%')
+                                                ->orWhereHas('parent', function ($q6) use ($value) {
+                                                    $q6->where('name', 'like', '%' . $value . '%');
+                                                });
+                                        });
+                                });
+                        });
+                });
+        });
     }
 
     public function announcementPartner() {

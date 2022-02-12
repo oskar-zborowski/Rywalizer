@@ -440,6 +440,7 @@ class User extends Authenticatable implements MustVerifyEmail
         }
 
         $result = [
+            'id' => $gender ? (int) $gender->id : null,
             'name' => $gender ? $gender->name : null,
             'description_simple' => $gender ? $gender->description_simple : null,
             'icon' => isset($icon) && $icon ? $icon->filename : null
