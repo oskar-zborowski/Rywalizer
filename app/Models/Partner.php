@@ -32,6 +32,7 @@ class Partner extends BaseModel
     protected $guarded = [
         'id',
         'user_id',
+        'alias',
         'submerchant_id',
         'avarage_rating',
         'rating_counter',
@@ -53,6 +54,7 @@ class Partner extends BaseModel
         'submerchant_id',
         'first_name',
         'last_name',
+        'alias',
         'business_name',
         'contact_email',
         'invoice_email',

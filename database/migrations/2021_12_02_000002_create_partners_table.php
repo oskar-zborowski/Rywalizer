@@ -18,6 +18,7 @@ class CreatePartnersTable extends Migration
             $table->char('submerchant_id', 9)->unique()->nullable(); // Kodowane natywnie
             $table->char('first_name', 40)->nullable(); // Kodowane natywnie
             $table->char('last_name', 40)->nullable(); // Kodowane natywnie
+            $table->string('alias', 80)->nullable();
             $table->string('business_name', 268)->nullable(); // Kodowane natywnie
             $table->string('contact_email', 340)->nullable(); // Kodowane natywnie
             $table->string('invoice_email', 340)->nullable(); // Kodowane natywnie

@@ -188,6 +188,7 @@ class PartnerSetting extends BaseModel
         return [
             'partner' => [
                 'id' => (int) $partner->id,
+                'alias' => $partner->alias,
                 'name' => $name,
                 'logos' => $images,
                 'contact_email' => $email,
@@ -224,6 +225,7 @@ class PartnerSetting extends BaseModel
             'partner' => [
                 'id' => (int) $partner->id,
                 'business_name' => $partner->business_name,
+                'alias' => $partner->alias,
                 'logos' => $partner->getLogos(true),
                 'contact_email' => $partner->contact_email,
                 'telephone' => $partner->telephone,

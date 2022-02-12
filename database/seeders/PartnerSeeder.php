@@ -19,6 +19,7 @@ class PartnerSeeder extends Seeder
                 'user_id' => 1,
                 'first_name' => '3FUF+zXkqJeznzfdA3B0YIQPf3zD4n2VLxGzWvBa',
                 'last_name' => 'sA8H1HfRxt6ZnRn8M3ICR6ExbE670i67RjG3QvpB',
+                'alias' => 'oskar.zborowski.1',
                 'creator_id' => 1,
                 'editor_id' => 1,
                 'created_at' => '2022-02-09 14:29:58',
