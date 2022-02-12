@@ -100,6 +100,10 @@ Route::middleware('verified')->group(function () {
 
     Route::post('/v1/announcements/join', [AnnouncementController::class, 'joinToAnnouncement'])->name('announcement-joinToAnnouncement');
     Route::delete('/v1/announcements/leave', [AnnouncementController::class, 'leaveAnnouncement'])->name('announcement-leaveAnnouncement');
+
+    Route::post('/v1/announcement/comment', [AnnouncementController::class, 'newComment'])->name('announcement-newComment');
+    Route::patch('/v1/announcement/comment', [AnnouncementController::class, 'updateComment'])->name('announcement-updateComment');
+    Route::delete('/v1/announcement/comment', [AnnouncementController::class, 'deleteComment'])->name('announcement-deleteComment');
 });
 
 

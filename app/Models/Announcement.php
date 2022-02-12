@@ -400,6 +400,51 @@ class Announcement extends BaseModel
         /** @var DefaultType $sport */
         $sport = $this->sport()->first();
 
+        $comments = null;
+
+        /** @var Rating[] $announcementComment */
+        $announcementComment = Rating::where('evaluable_type', 'App\Models\Announcement')->where('evaluable_id', $this->id)->get();
+
+        /** @var Rating $aC */
+        foreach ($announcementComment as $aC) {
+
+            /** @var User $commentedUser */
+            $commentedUser = $aC->evaluator()->first();
+
+            if (!$aC->answer_to_id) {
+                $comments[] = [
+                    'id' => $aC->id,
+                    'comment' => $aC->comment,
+                    'user' => [
+                        'id' => $commentedUser->id,
+                        'name' => $commentedUser->first_name . ' ' . $commentedUser->last_name,
+                        'gender' => $commentedUser->getGender(),
+                        'avatar' => $commentedUser->getAvatars(),
+                        'its_me' => $itsMe->id == $commentedUser->id ? true : false,
+                    ]
+                ];
+            } else {
+                if ($comments) {
+                    foreach ($comments as &$c) {
+                        if ($c['id'] == $aC->answer_to_id) {
+                            $c['answers'][] = [
+                                'id' => $aC->id,
+                                'comment' => $aC->comment,
+                                'user' => [
+                                    'id' => $commentedUser->id,
+                                    'name' => $commentedUser->first_name . ' ' . $commentedUser->last_name,
+                                    'gender' => $commentedUser->getGender(),
+                                    'avatar' => $commentedUser->getAvatars(),
+                                    'its_me' => $itsMe->id == $commentedUser->id ? true : false,
+                                ]
+                            ];
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         return [
             'partner' => $partner->getPartner('getBasicInformation', true, $this),
             'announcement' => [
@@ -450,6 +495,7 @@ class Announcement extends BaseModel
                 'announcement_seats' => $announcementSeats,
                 'announcement_payments' => $announcementPayments,
                 'announcement_participants' => $announcementParticipants,
+                'comments' => $comments
             ],
             'facility' => $facility ? [
                 'id' => (int) $facility->id,

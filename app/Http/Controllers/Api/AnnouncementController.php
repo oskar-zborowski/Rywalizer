@@ -17,6 +17,7 @@ use App\Models\Facility;
 use App\Models\User;
 use App\Models\Partner;
 use App\Models\PartnerSetting;
+use App\Models\Rating;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -818,5 +819,113 @@ class AnnouncementController extends Controller
                 'Announcement does not exist.'
             );
         }
+    }
+
+    /**
+     * #### `POST` `/api/v1/announcement/comment`
+     * Dodanie komentarza do wydarzenia
+     * 
+     * @param Request $request
+     * 
+     * @return void
+     */
+    public function newComment(Request $request): void {
+        
+        $request->validate([
+            'announcement_id' => 'required|integer|exists:announcements,id',
+            'answer_to_id' => 'nullable|integer|exists:ratings,id',
+            'comment' => 'required|string|max:10000'
+        ]);
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        /** @var Announcement $announcement */
+        $announcement = Announcement::where('id', $request->announcement_id)->first();
+
+        if (!$announcement) {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Announcement does not exist.'
+            );
+        }
+
+        /** @var Rating $rating */
+        $newComment = new Rating;
+        $newComment->evaluable_type = 'App\Models\Announcement';
+        $newComment->evaluable_id = $request->announcement_id;
+        $newComment->evaluator_type = 'App\Models\User';
+        $newComment->evaluator_id = $user->id;
+        $newComment->comment = $request->comment;
+        $newComment->answer_to_id = $request->answer_to_id;
+        $newComment->save();
+
+        JsonResponse::sendSuccess();
+    }
+
+    /**
+     * #### `PATCH` `/api/v1/announcement/comment`
+     * Edycja komentarza do wydarzenia
+     * 
+     * @param Request $request
+     * 
+     * @return void
+     */
+    public function updateComment(Request $request): void {
+        
+        $request->validate([
+            'comment_id' => 'required|integer|exists:ratings,id',
+            'comment' => 'required|string|max:10000'
+        ]);
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        /** @var Rating $rating */
+        $rating = Rating::where('id', $request->comment_id)->where('evaluator_type', 'App\Models\User')->where('evaluator_id', $user->id)->first();
+
+        if (!$rating) {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Rating does not exist.'
+            );
+        }
+
+        $rating->comment = $request->comment;
+        $rating->save();
+
+        JsonResponse::sendSuccess();
+    }
+
+    /**
+     * #### `DELETE` `/api/v1/announcement/comment`
+     * Usunięcie komentarza do wydarzenia
+     * 
+     * @param Request $request
+     * 
+     * @return void
+     */
+    public function deleteComment(Request $request): void {
+        
+        $request->validate([
+            'comment_id' => 'required|integer|exists:ratings,id',
+        ]);
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        /** @var Rating $rating */
+        $rating = Rating::where('id', $request->comment_id)->where('evaluator_type', 'App\Models\User')->where('evaluator_id', $user->id)->first();
+
+        if (!$rating) {
+            throw new ApiException(
+                BaseErrorCode::FAILED_VALIDATION(),
+                'Rating does not exist.'
+            );
+        }
+
+        $rating->delete();
+
+        JsonResponse::sendSuccess();
     }
 }
