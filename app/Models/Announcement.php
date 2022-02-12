@@ -96,6 +96,26 @@ class Announcement extends BaseModel
         'description' => 1500
     ];
 
+    protected $filters = [
+        'sort',
+        'like',
+        'in',
+        'greater',
+        'greater_or_equal',
+        'less',
+        'less_or_equal',
+        'date_from',
+        'date_to'
+    ];
+
+    public function date_from($query, $value) {
+        $query->where('start_date', '>=', $value . ' 00:00:00');
+    }
+
+    public function date_to($query, $value) {
+        $query->where('start_date', '<=', $value . ' 23:59:59');
+    }
+
     public function announcementPartner() {
         return $this->belongsTo(PartnerSetting::class, 'announcement_partner_id');
     }
@@ -246,6 +266,64 @@ class Announcement extends BaseModel
                 'Podano nieprawidłowy identyfikator zdjęcia'
             );
         }
+    }
+
+    /**
+     * Zwrócenie minimalnych informacji o wydarzeniu
+     * 
+     * @return array
+     */
+    public function getMinInformation(): array {
+
+        /** @var PartnerSetting $partner */
+        $partner = $this->announcementPartner()->first();
+
+        /** @var Facility $facility */
+        $facility = $this->facility()->first();
+
+        if ($facility && $facility->address_coordinates) {
+            $addressCoordinates = $facility->address_coordinates;
+            $addressCoordinates = explode(';', $addressCoordinates);
+        }
+
+        /** @var DefaultType $sport */
+        $sport = $this->sport()->first();
+
+        return [
+            'announcement' => [
+                'id' => (int) $this->id,
+                'sport' => [
+                    'id' => (int) $sport->id,
+                    'name' => $sport->name,
+                    'description' => $sport->description_simple,
+                    'icon' => $sport->icon()->first() ? $sport->icon()->first()->filename : null,
+                    'color' => $sport->color,
+                ],
+                'start_date' => $this->start_date,
+                'end_date' => $this->end_date,
+                'ticket_price' => (int) $this->ticket_price,
+                'minimum_skill_level' => $this->minimumSkillLevel()->first() ? [
+                    'id' => (int) $this->minimumSkillLevel()->first()->id,
+                    'name' => $this->minimumSkillLevel()->first()->name,
+                ] : null,
+                'participants_counter' => (int) $this->participants_counter,
+                'maximum_participants_number' => (int) $this->maximum_participants_number,
+                'front_image' => $this->getImage(),
+            ],
+            'facility' => $facility ? [
+                'id' => (int) $facility->id,
+                'name' => $facility->name,
+                'street' => $facility->street,
+                'city' => $facility->city()->first() ? [
+                    'id' => (int) $facility->city()->first()->id,
+                    'name' => $facility->city()->first()->name,
+                ] : null,
+                'address_coordinates' => [
+                    'lat' => isset($addressCoordinates) ? (float) $addressCoordinates[0] : null,
+                    'lng' => isset($addressCoordinates) ? (float) $addressCoordinates[1] : null
+                ]
+            ]: null
+        ];
     }
 
     /**

@@ -659,7 +659,7 @@ class AnnouncementController extends Controller
         /** @var Announcement $announcements */
         $announcements = Announcement::where('visible_at', '<=', now())->filter()->paginate($paginationAttributes['perPage']);
 
-        $result = $this->preparePagination($announcements, 'getBasicInformation');
+        $result = $this->preparePagination($announcements, 'getMinInformation');
 
         JsonResponse::sendSuccess($result['data'], $result['metadata']);
     }
