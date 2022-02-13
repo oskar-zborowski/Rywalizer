@@ -7,6 +7,7 @@ use App\Http\ErrorCodes\BaseErrorCode;
 use App\Http\Libraries\FileProcessing\FileProcessing;
 use App\Http\Libraries\Validation\Validation;
 use App\Http\Traits\Encryptable;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class Partner extends BaseModel
@@ -227,6 +228,8 @@ class Partner extends BaseModel
      */
     public function saveLogo(string $logoPath): void {
 
+        $user = Auth::user();
+
         $imageType = Validation::getDefaultType('LOGO', 'IMAGE_TYPE');
 
         /** @var ImageAssignment $oldLogo */
@@ -245,8 +248,8 @@ class Partner extends BaseModel
         $imageAssignment->image_type_id = $imageType->id;
         $imageAssignment->image_id = $image->id;
         $imageAssignment->number = 1;
-        $imageAssignment->creator_id = $this->id;
-        $imageAssignment->editor_id = $this->id;
+        $imageAssignment->creator_id = $user->id;
+        $imageAssignment->editor_id = $user->id;
         $imageAssignment->save();
     }
 

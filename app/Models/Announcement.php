@@ -246,6 +246,8 @@ class Announcement extends BaseModel
      */
     public function savePhoto(string $imagePath): void {
 
+        $user = Auth::user();
+
         $imageType = Validation::getDefaultType('ANNOUNCEMENT_IMAGE', 'IMAGE_TYPE');
 
         /** @var ImageAssignment $oldImage */
@@ -264,8 +266,8 @@ class Announcement extends BaseModel
         $imageAssignment->image_type_id = $imageType->id;
         $imageAssignment->image_id = $image->id;
         $imageAssignment->number = 1;
-        $imageAssignment->creator_id = $this->id;
-        $imageAssignment->editor_id = $this->id;
+        $imageAssignment->creator_id = $user->id;
+        $imageAssignment->editor_id = $user->id;
         $imageAssignment->save();
     }
 
