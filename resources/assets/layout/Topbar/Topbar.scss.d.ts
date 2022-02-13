@@ -5,6 +5,7 @@ interface CssExports {
   'avatar': string;
   'links': string;
   'logo': string;
+  'tooltip': string;
   'topbar': string;
   'userButton': string;
 }

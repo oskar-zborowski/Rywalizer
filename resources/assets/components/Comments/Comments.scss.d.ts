@@ -9,6 +9,7 @@ interface CssExports {
   'contentContainer': string;
   'contentHeader': string;
   'createdAt': string;
+  'tooltip': string;
   'username': string;
 }
 export const cssExports: CssExports;

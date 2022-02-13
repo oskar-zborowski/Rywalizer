@@ -120,6 +120,7 @@ class Announcement extends BaseModel
     public function search($query, $value) {
         $query->whereHas('facility', function ($q) use ($value) {
             $q->where('name', 'like', '%' . $value . '%')
+                ->orWhere('street', 'like', '%' . $value . '%')
                 ->orWhereHas('city', function ($q2) use ($value) {
                     $q2->where('name', 'like', '%' . $value . '%')
                         ->orWhereHas('parent', function ($q3) use ($value) {
@@ -399,6 +400,9 @@ class Announcement extends BaseModel
                         'status' => [
                             'id' => (int) $aP->joiningStatus()->first()->id,
                             'name' => $aP->joiningStatus()->first()->name,
+                        ],
+                        'announcement_seat' => [
+                            'id' => (int) $aP->announcement_seat_id
                         ]
                     ];
                 }

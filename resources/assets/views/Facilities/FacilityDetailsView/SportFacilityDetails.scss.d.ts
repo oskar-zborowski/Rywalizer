@@ -25,6 +25,7 @@ interface CssExports {
   'separator': string;
   'sportFacilityDetails': string;
   'stars': string;
+  'tooltip': string;
 }
 export const cssExports: CssExports;
 export default cssExports;

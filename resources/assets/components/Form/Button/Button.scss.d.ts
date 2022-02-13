@@ -9,6 +9,7 @@ interface CssExports {
   'icon': string;
   'orangeButton': string;
   'text': string;
+  'tooltip': string;
 }
 export const cssExports: CssExports;
 export default cssExports;

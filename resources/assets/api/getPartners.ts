@@ -1,7 +1,7 @@
 export interface IPartner {
     id: number;
     fullName: string;
-    logos: string[];
+    imageUrl: string;
     contactEmail: string;
     telephone: string;
     facebook: string;

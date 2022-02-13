@@ -3,7 +3,7 @@ import { getApiUrl } from '@/utils/api';
 import axios from 'axios';
 import getAdministrativeAreas, { AdministrativeAreaType } from './getAdministrativeAreas';
 
-const editUser = async (args: IEditUserArgs, imageFile: File) => {
+const editUser = async (args: IEditUserArgs, imageFile: File): Promise<IEditUserResult> => {
     const body = args as any;
 
     if (args.administrativeAreas && args.addressCoordinates) {
@@ -31,12 +31,21 @@ const editUser = async (args: IEditUserArgs, imageFile: File) => {
     if (imageFile) {
         const formData = new FormData();
         formData.append('avatar', imageFile);
-        await axios.post(getApiUrl('/api/v1/user/avatar'), formData, {
+        const response = await axios.post(getApiUrl('/api/v1/user/avatar'), formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
         });
+
+        const avatar = response.data?.data?.user?.avatars?.[0];
+
+        return {
+            avatarId: avatar.id,
+            avatarUrl: avatar.filename
+        };
     }
+
+    return {};
 };
 
 export default editUser;
@@ -55,4 +64,9 @@ export interface IEditUserArgs {
     password?: string;
     passwordConfirmation?: string;
     administrativeAreas: string[];
+}
+
+export interface IEditUserResult {
+    avatarId?: number,
+    avatarUrl?: string
 }

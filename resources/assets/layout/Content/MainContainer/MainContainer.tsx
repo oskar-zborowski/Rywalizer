@@ -5,6 +5,7 @@ import CreateEventView from '@/views/Events/CreateEventView';
 import EventDetailsView from '@/views/Events/EventDetailsView/EventDetailsView';
 import EventsView from '@/views/Events/EventsView/EventsView';
 import SportFacilityDetails from '@/views/Facilities/FacilityDetailsView/SportFacilityDetails';
+import PartnerView from '@/views/User/PartnerView';
 import UserView from '@/views/User/UserView';
 import { observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
@@ -36,6 +37,7 @@ const MainContainer: React.FC = () => {
                         </Fragment>
                     } /> */}
                         <Route path="/konto" element={<UserView />} />
+                        <Route path="/partnerstwo" element={<PartnerView />} />
                         <Route path="/obiekty/1" element={<SportFacilityDetails />} />
                         <Route path="/ogloszenia/dodaj" element={<CreateEventView />} />
                         <Route path="/ogloszenia/edytuj/:id" element={<CreateEventView />} />

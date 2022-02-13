@@ -67,7 +67,7 @@ export class UserStore {
     private prepareUserData(responseData: any): IUser {
         let coords = responseData.user.addressCoordinates;
 
-        if (!responseData.user.addressCoordinates.lat || responseData.user.addressCoordinates.lng) {
+        if (!coords.lat || !coords.lng) {
             coords = null;
         }
 
@@ -75,6 +75,7 @@ export class UserStore {
             id: responseData.user.id,
             firstName: responseData.user.firstName,
             lastName: responseData.user.lastName,
+            avatarId: responseData.user.avatars?.[0].id,
             avatarUrl: responseData.user.avatars?.[0].filename,
             avatarUrls: responseData.user.avatars,
             email: responseData.user.email,

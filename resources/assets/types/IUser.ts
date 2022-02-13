@@ -6,6 +6,7 @@ export interface IUser {
     id: number;
     firstName: string;
     lastName: string;
+    avatarId: number;
     avatarUrl: string;
     avatarUrls: string[];
     email: string;

@@ -24,6 +24,7 @@ const AuthButtons: React.FC = observer(() => {
                     handleIsOpenChange={(isOpen) => setDropdownOpen(isOpen)}
                 >
                     <Link to="/konto"><DropdownRow>Konto</DropdownRow></Link>
+                    <Link to="/partnerstwo"><DropdownRow>Partnerstwo</DropdownRow></Link>
                     <DropdownRow onClick={() => userStore.logout()}>Wyloguj</DropdownRow>
                 </Dropdown>
             </div>

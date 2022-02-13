@@ -3,6 +3,7 @@
 interface CssExports {
   'authButtons': string;
   'avatar': string;
+  'tooltip': string;
   'userButton': string;
 }
 export const cssExports: CssExports;

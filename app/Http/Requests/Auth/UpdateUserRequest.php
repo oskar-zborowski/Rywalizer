@@ -22,8 +22,8 @@ class UpdateUserRequest extends FormRequest
         return [
             'first_name' => 'nullable|alpha|max:30',
             'last_name' => 'nullable|alpha|max:30',
-            'email' => 'unique:users,email,' . $user->id,
-            'telephone' => 'unique:users,telephone,' . $user->id,
+            'email' => 'nullable|unique:users,email,' . $user->id,
+            'telephone' => 'nullable|unique:users,telephone,' . $user->id,
             'birth_date' => 'nullable|date_format:Y-m-d',
             'address_coordinates' => 'nullable|string|size:21',
             'facebook_profile' => 'nullable|url|max:255',

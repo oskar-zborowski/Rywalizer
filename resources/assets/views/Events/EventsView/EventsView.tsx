@@ -1,4 +1,4 @@
-import getEvents, { IEvent } from '@/api/getEvents';
+import getEvents, { IEvent, IGetEventsParams } from '@/api/getEvents';
 import { ISport } from '@/api/getSports';
 import Input from '@/components/Form/Input/Input';
 import SelectBox, { IOption, useSelectBox } from '@/components/Form/SelectBox/SelectBox';
@@ -7,7 +7,7 @@ import useScrollbar from '@/layout/Content/Scrollbar/Scrollbar';
 import appStore from '@/store/AppStore';
 import mapViewerStore from '@/store/MapViewerStore';
 import View from '@/views/View/View';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import styles from './EventsView.scss';
 import EventTile from './EventTile';
 
@@ -15,19 +15,18 @@ const EventsView: React.FC = () => {
     const { containerRef } = useScrollbar();
     const [queryString, setQueryString] = useState('');
     const [events, setEvents] = useState<IEvent[]>(null);
+    const [filters, setFilters] = useState<IGetEventsParams['filters']>({});
     const areEventsLoaded = events !== null;
-
-    const options: IOption<number>[] = [
-        { text: 'Poznań', value: 1 },
-        { text: 'Warszawa', value: 1 },
-        { text: 'Gdańsk', value: 1 },
-        { text: 'Luboń', value: 1 }
-    ];
 
     useEffect(() => {
         mapViewerStore.reset();
-        getEvents().then(setEvents);
     }, []);
+
+    useEffect(() => {
+        getEvents({
+            filters: filters
+        }).then(setEvents);
+    }, [filters]);
 
     areEventsLoaded && mapViewerStore.setEventPins(events.map(event => {
         return {
@@ -38,16 +37,26 @@ const EventsView: React.FC = () => {
     }));
 
     const sportsSelect = useSelectBox<ISport>([], (opts) => {
-        //TODO set filters
+        setFilters(filters => {
+            filters.sportIds = opts.map(opt => opt.value.id);
+            return { ...filters };
+        });
     });
 
-    const sortSelect = useSelectBox<number>([
-        { text: 'Najlepsze', value: 0, isSelected: true },
-        { text: 'Cena malejąco', value: 1 },
-        { text: 'Cena rosnąco', value: 2 }
+    const sortSelect = useSelectBox<[IGetEventsParams['filters']['sort'], IGetEventsParams['filters']['sortDir']]>([
+        { text: 'Cena malejąco', value: ['ticket_price', 'desc'] },
+        { text: 'Cena rosnąco', value: ['ticket_price', 'asc'], isSelected: true },
+        { text: 'Data malejąco', value: ['start_date', 'asc'] },
+        { text: 'Data rosnąco', value: ['start_date', 'desc'] },
+        { text: 'Poziom malejąco', value: ['minimum_skill_level_id', 'desc'] },
+        { text: 'Poziom rosnąco', value: ['minimum_skill_level_id', 'asc'] }
     ], ([opt]) => {
         sortSelect.setPlaceholder(`Sortuj wg: ${opt?.text}`);
-        //TODO set filters
+        setFilters(filters => {
+            filters.sort = opt.value[0];
+            filters.sortDir = opt.value[1];
+            return { ...filters };
+        });
     });
 
     useEffect(() => {
@@ -66,13 +75,23 @@ const EventsView: React.FC = () => {
                 <Fragment>
                     <div className={styles.filters}>
                         <Input
+                            placeholder="Nazwa obiektu / region / ulica"
                             value={queryString}
+                            style={{ gridColumn: 'span 2' }}
                             onChange={(v) => setQueryString(v)}
-                            // style={{flex: 100}}
+                            onBlur={() => {
+                                setFilters(filters => {
+                                    filters.search = queryString;
+                                    return { ...filters };
+                                });
+                            }}
+                        // style={{flex: 100}}
                         />
-                        <SelectBox
+                        {/* <SelectBox
+                            {...locationSelect}
+                            searchBar
                             placeholder="Lokalizacja"
-                        />
+                        /> */}
                         <SelectBox
                             searchBar
                             multiselect
@@ -85,7 +104,7 @@ const EventsView: React.FC = () => {
                         /> */}
                         <SelectBox
                             {...sortSelect}
-                            // transparent={true}
+                        // transparent={true}
                         />
                     </div>
                     <div className={styles.containerWrapper} ref={containerRef}>

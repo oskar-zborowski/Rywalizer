@@ -9,6 +9,7 @@ interface CssExports {
   'header': string;
   'loadingOverlay': string;
   'title': string;
+  'tooltip': string;
   'wrapper': string;
 }
 export const cssExports: CssExports;

@@ -19,7 +19,7 @@
     align-items: center;
     height: 34px;
     padding: 0 8px;
-    border: 1px solid #29292E;
+    border: 1px solid #29292e;
     position: relative;
     overflow: hidden;
     background-color: #141417;
@@ -34,5 +34,12 @@
         outline: none !important;
         color: #a1a1a1;
         -webkit-appearance: none !important;
+
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            transition: background-color 5000s ease-in-out 0s;
+        }
     }
 }
