@@ -48,10 +48,14 @@ function SelectBox<T = any>(props: ISelectBoxProps<T>) {
         options[i].isSelected = isSelected;
 
         handleOptionsChange(options);
-        handleSelectedOptionsChange(isSelected ? [options[i]] : []);
+        handleSelectedOptionsChange?.(isSelected ? [options[i]] : []);
 
         setIsOpen(false);
     };
+
+    useEffect(() => {
+        handleSelectedOptionsChange?.(options.filter(opt => opt.isSelected));
+    }, [options]);
 
     const onSearchQueryChange = async (query: string) => {
         const hiddenOptions = [];

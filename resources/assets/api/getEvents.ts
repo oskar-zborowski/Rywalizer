@@ -37,7 +37,7 @@ const getEvents = async (params?: IGetEventsParams) => {
             startDate: new Date(announcement.startDate),
             endDate: new Date(announcement.endDate),
             ticketPrice: +announcement.ticketPrice,
-            minSkillLevel: +announcement.minimumSkillLevel,
+            minSkillLevelId: +announcement.minimumSkillLevel,
             minAge: +announcement.minimalAge,
             maxAge: +announcement.maximumAge,
             description: announcement.description,
@@ -51,12 +51,12 @@ const getEvents = async (params?: IGetEventsParams) => {
                 name: facility.name,
                 street: facility.street,
                 city: {
-                    id: +facility.city.id,
-                    name: facility.city.name
+                    id: +facility.city?.id,
+                    name: facility.city?.name
                 },
                 location: {
-                    lat: +facility.addressCoordinates.lat + Math.random() - 0.5,
-                    lng: +facility.addressCoordinates.lng + Math.random() - 0.5
+                    lat: +facility.addressCoordinates.lat,
+                    lng: +facility.addressCoordinates.lng
                 }
             } : null,
             partner: partner ? {
@@ -99,7 +99,7 @@ export interface IEvent {
     //     id: 77,
     //     name: 'STANDARD'
     // },
-    minSkillLevel: number,
+    minSkillLevelId: number,
     // gender: null,
     // ageCategory: null,
     minAge: number,
