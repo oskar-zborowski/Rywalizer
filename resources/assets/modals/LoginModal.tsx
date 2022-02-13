@@ -60,7 +60,13 @@ const LoginModal: React.FC = observer(() => {
                     lub
                 </div>
                 <Input label="Login" value={loginValue} onChange={(v) => setLogin(v)} />
-                <Input label="Hasło" type="password" value={passwordValue} onChange={(v) => setPassword(v)} />
+                <Input 
+                    label="Hasło" 
+                    type="password" 
+                    value={passwordValue} 
+                    onChange={(v) => setPassword(v)}
+                    onEnter={() => login()}
+                />
                 <div style={{ fontSize: '12px', color: '#a1a1a1', textAlign: 'right' }}>
                     <Link fixedColor onClick={() => modalsStore.setIsRemindPasswordEnabled(true)}>Nie pamiętasz hasła?</Link>
                 </div>

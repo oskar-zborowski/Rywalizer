@@ -104,7 +104,15 @@ const getEvents = async (params?: IGetEventsParams) => {
                     //TODO status
                 };
             }) : [],
-            comments: announcement.comments
+            comments: announcement.comments ? announcement.comments.map((comment: any) => {
+                return {
+                    username: comment.user.name,
+                    userAvatarUrl: comment.user.avatar[0]?.filename,
+                    createdAt: 'DATA',
+                    comment: comment.comment,
+                    comments: []
+                };
+            }) : []
         };
         return event;
     }) : [] as IEvent[];

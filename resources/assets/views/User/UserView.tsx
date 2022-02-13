@@ -85,7 +85,7 @@ const UserView: React.FC = () => {
         }
 
         const marker = new google.maps.Marker({
-            position: defaultMarkerPosition, //TODO user pos
+            position: user.addressCoordinates ?? defaultMarkerPosition,
             draggable: true,
         });
 

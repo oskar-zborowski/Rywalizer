@@ -11,6 +11,7 @@ interface CssExports {
   'createdAt': string;
   'tooltip': string;
   'username': string;
+  'writeCommentRow': string;
 }
 export const cssExports: CssExports;
 export default cssExports;

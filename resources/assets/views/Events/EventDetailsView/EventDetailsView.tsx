@@ -31,6 +31,7 @@ import { AiOutlineClose } from 'react-icons/ai';
 import ReactTooltip from 'react-tooltip';
 import leaveEvent from '@/api/leaveEvent';
 import { event } from 'jquery';
+import addCommentToEvent from '@/api/addCommentToEvent';
 
 faker.locale = 'pl';
 
@@ -246,13 +247,25 @@ const EventDetailsView: React.FC = () => {
                         <div className={styles.separator}></div>
                         <section>
                             <h1>Komentarze:</h1>
-                            {event.comments ? (
-                                <Comments comments={event.comments} />
-                            ) : (
-                                <div style={{ marginTop: '20px' }}>
-                                    To wydarzenie nie posiada komentarzy
-                                </div>
-                            )}
+                            <Comments
+                                comments={event.comments ?? []}
+                                onAddComment={async (comment) => {
+                                    await addCommentToEvent({
+                                        announcementId: event.id,
+                                        comment
+                                    });
+
+                                    setEvent(event => {
+                                        event.comments.push({
+                                            username: user.firstName + ' ' + user.lastName,
+                                            comment: comment,
+                                            createdAt: new Date().toLocaleDateString()
+                                        });
+
+                                        return { ...event };
+                                    });
+                                }}
+                            />
                         </section>
                     </Fragment>
                 )}

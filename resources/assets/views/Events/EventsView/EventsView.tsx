@@ -109,7 +109,7 @@ const EventsView: React.FC = () => {
                     </div>
                     <div className={styles.containerWrapper} ref={containerRef}>
                         <div className={styles.eventTilesContainer}>
-                            {events.map((event, i) => <EventTile {...event} key={i} />)}
+                            {events.length ? events.map((event, i) => <EventTile {...event} key={i} />) : 'Brak wyników'}
                         </div>
                     </div>
                 </Fragment>
