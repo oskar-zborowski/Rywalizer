@@ -456,6 +456,7 @@ class Announcement extends BaseModel
                             $c['answers'][] = [
                                 'id' => $aC->id,
                                 'comment' => $aC->comment,
+                                'date' => $aC->created_at,
                                 'user' => [
                                     'id' => $commentedUser->id,
                                     'name' => $commentedUser->first_name . ' ' . $commentedUser->last_name,
