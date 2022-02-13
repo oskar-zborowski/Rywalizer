@@ -28,6 +28,10 @@
     &::-webkit-scrollbar {
         display: none;
     }
+
+    @include respond-to(null, "sm") {
+        padding: 15px;
+    }
 }
 
 .header {

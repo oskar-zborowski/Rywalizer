@@ -4,6 +4,7 @@ interface CssExports {
   'backgroundImage': string;
   'contact': string;
   'contactSM': string;
+  'deletUserIcon': string;
   'description': string;
   'detailsSeparator': string;
   'detailsTitle': string;
@@ -16,6 +17,7 @@ interface CssExports {
   'separator': string;
   'signUp': string;
   'signUpCell': string;
+  'tooltip': string;
   'userData': string;
   'userDetails': string;
   'userDetailsRow': string;

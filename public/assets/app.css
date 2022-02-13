@@ -19,6 +19,21 @@
   min-width: 600px;
 }
 
+.MapViewer_tooltip__ibdjH {
+  background-color: #ce8f3e55 !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-align: center !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid #ce8f3e !important;
+  backdrop-filter: blur(5px);
+}
+.MapViewer_tooltip__ibdjH::after, .MapViewer_tooltip__ibdjH::before {
+  content: none !important;
+}
+
 .MapViewer_mapViewer__PLqFb {
   border-radius: 15px;
   overflow: hidden;
@@ -36,6 +51,21 @@
 /*!***********************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/layout/Footer/Footer.scss ***!
   \***********************************************************************************************************************************************************************************************************************/
+.Footer_tooltip__uyIFs {
+  background-color: #ce8f3e55 !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-align: center !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid #ce8f3e !important;
+  backdrop-filter: blur(5px);
+}
+.Footer_tooltip__uyIFs::after, .Footer_tooltip__uyIFs::before {
+  content: none !important;
+}
+
 .Footer_footer__rz66K {
   height: 60px;
   width: 100%;
@@ -57,6 +87,21 @@
 /*!************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Form/Dropdown/Dropdown.scss ***!
   \************************************************************************************************************************************************************************************************************************************/
+.Dropdown_tooltip__h1Fb6 {
+  background-color: #ce8f3e55 !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-align: center !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid #ce8f3e !important;
+  backdrop-filter: blur(5px);
+}
+.Dropdown_tooltip__h1Fb6::after, .Dropdown_tooltip__h1Fb6::before {
+  content: none !important;
+}
+
 .Dropdown_dropdownWrapper__WUU4T {
   flex: 1;
   position: relative;
@@ -142,6 +187,21 @@
 /*!***********************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/layout/Topbar/Topbar.scss ***!
   \***********************************************************************************************************************************************************************************************************************/
+.Topbar_tooltip__AQC2V {
+  background-color: #ce8f3e55 !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-align: center !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid #ce8f3e !important;
+  backdrop-filter: blur(5px);
+}
+.Topbar_tooltip__AQC2V::after, .Topbar_tooltip__AQC2V::before {
+  content: none !important;
+}
+
 .Topbar_topbar__l9aHb {
   width: 100%;
   height: 60px;
@@ -198,6 +258,21 @@
 /*!********************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Form/Button/Button.scss ***!
   \********************************************************************************************************************************************************************************************************************************/
+.Button_tooltip__X7VbT {
+  background-color: #ce8f3e55 !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-align: center !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid #ce8f3e !important;
+  backdrop-filter: blur(5px);
+}
+.Button_tooltip__X7VbT::after, .Button_tooltip__X7VbT::before {
+  content: none !important;
+}
+
 .Button_button__kEP6o, .Button_googleButton__n4FiN, .Button_facebookButton__Fs1Dy, .Button_blackButton__WJceZ, .Button_grayButton__gDBax, .Button_orangeButton__i5tVN {
   border-radius: 8px;
   display: flex;
@@ -260,6 +335,21 @@
 /*!****************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/layout/Topbar/AuthButtons.scss ***!
   \****************************************************************************************************************************************************************************************************************************/
+.AuthButtons_tooltip__swtf3 {
+  background-color: #ce8f3e55 !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-align: center !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid #ce8f3e !important;
+  backdrop-filter: blur(5px);
+}
+.AuthButtons_tooltip__swtf3::after, .AuthButtons_tooltip__swtf3::before {
+  content: none !important;
+}
+
 .AuthButtons_userButton__wwlUT, .AuthButtons_authButtons__OCzBI {
   position: absolute;
   right: 0;
@@ -333,6 +423,21 @@
 /*!**************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Form/SelectBox/SelectBox.scss ***!
   \**************************************************************************************************************************************************************************************************************************************/
+.SelectBox_tooltip__bbUX3 {
+  background-color: #ce8f3e55 !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-align: center !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid #ce8f3e !important;
+  backdrop-filter: blur(5px);
+}
+.SelectBox_tooltip__bbUX3::after, .SelectBox_tooltip__bbUX3::before {
+  content: none !important;
+}
+
 .SelectBox_rowContent__Rr5yC {
   flex: 1;
   user-select: none;
@@ -419,6 +524,21 @@
 /*!******************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/View/View.scss ***!
   \******************************************************************************************************************************************************************************************************************/
+.View_tooltip__uufC_ {
+  background-color: #ce8f3e55 !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-align: center !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid #ce8f3e !important;
+  backdrop-filter: blur(5px);
+}
+.View_tooltip__uufC_::after, .View_tooltip__uufC_::before {
+  content: none !important;
+}
+
 .View_view___zuqU {
   padding: 20px;
   position: relative;
@@ -447,6 +567,11 @@
 .View_grayPane__oA6Xd::-webkit-scrollbar {
   display: none;
 }
+@media (max-width: 576px) {
+  .View_grayPane__oA6Xd {
+    padding: 15px;
+  }
+}
 
 .View_header__TeHwp {
   flex: none;
@@ -467,6 +592,21 @@
 /*!*******************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/Events/CreateEventView.scss ***!
   \*******************************************************************************************************************************************************************************************************************************/
+.CreateEventView_tooltip__AgMJS {
+  background-color: #ce8f3e55 !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-align: center !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid #ce8f3e !important;
+  backdrop-filter: blur(5px);
+}
+.CreateEventView_tooltip__AgMJS::after, .CreateEventView_tooltip__AgMJS::before {
+  content: none !important;
+}
+
 .CreateEventView_locationSection__Ldd23 {
   display: grid;
   gap: 20px;
@@ -500,29 +640,35 @@
 }
 
 .CreateEventView_restSection__Zwvw6 {
-  display: grid;
+  display: flex;
   gap: 20px;
-  grid-template-columns: repeat(4, 1fr);
+}
+.CreateEventView_restSection__Zwvw6 .CreateEventView_eventImageWrapper__L5usn {
+  flex: none;
+}
+.CreateEventView_restSection__Zwvw6 .CreateEventView_label__HxIoF {
+  margin-bottom: 3px;
+  margin-left: 8px;
+  color: #a1a1a1;
+  display: block;
+}
+.CreateEventView_restSection__Zwvw6 .CreateEventView_eventImage__p0uFV {
+  width: 160px;
+  height: 180px;
+  border: 1px solid #141417;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+@media (max-width: 576px) {
+  .CreateEventView_restSection__Zwvw6 .CreateEventView_eventImage__p0uFV {
+    width: 100%;
+    height: 220px;
+  }
 }
 @media (max-width: 767px) {
   .CreateEventView_restSection__Zwvw6 {
-    grid-template-columns: 1fr;
-  }
-  .CreateEventView_restSection__Zwvw6 > * {
-    grid-column: initial !important;
-  }
-}
-@media (min-width: 768px) and (max-width: 992px) {
-  .CreateEventView_restSection__Zwvw6 {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-@media (min-width: 993px) and (max-width: 1200px) {
-  .CreateEventView_restSection__Zwvw6 {
-    grid-template-columns: 1fr;
-  }
-  .CreateEventView_restSection__Zwvw6 > * {
-    grid-column: initial !important;
+    flex-direction: column;
   }
 }
 /*!***********************************************************************************************************************************************************************************************************************************!*\
@@ -557,6 +703,21 @@
 /*!*************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/Events/EventDetailsView/EventDetailsView.scss ***!
   \*************************************************************************************************************************************************************************************************************************************************/
+.EventDetailsView_tooltip__UxZI0 {
+  background-color: #ce8f3e55 !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-align: center !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid #ce8f3e !important;
+  backdrop-filter: blur(5px);
+}
+.EventDetailsView_tooltip__UxZI0::after, .EventDetailsView_tooltip__UxZI0::before {
+  content: none !important;
+}
+
 .EventDetailsView_eventDetails__FiVTm {
   padding: 20px 20px 40px 20px;
   height: 100%;
@@ -707,20 +868,26 @@
   grid-template-columns: 1fr 1fr;
 }
 .EventDetailsView_participantsList__XZcZh .EventDetailsView_participantCell__W6kX8 {
-  padding: 0 8px;
   border-bottom: 1px solid #4c4c52;
-  height: 38px;
+  position: relative;
+  height: 45px;
   color: #a1a1a1;
   display: flex;
   align-items: center;
 }
-.EventDetailsView_participantsList__XZcZh .EventDetailsView_participantCell__W6kX8:last-child {
-  border-bottom: none;
+.EventDetailsView_participantsList__XZcZh .EventDetailsView_participantCell__W6kX8 .EventDetailsView_deletUserIcon__rvqFP {
+  width: 18px;
+  height: 18px;
+  position: absolute;
+  cursor: pointer;
+  right: 0;
 }
-@media (min-width: 767px) {
-  .EventDetailsView_participantsList__XZcZh .EventDetailsView_participantCell__W6kX8:nth-last-of-type(2) {
-    border-bottom: none;
-  }
+.EventDetailsView_participantsList__XZcZh .EventDetailsView_participantCell__W6kX8 .EventDetailsView_deletUserIcon__rvqFP svg {
+  width: 100%;
+  height: 100%;
+}
+.EventDetailsView_participantsList__XZcZh .EventDetailsView_participantCell__W6kX8 .EventDetailsView_deletUserIcon__rvqFP:hover svg {
+  fill: #ce8f3e;
 }
 .EventDetailsView_participantsList__XZcZh .EventDetailsView_signUpCell__cQfJm {
   cursor: pointer;
@@ -765,6 +932,21 @@
 /*!***********************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Link/Link.scss ***!
   \***********************************************************************************************************************************************************************************************************************/
+.Link_tooltip__QokHg {
+  background-color: #ce8f3e55 !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-align: center !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid #ce8f3e !important;
+  backdrop-filter: blur(5px);
+}
+.Link_tooltip__QokHg::after, .Link_tooltip__QokHg::before {
+  content: none !important;
+}
+
 .Link_link__DW2O2 {
   cursor: pointer;
 }
@@ -792,6 +974,21 @@
 /*!*******************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Comments/Comments.scss ***!
   \*******************************************************************************************************************************************************************************************************************************/
+.Comments_tooltip__nCpxa {
+  background-color: #ce8f3e55 !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-align: center !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid #ce8f3e !important;
+  backdrop-filter: blur(5px);
+}
+.Comments_tooltip__nCpxa::after, .Comments_tooltip__nCpxa::before {
+  content: none !important;
+}
+
 .Comments_comments__LvcU0 {
   position: relative;
 }
@@ -859,6 +1056,21 @@
 /*!*************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/layout/Content/Scrollbar/Scrollbar.scss ***!
   \*************************************************************************************************************************************************************************************************************************************/
+.Scrollbar_tooltip__oWvpB {
+  background-color: #ce8f3e55 !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-align: center !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid #ce8f3e !important;
+  backdrop-filter: blur(5px);
+}
+.Scrollbar_tooltip__oWvpB::after, .Scrollbar_tooltip__oWvpB::before {
+  content: none !important;
+}
+
 .Scrollbar_scrollbar__BNjtG {
   margin: 15px 2px 15px 2px;
   border-radius: 4px;
@@ -881,6 +1093,21 @@
 /*!*************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/Events/EventsView/EventsView.scss ***!
   \*************************************************************************************************************************************************************************************************************************************/
+.EventsView_tooltip__zCr8r {
+  background-color: #ce8f3e55 !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-align: center !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid #ce8f3e !important;
+  backdrop-filter: blur(5px);
+}
+.EventsView_tooltip__zCr8r::after, .EventsView_tooltip__zCr8r::before {
+  content: none !important;
+}
+
 .EventsView_eventsView__oHfEP {
   display: flex;
   flex-direction: column;
@@ -975,7 +1202,7 @@
   background-color: #29292e;
 }
 .EventTile_eventTile__eBys7:hover .EventTile_border__vZtCT {
-  opacity: 0.5;
+  opacity: 0.3;
 }
 .EventTile_eventTile__eBys7:hover .EventTile_imageWrapper__Czl1I {
   filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.7));
@@ -1087,6 +1314,21 @@
 /*!*********************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/Facilities/FacilityDetailsView/Calendar/Calendar.scss ***!
   \*********************************************************************************************************************************************************************************************************************************************************/
+.Calendar_tooltip__sxPMd {
+  background-color: #ce8f3e55 !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-align: center !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid #ce8f3e !important;
+  backdrop-filter: blur(5px);
+}
+.Calendar_tooltip__sxPMd::after, .Calendar_tooltip__sxPMd::before {
+  content: none !important;
+}
+
 .Calendar_wrapper__Y5K8f {
   overflow-x: auto;
 }
@@ -1198,6 +1440,21 @@
 /*!************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/Facilities/FacilityDetailsView/SportFacilityDetails.scss ***!
   \************************************************************************************************************************************************************************************************************************************************************/
+.SportFacilityDetails_tooltip__DPGUf {
+  background-color: #ce8f3e55 !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-align: center !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid #ce8f3e !important;
+  backdrop-filter: blur(5px);
+}
+.SportFacilityDetails_tooltip__DPGUf::after, .SportFacilityDetails_tooltip__DPGUf::before {
+  content: none !important;
+}
+
 .SportFacilityDetails_sportFacilityDetails__fzCeo {
   padding: 20px 20px 40px 20px;
   height: 100%;
@@ -1406,6 +1663,21 @@
 /*!**********************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/views/User/UserView.scss ***!
   \**********************************************************************************************************************************************************************************************************************/
+.UserView_tooltip__S73k_ {
+  background-color: #ce8f3e55 !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-align: center !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid #ce8f3e !important;
+  backdrop-filter: blur(5px);
+}
+.UserView_tooltip__S73k_::after, .UserView_tooltip__S73k_::before {
+  content: none !important;
+}
+
 .UserView_userDataWrapper__CsjW1 {
   flex: 1;
   display: flex;
@@ -1426,6 +1698,7 @@
   border: 1px solid #141417;
   border-radius: 8px;
   object-fit: cover;
+  overflow: hidden;
 }
 
 .UserView_rightColumn__qh0H1 {
@@ -1485,6 +1758,21 @@
   max-width: 1050px;
 }
 
+.MainContainer_tooltip__kNzhS {
+  background-color: #ce8f3e55 !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-align: center !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid #ce8f3e !important;
+  backdrop-filter: blur(5px);
+}
+.MainContainer_tooltip__kNzhS::after, .MainContainer_tooltip__kNzhS::before {
+  content: none !important;
+}
+
 .MainContainer_mainContainer__RmFHB {
   position: relative;
   border-radius: 15px;
@@ -1509,6 +1797,21 @@
 /*!*************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Modal/Modal.scss ***!
   \*************************************************************************************************************************************************************************************************************************/
+.Modal_tooltip__jHZgC {
+  background-color: #ce8f3e55 !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-align: center !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid #ce8f3e !important;
+  backdrop-filter: blur(5px);
+}
+.Modal_tooltip__jHZgC::after, .Modal_tooltip__jHZgC::before {
+  content: none !important;
+}
+
 .Modal_wrapper__cnfIJ {
   top: 0;
   right: 0;
@@ -1621,6 +1924,21 @@
 /*!***********************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/main.scss (1) ***!
   \***********************************************************************************************************************************************************************************************************/
+.main_tooltip__cOmfi {
+  background-color: #ce8f3e55 !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-align: center !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid #ce8f3e !important;
+  backdrop-filter: blur(5px);
+}
+.main_tooltip__cOmfi::after, .main_tooltip__cOmfi::before {
+  content: none !important;
+}
+
 *,
 *:before,
 *:after {
@@ -1647,6 +1965,12 @@ body {
     font-size: 14px;
     background-color: #1c1c20;
   }
+}
+
+img {
+  display: block;
+  margin: 0;
+  padding: 0;
 }
 
 ul {

@@ -4,7 +4,7 @@ import axios from 'axios';
 import getAdministrativeAreas, { AdministrativeAreaType } from './getAdministrativeAreas';
 import moment from 'moment';
 
-const saveEvent = async (args: ISaveEventArgs, eventId?: number) => {
+const saveEvent = async (args: ISaveEventArgs, photoFile?: File, eventId?: number) => {
     const { lat, lng } = args.facility.coords;
 
     const body = {
@@ -47,13 +47,22 @@ const saveEvent = async (args: ISaveEventArgs, eventId?: number) => {
 
     if (eventId) {
         await axios.patch(getApiUrl(`/api/v1/announcements/${eventId}`), body);
-
-        return eventId;
     } else {
         const response = await axios.post(getApiUrl('/api/v1/announcements'), body);
-
-        return +response?.data?.data?.announcement?.id;
+        eventId = +response?.data?.data?.announcement?.id;
     }
+
+    if (eventId && photoFile) {
+        const formData = new FormData();
+        formData.append('photo', photoFile);
+        const response = await axios.post(getApiUrl(`/api/v1/announcements/${eventId}/photos`), formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+    }
+
+    return eventId;
 };
 
 export default saveEvent;

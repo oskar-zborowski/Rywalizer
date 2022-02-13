@@ -10,7 +10,9 @@ export interface IInputProps<T = string> {
     label?: string;
     className?: string;
     style?: React.CSSProperties;
-    ref?: React.RefObject<HTMLTextAreaElement>
+    ref?: React.RefObject<HTMLTextAreaElement>;
+    height?: number;
+    placeholder?: string;
 }
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, IInputProps>((props, ref) => {
@@ -21,7 +23,9 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, IInputProps>((props, ref)
         label,
         spellCheck = false,
         className = '',
-        style = {}
+        style = {},
+        height,
+        placeholder
     } = props;
 
     return (
@@ -29,6 +33,8 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, IInputProps>((props, ref)
             {label && <label className={styles.label}>{label}</label>}
             <div className={styles.wrapper}>
                 <textarea
+                    placeholder={placeholder}
+                    style={{height: height + 'px'}}
                     ref={ref}
                     value={value}
                     onChange={(e) => onChange?.(e.target.value, e)}

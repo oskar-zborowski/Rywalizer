@@ -23,6 +23,14 @@ import mapViewerStore from '@/store/MapViewerStore';
 import View, { useView } from '@/views/View/View';
 import userStore from '@/store/UserStore';
 import { OrangeButton } from '@/components/Form/Button/Button';
+import joinEvent from '@/api/joinEvent';
+import Avatar from '@/components/Avatar/Avatar';
+import noProfile from '@/static/images/noProfile.png';
+import { observer } from 'mobx-react';
+import { AiOutlineClose } from 'react-icons/ai';
+import ReactTooltip from 'react-tooltip';
+import leaveEvent from '@/api/leaveEvent';
+import { event } from 'jquery';
 
 faker.locale = 'pl';
 
@@ -56,11 +64,12 @@ const comments: IComment[] = [
     }
 ];
 
-const EventDetailsView: React.FC = (props) => {
+const EventDetailsView: React.FC = () => {
     const { id } = useParams();
     const [event, setEvent] = useState<IEvent>(null);
     const isEventLoaded = event !== null;
     const userHasAccess = event?.partner.id == userStore.user?.id;
+    const user = userStore.user;
 
     const navigateTo = useNavigate();
 
@@ -90,22 +99,89 @@ const EventDetailsView: React.FC = (props) => {
         });
     }, []);
 
+    const alreadyJoined = !event?.participants?.every(p => p.itsMe == false);
+
     const ParticipantsList = () => {
         return (
             <div className={styles.participantsListWrapper}>
                 <div className={styles.participantsList}>
                     {
-                        [...Array(++event.availableTicketsCount).keys()].map(i => {
+                        [...Array(+event.availableTicketsCount).keys()].map(i => {
                             const participant = event.participants?.[i];
+
+                            const tip = participant?.itsMe ? 'Opuść wydarzenie' :
+                                `Usuń użytkownika <b>${participant?.fullName}</b>`;
 
                             if (participant) {
                                 return <div className={styles.participantCell} key={i}>
-                                    {i + 1}.&nbsp;<span>{participant.fullName}</span>
+                                    <Avatar radius={'4px'} size={30} src={participant.avatarUrl ?? noProfile} />
+                                    &nbsp;
+                                    &nbsp;
+                                    {i + 1}.
+                                    &nbsp;
+                                    {participant.fullName}
+                                    {alreadyJoined && userHasAccess && (
+                                        <div
+                                            className={styles.deletUserIcon}
+                                            data-delay-show="300"
+                                            data-tip={tip}
+                                            onClick={async () => {
+                                                await leaveEvent({
+                                                    userId: participant.id,
+                                                    announcementId: event.id,
+                                                    announcementSeatId: participant.seatId
+                                                });
+
+                                                setEvent(event => {
+                                                    event.participants = event.participants.filter(p => {
+                                                        return p.id !== participant.id;
+                                                    });
+
+                                                    return { ...event };
+                                                });
+
+                                                ReactTooltip.hide();
+                                            }}
+                                        >
+                                            <AiOutlineClose />
+                                        </div>
+                                    )}
                                 </div>;
                             } else {
-                                return <div className={styles.participantCell + ' ' + styles.signUpCell} key={i}>
-                                    {i + 1}.&nbsp;<span className={styles.signUp}>Zapisz się</span>
-                                </div>;
+                                if (alreadyJoined) {
+                                    return <div className={styles.participantCell} key={i}>
+                                        <span>{i + 1}.&nbsp;Wolne miejsce</span>
+                                    </div>;
+                                } else {
+                                    return (
+                                        <div
+                                            key={i}
+                                            className={styles.participantCell + ' ' + styles.signUpCell}
+                                            onClick={async () => {
+                                                await joinEvent({
+                                                    announcementId: event.id,
+                                                    announcementSeatId: event.seats[0].id
+                                                });
+
+                                                setEvent(event => {
+                                                    event.participants.push({
+                                                        id: user.id,
+                                                        fullName: user.firstName + ' ' + user.lastName,
+                                                        avatarUrl: user.avatarUrl,
+                                                        itsMe: true,
+                                                        seatId: event.seats[0].id
+                                                    });
+
+                                                    return { ...event };
+                                                });
+
+                                                ReactTooltip.hide();
+                                            }}
+                                        >
+                                            <span>{i + 1}.&nbsp;<span className={styles.signUp}>Zapisz się</span></span>
+                                        </div>
+                                    );
+                                }
                             }
                         })
                     }
@@ -115,96 +191,99 @@ const EventDetailsView: React.FC = (props) => {
     };
 
     return (
-        <View isLoaderVisible={!isEventLoaded}>
-            {isEventLoaded && (
-                <Fragment>
-                    <header className={styles.header}>
-                        {event.imageUrl && <img className={styles.backgroundImage} src={event.imageUrl} alt="" />}
-                        <div className={styles.gradientOverlay}></div>
-                        <div className={styles.userData}>
-                            <img className={styles.userImage} src={prof} alt="" />
-                            <div className={styles.userDetails}>
-                                <div className={styles.userDetailsRow}>
-                                    <h1>Organizator:</h1>
-                                    <Icon svg={UserSvg}>{event.partner.fullName}</Icon>
-                                    <StarRatings rating={event.partner.avarageRating} />
-                                </div>
+        <Fragment>
+            <View isLoaderVisible={!isEventLoaded}>
+                {isEventLoaded && (
+                    <Fragment>
+                        <header className={styles.header}>
+                            {event.backgroundImageUrl && <img className={styles.backgroundImage} src={event.backgroundImageUrl} alt="" />}
+                            <div className={styles.gradientOverlay}></div>
+                            <div className={styles.userData}>
+                                <img className={styles.userImage} src={event.partner.imageUrl ?? noProfile} alt="" />
+                                <div className={styles.userDetails}>
+                                    <div className={styles.userDetailsRow}>
+                                        <h1>Organizator:</h1>
+                                        <Icon svg={UserSvg}>{event.partner.fullName}</Icon>
+                                        <StarRatings rating={event.partner.avarageRating} />
+                                    </div>
 
-                                <div className={styles.userDetailsRow + ' ' + styles.contact}>
-                                    <h1>Kontakt:</h1>
-                                    <Icon svg={TelephoneSvg}>{event.partner.telephone ?? 'Nie podano'}</Icon>
-                                    <Icon svg={MailSvg}>{event.partner.contactEmail ?? 'Nie podano'}</Icon>
-                                    <Icon svg={FacebookSvg}>
-                                        {event.partner.facebook ? (
-                                            <Link href="https://www.facebook.com/groups/356092872309341">
-                                                {event.partner.facebook}
-                                            </Link>
-                                        ) : (
-                                            'Nie podano'
-                                        )}
-                                    </Icon>
+                                    <div className={styles.userDetailsRow + ' ' + styles.contact}>
+                                        <h1>Kontakt:</h1>
+                                        <Icon svg={TelephoneSvg}>{event.partner.telephone ?? 'Nie podano'}</Icon>
+                                        <Icon svg={MailSvg}>{event.partner.contactEmail ?? 'Nie podano'}</Icon>
+                                        <Icon svg={FacebookSvg}>
+                                            {event.partner.facebook ? (
+                                                <Link href="https://www.facebook.com/groups/356092872309341">
+                                                    {event.partner.facebook}
+                                                </Link>
+                                            ) : (
+                                                'Nie podano'
+                                            )}
+                                        </Icon>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        {userHasAccess && (
-                            <OrangeButton
-                                style={{
-                                    position: 'absolute',
-                                    right: '20px',
-                                    top: '20px',
-                                    zIndex: '999'
-                                }}
-                                onClick={() => navigateTo(`/ogloszenia/edytuj/${event.id}`)}
-                            >
-                                Edytuj ogłoszenie
-                            </OrangeButton>
-                        )}
-                    </header>
-                    <section className={styles.userDetailsRow + ' ' + styles.contactSM}>
-                        <h1>Kontakt:</h1>
-                        <Icon svg={TelephoneSvg}>{event.partner.telephone ?? 'Nie podano'}</Icon>
-                        <Icon svg={MailSvg}>{event.partner.contactEmail ?? 'Nie podano'}</Icon>
-                        <Icon svg={FacebookSvg}>
-                            {event.partner.facebook ? (
-                                <Link href="https://www.facebook.com/groups/356092872309341">
-                                    {event.partner.facebook}
-                                </Link>
-                            ) : (
-                                'Nie podano'
+                            {userHasAccess && (
+                                <OrangeButton
+                                    style={{
+                                        position: 'absolute',
+                                        right: '20px',
+                                        top: '20px',
+                                        zIndex: '999'
+                                    }}
+                                    onClick={() => navigateTo(`/ogloszenia/edytuj/${event.id}`)}
+                                >
+                                    Edytuj ogłoszenie
+                                </OrangeButton>
                             )}
-                        </Icon>
-                    </section>
-                    <div className={styles.separator}></div>
-                    <section>
-                        <h1>Lista zapisanych:</h1>
-                        <StackPanel padding="20px 0 20px 0" vertical>
-                            <StackPanel>
-                                <Icon svg={LocationSvg}>
-                                    <b>{event.facility?.name}</b>,&nbsp;
-                                    {event.facility?.city.name}&nbsp;{event.facility?.street}
-                                </Icon>
-                                <Icon svg={CalendarSvg}>28.10.2022, 15:00 - 16:30</Icon>
+                        </header>
+                        <section className={styles.userDetailsRow + ' ' + styles.contactSM}>
+                            <h1>Kontakt:</h1>
+                            <Icon svg={TelephoneSvg}>{event.partner.telephone ?? 'Nie podano'}</Icon>
+                            <Icon svg={MailSvg}>{event.partner.contactEmail ?? 'Nie podano'}</Icon>
+                            <Icon svg={FacebookSvg}>
+                                {event.partner.facebook ? (
+                                    <Link href="https://www.facebook.com/groups/356092872309341">
+                                        {event.partner.facebook}
+                                    </Link>
+                                ) : (
+                                    'Nie podano'
+                                )}
+                            </Icon>
+                        </section>
+                        <div className={styles.separator}></div>
+                        <section>
+                            <h1>Lista zapisanych:</h1>
+                            <StackPanel padding="20px 0 20px 0" vertical>
+                                <StackPanel>
+                                    <Icon svg={LocationSvg}>
+                                        <b>{event.facility?.name}</b>,&nbsp;
+                                        {event.facility?.city.name}&nbsp;{event.facility?.street}
+                                    </Icon>
+                                    <Icon svg={CalendarSvg}>28.10.2022, 15:00 - 16:30</Icon>
+                                </StackPanel>
+                                <ProgressBar progress={event.soldTicketsCount / event.availableTicketsCount * 100} />
                             </StackPanel>
-                            <ProgressBar progress={event.soldTicketsCount / event.availableTicketsCount * 100} />
-                        </StackPanel>
-                        <ParticipantsList />
-                    </section>
-                    <div className={styles.separator}></div>
-                    <section>
-                        <h1>Opis:</h1>
-                        <div className={styles.description}>
-                            {event.description ?? 'To wydarzenie nie posiada opisu'}
-                        </div>
-                    </section>
-                    <div className={styles.separator}></div>
-                    <section>
-                        <h1>Komentarze:</h1>
-                        <Comments comments={comments} />
-                    </section>
-                </Fragment>
-            )}
-        </View >
+                            <ParticipantsList />
+                        </section>
+                        <div className={styles.separator}></div>
+                        <section>
+                            <h1>Opis:</h1>
+                            <div className={styles.description}>
+                                {event.description ?? 'To wydarzenie nie posiada opisu'}
+                            </div>
+                        </section>
+                        <div className={styles.separator}></div>
+                        <section>
+                            <h1>Komentarze:</h1>
+                            <Comments comments={comments} />
+                        </section>
+                    </Fragment>
+                )}
+            </View >
+            {isEventLoaded && <ReactTooltip multiline={true} html={true} className={styles.tooltip} />}
+        </Fragment>
     );
 };
 
-export default EventDetailsView;
+export default observer(EventDetailsView);

@@ -49,9 +49,26 @@ const CreateEventView: React.FC = observer(() => {
     const ticketsAvailableRef = useRef<HTMLInputElement>();
     const objectNameRef = useRef<HTMLInputElement>();
     const addressRef = useRef<HTMLInputElement>();
+    const imagefileRef = useRef<HTMLInputElement>();
+    const [newImageUrl, setNewImageUrl] = useState(null);
+    const [newImageFile, setNewImageFile] = useState<File>(null);
+
+    const displayImage = (file: File) => {
+        if (!file) {
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = e => {
+            setNewImageUrl(e.target.result);
+            setNewImageFile(file);
+        };
+
+        reader.readAsDataURL(file);
+    };
 
     useEffect(() => {
-        if (!userStore.user) {
+        if (!userStore.user || !userStore.user) {
             navigateTo('/');
             return;
         }
@@ -90,24 +107,24 @@ const CreateEventView: React.FC = observer(() => {
                     position: location.location,
                     draggable: true,
                 });
-        
+
                 const { sw, ne } = location.viewport;
                 mapViewerStore.setBounds(sw, ne);
-        
+
                 marker.addListener('dragend', async () => {
                     const location = await geocode(
                         marker.getPosition().toJSON()
                     );
-        
+
                     setLocation(location);
                     if (addressRef.current) addressRef.current.value = location.formattedAddress;
                 });
-        
+
                 marker.addListener('click', () => {
                     const markerPos = marker.getPosition().toJSON();
                     mapViewerStore.setBounds(markerPos, markerPos);
                 });
-        
+
                 mapViewerStore.setMarkers([marker]);
             })();
         } else {
@@ -209,7 +226,7 @@ const CreateEventView: React.FC = observer(() => {
                 coords: location.location,
                 street: location.street
             }
-        }, +id);
+        }, newImageFile, +id);
 
         if (eventId) {
             navigateTo('/ogloszenia/' + eventId);
@@ -230,14 +247,24 @@ const CreateEventView: React.FC = observer(() => {
                         label="Sport"
                         {...sportSelect}
                     />
-                    <Input ref={startDateRef} type="date" label="Data rozpoczęcia" />
-                    <Input ref={endDateRef} type="date" label="Data zakończenia" />
+                    <Input
+                        ref={startDateRef}
+                        type="datetime-local"
+                        label="Data rozpoczęcia"
+                        min={moment(new Date()).format('YYYY-MM-DDThh:mm')}
+                    />
+                    <Input
+                        ref={endDateRef}
+                        type="datetime-local"
+                        label="Data zakończenia"
+                        min={moment(new Date()).format('YYYY-MM-DDThh:mm')}
+                    />
                     <Input ref={priceRef} label="Cena" />
-                    <SelectBox
+                    {/* <SelectBox
                         dark
                         label="Wariant gry"
                         {...gameVariantSelect}
-                    />
+                    /> */}
                     <SelectBox
                         dark
                         label="Ogłoszenie publiczne"
@@ -254,7 +281,7 @@ const CreateEventView: React.FC = observer(() => {
                         {...genderSelect}
                     />
                     <Input ref={ticketsAvailableRef} label="Ilość miejsc" />
-                    <Input ref={objectNameRef} label="Nazwa obiektu" />
+                    <Input ref={objectNameRef} label="Nazwa obiektu" style={{ gridColumn: 'span 2' }} />
                     <Input
                         ref={addressRef}
                         label="Adres"
@@ -265,8 +292,21 @@ const CreateEventView: React.FC = observer(() => {
             </Section>
             <Section style={{ marginTop: '25px' }} title="Pozostałe" titleAlign="right" titleSize={15}>
                 <div className={styles.restSection}>
-                    <Input type="file" label="Zdjęcie wydarzenia" />
-                    <Textarea label="Opis" value="opis" style={{ gridColumn: 'span 3' }} />
+                    <div className={styles.eventImageWrapper}>
+                        <label className={styles.label}>Zdjęcie wydarzenia</label>
+                        <img src={newImageUrl ?? event?.imageUrl} alt="" className={styles.eventImage} />
+                        <input
+                            ref={imagefileRef}
+                            type="file"
+                            style={{ display: 'none' }}
+                            accept="image/jpeg, image/png"
+                            onChange={(e) => displayImage(e.currentTarget.files?.[0])}
+                        />
+                        <OrangeButton style={{ width: '100%' }} onClick={() => imagefileRef.current.click()}>
+                            Zmień zdjęcie
+                        </OrangeButton>
+                    </div>
+                    <Textarea label="Opis" placeholder="Opis" style={{ gridColumn: 'span 3' }} height={180} />
                 </div>
             </Section>
             <div style={{ marginTop: '20px', float: 'right' }}>

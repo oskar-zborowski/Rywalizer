@@ -10,6 +10,7 @@ interface CssExports {
   'image': string;
   'leftColumn': string;
   'rightColumn': string;
+  'tooltip': string;
   'userDataWrapper': string;
 }
 export const cssExports: CssExports;

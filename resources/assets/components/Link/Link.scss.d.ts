@@ -4,6 +4,7 @@ interface CssExports {
   'fixedColor': string;
   'fixedUnderline': string;
   'link': string;
+  'tooltip': string;
 }
 export const cssExports: CssExports;
 export default cssExports;

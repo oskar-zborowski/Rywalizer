@@ -1,3 +1,4 @@
+import deleteUserAvatar from '@/api/deleteUserAvatar';
 import editUser from '@/api/editUser';
 import geocode, { IGeocodeResults } from '@/api/geocode';
 import { IGender } from '@/api/getGenders';
@@ -117,7 +118,7 @@ const UserView: React.FC = () => {
     }, [appStore.genders]);
 
     const saveUserData = async () => {
-        await editUser({
+        const { avatarUrl, avatarId } = await editUser({
             email: emailRef.current.value,
             firstName: nameRef.current.value,
             lastName: lastnameRef.current.value,
@@ -133,8 +134,6 @@ const UserView: React.FC = () => {
             administrativeAreas: location?.administrativeAreas ?? undefined
         }, newImageFile);
 
-        //TODO zdjęcie
-
         runInAction(() => {
             userStore.user.email = emailRef.current.value;
             userStore.user.firstName = nameRef.current.value;
@@ -144,11 +143,13 @@ const UserView: React.FC = () => {
             userStore.user.instagramProfile = instagramRef.current.value;
             userStore.user.website = websiteRef.current.value;
             userStore.user.gender = appStore.genders.find(g => g.id == genderSelect.selectedOptions[0]?.value?.id);
-            userStore.user.avatarUrl = newImageUrl;
             userStore.user.addressCoordinates = location?.location;
+            userStore.user.avatarUrl = avatarUrl ?? newImageUrl ?? user.avatarUrl;
+            userStore.user.avatarId = avatarId ?? user.avatarId;
         });
 
         setEditMode(false);
+        setNewImageFile(null);
     };
 
     const header = (title: string) => {
@@ -216,7 +217,19 @@ const UserView: React.FC = () => {
                                     Zmień zdjęcie
                                 </OrangeButton>
                                 <BlackButton
-                                    onClick={() => alert('TODO')}
+                                    onClick={async () => {
+                                        if (user.avatarId) {
+                                            await deleteUserAvatar(user.avatarId);
+                                        }
+
+                                        setNewImageUrl(null);
+                                        setNewImageFile(null);
+
+                                        runInAction(() => {
+                                            userStore.user.avatarId = null;
+                                            userStore.user.avatarUrl = null;
+                                        });
+                                    }}
                                     style={{ marginTop: '10px', width: '100%' }}
                                 >
                                     Usuń zdjęcie

@@ -7,12 +7,13 @@ export interface IInputProps<T = string> {
     onBlur?: () => void;
     onEnter?: () => void;
     spellCheck?: boolean;
-    type?: 'text' | 'password' | 'date' | 'file';
+    type?: 'text' | 'password' | 'date' | 'file' | 'datetime-local';
     label?: string;
     placeholder?: string;
     className?: string;
     style?: React.CSSProperties;
     ref?: React.RefObject<HTMLInputElement>
+    min?: string
 }
 
 const Input = React.forwardRef<HTMLInputElement, IInputProps>((props, ref) => {
@@ -25,7 +26,8 @@ const Input = React.forwardRef<HTMLInputElement, IInputProps>((props, ref) => {
         spellCheck = false,
         type = 'text',
         className = '',
-        style = {}
+        style = {},
+        min
     } = props;
 
     const isFile = type === 'file';
@@ -35,6 +37,8 @@ const Input = React.forwardRef<HTMLInputElement, IInputProps>((props, ref) => {
             {label && <label className={styles.label}>{label}</label>}
             <div className={styles.inputWrapper}>
                 <input
+                    min={min}
+                    placeholder={placeholder}
                     style={{opacity: isFile ? 0 : 1}}
                     ref={ref}
                     type={type}
