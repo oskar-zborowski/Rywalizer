@@ -2,12 +2,14 @@ import Content from '@/layout/Content/Content';
 import MapViewer from '@/layout/Content/MapViewer/MapViewer';
 import Footer from '@/layout/Footer/Footer';
 import Topbar from '@/layout/Topbar/Topbar';
+import { when } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Fragment, useEffect, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import MainContainer from './layout/Content/MainContainer/MainContainer';
 import Modals from './modals/Modals';
 import appStore from './store/AppStore';
+import mapViewerStore from './store/MapViewerStore';
 import userStore from './store/UserStore';
 
 const App: React.FC = () => {

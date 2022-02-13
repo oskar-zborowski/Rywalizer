@@ -1,3 +1,5 @@
+import editUser from '@/api/editUser';
+import geocode, { IGeocodeResults } from '@/api/geocode';
 import { IGender } from '@/api/getGenders';
 import { BlackButton, OrangeButton } from '@/components/Form/Button/Button';
 import Input from '@/components/Form/Input/Input';
@@ -9,6 +11,7 @@ import appStore from '@/store/AppStore';
 import mapViewerStore from '@/store/MapViewerStore';
 import userStore from '@/store/UserStore';
 import { IPoint } from '@/types/IPoint';
+import { runInAction } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { Navigate } from 'react-router-dom';
@@ -28,11 +31,11 @@ const UserView: React.FC = () => {
         return <Navigate to="/" />;
     }
 
+    const [location, setLocation] = useState<IGeocodeResults>(null);
     const [editMode, setEditMode] = useState(false);
-    const [genderId, setGenderId] = useState(null);
     const [newImageUrl, setNewImageUrl] = useState(prof);
     const [newImageFile, setNewImageFile] = useState<File>(null);
-    const genderSelect = useSelectBox<IGender>([], ([opt]) => setGenderId(opt?.id));
+    const genderSelect = useSelectBox<IGender>();
 
     const nameRef = useRef<HTMLInputElement>();
     const lastnameRef = useRef<HTMLInputElement>();
@@ -50,6 +53,10 @@ const UserView: React.FC = () => {
     const imagefileRef = useRef<HTMLInputElement>();
 
     useEffect(() => {
+        mapViewerStore.reset();
+    }, []);
+
+    useEffect(() => {
         if (!user || !editMode) {
             mapViewerStore.setMarkers([]);
             return;
@@ -63,7 +70,11 @@ const UserView: React.FC = () => {
         websiteRef.current.value = user.website;
         facebookRef.current.value = user.facebookProfile;
         instagramRef.current.value = user.instagramProfile;
-        locationRef.current.value = 'co tu podać ??';
+
+        if (user.addressCoordinates) {
+            const { lat, lng } = user.addressCoordinates;
+            locationRef.current.value = lat.toFixed(4) + '; ' + lng.toFixed(4);
+        }
 
         if (!user.gender) {
             genderSelect.select(0);
@@ -79,6 +90,11 @@ const UserView: React.FC = () => {
         marker.addListener('drag', async () => {
             const { lat, lng } = marker.getPosition().toJSON();
             locationRef.current.value = lat.toFixed(4) + '; ' + lng.toFixed(4);
+        });
+
+        marker.addListener('dragend', async () => {
+            const location = await geocode(marker.getPosition().toJSON());
+            setLocation(location);
         });
 
         mapViewerStore.setMarkers([marker]);
@@ -99,8 +115,37 @@ const UserView: React.FC = () => {
         })]);
     }, [appStore.genders]);
 
-    const saveUserData = () => {
-        //TODO zapis usera do bazy
+    const saveUserData = async () => {
+        await editUser({
+            email: emailRef.current.value,
+            firstName: nameRef.current.value,
+            lastName: lastnameRef.current.value,
+            telephone: telephoneRef.current.value,
+            birthDate: birthDateRef.current.value,
+            addressCoordinates: location?.location ?? undefined,
+            facebookProfile: facebookRef.current.value,
+            instagramProfile: instagramRef.current.value,
+            website: websiteRef.current.value,
+            genderId: genderSelect.selectedOptions[0]?.value?.id,
+            password: newPasswordRef.current.value || undefined,
+            passwordConfirmation: confirmNewPasswordRef.current.value || undefined,
+            administrativeAreas: location?.administrativeAreas ?? undefined
+        }, newImageFile);
+
+        //TODO zdjęcie
+
+        runInAction(() => {
+            userStore.user.email = emailRef.current.value;
+            userStore.user.firstName = nameRef.current.value;
+            userStore.user.phoneNumber = telephoneRef.current.value;
+            userStore.user.birthDate = birthDateRef.current.value;
+            userStore.user.facebookProfile = facebookRef.current.value;
+            userStore.user.instagramProfile = instagramRef.current.value;
+            userStore.user.website = websiteRef.current.value;
+            userStore.user.gender = appStore.genders.find(g => g.id == genderSelect.selectedOptions[0]?.value?.id);
+            userStore.user.avatarUrl = newImageUrl;
+            userStore.user.addressCoordinates = location?.location;
+        });
 
         setEditMode(false);
     };
@@ -149,7 +194,7 @@ const UserView: React.FC = () => {
         >
             <div className={styles.userDataWrapper + ' ' + (editMode ? styles.editMode : '')}>
                 <div className={styles.leftColumn}>
-                    <img src={editMode ? newImageUrl : prof} alt="" className={styles.image} />
+                    <img src={editMode ? newImageUrl : user.avatarUrl} alt="" className={styles.image} />
                     {editMode && (
                         <Fragment>
                             <OrangeButton
@@ -199,7 +244,7 @@ const UserView: React.FC = () => {
                                         {...genderSelect}
                                     />
                                 ) : (
-                                    user.gender.name ?? 'Nie podano'
+                                    user.gender?.name ?? 'Nie podano'
                                 )}
                             </div>
                         </div>
@@ -219,7 +264,12 @@ const UserView: React.FC = () => {
                                 {editMode ? (
                                     <Input ref={locationRef}></Input>
                                 ) : (
-                                    '52.3567, 18.2341'
+                                    user.addressCoordinates ? (
+                                        user.addressCoordinates.lat.toFixed(4) + '; ' +
+                                        user.addressCoordinates.lng.toFixed(4)
+                                    ): (
+                                        'Nie podano'
+                                    )
                                 )}
                             </div>
                         </div>

@@ -1,4 +1,4 @@
-import createEvent from '@/api/createEvent';
+import saveEvent from '@/api/saveEvent';
 import geocode, { IGeocodeResults } from '@/api/geocode';
 import getEvents, { IEvent } from '@/api/getEvents';
 import { IGender } from '@/api/getGenders';
@@ -26,7 +26,7 @@ const CreateEventView: React.FC = observer(() => {
     const minLevelSelect = useSelectBox<ISportSkillLevel>([]);
     const genderSelect = useSelectBox<IGender>([]);
     const sportSelect = useSelectBox<ISport>([], ([opt]) => {
-        minLevelSelect.setOptions(opt.skillLevels.map(level => {
+        opt && minLevelSelect.setOptions(opt.skillLevels.map(level => {
             return {
                 text: level.name,
                 value: level
@@ -78,10 +78,37 @@ const CreateEventView: React.FC = observer(() => {
                 ticketsAvailableRef.current.value = event.availableTicketsCount + '';
                 //eventType
                 isPublicSelect.select(opt => opt == event.isPublic);
-                minLevelSelect.select(0); //TODO
+                minLevelSelect.select(opt => opt?.id == event.minSkillLevelId);
                 genderSelect.select(0); //TODO
                 objectNameRef.current.value = event.facility.name;
-                setLocation(await geocode(event.facility.location));
+
+                const location = await geocode(event.facility.location);
+                setLocation(location);
+                mapViewerStore.setPosition(location.location, 15);
+
+                const marker = new google.maps.Marker({
+                    position: location.location,
+                    draggable: true,
+                });
+        
+                const { sw, ne } = location.viewport;
+                mapViewerStore.setBounds(sw, ne);
+        
+                marker.addListener('dragend', async () => {
+                    const location = await geocode(
+                        marker.getPosition().toJSON()
+                    );
+        
+                    setLocation(location);
+                    if (addressRef.current) addressRef.current.value = location.formattedAddress;
+                });
+        
+                marker.addListener('click', () => {
+                    const markerPos = marker.getPosition().toJSON();
+                    mapViewerStore.setBounds(markerPos, markerPos);
+                });
+        
+                mapViewerStore.setMarkers([marker]);
             })();
         } else {
             sportSelect.select(null);
@@ -94,7 +121,6 @@ const CreateEventView: React.FC = observer(() => {
             minLevelSelect.select(0);
             genderSelect.select(0);
             objectNameRef.current.value = null;
-            findAddressCoords('Poznań');
         }
     }, [event]);
 
@@ -156,9 +182,38 @@ const CreateEventView: React.FC = observer(() => {
         return (
             <Fragment>
                 <h1>{title}</h1>
-                <OrangeButton>Zapisz zmiany</OrangeButton>
-            </Fragment>
+                {event &&
+                    <OrangeButton onClick={saveEventInner}>
+                        Zapisz zmiany
+                    </OrangeButton>
+                }
+            </Fragment >
         );
+    };
+
+    const saveEventInner = async () => {
+        const eventId = await saveEvent({
+            administrativeAreas: location.administrativeAreas,
+            sportId: sportSelect.selectedOptions[0]?.value.id,
+            startDate: new Date(startDateRef.current.value),
+            endDate: new Date(endDateRef.current.value),
+            ticketPrice: +priceRef.current.value,
+            description: '',
+            isPublic: isPublicSelect.selectedOptions[0]?.value,
+            minimumSkillLevelId: minLevelSelect.selectedOptions[0]?.value.id,
+            gameVariantId: 77,
+            genderId: genderSelect.selectedOptions[0]?.value?.id,
+            availableTicketsCount: +ticketsAvailableRef.current.value,
+            facility: {
+                name: objectNameRef.current.value,
+                coords: location.location,
+                street: location.street
+            }
+        }, +id);
+
+        if (eventId) {
+            navigateTo('/ogloszenia/' + eventId);
+        }
     };
 
     return (
@@ -215,40 +270,11 @@ const CreateEventView: React.FC = observer(() => {
                 </div>
             </Section>
             <div style={{ marginTop: '20px', float: 'right' }}>
-                {!event ? (
-                    <OrangeButton
-                        onClick={async () => {
-                            const eventId = await createEvent({
-                                administrativeAreas: location.administrativeAreas,
-                                sportId: sportSelect.selectedOptions[0]?.value.id,
-                                startDate: new Date(startDateRef.current.value),
-                                endDate: new Date(endDateRef.current.value),
-                                ticketPrice: +priceRef.current.value,
-                                description: '',
-                                isPublic: isPublicSelect.selectedOptions[0]?.value,
-                                minimumSkillLevelId: minLevelSelect.selectedOptions[0]?.value.id,
-                                gameVariantId: 77,
-                                genderId: genderSelect.selectedOptions[0]?.value.id,
-                                availableTicketsCount: +ticketsAvailableRef.current.value,
-                                facility: {
-                                    name: objectNameRef.current.value,
-                                    coords: location.location,
-                                    street: location.street
-                                }
-                            });
-
-                            if (eventId) {
-                                navigateTo('/ogloszenia/' + eventId);
-                            }
-                        }}
-                    >
-                        Dodaj ogłoszenie
-                    </OrangeButton>
-                ) : (
-                    <OrangeButton>
-                        Zapisz zmiany
-                    </OrangeButton>
-                )}
+                <OrangeButton
+                    onClick={saveEventInner}
+                >
+                    {event ? 'Zapisz zmiany' : 'Dodaj ogłoszenie'}
+                </OrangeButton>
             </div>
         </View>
     );

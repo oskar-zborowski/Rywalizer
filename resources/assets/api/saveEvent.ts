@@ -4,7 +4,7 @@ import axios from 'axios';
 import getAdministrativeAreas, { AdministrativeAreaType } from './getAdministrativeAreas';
 import moment from 'moment';
 
-const createEvent = async (args: ICreateEventArgs) => {
+const saveEvent = async (args: ISaveEventArgs, eventId?: number) => {
     const { lat, lng } = args.facility.coords;
 
     const body = {
@@ -21,6 +21,7 @@ const createEvent = async (args: ICreateEventArgs) => {
         facilityName: args.facility?.name,
         facilityStreet: args.facility?.street,
         facilityAddressCoordinates: lat.toFixed(7) + ';' + lng.toFixed(7),
+        announcementStatusId: 85,
         sportsPositions: [
             {
                 sportsPositionId: 6,
@@ -44,14 +45,20 @@ const createEvent = async (args: ICreateEventArgs) => {
         body.cityName = args.administrativeAreas[3];
     }
 
-    const response = await axios.post(getApiUrl('/api/v1/announcements'), body);
+    if (eventId) {
+        await axios.patch(getApiUrl(`/api/v1/announcements/${eventId}`), body);
 
-    return +response?.data?.data?.announcement?.id;
+        return eventId;
+    } else {
+        const response = await axios.post(getApiUrl('/api/v1/announcements'), body);
+
+        return +response?.data?.data?.announcement?.id;
+    }
 };
 
-export default createEvent;
+export default saveEvent;
 
-export interface ICreateEventArgs {
+export interface ISaveEventArgs {
     administrativeAreas: string[];
     sportId: number;
     startDate: Date;

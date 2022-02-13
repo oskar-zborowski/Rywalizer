@@ -45,6 +45,11 @@ export class MapViewerStore {
         this.map.fitBounds(new google.maps.LatLngBounds(sw, ne));
     }
 
+    public setPosition(position: IPoint, zoom?: number) {
+        this.map.setCenter(position);
+        zoom && this.map.setZoom(zoom);
+    }
+
 }
 
 const mapViewerStore = new MapViewerStore();

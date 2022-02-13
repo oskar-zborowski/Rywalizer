@@ -48,7 +48,7 @@ export class UserStore {
     }
 
     public async remindPassword(email: string) {
-        const response = await axios.post(getApiUrl('api/v1/account/password'), {email});
+        const response = await axios.post(getApiUrl('api/v1/account/password'), { email });
 
         console.log(response);
     }
@@ -65,22 +65,29 @@ export class UserStore {
     }
 
     private prepareUserData(responseData: any): IUser {
+        let coords = responseData.user.addressCoordinates;
+
+        if (!responseData.user.addressCoordinates.lat || responseData.user.addressCoordinates.lng) {
+            coords = null;
+        }
+
         return {
             id: responseData.user.id,
             firstName: responseData.user.firstName,
             lastName: responseData.user.lastName,
+            avatarUrl: responseData.user.avatars?.[0],
             avatarUrls: responseData.user.avatars,
             email: responseData.user.email,
             phoneNumber: responseData.user.telephone,
             birthDate: responseData.user.birthDate,
-            gender: {
+            gender: responseData.user.gender ? {
                 id: responseData.user.gender.id,
                 name: responseData.user.gender.descriptionSimple,
                 iconUrl: null //TODO
-            },
+            } : null,
             role: responseData.user.role,
             city: responseData.user.city,
-            addressCoordinates: responseData.user.addressCoordinates,
+            addressCoordinates: coords,
             facebookProfile: responseData.user.facebookProfile,
             instagramProfile: responseData.user.instagramProfile,
             website: responseData.user.website,
