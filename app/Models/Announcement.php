@@ -251,8 +251,10 @@ class Announcement extends BaseModel
         /** @var ImageAssignment $oldImage */
         $oldImage = $this->imageAssignments()->where('image_type_id', $imageType->id)->first();
 
-        Storage::delete('partner-pictures/' . $oldImage->image()->first()->filename);
-        $oldImage->image()->first()->delete();
+        if ($oldImage) {
+            Storage::delete('partner-pictures/' . $oldImage->image()->first()->filename);
+            $oldImage->image()->first()->delete();
+        }
 
         $image = FileProcessing::saveAnnouncementImage($imagePath, $this);
 

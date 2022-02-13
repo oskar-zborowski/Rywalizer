@@ -232,8 +232,10 @@ class Partner extends BaseModel
         /** @var ImageAssignment $oldLogo */
         $oldLogo = $this->imageAssignments()->where('image_type_id', $imageType->id)->first();
 
-        Storage::delete('partner-pictures/' . $oldLogo->image()->first()->filename);
-        $oldLogo->image()->first()->delete();
+        if ($oldLogo) {
+            Storage::delete('partner-pictures/' . $oldLogo->image()->first()->filename);
+            $oldLogo->image()->first()->delete();
+        }
 
         $image = FileProcessing::saveLogo($logoPath, $this);
 

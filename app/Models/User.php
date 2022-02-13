@@ -963,8 +963,10 @@ class User extends Authenticatable implements MustVerifyEmail
         /** @var ImageAssignment $oldAvatar */
         $oldAvatar = $this->imageAssignments()->where('image_type_id', $imageType->id)->first();
 
-        Storage::delete('user-pictures/' . $oldAvatar->image()->first()->filename);
-        $oldAvatar->image()->first()->delete();
+        if ($oldAvatar) {
+            Storage::delete('user-pictures/' . $oldAvatar->image()->first()->filename);
+            $oldAvatar->image()->first()->delete();
+        }
 
         $image = FileProcessing::saveAvatar($avatarPath, true);
 
