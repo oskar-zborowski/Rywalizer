@@ -229,21 +229,11 @@ class Partner extends BaseModel
 
         $imageType = Validation::getDefaultType('LOGO', 'IMAGE_TYPE');
 
-        $oldLogos = $this->imageAssignments()->where('image_type_id', $imageType->id)->orderBy('number', 'desc')->get();
+        /** @var ImageAssignment $oldLogo */
+        $oldLogo = $this->imageAssignments()->where('image_type_id', $imageType->id)->first();
 
-        $counter = 0;
-
-        foreach ($oldLogos as $oL) {
-            $counter++;
-        }
-
-        $newNumber = $counter + 1;
-
-        foreach ($oldLogos as $oL) {
-            $oL->number = $counter;
-            $oL->save();
-            $counter--;
-        }
+        Storage::delete('partner-pictures/' . $oldLogo->image()->first()->filename);
+        $oldLogo->image()->first()->delete();
 
         $image = FileProcessing::saveLogo($logoPath, $this);
 
@@ -252,7 +242,7 @@ class Partner extends BaseModel
         $imageAssignment->imageable_id = $this->id;
         $imageAssignment->image_type_id = $imageType->id;
         $imageAssignment->image_id = $image->id;
-        $imageAssignment->number = $newNumber;
+        $imageAssignment->number = 1;
         $imageAssignment->creator_id = $this->id;
         $imageAssignment->editor_id = $this->id;
         $imageAssignment->save();

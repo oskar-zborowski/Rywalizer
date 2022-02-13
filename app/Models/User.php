@@ -960,21 +960,11 @@ class User extends Authenticatable implements MustVerifyEmail
 
         $imageType = Validation::getDefaultType('AVATAR', 'IMAGE_TYPE');
 
-        $oldAvatars = $this->imageAssignments()->where('image_type_id', $imageType->id)->orderBy('number', 'desc')->get();
+        /** @var ImageAssignment $oldAvatar */
+        $oldAvatar = $this->imageAssignments()->where('image_type_id', $imageType->id)->first();
 
-        $counter = 0;
-
-        foreach ($oldAvatars as $oA) {
-            $counter++;
-        }
-
-        $newNumber = $counter + 1;
-
-        foreach ($oldAvatars as $oA) {
-            $oA->number = $counter;
-            $oA->save();
-            $counter--;
-        }
+        Storage::delete('user-pictures/' . $oldAvatar->image()->first()->filename);
+        $oldAvatar->image()->first()->delete();
 
         $image = FileProcessing::saveAvatar($avatarPath, true);
 
@@ -983,7 +973,7 @@ class User extends Authenticatable implements MustVerifyEmail
         $imageAssignment->imageable_id = $this->id;
         $imageAssignment->image_type_id = $imageType->id;
         $imageAssignment->image_id = $image->id;
-        $imageAssignment->number = $newNumber;
+        $imageAssignment->number = 1;
         $imageAssignment->creator_id = $this->id;
         $imageAssignment->editor_id = $this->id;
         $imageAssignment->save();
