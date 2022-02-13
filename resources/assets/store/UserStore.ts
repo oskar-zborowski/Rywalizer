@@ -12,11 +12,13 @@ export class UserStore {
     }
 
     public async getUser() {
-        const response = await axios.get(getApiUrl('api/v1/user'));
-        const user = this.prepareUserData(response.data.data);
-        runInAction(() => this.user = user);
-
-        return user;
+        try {
+            const response = await axios.get(getApiUrl('api/v1/user'));
+            const user = this.prepareUserData(response.data.data);
+            runInAction(() => this.user = user);
+        } catch (err) {
+            console.error(err);
+        }
     }
 
     public async login(login: string, password: string) {
@@ -71,7 +73,11 @@ export class UserStore {
             email: responseData.user.email,
             phoneNumber: responseData.user.telephone,
             birthDate: responseData.user.birthDate,
-            gender: responseData.user.gender,
+            gender: {
+                id: responseData.user.gender.id,
+                name: responseData.user.gender.descriptionSimple,
+                iconUrl: null //TODO
+            },
             role: responseData.user.role,
             city: responseData.user.city,
             addressCoordinates: responseData.user.addressCoordinates,

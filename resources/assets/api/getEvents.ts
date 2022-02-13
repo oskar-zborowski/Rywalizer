@@ -29,7 +29,7 @@ const getEvents = async (params?: IGetEventsParams) => {
     return entries.map((entry: any) => {
         const announcement = entry.announcement;
         const facility = entry.facility;
-        const partner = entry.partner.partner;
+        const partner = entry.partner?.partner;
 
         const event: IEvent = {
             id: +announcement.id,
@@ -59,7 +59,7 @@ const getEvents = async (params?: IGetEventsParams) => {
                     lng: +facility.addressCoordinates.lng + Math.random() - 0.5
                 }
             } : null,
-            partner: {
+            partner: partner ? {
                 id: partner.id,
                 fullName: partner.name,
                 logos: [],
@@ -71,7 +71,7 @@ const getEvents = async (params?: IGetEventsParams) => {
                 isVerified: partner.verified,
                 avarageRating: partner.avarageRating,
                 ratingCounter: partner.ratingCounter
-            },
+            } : null,
             participants: announcement.announcementParticipants?.map((participant: any) => {
                 return {
                     id: participant.id,

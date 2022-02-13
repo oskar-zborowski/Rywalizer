@@ -1,19 +1,19 @@
 import createEvent from '@/api/createEvent';
 import geocode, { IGeocodeResults } from '@/api/geocode';
 import getEvents, { IEvent } from '@/api/getEvents';
+import { IGender } from '@/api/getGenders';
+import { ISport, ISportSkillLevel } from '@/api/getSports';
 import { OrangeButton } from '@/components/Form/Button/Button';
 import Input from '@/components/Form/Input/Input';
-import SelectBox from '@/components/Form/SelectBox/SelectBox';
-import SportsSelectBox from '@/components/Form/SelectBox/SportSelectbox';
+import SelectBox, { useSelectBox } from '@/components/Form/SelectBox/SelectBox';
 import Textarea from '@/components/Form/Textarea/Textarea';
 import Section from '@/components/Section/Section';
-import Separator from '@/components/Separator/Separator';
 import appStore from '@/store/AppStore';
 import mapViewerStore from '@/store/MapViewerStore';
 import userStore from '@/store/UserStore';
 import { observer } from 'mobx-react';
 import moment from 'moment';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import View from '../View/View';
 import styles from './CreateEventView.scss';
@@ -23,51 +23,110 @@ const CreateEventView: React.FC = observer(() => {
     const [event, setEvent] = useState<IEvent>(null);
     const navigateTo = useNavigate();
 
+    const minLevelSelect = useSelectBox<ISportSkillLevel>([]);
+    const genderSelect = useSelectBox<IGender>([]);
+    const sportSelect = useSelectBox<ISport>([], ([opt]) => {
+        minLevelSelect.setOptions(opt.skillLevels.map(level => {
+            return {
+                text: level.name,
+                value: level
+            };
+        }));
+    });
+    const gameVariantSelect = useSelectBox([
+        { text: 'Podstawowy', value: 0, isSelected: true },
+        { text: 'Zaawansowany', value: 1 }
+    ]);
+    const isPublicSelect = useSelectBox([
+        { text: 'Tak', value: true, isSelected: true },
+        { text: 'Nie', value: false }
+    ]);
+
+    const [location, setLocation] = useState<IGeocodeResults>(null);
+    const startDateRef = useRef<HTMLInputElement>();
+    const endDateRef = useRef<HTMLInputElement>();
+    const priceRef = useRef<HTMLInputElement>();
+    const ticketsAvailableRef = useRef<HTMLInputElement>();
+    const objectNameRef = useRef<HTMLInputElement>();
+    const addressRef = useRef<HTMLInputElement>();
+
     useEffect(() => {
         if (!userStore.user) {
             navigateTo('/');
             return;
         }
 
-        findAddressCoords('Poznań');
         mapViewerStore.reset();
 
         if (id) {
             getEvents({ id: +id }).then(async events => {
                 const event = events?.[0];
                 setEvent(event);
-
-                setSportId(event.sport.id);
-                startDateRef.current.value = moment(event.startDate).format('YYYY-MM-DD');
-                endDateRef.current.value = moment(event.endDate).format('YYYY-MM-DD');
-                priceRef.current.value = event.ticketPrice + '';
-                //eventType
-                setIsPublic(event.isPublic);
-                setMinSkillLevel(event.minSkillLevel);
-                setGenderId(0);
-                objectNameRef.current.value = event.facility.name;
-                setLocation(await geocode(event.facility.location));
             });
+        } else {
+            findAddressCoords('Poznań');
         }
     }, []);
 
-    const [location, setLocation] = useState<IGeocodeResults>(null);
-    const [sportId, setSportId] = useState<number>(null);
-    const startDateRef = useRef<HTMLInputElement>();
-    const endDateRef = useRef<HTMLInputElement>();
-    const priceRef = useRef<HTMLInputElement>();
-    const [eventType, setEventType] = useState<number>(null);
-    const [isPublic, setIsPublic] = useState<boolean>(true);
-    const [minSkillLevel, setMinSkillLevel] = useState<number>(null);
-    const [genderId, setGenderId] = useState<number>(null);
-    const objectNameRef = useRef<HTMLInputElement>();
-    const addressRef = useRef<HTMLInputElement>();
+    useEffect(() => {
+        if (event) {
+            (async () => {
+                sportSelect.select(opt => opt.id == event.sport.id);
+                startDateRef.current.value = moment(event.startDate).format('YYYY-MM-DD');
+                endDateRef.current.value = moment(event.endDate).format('YYYY-MM-DD');
+                priceRef.current.value = (event.ticketPrice / 100) + '';
+                ticketsAvailableRef.current.value = event.availableTicketsCount + '';
+                //eventType
+                isPublicSelect.select(opt => opt == event.isPublic);
+                minLevelSelect.select(0); //TODO
+                genderSelect.select(0); //TODO
+                objectNameRef.current.value = event.facility.name;
+                setLocation(await geocode(event.facility.location));
+            })();
+        } else {
+            sportSelect.select(null);
+            startDateRef.current.value = null;
+            endDateRef.current.value = null;
+            priceRef.current.value = null;
+            ticketsAvailableRef.current.value = null;
+            //eventType
+            isPublicSelect.select(0);
+            minLevelSelect.select(0);
+            genderSelect.select(0);
+            objectNameRef.current.value = null;
+            findAddressCoords('Poznań');
+        }
+    }, [event]);
+
+    useEffect(() => {
+        genderSelect.setOptions([{
+            text: 'Brak podziału',
+            value: null,
+            isSelected: true
+        },
+        ...appStore.genders.map(gender => {
+            return {
+                text: gender.name,
+                value: gender
+            };
+        })]);
+    }, [appStore.genders]);
+
+    useEffect(() => {
+        sportSelect.setOptions(appStore.sports.map(sport => {
+            return {
+                text: sport.name,
+                value: sport
+            };
+        }));
+    }, [appStore.sports]);
 
     const findAddressCoords = async (address: string) => {
         const location = await geocode(address);
         setLocation(location);
 
-        addressRef.current.value = location.formattedAddress;
+        if (addressRef.current) addressRef.current.value = location.formattedAddress;
+
         const marker = new google.maps.Marker({
             position: location.location,
             draggable: true,
@@ -82,7 +141,7 @@ const CreateEventView: React.FC = observer(() => {
             );
 
             setLocation(location);
-            addressRef.current.value = location.formattedAddress;
+            if (addressRef.current) addressRef.current.value = location.formattedAddress;
         });
 
         marker.addListener('click', () => {
@@ -93,16 +152,28 @@ const CreateEventView: React.FC = observer(() => {
         mapViewerStore.setMarkers([marker]);
     };
 
+    const header = (title: string) => {
+        return (
+            <Fragment>
+                <h1>{title}</h1>
+                <OrangeButton>Zapisz zmiany</OrangeButton>
+            </Fragment>
+        );
+    };
+
     return (
-        <View withBackground title="Dodaj Ogłoszenie">
+        <View
+            withBackground
+            title={event ? 'Edycja ogłoszenia' : 'Dodaj ogłoszenie'}
+            headerContent={header}
+        >
             <Section title="Dane podstawowe" titleAlign="right" titleSize={15}>
                 <div className={styles.locationSection}>
-                    <SportsSelectBox
+                    <SelectBox
                         dark
                         searchBar
                         label="Sport"
-                        sports={appStore.sports}
-                        onChange={([option]) => setSportId(option.value.id)}
+                        {...sportSelect}
                     />
                     <Input ref={startDateRef} type="date" label="Data rozpoczęcia" />
                     <Input ref={endDateRef} type="date" label="Data zakończenia" />
@@ -110,50 +181,25 @@ const CreateEventView: React.FC = observer(() => {
                     <SelectBox
                         dark
                         label="Wariant gry"
-                        options={[
-                            { text: 'Podstawowy', value: 0, isSelected: true },
-                            { text: 'Zaawansowany', value: 1 }
-                        ]}
-                        onChange={([option]) => setEventType(option.value)}
+                        {...gameVariantSelect}
                     />
                     <SelectBox
                         dark
                         label="Ogłoszenie publiczne"
-                        options={[
-                            { text: 'tak', value: true, isSelected: true },
-                            { text: 'nie', value: false }
-                        ]}
-                        onChange={([option]) => setIsPublic(option.value)}
+                        {...isPublicSelect}
                     />
                     <SelectBox
                         dark
                         label="Minimalny poziom"
-                        options={[
-                            {
-                                text: 'Wszystkie poziomy',
-                                value: null,
-                                isSelected: true
-                            },
-                            ...[...Array(5).keys()].map(i => {
-                                return {
-                                    text: `Poziom ${i + 1}`,
-                                    value: i + 1
-                                };
-                            })
-                        ]}
-                        onChange={([option]) => setMinSkillLevel(option.value)}
+                        {...minLevelSelect}
                     />
                     <SelectBox
                         dark
                         label="Płeć"
-                        options={[
-                            { text: 'Brak podziału', value: null, isSelected: true },
-                            { text: 'Kobiety', value: 10 },
-                            { text: 'Mężczyźni', value: 9 }
-                        ]}
-                        onChange={([option]) => setGenderId(option.value)}
+                        {...genderSelect}
                     />
-                    <Input ref={objectNameRef} label="Nazwa obiektu" style={{ gridColumn: 'span 2' }} />
+                    <Input ref={ticketsAvailableRef} label="Ilość miejsc" />
+                    <Input ref={objectNameRef} label="Nazwa obiektu" />
                     <Input
                         ref={addressRef}
                         label="Adres"
@@ -162,17 +208,10 @@ const CreateEventView: React.FC = observer(() => {
                     />
                 </div>
             </Section>
-            {/* <Separator />
-            <Section title="Uczestnicy" titleAlign="right" titleSize={15}>
-                uczestnicy
-            </Section> */}
-            <Separator />
-            <Section title="Pozostałe" titleAlign="right" titleSize={15}>
+            <Section style={{ marginTop: '25px' }} title="Pozostałe" titleAlign="right" titleSize={15}>
                 <div className={styles.restSection}>
                     <Input type="file" label="Zdjęcie wydarzenia" />
-                    <div></div>
-                    {/* <Input ref={startDateRef} type="file" label="Zdjęcie w tle" /> */}
-                    <Textarea label="Opis" value="opis" style={{ gridColumn: 'span 2' }} />
+                    <Textarea label="Opis" value="opis" style={{ gridColumn: 'span 3' }} />
                 </div>
             </Section>
             <div style={{ marginTop: '20px', float: 'right' }}>
@@ -181,16 +220,16 @@ const CreateEventView: React.FC = observer(() => {
                         onClick={async () => {
                             const eventId = await createEvent({
                                 administrativeAreas: location.administrativeAreas,
-                                sportId,
+                                sportId: sportSelect.selectedOptions[0]?.value.id,
                                 startDate: new Date(startDateRef.current.value),
                                 endDate: new Date(endDateRef.current.value),
                                 ticketPrice: +priceRef.current.value,
                                 description: '',
-                                isPublic,
-                                minimumSkillLevelId: minSkillLevel,
+                                isPublic: isPublicSelect.selectedOptions[0]?.value,
+                                minimumSkillLevelId: minLevelSelect.selectedOptions[0]?.value.id,
                                 gameVariantId: 77,
-                                genderId,
-                                availableTicketsCount: 15,
+                                genderId: genderSelect.selectedOptions[0]?.value.id,
+                                availableTicketsCount: +ticketsAvailableRef.current.value,
                                 facility: {
                                     name: objectNameRef.current.value,
                                     coords: location.location,

@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { HTMLAttributes } from 'react';
 import styles from './Section.scss';
 
-export interface ISectionProps {
+export interface ISectionProps extends HTMLAttributes<HTMLDivElement> {
     title: string;
     titleAlign?: 'left' | 'right';
     titleSize?: number;
 }
 
-const Section: React.FC<ISectionProps> = ({ children, title, titleSize, titleAlign = 'left' }) => {
+const Section: React.FC<ISectionProps> = ({ children, title, titleSize, titleAlign = 'left', ...props }) => {
     return (
-        <section>
+        <section {...props}>
             <h1 
                 className={styles.sectionTitle} 
                 style={{

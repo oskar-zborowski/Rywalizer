@@ -13,18 +13,25 @@ export interface IViewProps {
     withBackground?: boolean;
     title?: string;
     isLoaderVisible?: boolean;
+    headerContent?: (title: string) => React.ReactNode; //TODO zmiana nazwy
 }
 
-const View: React.FC<IViewProps> = ({ withBackground, children, title, isLoaderVisible }) => {
+const View: React.FC<IViewProps> = ({ withBackground, children, title, isLoaderVisible, headerContent: header }) => {
     const [isLoaderVisibleInner, setIsLoaderVisibleInner] = useState(false);
 
     const showLoader = () => setIsLoaderVisibleInner(true);
     const hideLoader = () => setIsLoaderVisibleInner(false);
 
+    if (!header) {
+        header = (title) => (
+            <h1>{title}</h1>
+        );
+    }
+
     const content = !withBackground ? children : (
         <div className={styles.grayPane}>
             {title && <header className={styles.header}>
-                <h1>{title}</h1>
+                {header(title)}
             </header>}
             {children}
         </div>
