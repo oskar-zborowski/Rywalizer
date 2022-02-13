@@ -26,7 +26,7 @@ const CreateEventView: React.FC = observer(() => {
     const minLevelSelect = useSelectBox<ISportSkillLevel>([]);
     const genderSelect = useSelectBox<IGender>([]);
     const sportSelect = useSelectBox<ISport>([], ([opt]) => {
-        opt && minLevelSelect.setOptions(opt.skillLevels.map(level => {
+        opt && minLevelSelect.setOptions(opt.value?.skillLevels.map(level => {
             return {
                 text: level.name,
                 value: level

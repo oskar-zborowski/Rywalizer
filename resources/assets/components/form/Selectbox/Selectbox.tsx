@@ -17,6 +17,7 @@ export interface ISelectBoxProps<T = any> extends Omit<IDropdownProps, 'isOpen' 
     multiselect?: boolean;
     rowFactory?: (option: IOption<T>) => React.ReactNode,
     searchBar?: boolean;
+    closeOnSelect?: boolean;
     // searchBar?: {
     //     getOptions?: (searchString: string) => IOption<T>[] | Promise<IOption<T>[]>
     //     debounceTimeMs?: number;
@@ -29,28 +30,29 @@ function SelectBox<T = any>(props: ISelectBoxProps<T>) {
         options = [],
         handleOptionsChange,
         handleSelectedOptionsChange,
+        closeOnSelect = !multiselect,
         searchBar,
         rowFactory = op => (<span>{op.text}</span>),
         placeholder,
         ...dropdownProps
     } = props;
 
-    if (multiselect) {
-        //TODO
-    }
-
     const [isOpen, setIsOpen] = useState(false);
     const [hiddenOptionsIds, setHiddenOptionsIds] = useState<number[]>([]);
 
     const onClick = (i: number) => {
         const isSelected = !options[i].isSelected;
-        options.forEach(option => option.isSelected = false);
+
+        if (!multiselect) {
+            options.forEach(option => option.isSelected = false);
+        }
+
         options[i].isSelected = isSelected;
+        handleOptionsChange([...options]);
 
-        handleOptionsChange(options);
-        handleSelectedOptionsChange?.(isSelected ? [options[i]] : []);
-
-        setIsOpen(false);
+        if (closeOnSelect) {
+            setIsOpen(false);
+        }
     };
 
     useEffect(() => {
@@ -68,6 +70,17 @@ function SelectBox<T = any>(props: ISelectBoxProps<T>) {
     };
 
     const selectedOptions = options.filter(option => option.isSelected);
+    let finalPlaceholder = placeholder;
+
+    if (multiselect) {
+        if ( selectedOptions.length) {
+            finalPlaceholder += ` [${selectedOptions.length}]`;
+        }
+    } else {
+        if (!finalPlaceholder) {
+            finalPlaceholder = selectedOptions[0]?.text ?? '- Wybierz -';
+        }
+    }
 
     return (
         <Dropdown
@@ -76,7 +89,7 @@ function SelectBox<T = any>(props: ISelectBoxProps<T>) {
                 setIsOpen(isOpen);
                 setHiddenOptionsIds([]);
             }}
-            placeholder={placeholder || (selectedOptions[0]?.text ?? '- Wybierz -')}
+            placeholder={finalPlaceholder}
             {...dropdownProps}
         >
             {searchBar && <Input
@@ -105,19 +118,22 @@ export default SelectBox;
 
 export function useSelectBox<T = any>(
     initialOptions: IOption<T>[] = [],
-    onSelectedOptionsChange?: (selectedOptions: T[]) => void
+    onSelectedOptionsChange?: (selectedOptions: IOption<T>[]) => void
 ) {
     const [options, setOptions] = useState<IOption<T>[]>(initialOptions);
     const [selectedOptions, setSelectedOptions] = useState<IOption<T>[]>(initialOptions);
+    const [placeholder, setPlaceholder] = useState<string>(null);
 
     return {
+        placeholder,
+        setPlaceholder,
         options,
         setOptions,
         selectedOptions,
         handleOptionsChange: (options: IOption<T>[]) => setOptions(options),
         handleSelectedOptionsChange: (selectedOptions: IOption<T>[]) => {
             setSelectedOptions(selectedOptions);
-            onSelectedOptionsChange?.(selectedOptions.map(opt => opt.value));
+            onSelectedOptionsChange?.(selectedOptions);
         },
         select: (predicate: number | ((optionValue: T) => boolean)) => {
             if (predicate === null || predicate === undefined) {

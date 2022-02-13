@@ -10,8 +10,27 @@
     padding: 20px;
     width: 100%;
     flex: none;
-    display: flex;
+    display: grid;
     gap: 20px;
+    grid-template-columns: repeat(4, 1fr);
+
+    @include respond-to(null, "sm") {
+        padding: 0;
+        padding-bottom: 20px;
+        grid-template-columns: 1fr;
+    }
+
+    @include respond-to("sm", "lg") {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include respond-to("lg", "xl") {
+        grid-template-columns: 1fr;
+    }
+
+    @include respond-to("xl", "2xl") {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 .containerWrapper {

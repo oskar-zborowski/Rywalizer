@@ -1,6 +1,7 @@
 import getEvents, { IEvent } from '@/api/getEvents';
+import { ISport } from '@/api/getSports';
 import Input from '@/components/Form/Input/Input';
-import SelectBox, { IOption } from '@/components/Form/SelectBox/SelectBox';
+import SelectBox, { IOption, useSelectBox } from '@/components/Form/SelectBox/SelectBox';
 import SportsSelectBox from '@/components/Form/SelectBox/SportSelectbox';
 import useScrollbar from '@/layout/Content/Scrollbar/Scrollbar';
 import appStore from '@/store/AppStore';
@@ -36,6 +37,29 @@ const EventsView: React.FC = () => {
         };
     }));
 
+    const sportsSelect = useSelectBox<ISport>([], (opts) => {
+        //TODO set filters
+    });
+
+    const sortSelect = useSelectBox<number>([
+        { text: 'Najlepsze', value: 0, isSelected: true },
+        { text: 'Cena malejąco', value: 1 },
+        { text: 'Cena rosnąco', value: 2 }
+    ], ([opt]) => {
+        sortSelect.setPlaceholder(`Sortuj wg: ${opt?.text}`);
+        //TODO set filters
+    });
+
+    useEffect(() => {
+        sportsSelect.setPlaceholder('Sporty');
+        sportsSelect.setOptions(appStore.sports.map(sport => {
+            return {
+                text: sport.name,
+                value: sport
+            };
+        }));
+    }, [appStore.sports]);
+
     return (
         <View isLoaderVisible={!areEventsLoaded}>
             {areEventsLoaded && (
@@ -44,24 +68,24 @@ const EventsView: React.FC = () => {
                         <Input
                             value={queryString}
                             onChange={(v) => setQueryString(v)}
+                            // style={{flex: 100}}
                         />
                         <SelectBox
-                            options={options}
                             placeholder="Lokalizacja"
                         />
-                        <SportsSelectBox
-                            searchBar
-                            sports={appStore.sports}
-                            placeholder="Sporty"
-                        />
                         <SelectBox
+                            searchBar
+                            multiselect
+                            minWidth={230}
+                            {...sportsSelect}
+                        />
+                        {/* <SelectBox
                             options={options}
                             placeholder="Więcej filtrów"
-                        />
+                        /> */}
                         <SelectBox
-                            options={options}
-                            placeholder="Sortuj wg: Najlepsze"
-                            transparent={true}
+                            {...sortSelect}
+                            // transparent={true}
                         />
                     </div>
                     <div className={styles.containerWrapper} ref={containerRef}>

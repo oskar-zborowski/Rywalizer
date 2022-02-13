@@ -111,7 +111,7 @@
   border: 1px solid #29292e;
   overflow: hidden;
   min-height: 68px;
-  min-width: 150px;
+  min-width: min-content;
   max-width: 400px;
   z-index: 9999;
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.6);
@@ -124,6 +124,7 @@
   cursor: pointer;
   padding: 5px;
   border-radius: 6px;
+  white-space: nowrap;
 }
 .Dropdown_itemsContainer__FuLoD .Dropdown_row__IIe4P:hover {
   background-color: rgba(0, 0, 0, 0.2);
@@ -335,6 +336,8 @@
 .SelectBox_rowContent__Rr5yC {
   flex: 1;
   user-select: none;
+  white-space: nowrap;
+  margin-right: 25px;
 }
 
 .SelectBox_checkbox__v3p6G {
@@ -888,8 +891,31 @@
   padding: 20px;
   width: 100%;
   flex: none;
-  display: flex;
+  display: grid;
   gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
+}
+@media (max-width: 576px) {
+  .EventsView_filters__BZvQI {
+    padding: 0;
+    padding-bottom: 20px;
+    grid-template-columns: 1fr;
+  }
+}
+@media (min-width: 577px) and (max-width: 992px) {
+  .EventsView_filters__BZvQI {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 993px) and (max-width: 1200px) {
+  .EventsView_filters__BZvQI {
+    grid-template-columns: 1fr;
+  }
+}
+@media (min-width: 1201px) and (max-width: 1400px) {
+  .EventsView_filters__BZvQI {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .EventsView_containerWrapper__AA6EY {
@@ -1395,8 +1421,8 @@
   flex: none;
 }
 .UserView_leftColumn__ZUcfF .UserView_image__vcd8y {
-  width: 180px;
-  height: 180px;
+  width: 160px;
+  height: 160px;
   border: 1px solid #141417;
   border-radius: 8px;
   object-fit: cover;
@@ -1434,6 +1460,7 @@
 }
 
 .UserView_headerButtons__HyBJL > * {
+  transition: none;
   float: left;
   margin-right: 10px;
 }

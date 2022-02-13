@@ -6,7 +6,7 @@ import Input from '@/components/Form/Input/Input';
 import SelectBox, { useSelectBox } from '@/components/Form/SelectBox/SelectBox';
 import Link from '@/components/Link/Link';
 import Section from '@/components/Section/Section';
-import prof from '@/static/images/prof.png';
+import noProfile from '@/static/images/noProfile.png';
 import appStore from '@/store/AppStore';
 import mapViewerStore from '@/store/MapViewerStore';
 import userStore from '@/store/UserStore';
@@ -14,7 +14,7 @@ import { IPoint } from '@/types/IPoint';
 import { runInAction } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import View from '../View/View';
 import styles from './UserView.scss';
 
@@ -27,13 +27,9 @@ const defaultMarkerPosition: IPoint = {
 const UserView: React.FC = () => {
     const user = userStore.user;
 
-    if (!user) {
-        return <Navigate to="/" />;
-    }
-
     const [location, setLocation] = useState<IGeocodeResults>(null);
     const [editMode, setEditMode] = useState(false);
-    const [newImageUrl, setNewImageUrl] = useState(prof);
+    const [newImageUrl, setNewImageUrl] = useState(null);
     const [newImageFile, setNewImageFile] = useState<File>(null);
     const genderSelect = useSelectBox<IGender>();
 
@@ -51,10 +47,15 @@ const UserView: React.FC = () => {
     const confirmNewPasswordRef = useRef<HTMLInputElement>();
 
     const imagefileRef = useRef<HTMLInputElement>();
+    const navigateTo = useNavigate();
 
     useEffect(() => {
+        if (!user) {
+            navigateTo('/');
+        }
+
         mapViewerStore.reset();
-    }, []);
+    }, [user]);
 
     useEffect(() => {
         if (!user || !editMode) {
@@ -104,13 +105,13 @@ const UserView: React.FC = () => {
         genderSelect.setOptions([{
             text: 'Nie chcę podawać',
             value: null,
-            isSelected: !user.gender
+            isSelected: !user?.gender
         },
         ...appStore.genders.map(gender => {
             return {
                 text: gender.name,
                 value: gender,
-                isSelected: user.gender?.name == gender.name
+                isSelected: user?.gender?.name == gender.name
             };
         })]);
     }, [appStore.genders]);
@@ -186,6 +187,16 @@ const UserView: React.FC = () => {
         reader.readAsDataURL(file);
     };
 
+    if (!user) {
+        return null;
+    }
+
+    let imageUrl = user?.avatarUrl;
+
+    if (editMode) {
+        imageUrl = newImageUrl ?? user?.avatarUrl;
+    }
+
     return (
         <View
             title="Moje konto"
@@ -194,24 +205,32 @@ const UserView: React.FC = () => {
         >
             <div className={styles.userDataWrapper + ' ' + (editMode ? styles.editMode : '')}>
                 <div className={styles.leftColumn}>
-                    <img src={editMode ? newImageUrl : user.avatarUrl} alt="" className={styles.image} />
-                    {editMode && (
-                        <Fragment>
-                            <OrangeButton
-                                style={{ width: '100%' }}
-                                onClick={() => imagefileRef.current.click()}
-                            >
-                                Zmień zdjęcie
-                            </OrangeButton>
-                            <input
-                                ref={imagefileRef}
-                                type="file"
-                                style={{ display: 'none' }}
-                                accept="image/jpeg, image/png"
-                                onChange={(e) => displayImage(e.currentTarget.files?.[0])}
-                            />
-                        </Fragment>
-                    )}
+                    <div style={{ width: 'min-content' }}>
+                        <img src={imageUrl ?? noProfile} alt="" className={styles.image} />
+                        {editMode && (
+                            <Fragment>
+                                <OrangeButton
+                                    style={{ marginTop: '10px', width: '100%' }}
+                                    onClick={() => imagefileRef.current.click()}
+                                >
+                                    Zmień zdjęcie
+                                </OrangeButton>
+                                <BlackButton
+                                    onClick={() => alert('TODO')}
+                                    style={{ marginTop: '10px', width: '100%' }}
+                                >
+                                    Usuń zdjęcie
+                                </BlackButton>
+                                <input
+                                    ref={imagefileRef}
+                                    type="file"
+                                    style={{ display: 'none' }}
+                                    accept="image/jpeg, image/png"
+                                    onChange={(e) => displayImage(e.currentTarget.files?.[0])}
+                                />
+                            </Fragment>
+                        )}
+                    </div>
                 </div>
                 <div className={styles.rightColumn}>
                     <Section title="Dane podstawowe" titleAlign="right" titleSize={15}>
@@ -267,7 +286,7 @@ const UserView: React.FC = () => {
                                     user.addressCoordinates ? (
                                         user.addressCoordinates.lat.toFixed(4) + '; ' +
                                         user.addressCoordinates.lng.toFixed(4)
-                                    ): (
+                                    ) : (
                                         'Nie podano'
                                     )
                                 )}

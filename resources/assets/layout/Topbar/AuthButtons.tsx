@@ -1,5 +1,6 @@
 import { GrayButton, OrangeButton } from '@/components/Form/Button/Button';
 import Dropdown, { DropdownRow } from '@/components/Form/Dropdown/Dropdown';
+import noProfile from '@/static/images/noProfile.png';
 import prof from '@/static/images/prof.png';
 import modalsStore from '@/store/ModalsStore';
 import userStore from '@/store/UserStore';
@@ -15,7 +16,7 @@ const AuthButtons: React.FC = observer(() => {
     if (user) {
         return (
             <div className={styles.userButton} id="js-auth-buttons">
-                <img src={prof} alt="" className={styles.avatar} />
+                <img src={user.avatarUrl ?? noProfile} alt="" className={styles.avatar} />
                 <Dropdown 
                     transparent 
                     placeholder={user.firstName + ' ' + user.lastName}
