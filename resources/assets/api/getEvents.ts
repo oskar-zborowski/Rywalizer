@@ -9,6 +9,9 @@ import { ISport } from './getSports';
 
 export interface IGetEventsParams {
     id?: number;
+    filters?: {
+        sport?: number;
+    }
 }
 
 const getEvents = async (params?: IGetEventsParams) => {

@@ -3,6 +3,8 @@
 .rowContent {
     flex: 1;
     user-select: none;
+    white-space: nowrap;
+    margin-right: 25px;
 }
 
 .checkbox {

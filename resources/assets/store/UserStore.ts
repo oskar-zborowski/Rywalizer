@@ -75,7 +75,7 @@ export class UserStore {
             id: responseData.user.id,
             firstName: responseData.user.firstName,
             lastName: responseData.user.lastName,
-            avatarUrl: responseData.user.avatars?.[0],
+            avatarUrl: responseData.user.avatars?.[0].filename,
             avatarUrls: responseData.user.avatars,
             email: responseData.user.email,
             phoneNumber: responseData.user.telephone,

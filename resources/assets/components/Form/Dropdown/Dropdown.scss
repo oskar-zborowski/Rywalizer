@@ -59,7 +59,7 @@
     border: 1px solid #29292e;
     overflow: hidden;
     min-height: 2 * 34px;
-    min-width: 150px;
+    min-width: min-content;
     max-width: 400px;
     z-index: 9999;
     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.6);
@@ -84,6 +84,7 @@
         cursor: pointer;
         padding: 5px;
         border-radius: 6px;
+        white-space: nowrap;
 
         &:hover {
             background-color: rgba(0, 0, 0, 0.2);
