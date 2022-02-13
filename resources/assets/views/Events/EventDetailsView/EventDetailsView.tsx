@@ -166,7 +166,7 @@ const EventDetailsView: React.FC = () => {
                 {isEventLoaded && (
                     <Fragment>
                         <header className={styles.header}>
-                            {event.backgroundImageUrl && <img className={styles.backgroundImage} src={event.backgroundImageUrl} alt="" />}
+                            {event.imageUrl && <img className={styles.backgroundImage} src={event.imageUrl} alt="" />}
                             <div className={styles.gradientOverlay}></div>
                             <div className={styles.userData}>
                                 <img className={styles.userImage} src={event.partner.imageUrl ?? noProfile} alt="" />
