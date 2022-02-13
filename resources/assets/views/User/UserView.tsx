@@ -10,6 +10,7 @@ import Section from '@/components/Section/Section';
 import noProfile from '@/static/images/noProfile.png';
 import appStore from '@/store/AppStore';
 import mapViewerStore from '@/store/MapViewerStore';
+import modalsStore from '@/store/ModalsStore';
 import userStore from '@/store/UserStore';
 import { IPoint } from '@/types/IPoint';
 import { runInAction } from 'mobx';
@@ -167,9 +168,12 @@ const UserView: React.FC = () => {
                             <BlackButton>Usuń konto</BlackButton>
                             <BlackButton onClick={() => setEditMode(true)}>Edytuj konto</BlackButton>
                             <OrangeButton
-                                onClick={() => navigateTo('/partnerstwo')}
+                                onClick={() => {
+                                    
+                                    modalsStore.setIsPartnerModalEnabled(true);
+                                }}
                             >
-                                Zostań partnerem
+                                TODO Zostań partnerem / Partnerstwo
                             </OrangeButton>
                         </Fragment>
                     )}

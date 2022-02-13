@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import LoginModal from './LoginModal';
+import PartnerModal from './PartnerModal';
 import RegisterModal from './RegisterModal';
 import RemindPasswordModal from './RemindPasswordModal';
 
@@ -9,6 +10,7 @@ const Modals: React.FC = () => {
             <LoginModal/>
             <RemindPasswordModal/>
             <RegisterModal/>
+            <PartnerModal/>
         </Fragment>
     );
 };

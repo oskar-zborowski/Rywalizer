@@ -2,13 +2,12 @@ import { IGender } from '@/api/getGenders';
 import Flexbox from '@/components/Flexbox/Flexbox';
 import { OrangeButton } from '@/components/Form/Button/Button';
 import Input from '@/components/Form/Input/Input';
-import SelectBox, { IOption, useSelectBox } from '@/components/Form/SelectBox/SelectBox';
+import SelectBox, { useSelectBox } from '@/components/Form/SelectBox/SelectBox';
 import Link from '@/components/Link/Link';
 import Modal from '@/components/Modal/Modal';
 import appStore from '@/store/AppStore';
 import modalsStore from '@/store/ModalsStore';
 import userStore from '@/store/UserStore';
-import { toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 
@@ -22,7 +21,7 @@ const RegisterModal: React.FC = observer(() => {
     const [passwordConfirmation, setConfirmPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const genderSelect = useSelectBox<IGender>([], ([opt]) => setGenderId(opt?.id));
+    const genderSelect = useSelectBox<IGender>([], ([opt]) => setGenderId(opt?.value.id));
 
     useEffect(() => {
         genderSelect.setOptions([{

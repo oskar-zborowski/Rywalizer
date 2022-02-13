@@ -8,6 +8,7 @@ export class ModalsStore {
     public isRegisterEnabled = false;
     public isRemindPasswordEnabled = false;
     public isResetPasswordEnabled = false;
+    public isPartnerModalEnabled = false;
 
     public constructor() {
         makeAutoObservable(this);
@@ -18,6 +19,7 @@ export class ModalsStore {
         this.isRegisterEnabled = false;
         this.isRemindPasswordEnabled = false;
         this.isResetPasswordEnabled = false;
+        this.isPartnerModalEnabled = false;
     }
 
     public setIsRegisterEnabled(value: boolean) {
@@ -25,6 +27,7 @@ export class ModalsStore {
         this.isRegisterEnabled = value;
         this.isRemindPasswordEnabled = false;
         this.isResetPasswordEnabled = false;
+        this.isPartnerModalEnabled = false;
     }
 
     public setIsRemindPasswordEnabled(value: boolean) {
@@ -32,6 +35,7 @@ export class ModalsStore {
         this.isRegisterEnabled = false;
         this.isRemindPasswordEnabled = value;
         this.isResetPasswordEnabled = false;
+        this.isPartnerModalEnabled = false;
     }
 
     public setIsResetPasswordEnabled(value: boolean) {
@@ -39,6 +43,15 @@ export class ModalsStore {
         this.isRegisterEnabled = false;
         this.isRemindPasswordEnabled = false;
         this.isResetPasswordEnabled = value;
+        this.isPartnerModalEnabled = false;
+    }
+
+    public setIsPartnerModalEnabled(value: boolean) {
+        this.isLoginEnabled = false;
+        this.isRegisterEnabled = false;
+        this.isRemindPasswordEnabled = false;
+        this.isResetPasswordEnabled = false;
+        this.isPartnerModalEnabled = value;
     }
 
 }

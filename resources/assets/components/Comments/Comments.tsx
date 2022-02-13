@@ -26,7 +26,7 @@ const Comment: React.FC<IComment> = ({ username, createdAt, comment, userAvatarU
     return (
         <div className={styles.comment}>
             <div className={styles.avatarContainer}>
-                <Avatar src={prof} size={40} />
+                <Avatar src={userAvatarUrl ?? noProfile} size={40} />
             </div>
             <div className={styles.contentContainer}>
                 <header className={styles.contentHeader}>

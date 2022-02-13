@@ -4,8 +4,6 @@ import { IPoint } from '@/types/IPoint';
 import { getApiUrl } from '@/utils/api';
 import axios from 'axios';
 import { when } from 'mobx';
-import { IGender } from './getGenders';
-import { IPartner } from './getPartners';
 import { ISport } from './getSports';
 
 export interface IGetEventsParams {
@@ -108,7 +106,7 @@ const getEvents = async (params?: IGetEventsParams) => {
                 return {
                     username: comment.user.name,
                     userAvatarUrl: comment.user.avatar[0]?.filename,
-                    createdAt: 'DATA',
+                    createdAt: new Date(comment.date).toLocaleDateString(),
                     comment: comment.comment,
                     comments: []
                 };
@@ -173,4 +171,18 @@ export interface IEvent {
     }[];
     comments: IComment[];
     //TODO reszta pól
+}
+
+interface IPartner {
+    id: number;
+    fullName: string;
+    imageUrl: string;
+    contactEmail: string;
+    telephone: string;
+    facebook: string;
+    instagram: string;
+    website: string;
+    isVerified: boolean;
+    avarageRating: number;
+    ratingCounter: number;
 }
