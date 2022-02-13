@@ -49,6 +49,7 @@ const CreateEventView: React.FC = observer(() => {
     const ticketsAvailableRef = useRef<HTMLInputElement>();
     const objectNameRef = useRef<HTMLInputElement>();
     const addressRef = useRef<HTMLInputElement>();
+    const descriptionRef = useRef<HTMLTextAreaElement>();
     const imagefileRef = useRef<HTMLInputElement>();
     const [newImageUrl, setNewImageUrl] = useState(null);
     const [newImageFile, setNewImageFile] = useState<File>(null);
@@ -68,7 +69,7 @@ const CreateEventView: React.FC = observer(() => {
     };
 
     useEffect(() => {
-        if (!userStore.user || !userStore.user) {
+        if (!userStore.user) { //TODO sprawdzenie czy user jest partnerem
             navigateTo('/');
             return;
         }
@@ -89,8 +90,8 @@ const CreateEventView: React.FC = observer(() => {
         if (event) {
             (async () => {
                 sportSelect.select(opt => opt.id == event.sport.id);
-                startDateRef.current.value = moment(event.startDate).format('YYYY-MM-DD');
-                endDateRef.current.value = moment(event.endDate).format('YYYY-MM-DD');
+                startDateRef.current.value = moment(event.startDate).format('YYYY-MM-DDThh:mm');
+                endDateRef.current.value = moment(event.endDate).format('YYYY-MM-DDThh:mm');
                 priceRef.current.value = (event.ticketPrice / 100) + '';
                 ticketsAvailableRef.current.value = event.availableTicketsCount + '';
                 //eventType
@@ -98,6 +99,7 @@ const CreateEventView: React.FC = observer(() => {
                 minLevelSelect.select(opt => opt?.id == event.minSkillLevelId);
                 genderSelect.select(0); //TODO
                 objectNameRef.current.value = event.facility.name;
+                descriptionRef.current.value = event.description;
 
                 const location = await geocode(event.facility.location);
                 setLocation(location);
@@ -133,6 +135,7 @@ const CreateEventView: React.FC = observer(() => {
             endDateRef.current.value = null;
             priceRef.current.value = null;
             ticketsAvailableRef.current.value = null;
+            descriptionRef.current.value = null;
             //eventType
             isPublicSelect.select(0);
             minLevelSelect.select(0);
@@ -215,7 +218,7 @@ const CreateEventView: React.FC = observer(() => {
             startDate: new Date(startDateRef.current.value),
             endDate: new Date(endDateRef.current.value),
             ticketPrice: +priceRef.current.value,
-            description: '',
+            description: descriptionRef.current.value,
             isPublic: isPublicSelect.selectedOptions[0]?.value,
             minimumSkillLevelId: minLevelSelect.selectedOptions[0]?.value.id,
             gameVariantId: 77,
@@ -306,7 +309,7 @@ const CreateEventView: React.FC = observer(() => {
                             Zmień zdjęcie
                         </OrangeButton>
                     </div>
-                    <Textarea label="Opis" placeholder="Opis" style={{ gridColumn: 'span 3' }} height={180} />
+                    <Textarea ref={descriptionRef} label="Opis" placeholder="Opis" style={{ gridColumn: 'span 3' }} height={180} />
                 </div>
             </Section>
             <div style={{ marginTop: '20px', float: 'right' }}>

@@ -404,7 +404,7 @@
   align-items: center;
   height: 34px;
   padding: 0 8px;
-  border: 1px solid #29292E;
+  border: 1px solid #29292e;
   position: relative;
   overflow: hidden;
   background-color: #141417;
@@ -419,6 +419,12 @@
   outline: none !important;
   color: #a1a1a1;
   -webkit-appearance: none !important;
+}
+.Input_inputWrapper__IuVx8 input input:-webkit-autofill,
+.Input_inputWrapper__IuVx8 input input:-webkit-autofill:hover,
+.Input_inputWrapper__IuVx8 input input:-webkit-autofill:focus,
+.Input_inputWrapper__IuVx8 input input:-webkit-autofill:active {
+  transition: background-color 5000s ease-in-out 0s;
 }
 /*!**************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Form/SelectBox/SelectBox.scss ***!

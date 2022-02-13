@@ -25,7 +25,7 @@ const defaultMarkerPosition: IPoint = {
     lng: 16.9109
 };
 
-const UserView: React.FC = () => {
+const PartnerView: React.FC = () => {
     const user = userStore.user;
 
     const [location, setLocation] = useState<IGeocodeResults>(null);
@@ -34,7 +34,7 @@ const UserView: React.FC = () => {
     const [newImageFile, setNewImageFile] = useState<File>(null);
     const genderSelect = useSelectBox<IGender>();
 
-    const nameRef = useRef<HTMLInputElement>();
+    const companyNameRef = useRef<HTMLInputElement>();
     const lastnameRef = useRef<HTMLInputElement>();
     const birthDateRef = useRef<HTMLInputElement>();
     const locationRef = useRef<HTMLInputElement>();
@@ -64,8 +64,7 @@ const UserView: React.FC = () => {
             return;
         }
 
-        nameRef.current.value = user.firstName;
-        lastnameRef.current.value = user.lastName;
+        companyNameRef.current.value = user.firstName;
         birthDateRef.current.value = user.birthDate;
         emailRef.current.value = user.email;
         telephoneRef.current.value = user.phoneNumber;
@@ -120,7 +119,7 @@ const UserView: React.FC = () => {
     const saveUserData = async () => {
         const { avatarUrl, avatarId } = await editUser({
             email: emailRef.current.value,
-            firstName: nameRef.current.value,
+            firstName: companyNameRef.current.value,
             lastName: lastnameRef.current.value,
             telephone: telephoneRef.current.value,
             birthDate: birthDateRef.current.value,
@@ -136,7 +135,7 @@ const UserView: React.FC = () => {
 
         runInAction(() => {
             userStore.user.email = emailRef.current.value;
-            userStore.user.firstName = nameRef.current.value;
+            userStore.user.firstName = companyNameRef.current.value;
             userStore.user.phoneNumber = telephoneRef.current.value;
             userStore.user.birthDate = birthDateRef.current.value;
             userStore.user.facebookProfile = facebookRef.current.value;
@@ -164,13 +163,7 @@ const UserView: React.FC = () => {
                         </Fragment>
                     ) : (
                         <Fragment>
-                            <BlackButton>Usuń konto</BlackButton>
-                            <BlackButton onClick={() => setEditMode(true)}>Edytuj konto</BlackButton>
-                            <OrangeButton
-                                onClick={() => navigateTo('/partnerstwo')}
-                            >
-                                Zostań partnerem
-                            </OrangeButton>
+                            <BlackButton onClick={() => setEditMode(true)}>Edytuj dane</BlackButton>
                         </Fragment>
                     )}
                 </div>
@@ -204,7 +197,7 @@ const UserView: React.FC = () => {
 
     return (
         <View
-            title="Moje konto"
+            title="Partnerstwo"
             withBackground
             headerContent={header}
         >
@@ -252,22 +245,12 @@ const UserView: React.FC = () => {
                 <div className={styles.rightColumn}>
                     <Section title="Dane podstawowe" titleAlign="right" titleSize={15}>
                         <div className={styles.fieldRow}>
-                            <div className={styles.fieldName}>Imię</div>
+                            <div className={styles.fieldName}>Nazwa firmy</div>
                             <div className={styles.fieldValue}>
                                 {editMode && user.canChangeName ? (
-                                    <Input ref={nameRef}></Input>
+                                    <Input ref={companyNameRef}></Input>
                                 ) : (
                                     user.firstName
-                                )}
-                            </div>
-                        </div>
-                        <div className={styles.fieldRow}>
-                            <div className={styles.fieldName}>Nazwisko</div>
-                            <div className={styles.fieldValue}>
-                                {editMode && user.canChangeName ? (
-                                    <Input ref={lastnameRef}></Input>
-                                ) : (
-                                    user.lastName
                                 )}
                             </div>
                         </div>
@@ -387,4 +370,4 @@ const UserView: React.FC = () => {
     );
 };
 
-export default observer(UserView);
+export default observer(PartnerView);

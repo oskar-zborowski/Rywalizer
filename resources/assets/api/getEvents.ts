@@ -1,3 +1,4 @@
+import { IComment } from '@/components/Comments/Comments';
 import appStore from '@/store/AppStore';
 import { IPoint } from '@/types/IPoint';
 import { getApiUrl } from '@/utils/api';
@@ -102,9 +103,9 @@ const getEvents = async (params?: IGetEventsParams) => {
                     seatId: +participant.announcementSeat.id
                     //TODO status
                 };
-            }) : []
+            }) : [],
+            comments: announcement.comments
         };
-
         return event;
     }) : [] as IEvent[];
 };
@@ -161,6 +162,7 @@ export interface IEvent {
         seatId: number;
         //itsme
         //status
-    }[]
+    }[];
+    comments: IComment[];
     //TODO reszta pól
 }
