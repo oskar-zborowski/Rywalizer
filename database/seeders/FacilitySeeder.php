@@ -18,7 +18,7 @@ class FacilitySeeder extends Seeder
             [
                 'name' => 'SP nr 1',
                 'street' => 'Hezjoda 15',
-                'address_coordinates' => '1A5NhzGny9Xr43iQSAwGJfF4Gh+Q',
+                'address_coordinates' => '0ApNijetwdTt6niUTAwKIv51HhiU',
                 'city_id' => 5,
                 'creator_id' => 1,
                 'editor_id' => 1,
@@ -29,7 +29,7 @@ class FacilitySeeder extends Seeder
             [
                 'name' => 'SP nr 2',
                 'street' => 'Warszawska 10b',
-                'address_coordinates' => '1A5NhzGny9Xr43iQSAwGJfF4Gh+Q',
+                'address_coordinates' => '0ApNijOnxtXo6HKTVBsFI/RxHxY=',
                 'city_id' => 5,
                 'creator_id' => 1,
                 'editor_id' => 1,
@@ -40,7 +40,7 @@ class FacilitySeeder extends Seeder
             [
                 'name' => 'Gimnazjum nr 45',
                 'street' => 'Aleje Solidarności 49',
-                'address_coordinates' => '1A5NhzGny9Xr43iQSAwGJfF4Gh+Q',
+                'address_coordinates' => '0ApNijCowtXs4HiUTAwLJPN0HheX',
                 'city_id' => 5,
                 'creator_id' => 1,
                 'editor_id' => 1,
