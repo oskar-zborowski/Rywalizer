@@ -626,7 +626,8 @@ class User extends Authenticatable implements MustVerifyEmail
                 'website' => $this->website,
                 'is_verified' => (bool) $this->verified_at,
                 'can_change_name' => $this->canChangeName(),
-                'permissions' => $this->getPermissions()
+                'permissions' => $this->getPermissions(),
+                'is_partner' => $this->partners()->first() ? true : false
             ],
             'user_setting' => [
                 'is_visible_in_comments' => (bool) $this->userSetting()->first()->is_visible_in_comments
