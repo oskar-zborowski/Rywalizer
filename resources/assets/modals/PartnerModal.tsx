@@ -6,8 +6,10 @@ import Link from '@/components/Link/Link';
 import Modal from '@/components/Modal/Modal';
 import modalsStore from '@/store/ModalsStore';
 import userStore from '@/store/UserStore';
+import { runInAction } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const PartnerModal: React.FC = observer(() => {
     const [isLoading, setIsLoading] = useState(false);
@@ -17,6 +19,8 @@ const PartnerModal: React.FC = observer(() => {
     const [website, setWebsite] = useState('');
     const [facebookProfile, setFacebook] = useState('');
     const [instagramProfile, setInstagram] = useState('');
+
+    const navigateTo = useNavigate();
 
     const saveNewPartner = async () => {
         setIsLoading(true);
@@ -28,8 +32,14 @@ const PartnerModal: React.FC = observer(() => {
             facebookProfile: facebookProfile || undefined,
             instagramProfile: instagramProfile || undefined
         });
+
         setIsLoading(false);
+        runInAction(() => {
+            userStore.user.isPartner = true;
+        });
+
         modalsStore.setIsPartnerModalEnabled(false);
+        navigateTo('/partnerstwo');
     };
 
     useEffect(() => {
@@ -60,8 +70,8 @@ const PartnerModal: React.FC = observer(() => {
                     <Input label="Telefon" value={telephone} onChange={v => setTelephone(v)} />
                 </Flexbox>
                 <Input label="Strona internetowa" value={website} onChange={v => setWebsite(v)} />
-                <Input label="Facebook" value={facebookProfile} onChange={v => setFacebook(v)}/>
-                <Input label="Instagram" value={instagramProfile} onChange={v => setInstagram(v)}/>
+                <Input label="Facebook" value={facebookProfile} onChange={v => setFacebook(v)} />
+                <Input label="Instagram" value={instagramProfile} onChange={v => setInstagram(v)} />
                 <div style={{ fontSize: '12px', color: '#a1a1a1' }}>
                     Rejestrując się jako partner, akceptujesz&nbsp;<Link fixedColor>regulamin</Link> oraz&nbsp;
                     <Link fixedColor>politykę prywatyności</Link> serwisu nasza-nazwa.pl.

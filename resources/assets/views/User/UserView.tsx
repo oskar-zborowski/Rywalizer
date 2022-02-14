@@ -52,6 +52,10 @@ const UserView: React.FC = () => {
     const navigateTo = useNavigate();
 
     useEffect(() => {
+        mapViewerStore.reset();
+    }, []);
+
+    useEffect(() => {
         if (!user) {
             navigateTo('/');
         }
@@ -169,11 +173,14 @@ const UserView: React.FC = () => {
                             <BlackButton onClick={() => setEditMode(true)}>Edytuj konto</BlackButton>
                             <OrangeButton
                                 onClick={() => {
-                                    
-                                    modalsStore.setIsPartnerModalEnabled(true);
+                                    if (user.isPartner) {
+                                        navigateTo('/partnerstwo');
+                                    } else {
+                                        modalsStore.setIsPartnerModalEnabled(true);
+                                    }
                                 }}
                             >
-                                TODO Zostań partnerem / Partnerstwo
+                                {user.isPartner ? 'Partnerstwo' : 'Zostań partnerem'}
                             </OrangeButton>
                         </Fragment>
                     )}

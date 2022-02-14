@@ -1,4 +1,6 @@
-import { IUser } from '@/types/IUser';
+import { IGender } from '@/api/getGenders';
+import { IPoint } from '@/types/IPoint';
+import { Permission } from '@/types/Permission';
 import { getApiUrl } from '@/utils/api';
 import axios from 'axios';
 import { makeAutoObservable, runInAction } from 'mobx';
@@ -95,7 +97,8 @@ export class UserStore {
             isVerified: responseData.user.isVerified,
             canChangeName: responseData.user.canChangeName,
             permissions: responseData.user.permissions,
-            settings: responseData.userSettings
+            settings: responseData.userSettings,
+            isPartner: responseData.user.isPartner
         };
     }
 
@@ -110,6 +113,32 @@ export interface IRegisterData {
     password: string;
     passwordConfirmation: string;
     acceptedAgreements: number[]
+}
+
+export interface IUser {
+    id: number;
+    firstName: string;
+    lastName: string;
+    avatarId: number;
+    avatarUrl: string;
+    avatarUrls: string[];
+    email: string;
+    phoneNumber: string;
+    birthDate: string;
+    gender: IGender;
+    role: 'USER',
+    city: string;
+    addressCoordinates: IPoint;
+    facebookProfile: string;
+    instagramProfile: string;
+    website: string;
+    isVerified: boolean;
+    canChangeName: boolean;
+    permissions: Permission[];
+    isPartner: boolean;
+    settings: {
+        isVisibleInComments: boolean
+    }
 }
 
 const userStore = new UserStore();

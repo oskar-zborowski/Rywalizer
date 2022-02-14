@@ -21,7 +21,7 @@ const RegisterModal: React.FC = observer(() => {
     const [passwordConfirmation, setConfirmPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const genderSelect = useSelectBox<IGender>([], ([opt]) => setGenderId(opt?.value.id));
+    const genderSelect = useSelectBox<IGender>([], ([opt]) => setGenderId(opt?.value?.id));
 
     useEffect(() => {
         genderSelect.setOptions([{

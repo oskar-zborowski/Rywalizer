@@ -17,14 +17,18 @@ const AuthButtons: React.FC = observer(() => {
         return (
             <div className={styles.userButton} id="js-auth-buttons">
                 <img src={user.avatarUrl ?? noProfile} alt="" className={styles.avatar} />
-                <Dropdown 
-                    transparent 
+                <Dropdown
+                    transparent
                     placeholder={user.firstName + ' ' + user.lastName}
                     isOpen={dropdownOpen}
                     handleIsOpenChange={(isOpen) => setDropdownOpen(isOpen)}
                 >
                     <Link to="/konto"><DropdownRow>Konto</DropdownRow></Link>
-                    <Link to="/partnerstwo"><DropdownRow>Partnerstwo</DropdownRow></Link>
+                    {user.isPartner ? (
+                        <Link to="/partnerstwo"><DropdownRow>Partnerstwo</DropdownRow></Link>
+                    ) : (
+                        <DropdownRow onClick={() => modalsStore.setIsPartnerModalEnabled(true)}>Partnerstwo</DropdownRow>
+                    )}
                     <DropdownRow onClick={() => userStore.logout()}>Wyloguj</DropdownRow>
                 </Dropdown>
             </div>

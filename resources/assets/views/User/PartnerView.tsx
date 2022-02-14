@@ -1,5 +1,6 @@
 import deleteUserAvatar from '@/api/deleteUserAvatar';
 import getPartner, { IPartner } from '@/api/getPartner';
+import savePartner from '@/api/savePartner';
 import { BlackButton, OrangeButton } from '@/components/Form/Button/Button';
 import Input from '@/components/Form/Input/Input';
 import Link from '@/components/Link/Link';
@@ -39,6 +40,8 @@ const PartnerView: React.FC = () => {
     const navigateTo = useNavigate();
 
     useEffect(() => {
+        mapViewerStore.reset();
+
         try {
             getPartner().then(partner => {
                 setPartner(partner);
@@ -73,25 +76,37 @@ const PartnerView: React.FC = () => {
     }, [editMode]);
 
     const saveUserData = async () => {
-        // const { avatarUrl, avatarId } = await editUser({
-        //     email: emailRef.current.value,
-        //     firstName: companyNameRef.current.value,
-        //     lastName: lastnameRef.current.value,
-        //     telephone: telephoneRef.current.value,
-        //     facebookProfile: facebookRef.current.value,
-        //     instagramProfile: instagramRef.current.value,
-        //     website: websiteRef.current.value,
-        // }, newImageFile);
-
-        //TODO zapis do bazy
+        const imageUrl = await savePartner({
+            businessName: companyNameRef.current.value,
+            contactEmail: emailRef.current.value,
+            telephone: telephoneRef.current.value,
+            website: websiteRef.current.value,
+            facebookProfile: facebookRef.current.value,
+            instagramProfile: instagramRef.current.value
+        }, true, newImageFile);
 
         runInAction(() => {
-            //TODO update partnera
-            userStore.user.email = emailRef.current.value;
-            userStore.user.phoneNumber = telephoneRef.current.value;
-            userStore.user.facebookProfile = facebookRef.current.value;
-            userStore.user.instagramProfile = instagramRef.current.value;
-            userStore.user.website = websiteRef.current.value;
+            setPartner(partner => {
+                partner.businessName = companyNameRef.current.value;
+                partner.contactEmail = emailRef.current.value;
+                partner.telephone = telephoneRef.current.value;
+                partner.website = websiteRef.current.value;
+                partner.facebook = facebookRef.current.value;
+                partner.instagram = instagramRef.current.value;
+
+                if (imageUrl) {
+                    partner.imageUrl = imageUrl;
+                }
+
+                companyNameRef.current.value = partner?.businessName;
+                emailRef.current.value = partner?.contactEmail;
+                telephoneRef.current.value = partner?.telephone;
+                websiteRef.current.value = partner?.website;
+                facebookRef.current.value = partner?.facebook;
+                instagramRef.current.value = partner?.instagram;
+
+                return { ...partner };
+            });
         });
 
         setEditMode(false);
