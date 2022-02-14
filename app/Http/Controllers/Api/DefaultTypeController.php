@@ -55,7 +55,7 @@ class DefaultTypeController extends Controller
             $paginationAttributes = $this->getPaginationAttributes($request);
 
             /** @var \App\Models\DefaultType $defaultTypes */
-            $defaultTypes = $defaultTypeName->defaultTypes()->filter()->paginate($paginationAttributes['perPage']);
+            $defaultTypes = $defaultTypeName->defaultTypes()->where('is_active', true)->filter()->paginate($paginationAttributes['perPage']);
 
             $result = $this->preparePagination($defaultTypes, 'getDetailedInformation');
 
@@ -69,7 +69,7 @@ class DefaultTypeController extends Controller
         $result = null;
 
         /** @var \App\Models\DefaultType $defaultTypes */
-        $defaultTypes = $defaultTypeName->defaultTypes()->get();
+        $defaultTypes = $defaultTypeName->defaultTypes()->where('is_active', true)->get();
 
         /** @var \App\Models\DefaultType $dT */
         foreach ($defaultTypes as $dT) {

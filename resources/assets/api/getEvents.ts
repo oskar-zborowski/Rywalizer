@@ -105,7 +105,7 @@ const getEvents = async (params?: IGetEventsParams) => {
             comments: announcement.comments ? announcement.comments.map((comment: any) => {
                 return {
                     username: comment.user.name,
-                    userAvatarUrl: comment.user.avatar[0]?.filename,
+                    userAvatarUrl: comment.user.avatar?.[0]?.filename,
                     createdAt: new Date(comment.date).toLocaleDateString(),
                     comment: comment.comment,
                     comments: []

@@ -226,7 +226,7 @@ class PartnerSetting extends BaseModel
                 'id' => (int) $partner->id,
                 'business_name' => $partner->business_name,
                 'alias' => $partner->alias,
-                'logos' => $partner->getLogos(true),
+                'logos' => $partner->getLogos(false),
                 'contact_email' => $partner->contact_email,
                 'telephone' => $partner->telephone,
                 'facebook' => $partner->facebook,

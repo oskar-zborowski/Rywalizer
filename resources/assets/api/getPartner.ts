@@ -9,6 +9,7 @@ const getPartner = async (): Promise<IPartner> => {
         id: data.id,
         businessName: data.businessName,
         alias: data.alias,
+        imageId: +data.logos?.[0]?.id,
         imageUrl: data.logos?.[0]?.filename,
         contactEmail: data.contactEmail,
         telephone: data.telephone,
@@ -25,6 +26,7 @@ export interface IPartner {
     id: number,
     businessName: string,
     alias: string,
+    imageId: number;
     imageUrl: string,
     contactEmail: string,
     telephone: string,

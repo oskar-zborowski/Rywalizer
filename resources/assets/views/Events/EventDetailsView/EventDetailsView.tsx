@@ -1,37 +1,33 @@
 
-import StarRatings from '@/components/StarRating/StarRating';
-import React, { Fragment, useEffect, useState } from 'react';
-import styles from './EventDetailsView.scss';
-import prof from '@/static/images/prof.png';
+import addCommentToEvent from '@/api/addCommentToEvent';
+import getEvents, { IEvent } from '@/api/getEvents';
+import joinEvent from '@/api/joinEvent';
+import leaveEvent from '@/api/leaveEvent';
+import Avatar from '@/components/Avatar/Avatar';
+import Comments from '@/components/Comments/Comments';
+import { OrangeButton } from '@/components/Form/Button/Button';
 import Icon from '@/components/Icon/Icon';
-
-import LocationSvg from '@/static/icons/location.svg';
-import CalendarSvg from '@/static/icons/calendar.svg';
-import UserSvg from '@/static/icons/my-account.svg';
-import ContactSvg from '@/static/icons/food.svg';
-import TelephoneSvg from '@/static/icons/telephone.svg';
-import MailSvg from '@/static/icons/mail.svg';
-import FacebookSvg from '@/static/icons/facebook.svg';
 import Link from '@/components/Link/Link';
-import faker from 'faker';
-import Comments, { IComment } from '@/components/Comments/Comments';
 import ProgressBar from '@/components/ProgressBar/ProgressBar';
 import StackPanel from '@/components/StackPanel/StackPanel';
-import { useNavigate, useParams } from 'react-router-dom';
-import getEvents, { IEvent } from '@/api/getEvents';
-import mapViewerStore from '@/store/MapViewerStore';
-import View, { useView } from '@/views/View/View';
-import userStore from '@/store/UserStore';
-import { OrangeButton } from '@/components/Form/Button/Button';
-import joinEvent from '@/api/joinEvent';
-import Avatar from '@/components/Avatar/Avatar';
+import StarRatings from '@/components/StarRating/StarRating';
+import CalendarSvg from '@/static/icons/calendar.svg';
+import FacebookSvg from '@/static/icons/facebook.svg';
+import LocationSvg from '@/static/icons/location.svg';
+import MailSvg from '@/static/icons/mail.svg';
+import UserSvg from '@/static/icons/my-account.svg';
+import TelephoneSvg from '@/static/icons/telephone.svg';
 import noProfile from '@/static/images/noProfile.png';
+import mapViewerStore from '@/store/MapViewerStore';
+import userStore from '@/store/UserStore';
+import View from '@/views/View/View';
+import faker from 'faker';
 import { observer } from 'mobx-react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { AiOutlineClose } from 'react-icons/ai';
+import { useNavigate, useParams } from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
-import leaveEvent from '@/api/leaveEvent';
-import { event } from 'jquery';
-import addCommentToEvent from '@/api/addCommentToEvent';
+import styles from './EventDetailsView.scss';
 
 faker.locale = 'pl';
 
@@ -259,7 +255,8 @@ const EventDetailsView: React.FC = () => {
                                         event.comments.push({
                                             username: user.firstName + ' ' + user.lastName,
                                             comment: comment,
-                                            createdAt: new Date().toLocaleDateString()
+                                            createdAt: new Date().toLocaleDateString(),
+                                            userAvatarUrl: user.avatarUrl
                                         });
 
                                         return { ...event };

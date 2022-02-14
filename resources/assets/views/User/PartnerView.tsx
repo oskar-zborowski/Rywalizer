@@ -1,3 +1,4 @@
+import deletePartnerAvatar from '@/api/deletePartnerAvatar';
 import deleteUserAvatar from '@/api/deleteUserAvatar';
 import getPartner, { IPartner } from '@/api/getPartner';
 import savePartner from '@/api/savePartner';
@@ -9,18 +10,13 @@ import noProfile from '@/static/images/noProfile.png';
 import mapViewerStore from '@/store/MapViewerStore';
 import userStore from '@/store/UserStore';
 import { IPoint } from '@/types/IPoint';
+import de from 'faker/locale/de';
 import { runInAction } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import View from '../View/View';
 import styles from './UserView.scss';
-
-// Poznań
-const defaultMarkerPosition: IPoint = {
-    lat: 52.4035,
-    lng: 16.9109
-};
 
 const PartnerView: React.FC = () => {
     const [partner, setPartner] = useState<IPartner>(null);
@@ -76,7 +72,7 @@ const PartnerView: React.FC = () => {
     }, [editMode]);
 
     const saveUserData = async () => {
-        const imageUrl = await savePartner({
+        const {imageUrl, imageId} = await savePartner({
             businessName: companyNameRef.current.value,
             contactEmail: emailRef.current.value,
             telephone: telephoneRef.current.value,
@@ -94,8 +90,9 @@ const PartnerView: React.FC = () => {
                 partner.facebook = facebookRef.current.value;
                 partner.instagram = instagramRef.current.value;
 
-                if (imageUrl) {
+                if (imageUrl && imageId) {
                     partner.imageUrl = imageUrl;
+                    partner.imageId = imageId;
                 }
 
                 companyNameRef.current.value = partner?.businessName;
@@ -177,10 +174,16 @@ const PartnerView: React.FC = () => {
                                 </OrangeButton>
                                 <BlackButton
                                     onClick={async () => {
-                                        //TODO usuwanie awatara partnera
-                                        // if (user.avatarId) {
-                                        //     await deleteUserAvatar(user.avatarId);
-                                        // }
+                                        if (partner.imageId) {
+                                            await deletePartnerAvatar(partner.imageId);
+                                        }
+
+                                        setPartner(partner => {
+                                            partner.imageId = null;
+                                            partner.imageUrl = null;
+
+                                            return { ...partner };
+                                        });
 
                                         setNewImageUrl(null);
                                         setNewImageFile(null);

@@ -26,11 +26,16 @@ const savePartner = async (args: ISavePartnerArgs, edit = false, imageFile?: Fil
                 }
             });
 
-            return result?.data?.data?.partner?.logos?.[0]?.filename as string;
+            return {
+                imageUrl: result?.data?.data?.partner?.logos?.[0]?.filename,
+                imageId: +result?.data?.data?.partner?.logos?.[0]?.id
+            };
         }
     } else {
         await axios.post(getApiUrl('api/v1/partners'), body);
     }
+
+    return {};
 };
 
 export interface ISavePartnerArgs {

@@ -470,7 +470,7 @@ class DefaultTypeSeeder extends Seeder
                 'name' => 'VOLLEYBALL',
                 'description_simple' => 'Siatkówka',
                 'icon_id' => null,
-                'color' => '#FFD653',
+                'color' => '#FFA401',
                 'is_active' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -491,7 +491,7 @@ class DefaultTypeSeeder extends Seeder
                 'description_simple' => 'Piłka Nożna',
                 'icon_id' => null,
                 'color' => '#7AB661',
-                'is_active' => 1,
+                'is_active' => 0,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -501,7 +501,7 @@ class DefaultTypeSeeder extends Seeder
                 'description_simple' => 'Tenis',
                 'icon_id' => null,
                 'color' => '#5CD3E6',
-                'is_active' => 1,
+                'is_active' => 0,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -511,7 +511,7 @@ class DefaultTypeSeeder extends Seeder
                 'description_simple' => 'Koszykówka',
                 'icon_id' => null,
                 'color' => '#FF5E44',
-                'is_active' => 1,
+                'is_active' => 0,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -521,7 +521,7 @@ class DefaultTypeSeeder extends Seeder
                 'description_simple' => 'Piłka Ręczna',
                 'icon_id' => null,
                 'color' => '#ABCDEF',
-                'is_active' => 1,
+                'is_active' => 0,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -531,7 +531,7 @@ class DefaultTypeSeeder extends Seeder
                 'description_simple' => 'Hokej',
                 'icon_id' => null,
                 'color' => '#ABCDEF',
-                'is_active' => 1,
+                'is_active' => 0,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -541,7 +541,7 @@ class DefaultTypeSeeder extends Seeder
                 'description_simple' => 'Tenis Stołowy',
                 'icon_id' => null,
                 'color' => '#5CD3E6',
-                'is_active' => 1,
+                'is_active' => 0,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -551,7 +551,7 @@ class DefaultTypeSeeder extends Seeder
                 'description_simple' => 'Snooker',
                 'icon_id' => null,
                 'color' => '#ABCDEF',
-                'is_active' => 1,
+                'is_active' => 0,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -561,7 +561,7 @@ class DefaultTypeSeeder extends Seeder
                 'description_simple' => 'Bilard',
                 'icon_id' => null,
                 'color' => '#ABCDEF',
-                'is_active' => 1,
+                'is_active' => 0,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -571,7 +571,7 @@ class DefaultTypeSeeder extends Seeder
                 'description_simple' => 'Dart',
                 'icon_id' => null,
                 'color' => '#ABCDEF',
-                'is_active' => 1,
+                'is_active' => 0,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -581,7 +581,7 @@ class DefaultTypeSeeder extends Seeder
                 'description_simple' => 'Futsal',
                 'icon_id' => null,
                 'color' => '#7AB661',
-                'is_active' => 1,
+                'is_active' => 0,
                 'created_at' => now(),
                 'updated_at' => now()
             ],

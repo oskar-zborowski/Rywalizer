@@ -15,7 +15,6 @@ const Topbar = () => {
         <div className={styles.topbar}>
             <div className={styles.logo}><Link to="/">LOGO</Link></div>
             <nav className={styles.links}>
-                <span>Obiekty sportowe</span>
                 <Dropdown
                     transparent
                     placeholder="Ogłoszenia"
@@ -31,11 +30,11 @@ const Topbar = () => {
                 </Dropdown>
                 <Dropdown
                     transparent
-                    placeholder="Współpraca"
+                    placeholder="Obiekty sportowe"
                     isOpen={facilitiesDropdownOpen}
                     handleIsOpenChange={(isOpen) => setFacilitiesDropdownOpen(isOpen)}
                 >
-                    <Link to="/obiekty/1"><DropdownRow><span>TEST</span></DropdownRow></Link>
+                    <Link to="/obiekty/1"><DropdownRow><span>Obiekt 1</span></DropdownRow></Link>
                 </Dropdown>
             </nav>
         </div >

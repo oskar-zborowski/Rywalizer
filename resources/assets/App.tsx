@@ -2,14 +2,13 @@ import Content from '@/layout/Content/Content';
 import MapViewer from '@/layout/Content/MapViewer/MapViewer';
 import Footer from '@/layout/Footer/Footer';
 import Topbar from '@/layout/Topbar/Topbar';
-import { when } from 'mobx';
-import { observer } from 'mobx-react';
+import chroma from 'chroma-js';
 import React, { Fragment, useEffect, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import MainContainer from './layout/Content/MainContainer/MainContainer';
 import Modals from './modals/Modals';
 import appStore from './store/AppStore';
-import mapViewerStore from './store/MapViewerStore';
+import mapViewerStore, { IEventPin } from './store/MapViewerStore';
 import userStore from './store/UserStore';
 
 const App: React.FC = () => {
@@ -28,6 +27,21 @@ const App: React.FC = () => {
 
     useEffect(() => {
         fetchData();
+
+        // setTimeout(() => {
+        //     const pins: IEventPin[] = [];
+
+        //     for (let i = 0; i < 100000; i++) {
+        //         const lat = 52 + (Math.random() - 0.5) * 4;
+        //         const lng = 19 + (Math.random() - 0.5) * 6;
+
+        //         pins.push({
+        //             lat, lng, id: 0, color: chroma.random()
+        //         });
+        //     }
+
+        //     mapViewerStore.setEventPins(pins);
+        // }, 4000);
     }, []);
 
     return (
