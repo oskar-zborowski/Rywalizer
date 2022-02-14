@@ -1002,7 +1002,7 @@
 .Comments_comment__xiia5 {
   margin-top: 20px;
   display: flex;
-  gap: 25px;
+  gap: 15px;
 }
 .Comments_contentContainer__YR8fn .Comments_comment__xiia5 {
   margin-top: 10px;
@@ -1037,6 +1037,10 @@
 .Comments_comment__xiia5 .Comments_comment__xiia5 .Comments_commentAvatar__fMR8z {
   width: 30px;
   height: 30px;
+}
+
+.Comments_writeCommentRow__pWSXQ {
+  display: flex;
 }
 /*!*************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/ProgressBar/ProgressBar.scss ***!
@@ -1270,6 +1274,7 @@
   height: 100%;
   object-fit: cover;
   transition: 0.2s;
+  opacity: 0.8;
 }
 .EventTile_eventTile__eBys7 .EventTile_detailsRow__p1drI {
   display: flex;
@@ -1719,7 +1724,6 @@
   align-items: center;
 }
 .UserView_rightColumn__qh0H1 .UserView_fieldRow__PpaF0:last-of-type {
-  border-bottom: none;
   margin-bottom: 25px;
 }
 .UserView_rightColumn__qh0H1 .UserView_fieldRow__PpaF0 .UserView_fieldName__oiVfp {

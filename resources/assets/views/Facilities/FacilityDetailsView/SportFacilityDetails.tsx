@@ -30,25 +30,23 @@ const comments: IComment[] = [
         username: 'K. Borowicz',
         createdAt: '2 dzień temu',
         comment: 'Reasumując wszystkie aspekty kwintesencji tematu, dochodzę do fundamentalnej konkluzji, warto studiować.\n~ Mariusz pudzianowski',
-        comments: [
-            {
-                username: 'O. Zborowski',
-                createdAt: 'Przed chwilą',
-                comment: 'To nie dałoby nic, nic by nie dało.\nhttps://www.youtube.com/watch?v=8AwVRlXsxlA&ab_channel=CACACACACA',
-                comments: [
-                    {
-                        username: 'M. Pudzianowski',
-                        createdAt: 'Przed chwilą',
-                        comment: 'Odtworzyłem wczoraj po nocy oryginalną klasyfikację z tych zawodów. Policzyłem wszystko skrupulatnie i zrobiłem double check z regulaminem. Okazało się, że to i tak by nic nie dało.'
-                    }, {
-                        username: 'B. Babiaczyk',
-                        createdAt: 'Przed chwilą',
-                        comment: 'Skład rzeczy które i tak by nic nie dały:\n- wygrana bo on by musiał być 4 w kulach\n- mała różnica czasów\n- branie kuli od boku'
-                    }
-                ]
-            }
-        ]
-    }, {
+    },
+    {
+        username: 'O. Zborowski',
+        createdAt: 'Przed chwilą',
+        comment: 'To nie dałoby nic, nic by nie dało.\nhttps://www.youtube.com/watch?v=8AwVRlXsxlA&ab_channel=CACACACACA'
+    },
+    {
+        username: 'M. Pudzianowski',
+        createdAt: 'Przed chwilą',
+        comment: 'Odtworzyłem wczoraj po nocy oryginalną klasyfikację z tych zawodów. Policzyłem wszystko skrupulatnie i zrobiłem double check z regulaminem. Okazało się, że to i tak by nic nie dało.'
+    }, 
+    {
+        username: 'B. Babiaczyk',
+        createdAt: 'Przed chwilą',
+        comment: 'Skład rzeczy które i tak by nic nie dały:\n- wygrana bo on by musiał być 4 w kulach\n- mała różnica czasów\n- branie kuli od boku'
+    },
+    {
         username: 'B. Babiaczyk',
         createdAt: '1 dni temu',
         comment: 'Bez ryzyka nie ma gry.',

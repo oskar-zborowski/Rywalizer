@@ -20,6 +20,7 @@ const Input = React.forwardRef<HTMLInputElement, IInputProps>((props, ref) => {
     const {
         value,
         onChange,
+        onEnter,
         onBlur,
         label,
         placeholder,
@@ -31,6 +32,11 @@ const Input = React.forwardRef<HTMLInputElement, IInputProps>((props, ref) => {
     } = props;
 
     const isFile = type === 'file';
+    const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (event) => {
+        if (event.key === 'Enter') {
+            onEnter?.();
+        }
+    };
 
     return (
         <div className={styles.input + ' ' + className} style={style}>
@@ -39,13 +45,14 @@ const Input = React.forwardRef<HTMLInputElement, IInputProps>((props, ref) => {
                 <input
                     min={min}
                     placeholder={placeholder}
-                    style={{opacity: isFile ? 0 : 1}}
+                    style={{ opacity: isFile ? 0 : 1 }}
                     ref={ref}
                     type={type}
                     value={value}
                     onChange={(e) => onChange?.(e.target.value, e)}
                     onBlur={onBlur}
                     spellCheck={spellCheck}
+                    onKeyDown={handleKeyDown}
                 />
             </div>
         </div>

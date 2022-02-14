@@ -445,12 +445,13 @@ class Announcement extends BaseModel
                 $comments[] = [
                     'id' => $aC->id,
                     'comment' => $aC->comment,
+                    'date' => $aC->created_at,
                     'user' => [
                         'id' => $commentedUser->id,
                         'name' => $commentedUser->first_name . ' ' . $commentedUser->last_name,
                         'gender' => $commentedUser->getGender(),
                         'avatar' => $commentedUser->getAvatars(),
-                        'its_me' => $itsMe->id == $commentedUser->id ? true : false,
+                        'its_me' => $itsMe && $itsMe->id == $commentedUser->id ? true : false,
                     ]
                 ];
             } else {
