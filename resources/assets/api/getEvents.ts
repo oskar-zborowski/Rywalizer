@@ -89,7 +89,8 @@ const getEvents = async (params?: IGetEventsParams) => {
                 website: partner.website,
                 isVerified: partner.verified,
                 avarageRating: partner.avarageRating,
-                ratingCounter: partner.ratingCounter
+                ratingCounter: partner.ratingCounter,
+                itsMe: !!partner.itsMe
             } : null,
             participants: announcement.announcementParticipants ? announcement.announcementParticipants.map((participant: any) => {
                 return {
@@ -185,4 +186,5 @@ interface IPartner {
     isVerified: boolean;
     avarageRating: number;
     ratingCounter: number;
+    itsMe: boolean;
 }
