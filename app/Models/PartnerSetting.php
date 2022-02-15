@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Exceptions\ApiException;
 use App\Http\ErrorCodes\BaseErrorCode;
 use App\Http\Responses\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class PartnerSetting extends BaseModel
 {
@@ -123,6 +124,17 @@ class PartnerSetting extends BaseModel
         $visibleInstagram = $this->visible_instagram_id;
         $visibleWebsite = $this->visible_website_id;
 
+        /** @var User $loggedUser */
+        $loggedUser = Auth::user();
+
+        /** @var Partner $partnerByUser */
+        $partnerByUser = $loggedUser->partners()->first();
+
+        if ($partnerByUser) {
+            /** @var PartnerSetting $partnerSettingByUser */
+            $partnerSettingByUser = $partnerByUser->partnerSettings()->first();
+        }
+
         /** @var Partner $partner */
         $partner = $this->partner()->first();
 
@@ -199,7 +211,7 @@ class PartnerSetting extends BaseModel
                 'verified' => (bool) $partner->verified_at,
                 'avarage_rating' => (float) $partner->avarage_rating,
                 'rating_counter' => (int) $partner->rating_counter,
-                'its_me' => $announcement->announcement_partner_id == $this->id ? true : false,
+                'its_me' => isset($partnerSettingByUser) && $partnerSettingByUser && $partnerSettingByUser->id == $announcement->announcement_partner_id,
             ],
             'partnerSetting' => [
                 'id' => (int) $this->id,
