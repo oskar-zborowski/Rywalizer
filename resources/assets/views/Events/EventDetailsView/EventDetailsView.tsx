@@ -35,7 +35,7 @@ const EventDetailsView: React.FC = () => {
     const { id } = useParams();
     const [event, setEvent] = useState<IEvent>(null);
     const isEventLoaded = event !== null;
-    const userHasAccess = event?.partner.id == userStore.user?.id;
+    const userHasAccess = event?.partner?.itsMe;
     const user = userStore.user;
 
     const navigateTo = useNavigate();
@@ -87,7 +87,7 @@ const EventDetailsView: React.FC = () => {
                                     {i + 1}.
                                     &nbsp;
                                     {participant.fullName}
-                                    {alreadyJoined && userHasAccess && (
+                                    {(userHasAccess || participant.itsMe) && (
                                         <div
                                             className={styles.deletUserIcon}
                                             data-delay-show="300"

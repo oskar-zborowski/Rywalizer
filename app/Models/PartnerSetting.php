@@ -130,8 +130,10 @@ class PartnerSetting extends BaseModel
         /** @var Partner $partnerByUser */
         $partnerByUser = $loggedUser->partners()->first();
 
-        /** @var PartnerSetting $partnerSettingByUser */
-        $partnerSettingByUser = $partnerByUser->partnerSettings()->first();
+        if ($partnerByUser) {
+            /** @var PartnerSetting $partnerSettingByUser */
+            $partnerSettingByUser = $partnerByUser->partnerSettings()->first();
+        }
 
         /** @var Partner $partner */
         $partner = $this->partner()->first();
@@ -209,7 +211,7 @@ class PartnerSetting extends BaseModel
                 'verified' => (bool) $partner->verified_at,
                 'avarage_rating' => (float) $partner->avarage_rating,
                 'rating_counter' => (int) $partner->rating_counter,
-                'its_me' => $partnerSettingByUser->id == $announcement->announcement_partner_id,
+                'its_me' => isset($partnerSettingByUser) && $partnerSettingByUser && $partnerSettingByUser->id == $announcement->announcement_partner_id,
             ],
             'partnerSetting' => [
                 'id' => (int) $this->id,
