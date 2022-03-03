@@ -18,7 +18,7 @@ return [
     'active_url'           => 'Pole :attribute jest nieprawidłowym adresem URL.',
     'after'                => 'Pole :attribute musi być datą późniejszą od :date.',
     'after_or_equal'       => 'Pole :attribute musi być datą nie wcześniejszą niż :date.',
-    'alpha'                => 'To pole może zawierać jedynie litery.', // Zmieniłem z 'Pole :attribute może zawierać jedynie litery.'
+    'alpha'                => 'Pole :attribute może zawierać jedynie litery.', // Zmieniłem z 'Pole :attribute może zawierać jedynie litery.'
     'alpha_dash'           => 'Pole :attribute może zawierać jedynie litery, cyfry i myślniki.',
     'alpha_num'            => 'Pole :attribute może zawierać jedynie litery i cyfry.',
     'array'                => 'To pole musi być tablicą.', // Zmieniłem z 'Pole :attribute może zawierać jedynie litery.'
@@ -159,5 +159,7 @@ return [
     |
     */
 
-    'attributes' => []
+    'attributes' => [
+        'first_name' => 'imię'
+    ]
 ];

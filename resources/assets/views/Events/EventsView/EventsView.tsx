@@ -8,14 +8,20 @@ import appStore from '@/store/AppStore';
 import mapViewerStore from '@/store/MapViewerStore';
 import View from '@/views/View/View';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import styles from './EventsView.scss';
 import EventTile from './EventTile';
 
 const EventsView: React.FC = () => {
+    const { alias } = useParams();
+    const initFilters: IGetEventsParams['filters'] = {
+        partnerAlias: alias ?? undefined
+    };
+
     const { containerRef } = useScrollbar();
     const [queryString, setQueryString] = useState('');
     const [events, setEvents] = useState<IEvent[]>(null);
-    const [filters, setFilters] = useState<IGetEventsParams['filters']>({});
+    const [filters, setFilters] = useState<IGetEventsParams['filters']>(initFilters);
     const areEventsLoaded = events !== null;
 
     useEffect(() => {

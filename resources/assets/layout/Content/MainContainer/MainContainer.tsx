@@ -120,6 +120,7 @@ const MainContainer: React.FC = () => {
                         <Route path="/partnerstwo" element={<PartnerView />} />
                         <Route path="/regulamin" element={<AgreementView />} />
                         {/* <Route path="/obiekty/1" element={<SportFacilityDetails />} /> */}
+                        <Route path="/ogloszenia/partner/:alias" element={<EventsView />} />
                         <Route path="/ogloszenia/dodaj" element={<CreateEventView />} />
                         <Route path="/ogloszenia/edytuj/:id" element={<CreateEventView />} />
                         <Route path="/ogloszenia/:id" element={<EventDetailsView />} />

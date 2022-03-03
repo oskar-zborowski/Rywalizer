@@ -1,3 +1,4 @@
+import extractError from '@/api/extractError';
 import Flexbox from '@/components/Flexbox/Flexbox';
 import { FacebookButton, GoogleButton, OrangeButton } from '@/components/Form/Button/Button';
 import Input from '@/components/Form/Input/Input';
@@ -5,6 +6,7 @@ import Link from '@/components/Link/Link';
 import Modal from '@/components/Modal/Modal';
 import modalsStore from '@/store/ModalsStore';
 import userStore from '@/store/UserStore';
+import { AxiosError } from 'axios';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 
@@ -12,6 +14,7 @@ const LoginModal: React.FC = observer(() => {
     const [loginValue, setLogin] = useState('');
     const [passwordValue, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string>('');
 
     const login = async () => {
         setIsLoading(true);
@@ -20,7 +23,7 @@ const LoginModal: React.FC = observer(() => {
             await userStore.login(loginValue, passwordValue);
             modalsStore.setIsLoginEnabled(false);
         } catch (err) {
-
+            setError(extractError(err as AxiosError).message);
         } finally {
             setIsLoading(false);
         }
@@ -67,6 +70,7 @@ const LoginModal: React.FC = observer(() => {
                     onChange={(v) => setPassword(v)}
                     onEnter={() => login()}
                 />
+                {error && <div style={{fontWeight: 'bold', color: 'red'}}>{error}</div>}
                 <div style={{ fontSize: '12px', color: '#a1a1a1', textAlign: 'right' }}>
                     <Link fixedColor onClick={() => modalsStore.setIsRemindPasswordEnabled(true)}>Nie pamiętasz hasła?</Link>
                 </div>

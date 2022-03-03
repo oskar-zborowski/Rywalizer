@@ -3,8 +3,12 @@
 interface CssExports {
   'authButtons': string;
   'avatar': string;
+  'eventsDropdown': string;
+  'menuButton': string;
+  'menuDropdown': string;
   'tooltip': string;
   'userButton': string;
+  'userDropdown': string;
 }
 export const cssExports: CssExports;
 export default cssExports;

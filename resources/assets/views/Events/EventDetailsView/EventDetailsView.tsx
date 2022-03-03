@@ -1,5 +1,6 @@
 
 import addCommentToEvent from '@/api/addCommentToEvent';
+import extractError from '@/api/extractError';
 import getEvents, { IEvent } from '@/api/getEvents';
 import joinEvent from '@/api/joinEvent';
 import leaveEvent from '@/api/leaveEvent';
@@ -21,6 +22,7 @@ import noProfile from '@/static/images/noProfile.png';
 import mapViewerStore from '@/store/MapViewerStore';
 import userStore from '@/store/UserStore';
 import View from '@/views/View/View';
+import { AxiosError } from 'axios';
 import faker from 'faker';
 import { observer } from 'mobx-react';
 import React, { Fragment, useEffect, useState } from 'react';
@@ -37,6 +39,7 @@ const EventDetailsView: React.FC = () => {
     const isEventLoaded = event !== null;
     const userHasAccess = event?.partner?.itsMe;
     const user = userStore.user;
+    const [error, setError] = useState<string>('');
 
     const navigateTo = useNavigate();
 
@@ -93,21 +96,26 @@ const EventDetailsView: React.FC = () => {
                                             data-delay-show="300"
                                             data-tip={tip}
                                             onClick={async () => {
-                                                await leaveEvent({
-                                                    userId: participant.id,
-                                                    announcementId: event.id,
-                                                    announcementSeatId: participant.seatId
-                                                });
-
-                                                setEvent(event => {
-                                                    event.participants = event.participants.filter(p => {
-                                                        return p.id !== participant.id;
+                                                try {
+                                                    await leaveEvent({
+                                                        userId: participant.id,
+                                                        announcementId: event.id,
+                                                        announcementSeatId: participant.seatId
                                                     });
 
-                                                    return { ...event };
-                                                });
+                                                    setEvent(event => {
+                                                        event.participants = event.participants.filter(p => {
+                                                            return p.id !== participant.id;
+                                                        });
 
-                                                ReactTooltip.hide();
+                                                        return { ...event };
+                                                    });
+
+                                                    ReactTooltip.hide();
+
+                                                }catch(err) {
+                                                    setError(extractError(err as AxiosError).message);
+                                                }
                                             }}
                                         >
                                             <AiOutlineClose />
@@ -125,24 +133,28 @@ const EventDetailsView: React.FC = () => {
                                             key={i}
                                             className={styles.participantCell + ' ' + styles.signUpCell}
                                             onClick={async () => {
-                                                await joinEvent({
-                                                    announcementId: event.id,
-                                                    announcementSeatId: event.seats[0].id
-                                                });
-
-                                                setEvent(event => {
-                                                    event.participants.push({
-                                                        id: user.id,
-                                                        fullName: user.firstName + ' ' + user.lastName,
-                                                        avatarUrl: user.avatarUrl,
-                                                        itsMe: true,
-                                                        seatId: event.seats[0].id
+                                                try {
+                                                    await joinEvent({
+                                                        announcementId: event.id,
+                                                        announcementSeatId: event.seats[0].id
                                                     });
-
-                                                    return { ...event };
-                                                });
-
-                                                ReactTooltip.hide();
+    
+                                                    setEvent(event => {
+                                                        event.participants.push({
+                                                            id: user.id,
+                                                            fullName: user.firstName + ' ' + user.lastName,
+                                                            avatarUrl: user.avatarUrl,
+                                                            itsMe: true,
+                                                            seatId: event.seats[0].id
+                                                        });
+    
+                                                        return { ...event };
+                                                    });
+    
+                                                    ReactTooltip.hide();
+                                                } catch(err) {
+                                                    setError(extractError(err as AxiosError).message);
+                                                }
                                             }}
                                         >
                                             <span>{i + 1}.&nbsp;<span className={styles.signUp}>Zapisz się</span></span>
@@ -246,21 +258,25 @@ const EventDetailsView: React.FC = () => {
                             <Comments
                                 comments={event.comments ?? []}
                                 onAddComment={async (comment) => {
-                                    await addCommentToEvent({
-                                        announcementId: event.id,
-                                        comment
-                                    });
-
-                                    setEvent(event => {
-                                        event.comments.push({
-                                            username: user.firstName + ' ' + user.lastName,
-                                            comment: comment,
-                                            createdAt: new Date().toLocaleDateString(),
-                                            userAvatarUrl: user.avatarUrl
+                                    try {
+                                        await addCommentToEvent({
+                                            announcementId: event.id,
+                                            comment
                                         });
 
-                                        return { ...event };
-                                    });
+                                        setEvent(event => {
+                                            event.comments.push({
+                                                username: user.firstName + ' ' + user.lastName,
+                                                comment: comment,
+                                                createdAt: new Date().toLocaleDateString(),
+                                                userAvatarUrl: user.avatarUrl
+                                            });
+    
+                                            return { ...event };
+                                        });
+                                    } catch(err) {
+                                        setError(extractError(err as AxiosError).message);
+                                    }
                                 }}
                             />
                         </section>

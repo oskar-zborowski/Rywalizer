@@ -396,7 +396,7 @@ class Announcement extends BaseModel
                         'name' => $user->first_name . ' ' . $user->last_name,
                         'gender' => $user->getGender(),
                         'avatar' => $user->getAvatars(),
-                        'its_me' => $itsMe->id == $user->id ? true : false,
+                        'its_me' => $itsMe && $user && $itsMe->id == $user->id ? true : false,
                         'status' => [
                             'id' => (int) $aP->joiningStatus()->first()->id,
                             'name' => $aP->joiningStatus()->first()->name,

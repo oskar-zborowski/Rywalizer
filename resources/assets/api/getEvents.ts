@@ -11,8 +11,9 @@ export interface IGetEventsParams {
     filters?: {
         search?: string;
         sportIds?: number[];
-        sort?: 'minimum_skill_level_id' | 'start_date' | 'ticket_price'
-        sortDir?: 'asc' | 'desc'
+        sort?: 'minimum_skill_level_id' | 'start_date' | 'ticket_price';
+        sortDir?: 'asc' | 'desc';
+        partnerAlias?: string;
     }
 }
 
@@ -27,12 +28,13 @@ const getEvents = async (params?: IGetEventsParams) => {
         const response = await axios.get(getApiUrl(`api/v1/announcements/${id}`));
         entries = [response?.data?.data];
     } else {
-        const { sportIds, sort, sortDir = 'asc', search } = filters;
+        const { sportIds, sort, sortDir = 'asc', search, partnerAlias } = filters;
 
         const response = await axios.get(getApiUrl('api/v1/announcements'), {
             params: {
                 in: sportIds && sportIds.length ? `sport_id,${sportIds.join(',')}` : undefined,
                 search,
+                partnerAlias,
                 sort: sort ? `${sort},${sortDir}` : undefined,
             }
         });

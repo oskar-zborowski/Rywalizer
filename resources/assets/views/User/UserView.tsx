@@ -1,5 +1,6 @@
 import deleteUserAvatar from '@/api/deleteUserAvatar';
 import editUser from '@/api/editUser';
+import extractError from '@/api/extractError';
 import geocode, { IGeocodeResults } from '@/api/geocode';
 import { IGender } from '@/api/getGenders';
 import { BlackButton, OrangeButton } from '@/components/Form/Button/Button';
@@ -7,12 +8,14 @@ import Input from '@/components/Form/Input/Input';
 import SelectBox, { useSelectBox } from '@/components/Form/SelectBox/SelectBox';
 import Link from '@/components/Link/Link';
 import Section from '@/components/Section/Section';
+import ErrorModal from '@/modals/ErrorModal';
 import noProfile from '@/static/images/noProfile.png';
 import appStore from '@/store/AppStore';
 import mapViewerStore from '@/store/MapViewerStore';
 import modalsStore from '@/store/ModalsStore';
 import userStore from '@/store/UserStore';
 import { IPoint } from '@/types/IPoint';
+import { AxiosError } from 'axios';
 import { runInAction } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
@@ -28,6 +31,8 @@ const defaultMarkerPosition: IPoint = {
 
 const UserView: React.FC = () => {
     const user = userStore.user;
+
+    const [error, setError] = useState<string>('');
 
     const [location, setLocation] = useState<IGeocodeResults>(null);
     const [editMode, setEditMode] = useState(false);
@@ -123,38 +128,43 @@ const UserView: React.FC = () => {
     }, [appStore.genders]);
 
     const saveUserData = async () => {
-        const { avatarUrl, avatarId } = await editUser({
-            email: emailRef.current.value,
-            firstName: nameRef.current.value,
-            lastName: lastnameRef.current.value,
-            telephone: telephoneRef.current.value,
-            birthDate: birthDateRef.current.value,
-            addressCoordinates: location?.location ?? undefined,
-            facebookProfile: facebookRef.current.value,
-            instagramProfile: instagramRef.current.value,
-            website: websiteRef.current.value,
-            genderId: genderSelect.selectedOptions[0]?.value?.id,
-            password: newPasswordRef.current.value || undefined,
-            passwordConfirmation: confirmNewPasswordRef.current.value || undefined,
-            administrativeAreas: location?.administrativeAreas ?? undefined
-        }, newImageFile);
+        try {
+            const { avatarUrl, avatarId } = await editUser({
+                email: emailRef.current.value,
+                firstName: nameRef.current.value,
+                lastName: lastnameRef.current.value,
+                telephone: telephoneRef.current.value,
+                birthDate: birthDateRef.current.value,
+                addressCoordinates: location?.location ?? undefined,
+                facebookProfile: facebookRef.current.value,
+                instagramProfile: instagramRef.current.value,
+                website: websiteRef.current.value,
+                genderId: genderSelect.selectedOptions[0]?.value?.id,
+                password: newPasswordRef.current.value || undefined,
+                passwordConfirmation: confirmNewPasswordRef.current.value || undefined,
+                administrativeAreas: location?.administrativeAreas ?? undefined
+            }, newImageFile);
 
-        runInAction(() => {
-            userStore.user.email = emailRef.current.value;
-            userStore.user.firstName = nameRef.current.value;
-            userStore.user.phoneNumber = telephoneRef.current.value;
-            userStore.user.birthDate = birthDateRef.current.value;
-            userStore.user.facebookProfile = facebookRef.current.value;
-            userStore.user.instagramProfile = instagramRef.current.value;
-            userStore.user.website = websiteRef.current.value;
-            userStore.user.gender = appStore.genders.find(g => g.id == genderSelect.selectedOptions[0]?.value?.id);
-            userStore.user.addressCoordinates = location?.location;
-            userStore.user.avatarUrl = avatarUrl ?? newImageUrl ?? user.avatarUrl;
-            userStore.user.avatarId = avatarId ?? user.avatarId;
-        });
+            runInAction(() => {
+                userStore.user.email = emailRef.current.value;
+                userStore.user.firstName = nameRef.current.value;
+                userStore.user.phoneNumber = telephoneRef.current.value;
+                userStore.user.birthDate = birthDateRef.current.value;
+                userStore.user.facebookProfile = facebookRef.current.value;
+                userStore.user.instagramProfile = instagramRef.current.value;
+                userStore.user.website = websiteRef.current.value;
+                userStore.user.gender = appStore.genders.find(g => g.id == genderSelect.selectedOptions[0]?.value?.id);
+                userStore.user.addressCoordinates = location?.location;
+                userStore.user.avatarUrl = avatarUrl ?? newImageUrl ?? user.avatarUrl;
+                userStore.user.avatarId = avatarId ?? user.avatarId;
+            });
 
-        setEditMode(false);
-        setNewImageFile(null);
+            setEditMode(false);
+            setNewImageFile(null);
+
+        } catch(err) {
+            setError(extractError(err as AxiosError).message);
+        }
     };
 
     const header = (title: string) => {
@@ -234,7 +244,11 @@ const UserView: React.FC = () => {
                                 <BlackButton
                                     onClick={async () => {
                                         if (user.avatarId) {
-                                            await deleteUserAvatar(user.avatarId);
+                                            try {
+                                                await deleteUserAvatar(user.avatarId);
+                                            } catch(err) {
+                                                setError(extractError(err as AxiosError).message);
+                                            }
                                         }
 
                                         setNewImageUrl(null);
@@ -394,6 +408,7 @@ const UserView: React.FC = () => {
                     }
                 </div>
             </div>
+            {error && <ErrorModal error={error}/>}
         </View>
     );
 };

@@ -128,7 +128,11 @@ class PartnerSetting extends BaseModel
         $loggedUser = Auth::user();
 
         /** @var Partner $partnerByUser */
-        $partnerByUser = $loggedUser->partners()->first();
+        if ($loggedUser) {
+            $partnerByUser = $loggedUser->partners()->first();
+        } else {
+            $partnerByUser = null;
+        }
 
         if ($partnerByUser) {
             /** @var PartnerSetting $partnerSettingByUser */

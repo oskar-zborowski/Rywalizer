@@ -1,15 +1,18 @@
 import deletePartnerAvatar from '@/api/deletePartnerAvatar';
 import deleteUserAvatar from '@/api/deleteUserAvatar';
+import extractError from '@/api/extractError';
 import getPartner, { IPartner } from '@/api/getPartner';
 import savePartner from '@/api/savePartner';
 import { BlackButton, OrangeButton } from '@/components/Form/Button/Button';
 import Input from '@/components/Form/Input/Input';
 import Link from '@/components/Link/Link';
 import Section from '@/components/Section/Section';
+import ErrorModal from '@/modals/ErrorModal';
 import noProfile from '@/static/images/noProfile.png';
 import mapViewerStore from '@/store/MapViewerStore';
 import userStore from '@/store/UserStore';
 import { IPoint } from '@/types/IPoint';
+import { AxiosError } from 'axios';
 import de from 'faker/locale/de';
 import { runInAction } from 'mobx';
 import { observer } from 'mobx-react';
@@ -19,6 +22,8 @@ import View from '../View/View';
 import styles from './UserView.scss';
 
 const PartnerView: React.FC = () => {
+    const [error, setError] = useState<string>('');
+
     const [partner, setPartner] = useState<IPartner>(null);
     const [editMode, setEditMode] = useState(null);
     const [newImageUrl, setNewImageUrl] = useState(null);
@@ -72,42 +77,46 @@ const PartnerView: React.FC = () => {
     }, [editMode]);
 
     const saveUserData = async () => {
-        const {imageUrl, imageId} = await savePartner({
-            businessName: companyNameRef.current.value,
-            contactEmail: emailRef.current.value,
-            telephone: telephoneRef.current.value,
-            website: websiteRef.current.value,
-            facebookProfile: facebookRef.current.value,
-            instagramProfile: instagramRef.current.value
-        }, true, newImageFile);
-
-        runInAction(() => {
-            setPartner(partner => {
-                partner.businessName = companyNameRef.current.value;
-                partner.contactEmail = emailRef.current.value;
-                partner.telephone = telephoneRef.current.value;
-                partner.website = websiteRef.current.value;
-                partner.facebook = facebookRef.current.value;
-                partner.instagram = instagramRef.current.value;
-
-                if (imageUrl && imageId) {
-                    partner.imageUrl = imageUrl;
-                    partner.imageId = imageId;
-                }
-
-                companyNameRef.current.value = partner?.businessName;
-                emailRef.current.value = partner?.contactEmail;
-                telephoneRef.current.value = partner?.telephone;
-                websiteRef.current.value = partner?.website;
-                facebookRef.current.value = partner?.facebook;
-                instagramRef.current.value = partner?.instagram;
-
-                return { ...partner };
+        try {
+            const {imageUrl, imageId} = await savePartner({
+                businessName: companyNameRef.current.value,
+                contactEmail: emailRef.current.value,
+                telephone: telephoneRef.current.value,
+                website: websiteRef.current.value,
+                facebookProfile: facebookRef.current.value,
+                instagramProfile: instagramRef.current.value
+            }, true, newImageFile);
+    
+            runInAction(() => {
+                setPartner(partner => {
+                    partner.businessName = companyNameRef.current.value;
+                    partner.contactEmail = emailRef.current.value;
+                    partner.telephone = telephoneRef.current.value;
+                    partner.website = websiteRef.current.value;
+                    partner.facebook = facebookRef.current.value;
+                    partner.instagram = instagramRef.current.value;
+    
+                    if (imageUrl && imageId) {
+                        partner.imageUrl = imageUrl;
+                        partner.imageId = imageId;
+                    }
+    
+                    companyNameRef.current.value = partner?.businessName;
+                    emailRef.current.value = partner?.contactEmail;
+                    telephoneRef.current.value = partner?.telephone;
+                    websiteRef.current.value = partner?.website;
+                    facebookRef.current.value = partner?.facebook;
+                    instagramRef.current.value = partner?.instagram;
+    
+                    return { ...partner };
+                });
             });
-        });
-
-        setEditMode(false);
-        setNewImageFile(null);
+    
+            setEditMode(false);
+            setNewImageFile(null);
+        } catch (err) {
+            setError(extractError(err as AxiosError).message);
+        }
     };
 
     const header = (title: string) => {
@@ -175,7 +184,11 @@ const PartnerView: React.FC = () => {
                                 <BlackButton
                                     onClick={async () => {
                                         if (partner.imageId) {
-                                            await deletePartnerAvatar(partner.imageId);
+                                            try {
+                                                await deletePartnerAvatar(partner.imageId);
+                                            } catch(err) {
+                                                setError(extractError(err as AxiosError).message);
+                                            }
                                         }
 
                                         setPartner(partner => {
@@ -272,6 +285,7 @@ const PartnerView: React.FC = () => {
                     </Section>
                 </div>
             </div>
+            {error && <ErrorModal error={error}/>}
         </View>
     );
 };

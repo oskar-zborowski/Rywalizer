@@ -18,6 +18,8 @@ const Topbar = () => {
                 <Dropdown
                     transparent
                     placeholder="Ogłoszenia"
+                    align="right"
+                    horizontalOffset={-10}
                     isOpen={eventsDropdownOpen}
                     handleIsOpenChange={(isOpen) => setEventsDropdownOpen(isOpen)}
                 >

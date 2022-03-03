@@ -38,6 +38,10 @@
     display: flex;
     flex-direction: column;
 
+    &.error {
+        background-color: #5c0a0a;
+    }
+
     @include respond-to(null, "sm") {
         width: 100% !important;
     }

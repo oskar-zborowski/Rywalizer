@@ -33,6 +33,7 @@ const overlayAnimation = {
 export interface ModalProps {
     isOpen?: boolean;
     isLoading?: boolean;
+    className?: string;
     placement?: 'top' | 'middle' | 'bottom'
     onClose?: () => void,
     onEnter?: (e: KeyboardEvent) => void,
@@ -54,6 +55,7 @@ const Modal: React.FC<ModalProps> = props => {
         onEnter,
         title,
         width,
+        className = '',
         closeOnClickOutside = false,
         closeButton = true,
         closeOnEsc = false,
@@ -107,7 +109,7 @@ const Modal: React.FC<ModalProps> = props => {
                 <div className={styles.containerWrapper}>
                     <motion.div
                         ref={containerRef}
-                        className={styles.container}
+                        className={styles.container + ' ' + className}
                         {...containerAnimation}
                         style={{ width }}
                     >

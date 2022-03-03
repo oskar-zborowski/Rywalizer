@@ -5,6 +5,7 @@ interface CssExports {
   'closeButton': string;
   'container': string;
   'containerWrapper': string;
+  'error': string;
   'footer': string;
   'header': string;
   'loadingOverlay': string;

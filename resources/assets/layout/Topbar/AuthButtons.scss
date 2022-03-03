@@ -6,6 +6,16 @@
     top: -$topbar-height / 2;
     transform: translateY(-50%);
     z-index: 999;
+
+    @include respond-to(null, "lg") {
+        right: 40px;
+        position: fixed;
+        top: $topbar-height / 2;
+    }
+
+    @include respond-to(null, "sm") {
+        right: 15px;
+    }
 }
 
 .authButtons {
@@ -33,5 +43,39 @@
         border-radius: 4px;
         overflow: hidden;
         border: 1px solid #141417
+    }
+}
+
+.userDropdown {
+    @include respond-to(0, "sm") {
+        display: none;
+    }
+}
+
+.eventsDropdown {
+    margin-left: 5px;
+
+    @include respond-to(null, "sm") {
+        display: none;
+    }
+
+    @include respond-to("lg", null) {
+        display: none;
+    }
+}
+
+.menuButton {
+    height: 30px;
+    width: 30px;
+
+    svg {
+        height: 100%;
+        width: 100%;
+    }
+}
+
+.menuDropdown {
+    @include respond-to("sm", null) {
+        display: none;
     }
 }

@@ -72,7 +72,6 @@ Route::get('/v1/areas', [DefaultTypeController::class, 'getAreas'])->name('defau
 Route::get('/v1/partners/{id}', [PartnerController::class, 'getPartnerById'])->name('partner-getPartnerById');
 Route::get('/v1/announcements/{id}', [AnnouncementController::class, 'getAnnouncementById'])->name('announcement-getAnnouncementById');
 Route::get('/v1/announcements', [AnnouncementController::class, 'getAnnouncements'])->name('announcement-getAnnouncements');
-Route::get('/v1/announcement/alias', [AnnouncementController::class, 'getAnnouncementsByAlias'])->name('announcement-getAnnouncementsByAlias');
 
 
 

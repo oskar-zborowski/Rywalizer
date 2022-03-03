@@ -17,8 +17,13 @@ import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import View from '../View/View';
 import styles from './CreateEventView.scss';
+import ErrorModal from '@/modals/ErrorModal';
+import extractError from '@/api/extractError';
+import { AxiosError } from 'axios';
 
 const CreateEventView: React.FC = observer(() => {
+    const [error, setError] = useState<string>('');
+
     const { id } = useParams();
     const [event, setEvent] = useState<IEvent>(null);
     const navigateTo = useNavigate();
@@ -212,27 +217,31 @@ const CreateEventView: React.FC = observer(() => {
     };
 
     const saveEventInner = async () => {
-        const eventId = await saveEvent({
-            administrativeAreas: location.administrativeAreas,
-            sportId: sportSelect.selectedOptions[0]?.value.id,
-            startDate: new Date(startDateRef.current.value),
-            endDate: new Date(endDateRef.current.value),
-            ticketPrice: +priceRef.current.value,
-            description: descriptionRef.current.value,
-            isPublic: isPublicSelect.selectedOptions[0]?.value,
-            minimumSkillLevelId: minLevelSelect.selectedOptions[0]?.value.id,
-            gameVariantId: 77,
-            genderId: genderSelect.selectedOptions[0]?.value?.id,
-            availableTicketsCount: +ticketsAvailableRef.current.value,
-            facility: {
-                name: objectNameRef.current.value,
-                coords: location.location,
-                street: location.street
+        try {
+            const eventId = await saveEvent({
+                administrativeAreas: location.administrativeAreas,
+                sportId: sportSelect.selectedOptions[0]?.value.id,
+                startDate: new Date(startDateRef.current.value),
+                endDate: new Date(endDateRef.current.value),
+                ticketPrice: +priceRef.current.value,
+                description: descriptionRef.current.value,
+                isPublic: isPublicSelect.selectedOptions[0]?.value,
+                minimumSkillLevelId: minLevelSelect.selectedOptions[0]?.value.id,
+                gameVariantId: 77,
+                genderId: genderSelect.selectedOptions[0]?.value?.id,
+                availableTicketsCount: +ticketsAvailableRef.current.value,
+                facility: {
+                    name: objectNameRef.current.value,
+                    coords: location.location,
+                    street: location.street
+                }
+            }, newImageFile, +id);
+    
+            if (eventId) {
+                navigateTo('/ogloszenia/' + eventId);
             }
-        }, newImageFile, +id);
-
-        if (eventId) {
-            navigateTo('/ogloszenia/' + eventId);
+        } catch (err) {
+            setError(extractError(err as AxiosError).message);
         }
     };
 
@@ -319,6 +328,7 @@ const CreateEventView: React.FC = observer(() => {
                     {event ? 'Zapisz zmiany' : 'Dodaj ogłoszenie'}
                 </OrangeButton>
             </div>
+            {error && <ErrorModal error={error}/>}
         </View>
     );
 });

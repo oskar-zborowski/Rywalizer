@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Http\ErrorCodes\BaseErrorCode;
+use App\Http\Libraries\Encrypter\Encrypter;
 use App\Http\Requests\PartnerRequest;
 use App\Http\Responses\JsonResponse;
 use App\Models\Partner;
@@ -23,7 +24,7 @@ class PartnerController extends Controller
      * 
      * @return void
      */
-    public function createPartner(PartnerRequest $request): void {
+    public function createPartner(PartnerRequest $request, Encrypter $encrypter): void {
 
         if ($request->telephone) {
 
@@ -42,6 +43,17 @@ class PartnerController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
+        $encryptedFirstName = $encrypter->encrypt($user->first_name, 30);
+        $encryptedLastName = $encrypter->encrypt($user->last_name, 30);
+
+        $personWithSimilarName = Partner::where('first_name', $encryptedFirstName)->where('last_name', $encryptedLastName)->get();
+
+        if ($personWithSimilarName) {
+            $countPerson = count($personWithSimilarName);
+        } else {
+            $countPerson = 0;
+        }
+
         $partnerExists = $user->partners()->first();
 
         if (!$partnerExists) {
@@ -49,6 +61,7 @@ class PartnerController extends Controller
             $partner->user_id = $user->id;
             $partner->first_name = $user->first_name;
             $partner->last_name = $user->last_name;
+            $partner->alias = $user->first_name . '.' . $user->last_name . '.' . ($countPerson+1);
             $partner->business_name = $request->business_name;
             $partner->contact_email = $request->contact_email;
             $partner->telephone = $request->telephone;

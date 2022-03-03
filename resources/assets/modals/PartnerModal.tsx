@@ -1,3 +1,4 @@
+import extractError from '@/api/extractError';
 import savePartner from '@/api/savePartner';
 import Flexbox from '@/components/Flexbox/Flexbox';
 import { OrangeButton } from '@/components/Form/Button/Button';
@@ -6,6 +7,7 @@ import Link from '@/components/Link/Link';
 import Modal from '@/components/Modal/Modal';
 import modalsStore from '@/store/ModalsStore';
 import userStore from '@/store/UserStore';
+import { AxiosError } from 'axios';
 import { runInAction } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
@@ -19,26 +21,33 @@ const PartnerModal: React.FC = observer(() => {
     const [website, setWebsite] = useState('');
     const [facebookProfile, setFacebook] = useState('');
     const [instagramProfile, setInstagram] = useState('');
+    const [error, setError] = useState<string>('');
 
     const navigateTo = useNavigate();
 
     const saveNewPartner = async () => {
         setIsLoading(true);
-        await savePartner({
-            businessName: businessName || undefined,
-            contactEmail: contactEmail || undefined,
-            telephone: telephone || undefined,
-            website: website || undefined,
-            facebookProfile: facebookProfile || undefined,
-            instagramProfile: instagramProfile || undefined
-        });
+
+        try {
+            await savePartner({
+                businessName: businessName || undefined,
+                contactEmail: contactEmail || undefined,
+                telephone: telephone || undefined,
+                website: website || undefined,
+                facebookProfile: facebookProfile || undefined,
+                instagramProfile: instagramProfile || undefined
+            });
+
+            runInAction(() => {
+                userStore.user.isPartner = true;
+            });
+    
+            modalsStore.setIsPartnerModalEnabled(false);
+        } catch(err) {
+            setError(extractError(err as AxiosError).message);
+        }
 
         setIsLoading(false);
-        runInAction(() => {
-            userStore.user.isPartner = true;
-        });
-
-        modalsStore.setIsPartnerModalEnabled(false);
         navigateTo('/partnerstwo');
     };
 
@@ -72,6 +81,7 @@ const PartnerModal: React.FC = observer(() => {
                 <Input label="Strona internetowa" value={website} onChange={v => setWebsite(v)} />
                 <Input label="Facebook" value={facebookProfile} onChange={v => setFacebook(v)} />
                 <Input label="Instagram" value={instagramProfile} onChange={v => setInstagram(v)} />
+                {error && <div style={{fontWeight: 'bold', color: 'red'}}>{error}</div>}
                 <div style={{ fontSize: '12px', color: '#a1a1a1' }}>
                     Rejestrując się jako partner, akceptujesz&nbsp;<Link fixedColor>regulamin</Link> oraz&nbsp;
                     <Link fixedColor>politykę prywatyności</Link> serwisu nasza-nazwa.pl.

@@ -1,3 +1,4 @@
+import extractError from '@/api/extractError';
 import { IGender } from '@/api/getGenders';
 import Flexbox from '@/components/Flexbox/Flexbox';
 import { OrangeButton } from '@/components/Form/Button/Button';
@@ -8,6 +9,7 @@ import Modal from '@/components/Modal/Modal';
 import appStore from '@/store/AppStore';
 import modalsStore from '@/store/ModalsStore';
 import userStore from '@/store/UserStore';
+import { AxiosError } from 'axios';
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 
@@ -20,6 +22,7 @@ const RegisterModal: React.FC = observer(() => {
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setConfirmPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string>('');
 
     const genderSelect = useSelectBox<IGender>([], ([opt]) => setGenderId(opt?.value?.id));
 
@@ -55,7 +58,7 @@ const RegisterModal: React.FC = observer(() => {
 
             modalsStore.setIsRegisterEnabled(false);
         } catch (err) {
-
+            setError(extractError(err as AxiosError).message);
         } finally {
             setIsLoading(false);
         }
@@ -86,6 +89,7 @@ const RegisterModal: React.FC = observer(() => {
                 <Input label="Adres e-mail" value={email} onChange={(v) => setEmail(v)} />
                 <Input label="Hasło" type="password" value={password} onChange={(v) => setPassword(v)} />
                 <Input label="Potwierdź hasło" type="password" value={passwordConfirmation} onChange={(v) => setConfirmPassword(v)} />
+                {error && <div style={{fontWeight: 'bold', color: 'red'}}>{error}</div>}
                 <div style={{ fontSize: '12px', color: '#a1a1a1' }}>
                     Rejestrując się, akceptujesz&nbsp;<Link fixedColor>regulamin</Link> oraz&nbsp;
                     <Link fixedColor>politykę prywatyności</Link> serwisu nasza-nazwa.pl.

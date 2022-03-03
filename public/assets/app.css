@@ -183,6 +183,12 @@
     padding: 10px;
   }
 }
+.Dropdown_itemsContainer__FuLoD .Dropdown_separator__bHrzq {
+  width: 100%;
+  height: 1px;
+  background-color: #141417;
+  margin: 10px 0;
+}
 
 .Dropdown_dark__froLS {
   border: 1px solid #29292e;
@@ -361,6 +367,18 @@
   transform: translateY(-50%);
   z-index: 999;
 }
+@media (max-width: 992px) {
+  .AuthButtons_userButton__wwlUT, .AuthButtons_authButtons__OCzBI {
+    right: 40px;
+    position: fixed;
+    top: 30px;
+  }
+}
+@media (max-width: 576px) {
+  .AuthButtons_userButton__wwlUT, .AuthButtons_authButtons__OCzBI {
+    right: 15px;
+  }
+}
 
 .AuthButtons_authButtons__OCzBI {
   display: flex;
@@ -384,6 +402,41 @@
   border-radius: 4px;
   overflow: hidden;
   border: 1px solid #141417;
+}
+
+@media (min-width: 1px) and (max-width: 576px) {
+  .AuthButtons_userDropdown__lAPLl {
+    display: none;
+  }
+}
+
+.AuthButtons_eventsDropdown__MhMmE {
+  margin-left: 5px;
+}
+@media (max-width: 576px) {
+  .AuthButtons_eventsDropdown__MhMmE {
+    display: none;
+  }
+}
+@media (min-width: 992px) {
+  .AuthButtons_eventsDropdown__MhMmE {
+    display: none;
+  }
+}
+
+.AuthButtons_menuButton__bSMlF {
+  height: 30px;
+  width: 30px;
+}
+.AuthButtons_menuButton__bSMlF svg {
+  height: 100%;
+  width: 100%;
+}
+
+@media (min-width: 576px) {
+  .AuthButtons_menuDropdown__PwbiZ {
+    display: none;
+  }
 }
 /*!*************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-modules-typescript-loader/index.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js!./resources/assets/components/Modal/Modal.scss ***!
@@ -441,6 +494,9 @@
   padding: 20px;
   display: flex;
   flex-direction: column;
+}
+.Modal_container__LeMIo.Modal_error__fhPiK {
+  background-color: #5c0a0a;
 }
 @media (max-width: 576px) {
   .Modal_container__LeMIo {
@@ -756,7 +812,7 @@
 .CreateEventView_locationSection__Ldd23 {
   display: grid;
   gap: 20px;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 @media (max-width: 767px) {
   .CreateEventView_locationSection__Ldd23 {
@@ -768,7 +824,7 @@
 }
 @media (min-width: 768px) and (max-width: 992px) {
   .CreateEventView_locationSection__Ldd23 {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 @media (min-width: 993px) and (max-width: 1200px) {
@@ -781,7 +837,7 @@
 }
 @media (min-width: 1201px) and (max-width: 1400px) {
   .CreateEventView_locationSection__Ldd23 {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

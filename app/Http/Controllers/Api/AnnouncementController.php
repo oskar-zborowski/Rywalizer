@@ -652,12 +652,34 @@ class AnnouncementController extends Controller
      * @return void
      */
     public function getAnnouncements(Request $request): void {
+
+        $request->validate([
+            'partner_alias' => 'nullable|string'
+        ]);
+
         $paginationAttributes = $this->getPaginationAttributes($request);
 
-        /** @var Announcement $announcements */
-        $announcements = Announcement::where('visible_at', '<=', now())->where('is_public', true)->filter()->paginate($paginationAttributes['perPage']);
+        if ($request->partner_alias) {
+            /** @var Partner $partner */
+            $partner = Partner::where('alias', $request->partner_alias)->first();
+        }
 
-        $result = $this->preparePagination($announcements, 'getMinInformation');
+        if (isset($partner) && $partner) {
+            $partnerId = $partner->partnerSettings()->first()->id;
+        } else {
+            $partnerId = 0;
+        }
+
+        /** @var Announcement $announcements */
+        $announcements = Announcement::where('visible_at', '<=', now());
+
+        if ($partnerId == 0) {
+            $announcements->where('is_public', true);
+        } else {
+            $announcements->where('announcement_partner_id', $partnerId);
+        }
+
+        $result = $this->preparePagination($announcements->filter()->paginate($paginationAttributes['perPage']), 'getMinInformation');
 
         JsonResponse::sendSuccess($result['data'], $result['metadata']);
     }
@@ -938,33 +960,5 @@ class AnnouncementController extends Controller
         $rating->delete();
 
         JsonResponse::sendSuccess();
-    }
-
-    /**
-     * #### `GET` `/api/v1/announcement/alias`
-     * Pobranie listy wydarzeń
-     * 
-     * @param Request $request
-     * 
-     * @return void
-     */
-    public function getAnnouncementsByAlias(Request $request): void {
-
-        $request->validate([
-            'partner_alias' => 'required|string'
-        ]);
-
-        $paginationAttributes = $this->getPaginationAttributes($request);
-
-        /** @var Announcement $announcements */
-        $announcements = Announcement::where('visible_at', '<=', now())->whereHas('announcementPartner', function ($q) use ($request) {
-            $q->whereHas('partner', function ($q2) use ($request) {
-                $q2->where('alias', $request->partner_alias);
-            });
-        })->filter()->paginate($paginationAttributes['perPage']);
-
-        $result = $this->preparePagination($announcements, 'getMinInformation');
-
-        JsonResponse::sendSuccess($result['data'], $result['metadata']);
     }
 }

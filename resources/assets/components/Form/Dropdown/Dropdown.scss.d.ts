@@ -10,6 +10,7 @@ interface CssExports {
   'open': string;
   'placeholder': string;
   'row': string;
+  'separator': string;
   'tooltip': string;
   'transparent': string;
 }
