@@ -194,8 +194,9 @@ class AuthController extends Controller
                     $foundUser->operationable()->where('account_operation_type_id', $accountOperationType->id)->delete();
                 }
 
-                $createdUser = $foundUser->update($newUser);
-                $foundUser->userSetting()->create([]);
+                $foundUser->update($newUser);
+                $createdUser = $foundUser;
+                // $foundUser->userSetting()->create([]);
 
             } else {
 
