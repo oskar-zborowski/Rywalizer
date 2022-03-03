@@ -28,14 +28,14 @@ const Topbar = () => {
                         <DropdownRow onClick={() => modalsStore.setIsLoginEnabled(true)}><span>Dodaj ogłoszenie</span></DropdownRow>
                     )}
                 </Dropdown>
-                <Dropdown
+                {/* <Dropdown
                     transparent
                     placeholder="Obiekty sportowe"
                     isOpen={facilitiesDropdownOpen}
                     handleIsOpenChange={(isOpen) => setFacilitiesDropdownOpen(isOpen)}
                 >
                     <Link to="/obiekty/1"><DropdownRow><span>Obiekt 1</span></DropdownRow></Link>
-                </Dropdown>
+                </Dropdown> */}
             </nav>
         </div >
     );

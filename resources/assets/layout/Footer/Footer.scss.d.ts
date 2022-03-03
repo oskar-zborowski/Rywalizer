@@ -2,6 +2,7 @@
 // Please do not change this file!
 interface CssExports {
   'footer': string;
+  'link': string;
   'links': string;
   'tooltip': string;
 }

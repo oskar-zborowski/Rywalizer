@@ -625,6 +625,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 'instagram_profile' => $this->instagram_profile,
                 'website' => $this->website,
                 'is_verified' => (bool) $this->verified_at,
+                'is_email_verified' => (bool) $this->email_verified_at,
                 'can_change_name' => $this->canChangeName(),
                 'permissions' => $this->getPermissions(),
                 'is_partner' => $this->partners()->first() ? true : false
@@ -715,7 +716,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_sending_counter' => $emailSendingCounter
         ]);
 
-        $url = env('APP_URL') . '/potwierdzenie-maila?token=' . $token; // TODO Poprawić na prawidłowy URL
+        $url = env('APP_URL') . '/potwierdzenie-maila?vmtoken=' . $token; // TODO Poprawić na prawidłowy URL
         Mail::to($this)->send(new MailEmailVerification($url, $afterRegistartion));
 
         if (!$afterRegistartion) {
@@ -1315,7 +1316,12 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_sending_counter' => $emailSendingCounter
         ]);
 
-        $url = env('APP_URL') . '/' . $urlEndpoint . '?token=' . $token; // TODO Poprawić na prawidłowy URL
+        if ($urlEndpoint == 'reset-hasla') {
+            $url = env('APP_URL') . '/' . $urlEndpoint . '?rptoken=' . $token; // TODO Poprawić na prawidłowy URL
+        } else {
+            $url = env('APP_URL') . '/' . $urlEndpoint . '?token=' . $token; // TODO Poprawić na prawidłowy URL
+        }
+
         Mail::to($this)->send(new $mail($url));
     }
 }

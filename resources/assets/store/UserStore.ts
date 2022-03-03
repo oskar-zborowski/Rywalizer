@@ -49,10 +49,14 @@ export class UserStore {
         return user;
     }
 
+    public async verifyEmail(token: string) {
+        const response = await axios.put('/api/v1/user/email', {token});
+        const user = this.prepareUserData(response.data.data);
+        runInAction(() => this.user = user);
+    }
+
     public async remindPassword(email: string) {
         const response = await axios.post(getApiUrl('api/v1/account/password'), { email });
-
-        console.log(response);
     }
 
     public async resetPassword(password: string, passwordConfirmation: string, token: string) {
@@ -95,6 +99,7 @@ export class UserStore {
             instagramProfile: responseData.user.instagramProfile,
             website: responseData.user.website,
             isVerified: responseData.user.isVerified,
+            isEmailVerified: responseData.user.isEmailVerified,
             canChangeName: responseData.user.canChangeName,
             permissions: responseData.user.permissions,
             settings: responseData.userSettings,
@@ -132,6 +137,7 @@ export interface IUser {
     facebookProfile: string;
     instagramProfile: string;
     website: string;
+    isEmailVerified: boolean;
     isVerified: boolean;
     canChangeName: boolean;
     permissions: Permission[];

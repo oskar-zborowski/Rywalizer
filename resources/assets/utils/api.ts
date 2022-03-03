@@ -1,5 +1,5 @@
 // export const apiHost = 'http://localhost:81';
-export const apiHost = 'http://rywalizer.test';
+export const apiHost = 'https://rywalizer.test';
 
 /**
  * 

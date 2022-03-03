@@ -23,6 +23,7 @@ Route::middleware('before.user')->group(function () {
 
     Route::post('/v1/account/password', [AccountController::class, 'forgotPassword'])->name('account-forgotPassword');
     Route::put('/v1/account/password', [AccountController::class, 'resetPassword'])->name('account-resetPassword');
+    Route::post('/v1/account/password/valid', [AccountController::class, 'isPasswordTokenValid'])->name('account-isPasswordTokenValid');
     Route::put('/v1/account/restore', [AccountController::class, 'restoreAccount'])->name('account-restoreAccount');
 
     Route::patch('/v1/user', [UserController::class, 'updateUser'])->name('user-updateUser');

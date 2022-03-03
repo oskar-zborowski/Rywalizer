@@ -6,9 +6,11 @@ use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Http\ErrorCodes\AuthErrorCode;
 use App\Http\ErrorCodes\BaseErrorCode;
+use App\Http\Libraries\Encrypter\Encrypter;
 use App\Http\Libraries\Validation\Validation;
 use App\Http\Responses\JsonResponse;
 use App\Models\AccountAction;
+use App\Models\AccountOperation;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -62,6 +64,35 @@ class AccountController extends Controller
         /** @var User $user */
         $user = $accountOperation->operationable()->first();
         $user->resetPassword($request, $accountOperation);
+    }
+
+    /**
+     * #### `POST` `/api/v1/account/password/valid`
+     * Sprawdzenie czy token do resetu hasła jest ważny
+     * 
+     * @param Request $request
+     * 
+     * @return void
+     */
+    public function isPasswordTokenValid(Request $request, Encrypter $encrypter): void {
+
+        if (!$request->token) {
+            throw new ApiException(BaseErrorCode::FAILED_VALIDATION());
+        }
+
+        $encryptedToken = $encrypter->encrypt($request->token);
+
+        /** @var AccountOperation $accountOperaction */
+        $accountOperaction = AccountOperation::where([
+            'token' => $encryptedToken,
+            'account_operation_type_id' => 18
+        ])->first();
+
+        if ($accountOperaction) {
+            JsonResponse::sendSuccess();
+        } else {
+            throw new ApiException(AuthErrorCode::INVALID_PASSWORD_RESET_TOKEN());
+        }
     }
 
     /**

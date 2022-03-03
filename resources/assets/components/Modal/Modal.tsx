@@ -115,7 +115,7 @@ const Modal: React.FC<ModalProps> = props => {
                             {title && <span className={styles.title}>{title}</span>}
                             {closeButton && <div
                                 className={styles.closeButton}
-                                onClick={onClose}
+                                onClick={() => onClose()}
                             >
                                 <AiOutlineClose />
                             </div>

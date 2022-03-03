@@ -1,0 +1,10 @@
+.agreementView {
+    h3 {
+        margin-top: 20px;
+        // margin-bottom: 2px;
+
+        &:first-of-type {
+            margin-top: 0;
+        }
+    }
+}

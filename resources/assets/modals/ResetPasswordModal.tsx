@@ -5,24 +5,25 @@ import Modal from '@/components/Modal/Modal';
 import useQuery from '@/hooks/useQuery';
 import modalsStore from '@/store/ModalsStore';
 import userStore from '@/store/UserStore';
+import axios from 'axios';
 import { observer } from 'mobx-react';
-import React, { useState } from 'react';
-
-//TODO cały ten modal powinien być podpięty pod konkretny link np. /reset-password?token={TOKEN}
+import React, { useEffect, useState } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const ResetPasswordModal: React.FC = observer(() => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isOpen, setIsOpen] = useState(true);
     const query = useQuery();
 
     const resetPassword = async () => {
         setIsLoading(true);
         
         try {
-            await userStore.resetPassword(password, confirmPassword, query.get('token'));
+            await userStore.resetPassword(password, confirmPassword, query.get('rptoken'));
 
-            modalsStore.setIsResetPasswordEnabled(false);
+            setIsOpen(false);
         } catch (err) {
 
         } finally {
@@ -33,10 +34,9 @@ const ResetPasswordModal: React.FC = observer(() => {
     return (
         <Modal
             title="Reset hasła"
-            isOpen={modalsStore.isResetPasswordEnabled}
+            isOpen={isOpen}
             isLoading={isLoading}
-            onClose={() => modalsStore.setIsResetPasswordEnabled(false)}
-            closeOnEsc={false}
+            onClose={() => setIsOpen(false)}
             footerItems={[
                 <OrangeButton key="2" onClick={resetPassword}>Zapisz</OrangeButton>
             ]}
