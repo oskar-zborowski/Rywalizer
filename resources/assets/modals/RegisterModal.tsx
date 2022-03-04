@@ -59,11 +59,11 @@ const RegisterModal: React.FC = observer(() => {
             });
 
             modalsStore.setIsRegisterEnabled(false);
+            setVerifyInfoModalOpen(true);
         } catch (err) {
             setError(extractError(err as AxiosError).message);
         } finally {
             setIsLoading(false);
-            setVerifyInfoModalOpen(true);
         }
     };
 

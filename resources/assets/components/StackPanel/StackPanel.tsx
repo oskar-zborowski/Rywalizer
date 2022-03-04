@@ -6,15 +6,17 @@ export interface IStackPanelProps {
     padding?: React.CSSProperties['padding'],
     margin?: React.CSSProperties['margin'],
     vertical?: boolean;
-    fluid?: boolean
+    fluid?: boolean;
+    wrap?: boolean
 }
 
-const StackPanel: React.FC<IStackPanelProps> = ({ children, gap = 20, padding, margin, vertical, fluid }) => {
+const StackPanel: React.FC<IStackPanelProps> = ({ children, gap = 20, padding, margin, vertical, fluid, wrap = false }) => {
     const style: React.CSSProperties = {
         gap: gap + 'px',
         width: 'min-content',
         margin,
-        padding
+        padding,
+        flexWrap: wrap ? 'wrap' : 'nowrap'
     };
 
     if (vertical) {

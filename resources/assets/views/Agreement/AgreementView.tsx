@@ -23,7 +23,7 @@ Kontakt z użytkownikiem odbywa się drogą mailową lub telefoniczną.
             <h3>6. Wyrażenie zgody przez użytkownika</h3>
 Korzystając z usług dostarczanych przez nasz serwis akceptujesz ten Regulamin i Politykę Prywatności, które mogą zostać zmienione w późniejszym czasie. Na tej stronie zawsze znajduje się obowiązująca wersja tego dokumentu.
             <h3>7. Treści utworzone przez użytkowników</h3>
-Nie ponosimy odpowiedzialności za treści utworzone przez użytkowników. Jeśli uważasz, że pewna zawartość narusza regulamin, prosimy o kontakt na adres email podany w punkcie 8. Wszelkie nazwy podawane przez użytkowników są uznane za publiczne, a odpowiedzialność za ich podanie ponosi użytkownik. W przypadku danych przesłanych anonimowo, które łamią obowiązujące prawo, zastrzegamy sobie możlwość usunięcia takich danych bez wcześniejszego ostrzeżenia.
+Nie ponosimy odpowiedzialności za treści utworzone przez użytkowników. Użytkownik ponosi pełną odpowiedzialność za wgrywane materiały, co wiąże się z ewentualnymi konsekwencjami prawnymi. Jeśli uważasz, że pewna zawartość narusza regulamin, prosimy o kontakt na adres email podany w punkcie 8. Wszelkie nazwy podawane przez użytkowników są uznane za publiczne, a odpowiedzialność za ich podanie ponosi użytkownik. W przypadku danych przesłanych anonimowo, które łamią obowiązujące prawo, zastrzegamy sobie możlwość usunięcia takich danych bez wcześniejszego ostrzeżenia.
             <h3>8. Kontakt</h3>
 W razie pytań lub wątpliwości należy skontaktować się z nami pod adresem: kontakt@zagra.com.
         </View>

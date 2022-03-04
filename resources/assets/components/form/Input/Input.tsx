@@ -13,7 +13,9 @@ export interface IInputProps<T = string> {
     className?: string;
     style?: React.CSSProperties;
     ref?: React.RefObject<HTMLInputElement>
-    min?: string
+    min?: string;
+    tip?: string;
+    tipDelay?: number;
 }
 
 const Input = React.forwardRef<HTMLInputElement, IInputProps>((props, ref) => {
@@ -28,7 +30,9 @@ const Input = React.forwardRef<HTMLInputElement, IInputProps>((props, ref) => {
         type = 'text',
         className = '',
         style = {},
-        min
+        min,
+        tip = undefined,
+        tipDelay = 0,
     } = props;
 
     const isFile = type === 'file';
@@ -53,6 +57,8 @@ const Input = React.forwardRef<HTMLInputElement, IInputProps>((props, ref) => {
                     onBlur={onBlur}
                     spellCheck={spellCheck}
                     onKeyDown={handleKeyDown}
+                    data-tip={tip}
+                    data-delay-show={tipDelay}
                 />
             </div>
         </div>

@@ -24,12 +24,12 @@ Route::middleware('before.user')->group(function () {
     Route::post('/v1/account/password', [AccountController::class, 'forgotPassword'])->name('account-forgotPassword');
     Route::put('/v1/account/password', [AccountController::class, 'resetPassword'])->name('account-resetPassword');
     Route::post('/v1/account/password/valid', [AccountController::class, 'isPasswordTokenValid'])->name('account-isPasswordTokenValid');
-    Route::put('/v1/account/restore', [AccountController::class, 'restoreAccount'])->name('account-restoreAccount');
+    // Route::put('/v1/account/restore', [AccountController::class, 'restoreAccount'])->name('account-restoreAccount');
 
     Route::patch('/v1/user', [UserController::class, 'updateUser'])->name('user-updateUser');
     Route::put('/v1/user/email', [UserController::class, 'verifyEmail'])->name('user-verifyEmail');
     Route::post('/v1/user/avatar', [UserController::class, 'uploadAvatar'])->name('user-uploadAvatar')->middleware('throttle:uploadAvatarLimit');
-    Route::put('/v1/user/avatar/{id}', [UserController::class, 'changeAvatar'])->name('user-changeAvatar');
+    // Route::put('/v1/user/avatar/{id}', [UserController::class, 'changeAvatar'])->name('user-changeAvatar');
 });
 
 
@@ -56,9 +56,9 @@ Route::get('/v1/auth/{provider}/callback', [AuthController::class, 'handleProvid
 */
 
 Route::delete('/v1/auth/logout', [AuthController::class, 'logout'])->name('auth-logout')->withoutMiddleware('throttle:api');
-Route::delete('/v1/auth/logout/all', [AuthController::class, 'logoutAll'])->name('auth-logoutAll');
+// Route::delete('/v1/auth/logout/all', [AuthController::class, 'logoutAll'])->name('auth-logoutAll');
 
-Route::delete('/v1/account', [AccountController::class, 'deleteAccount'])->name('account-deleteAccount');
+// Route::delete('/v1/account', [AccountController::class, 'deleteAccount'])->name('account-deleteAccount');
 
 Route::get('/v1/user', [UserController::class, 'getUser'])->name('user-getUser');
 Route::post('/v1/user/email', [UserController::class, 'sendVerificationEmail'])->name('user-sendVerificationEmail');
@@ -84,14 +84,14 @@ Route::get('/v1/announcements', [AnnouncementController::class, 'getAnnouncement
 */
 
 Route::middleware('verified')->group(function () {
-    Route::post('/v1/partners', [PartnerController::class, 'createPartner'])->name('partner-createPartner');
-    Route::patch('/v1/partners', [PartnerController::class, 'updatePartner'])->name('partner-updatePartner');
+    // Route::post('/v1/partners', [PartnerController::class, 'createPartner'])->name('partner-createPartner');
+    // Route::patch('/v1/partners', [PartnerController::class, 'updatePartner'])->name('partner-updatePartner');
     Route::get('/v1/partners', [PartnerController::class, 'getPartner'])->name('partner-getPartner');
-    Route::delete('/v1/partners', [PartnerController::class, 'deletePartner'])->name('partner-deletePartner');
+    // Route::delete('/v1/partners', [PartnerController::class, 'deletePartner'])->name('partner-deletePartner');
 
-    Route::post('/v1/partners/logo', [PartnerController::class, 'uploadLogo'])->name('partner-uploadLogo')->middleware('throttle:uploadLogoLimit');
-    Route::put('/v1/partners/logo/{id}', [PartnerController::class, 'changeLogo'])->name('partner-changeLogo');
-    Route::delete('/v1/partners/logo/{id}', [PartnerController::class, 'deleteLogo'])->name('partner-deleteLogo');
+    // Route::post('/v1/partners/logo', [PartnerController::class, 'uploadLogo'])->name('partner-uploadLogo')->middleware('throttle:uploadLogoLimit');
+    // Route::put('/v1/partners/logo/{id}', [PartnerController::class, 'changeLogo'])->name('partner-changeLogo');
+    // Route::delete('/v1/partners/logo/{id}', [PartnerController::class, 'deleteLogo'])->name('partner-deleteLogo');
 
     Route::post('/v1/announcements', [AnnouncementController::class, 'createAnnouncement'])->name('announcement-createAnnouncement');
     Route::patch('/v1/announcements/{id}', [AnnouncementController::class, 'updateAnnouncement'])->name('announcement-updateAnnouncement');
@@ -103,8 +103,8 @@ Route::middleware('verified')->group(function () {
     Route::delete('/v1/announcements/leave', [AnnouncementController::class, 'leaveAnnouncement'])->name('announcement-leaveAnnouncement');
 
     Route::post('/v1/announcement/comment', [AnnouncementController::class, 'newComment'])->name('announcement-newComment');
-    Route::patch('/v1/announcement/comment', [AnnouncementController::class, 'updateComment'])->name('announcement-updateComment');
-    Route::delete('/v1/announcement/comment', [AnnouncementController::class, 'deleteComment'])->name('announcement-deleteComment');
+    // Route::patch('/v1/announcement/comment', [AnnouncementController::class, 'updateComment'])->name('announcement-updateComment');
+    // Route::delete('/v1/announcement/comment', [AnnouncementController::class, 'deleteComment'])->name('announcement-deleteComment');
 });
 
 

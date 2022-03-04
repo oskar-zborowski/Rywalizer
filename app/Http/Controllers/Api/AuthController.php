@@ -40,7 +40,7 @@ class AuthController extends Controller
     public function login(Request $request): void {
 
         if (!Auth::attempt($request->only('email', 'password'))) {
-            throw new ApiException(AuthErrorCode::INVALID_CREDENTIALS());
+            throw new ApiException(AuthErrorCode::INVALID_CREDENTIALS(), 'Nieprawidłowy login lub hasło.');
         }
 
         /** @var User $user */

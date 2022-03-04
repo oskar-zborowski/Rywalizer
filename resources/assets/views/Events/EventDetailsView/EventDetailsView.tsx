@@ -32,6 +32,7 @@ import styles from './EventDetailsView.scss';
 import BallSvg from '@/static/icons/ball.svg';
 import moment from 'moment';
 import ErrorModal from '@/modals/ErrorModal';
+import modalsStore from '@/store/ModalsStore';
 
 const EventDetailsView: React.FC = () => {
     const { id } = useParams();
@@ -140,6 +141,11 @@ const EventDetailsView: React.FC = () => {
                                             className={styles.participantCell + ' ' + styles.signUpCell}
                                             onClick={async () => {
                                                 try {
+                                                    if (!userStore.user) {
+                                                        modalsStore.setIsLoginEnabled(true);
+                                                        return;
+                                                    }
+
                                                     await joinEvent({
                                                         announcementId: event.id,
                                                         announcementSeatId: event.seats[0].id
@@ -202,8 +208,8 @@ const EventDetailsView: React.FC = () => {
                                         <Icon svg={MailSvg}>{event.partner.contactEmail ?? 'Nie podano'}</Icon>
                                         <Icon svg={FacebookSvg}>
                                             {event.partner.facebook ? (
-                                                <Link href="https://www.facebook.com/groups/356092872309341">
-                                                    {event.partner.facebook}
+                                                <Link href={event.partner.facebook}>
+                                                    {event.partner.fullName}
                                                 </Link>
                                             ) : (
                                                 'Nie podano'
@@ -247,8 +253,8 @@ const EventDetailsView: React.FC = () => {
                             <Icon svg={MailSvg}>{event.partner.contactEmail ?? 'Nie podano'}</Icon>
                             <Icon svg={FacebookSvg}>
                                 {event.partner.facebook ? (
-                                    <Link href="https://www.facebook.com/groups/356092872309341">
-                                        {event.partner.facebook}
+                                    <Link href={event.partner.facebook}>
+                                        {event.partner.fullName}
                                     </Link>
                                 ) : (
                                     'Nie podano'
@@ -259,7 +265,7 @@ const EventDetailsView: React.FC = () => {
                         <section>
                             <h1>Lista zapisanych:</h1>
                             <StackPanel padding="20px 0 20px 0" vertical>
-                                <StackPanel>
+                                <StackPanel wrap>
                                     <Icon svg={LocationSvg}>
                                         {event.facility?.name && (
                                             <Fragment>
@@ -269,7 +275,7 @@ const EventDetailsView: React.FC = () => {
                                         {capitalize(event.facility?.city.name)}&nbsp;ul.&nbsp;{capitalize(event.facility?.street)}
                                     </Icon>
                                     <Icon svg={CalendarSvg}>
-                                        {moment(event.startDate).format('DD.MM.YY hh:mm')} - {moment(event.endDate).format('DD.MM.YY hh:mm')}
+                                        {moment(event.startDate).format('DD.MM.YY HH:mm')} - {moment(event.endDate).format('DD.MM.YY HH:mm')}
                                     </Icon>
                                 </StackPanel>
                             </StackPanel>

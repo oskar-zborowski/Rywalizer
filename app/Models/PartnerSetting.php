@@ -178,7 +178,7 @@ class PartnerSetting extends BaseModel
         }
 
         if ($visibleFacebook == 61) {
-            $facebook = $user->facebook;
+            $facebook = $user->facebook_profile;
         } else if ($visibleFacebook == 62) {
             $facebook = $partner->facebook;
         } else {
@@ -186,7 +186,7 @@ class PartnerSetting extends BaseModel
         }
 
         if ($visibleInstagram == 61) {
-            $instagram = $user->instagram;
+            $instagram = $user->instagram_profile;
         } else if ($visibleInstagram == 62) {
             $instagram = $partner->instagram;
         } else {

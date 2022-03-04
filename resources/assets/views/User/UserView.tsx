@@ -16,11 +16,13 @@ import mapViewerStore from '@/store/MapViewerStore';
 import modalsStore from '@/store/ModalsStore';
 import userStore from '@/store/UserStore';
 import { IPoint } from '@/types/IPoint';
+import Tooltip from '@deck.gl/core/lib/tooltip';
 import axios, { AxiosError } from 'axios';
 import { runInAction } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
+import ReactTooltip from 'react-tooltip';
 import View from '../View/View';
 import styles from './UserView.scss';
 
@@ -73,6 +75,8 @@ const UserView: React.FC = () => {
     }, [user]);
 
     useEffect(() => {
+        ReactTooltip.rebuild();
+
         if (!user || !editMode) {
             mapViewerStore.setMarkers([]);
             return;
@@ -299,7 +303,7 @@ const UserView: React.FC = () => {
                             <div className={styles.fieldName}>Imię</div>
                             <div className={styles.fieldValue}>
                                 {editMode && user.canChangeName ? (
-                                    <Input ref={nameRef}></Input>
+                                    <Input ref={nameRef} tip="Twoję imię będzie widoczne publicznie" tipDelay={300}></Input>
                                 ) : (
                                     user.firstName
                                 )}
@@ -309,7 +313,7 @@ const UserView: React.FC = () => {
                             <div className={styles.fieldName}>Nazwisko</div>
                             <div className={styles.fieldValue}>
                                 {editMode && user.canChangeName ? (
-                                    <Input ref={lastnameRef}></Input>
+                                    <Input ref={lastnameRef} tip="Twoję nazwisko będzie widoczne publicznie" tipDelay={300}></Input>
                                 ) : (
                                     user.lastName
                                 )}
@@ -359,7 +363,7 @@ const UserView: React.FC = () => {
                             <div className={styles.fieldName}>E-mail</div>
                             <div className={styles.fieldValue}>
                                 {editMode ? (
-                                    <Input ref={emailRef}></Input>
+                                    <Input ref={emailRef} tip="Twój adres e-mail będzie widoczny</br>kiedy utworzysz ogłoszenie" tipDelay={300}></Input>
                                 ) : (
                                     user.email ?? 'Nie podano'
                                 )}
@@ -369,7 +373,7 @@ const UserView: React.FC = () => {
                             <div className={styles.fieldName}>Telefon</div>
                             <div className={styles.fieldValue}>
                                 {editMode ? (
-                                    <Input ref={telephoneRef}></Input>
+                                    <Input ref={telephoneRef} tip="Twój nr telefonu będzie widoczny</br>kiedy utworzysz ogłoszenie" tipDelay={300}></Input>
                                 ) : (
                                     user.phoneNumber ?? 'Nie podano'
                                 )}
@@ -392,7 +396,7 @@ const UserView: React.FC = () => {
                             <div className={styles.fieldName}>Facebook</div>
                             <div className={styles.fieldValue}>
                                 {editMode ? (
-                                    <Input ref={facebookRef}></Input>
+                                    <Input ref={facebookRef} tip="Twój link do profilu będzie widoczny</br>kiedy utworzysz ogłoszenie" tipDelay={300}></Input>
                                 ) : (
                                     user.facebookProfile ? <Link href={user.facebookProfile}>{user.facebookProfile}</Link> : 'Nie podano'
                                 )}
@@ -432,6 +436,7 @@ const UserView: React.FC = () => {
                 isOpen={isVerifyInfoModalOpen}
                 setIsOpen={(isOpen) => setVerifyInfoModalOpen(isOpen)}
             />
+            <ReactTooltip multiline={true} html={true} className={styles.tooltip} />
         </View>
     );
 };
