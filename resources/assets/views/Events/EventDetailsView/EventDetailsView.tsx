@@ -31,6 +31,7 @@ import ReactTooltip from 'react-tooltip';
 import styles from './EventDetailsView.scss';
 import BallSvg from '@/static/icons/ball.svg';
 import moment from 'moment';
+import ErrorModal from '@/modals/ErrorModal';
 
 const EventDetailsView: React.FC = () => {
     const { id } = useParams();
@@ -38,7 +39,9 @@ const EventDetailsView: React.FC = () => {
     const isEventLoaded = event !== null;
     const userHasAccess = event?.partner?.itsMe;
     const user = userStore.user;
+
     const [error, setError] = useState<string>('');
+    const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
 
     const navigateTo = useNavigate();
 
@@ -114,6 +117,7 @@ const EventDetailsView: React.FC = () => {
                                                     ReactTooltip.rebuild();
                                                     ReactTooltip.hide();
                                                 } catch (err) {
+                                                    setIsErrorModalOpen(true);
                                                     setError(extractError(err as AxiosError).message);
                                                 }
                                             }}
@@ -158,6 +162,7 @@ const EventDetailsView: React.FC = () => {
                                                     ReactTooltip.rebuild();
                                                     // ReactTooltip.hide();
                                                 } catch (err) {
+                                                    setIsErrorModalOpen(true);
                                                     setError(extractError(err as AxiosError).message);
                                                 }
                                             }}
@@ -306,6 +311,7 @@ const EventDetailsView: React.FC = () => {
                                             return { ...event };
                                         });
                                     } catch (err) {
+                                        setIsErrorModalOpen(true);
                                         setError(extractError(err as AxiosError).message);
                                     }
                                 }}
@@ -314,6 +320,7 @@ const EventDetailsView: React.FC = () => {
                     </Fragment>
                 )}
             </View >
+            <ErrorModal error={error} isOpen={isErrorModalOpen} setIsOpen={(isOpen) => setIsErrorModalOpen(isOpen)} />
             {isEventLoaded && <ReactTooltip multiline={true} html={true} className={styles.tooltip} />}
         </Fragment>
     );

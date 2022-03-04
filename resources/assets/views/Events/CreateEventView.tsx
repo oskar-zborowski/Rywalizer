@@ -25,6 +25,7 @@ import deleteTaskPhoto from '@/api/deleteTaskPhoto';
 
 const CreateEventView: React.FC = observer(() => {
     const [error, setError] = useState<string>('');
+    const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
 
     const { id } = useParams();
     const [event, setEvent] = useState<IEvent>(null);
@@ -252,6 +253,7 @@ const CreateEventView: React.FC = observer(() => {
                 navigateTo('/ogloszenia/' + eventId);
             }
         } catch (err) {
+            setIsErrorModalOpen(true);
             setError(extractError(err as AxiosError).message);
         }
     };
@@ -347,6 +349,7 @@ const CreateEventView: React.FC = observer(() => {
                                         return { ...event };
                                     });
                                 } catch (err) {
+                                    setIsErrorModalOpen(true);
                                     setError(extractError(err as AxiosError).message);
                                 }
                             } else {
@@ -368,7 +371,7 @@ const CreateEventView: React.FC = observer(() => {
                     </div>
                 </div>
             </Section>
-            {error && <ErrorModal error={error} />}
+            <ErrorModal error={error} isOpen={isErrorModalOpen} setIsOpen={(isOpen) => setIsErrorModalOpen(isOpen)} />
         </View>
     );
 });

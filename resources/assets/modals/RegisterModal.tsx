@@ -11,7 +11,8 @@ import modalsStore from '@/store/ModalsStore';
 import userStore from '@/store/UserStore';
 import { AxiosError } from 'axios';
 import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
+import EmailVerifyInfoModal from './EmailVerifyInfoModal';
 
 const RegisterModal: React.FC = observer(() => {
     const [firstName, setFisrtname] = useState('');
@@ -24,6 +25,7 @@ const RegisterModal: React.FC = observer(() => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string>('');
 
+    const [isVerifyInfoModalOpen, setVerifyInfoModalOpen] = useState(false);
     const genderSelect = useSelectBox<IGender>([], ([opt]) => setGenderId(opt?.value?.id));
 
     useEffect(() => {
@@ -61,41 +63,48 @@ const RegisterModal: React.FC = observer(() => {
             setError(extractError(err as AxiosError).message);
         } finally {
             setIsLoading(false);
+            setVerifyInfoModalOpen(true);
         }
     };
 
     return (
-        <Modal
-            onEnter={() => register()}
-            title="Zarejestruj się"
-            isOpen={modalsStore.isRegisterEnabled}
-            onClose={() => modalsStore.setIsRegisterEnabled(false)}
-            width="450px"
-            isLoading={isLoading}
-            footerItems={[
-                <Link key="1" onClick={() => modalsStore.setIsLoginEnabled(true)}>Zaloguj się</Link>,
-                <OrangeButton key="2" onClick={() => register()}>Zarejestruj się</OrangeButton>
-            ]}
-        >
-            <Flexbox flexDirection="column" gap="10px">
-                <Flexbox gap="10px">
-                    <Input label="Imię" value={firstName} onChange={(v) => setFisrtname(v)} />
-                    <Input label="Nazwisko" value={lastName} onChange={(v) => setLastname(v)} />
+        <Fragment>
+            <Modal
+                onEnter={() => register()}
+                title="Zarejestruj się"
+                isOpen={modalsStore.isRegisterEnabled}
+                onClose={() => modalsStore.setIsRegisterEnabled(false)}
+                width="450px"
+                isLoading={isLoading}
+                footerItems={[
+                    <Link key="1" onClick={() => modalsStore.setIsLoginEnabled(true)}>Zaloguj się</Link>,
+                    <OrangeButton key="2" onClick={() => register()}>Zarejestruj się</OrangeButton>
+                ]}
+            >
+                <Flexbox flexDirection="column" gap="10px">
+                    <Flexbox gap="10px">
+                        <Input label="Imię" value={firstName} onChange={(v) => setFisrtname(v)} />
+                        <Input label="Nazwisko" value={lastName} onChange={(v) => setLastname(v)} />
+                    </Flexbox>
+                    <Flexbox gap="10px">
+                        <Input label="Data urodzenia" type="date" value={birthDate} onChange={(v) => setBirthDate(v)} />
+                        <SelectBox label="Płeć" {...genderSelect} />
+                    </Flexbox>
+                    <Input label="Adres e-mail" value={email} onChange={(v) => setEmail(v)} />
+                    <Input label="Hasło" type="password" value={password} onChange={(v) => setPassword(v)} />
+                    <Input label="Potwierdź hasło" type="password" value={passwordConfirmation} onChange={(v) => setConfirmPassword(v)} />
+                    {error && <div style={{ fontWeight: 'bold', color: 'red' }}>{error}</div>}
+                    <div style={{ fontSize: '12px', color: '#a1a1a1' }}>
+                        Rejestrując się, akceptujesz&nbsp;<Link fixedColor href="/regulamin">regulamin oraz&nbsp;
+                            politykę prywatyności</Link> serwisu.
+                    </div>
                 </Flexbox>
-                <Flexbox gap="10px">
-                    <Input label="Data urodzenia" type="date" value={birthDate} onChange={(v) => setBirthDate(v)} />
-                    <SelectBox label="Płeć" {...genderSelect} />
-                </Flexbox>
-                <Input label="Adres e-mail" value={email} onChange={(v) => setEmail(v)} />
-                <Input label="Hasło" type="password" value={password} onChange={(v) => setPassword(v)} />
-                <Input label="Potwierdź hasło" type="password" value={passwordConfirmation} onChange={(v) => setConfirmPassword(v)} />
-                {error && <div style={{fontWeight: 'bold', color: 'red'}}>{error}</div>}
-                <div style={{ fontSize: '12px', color: '#a1a1a1' }}>
-                    Rejestrując się, akceptujesz&nbsp;<Link fixedColor href="/regulamin">regulamin oraz&nbsp;
-                    politykę prywatyności</Link> serwisu.
-                </div>
-            </Flexbox>
-        </Modal>
+            </Modal>
+            <EmailVerifyInfoModal
+                isOpen={isVerifyInfoModalOpen}
+                setIsOpen={(isOpen) => setVerifyInfoModalOpen(isOpen)}
+            />
+        </Fragment>
     );
 });
 

@@ -8,6 +8,7 @@ import Input from '@/components/Form/Input/Input';
 import SelectBox, { useSelectBox } from '@/components/Form/SelectBox/SelectBox';
 import Link from '@/components/Link/Link';
 import Section from '@/components/Section/Section';
+import EmailVerifyInfoModal from '@/modals/EmailVerifyInfoModal';
 import ErrorModal from '@/modals/ErrorModal';
 import noProfile from '@/static/images/noProfile.png';
 import appStore from '@/store/AppStore';
@@ -15,7 +16,7 @@ import mapViewerStore from '@/store/MapViewerStore';
 import modalsStore from '@/store/ModalsStore';
 import userStore from '@/store/UserStore';
 import { IPoint } from '@/types/IPoint';
-import { AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
 import { runInAction } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
@@ -33,6 +34,7 @@ const UserView: React.FC = () => {
     const user = userStore.user;
 
     const [error, setError] = useState<string>('');
+    const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
 
     const [location, setLocation] = useState<IGeocodeResults>(null);
     const [editMode, setEditMode] = useState(false);
@@ -55,6 +57,8 @@ const UserView: React.FC = () => {
 
     const imagefileRef = useRef<HTMLInputElement>();
     const navigateTo = useNavigate();
+
+    const [isVerifyInfoModalOpen, setVerifyInfoModalOpen] = useState(false);
 
     useEffect(() => {
         mapViewerStore.reset();
@@ -162,7 +166,8 @@ const UserView: React.FC = () => {
             setEditMode(false);
             setNewImageFile(null);
 
-        } catch(err) {
+        } catch (err) {
+            setIsErrorModalOpen(true);
             setError(extractError(err as AxiosError).message);
         }
     };
@@ -180,7 +185,19 @@ const UserView: React.FC = () => {
                     ) : (
                         <Fragment>
                             {/* <BlackButton>Usuń konto</BlackButton> */}
-                            <BlackButton onClick={() => setEditMode(true)}>Edytuj konto</BlackButton>
+                            {!user.isEmailVerified && (
+                                <BlackButton onClick={async () => {
+                                    try {
+                                        await axios.post('/api/v1/user/email');
+
+                                        setVerifyInfoModalOpen(true);
+                                    } catch (err) {
+                                        setIsErrorModalOpen(true);
+                                        setError(extractError(err as AxiosError).message);
+                                    }
+                                }}>Wyślij link aktywacyjny</BlackButton>
+                            )}
+                            < BlackButton onClick={() => setEditMode(true)}>Edytuj konto</BlackButton>
                             {/* <OrangeButton
                                 onClick={() => {
                                     if (user.isPartner) {
@@ -193,9 +210,10 @@ const UserView: React.FC = () => {
                                 {user.isPartner ? 'Partnerstwo' : 'Zostań partnerem'}
                             </OrangeButton> */}
                         </Fragment>
-                    )}
-                </div>
-            </Fragment>
+                    )
+                    }
+                </div >
+            </Fragment >
         );
     };
 
@@ -246,7 +264,8 @@ const UserView: React.FC = () => {
                                         if (user.avatarId) {
                                             try {
                                                 await deleteUserAvatar(user.avatarId);
-                                            } catch(err) {
+                                            } catch (err) {
+                                                setIsErrorModalOpen(true);
                                                 setError(extractError(err as AxiosError).message);
                                             }
                                         }
@@ -408,7 +427,11 @@ const UserView: React.FC = () => {
                     }
                 </div>
             </div>
-            {error && <ErrorModal error={error}/>}
+            <ErrorModal error={error} isOpen={isErrorModalOpen} setIsOpen={(isOpen) => setIsErrorModalOpen(isOpen)} />
+            <EmailVerifyInfoModal
+                isOpen={isVerifyInfoModalOpen}
+                setIsOpen={(isOpen) => setVerifyInfoModalOpen(isOpen)}
+            />
         </View>
     );
 };

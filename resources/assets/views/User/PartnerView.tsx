@@ -23,6 +23,7 @@ import styles from './UserView.scss';
 
 const PartnerView: React.FC = () => {
     const [error, setError] = useState<string>('');
+    const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
 
     const [partner, setPartner] = useState<IPartner>(null);
     const [editMode, setEditMode] = useState(null);
@@ -115,6 +116,7 @@ const PartnerView: React.FC = () => {
             setEditMode(false);
             setNewImageFile(null);
         } catch (err) {
+            setIsErrorModalOpen(true);
             setError(extractError(err as AxiosError).message);
         }
     };
@@ -187,6 +189,7 @@ const PartnerView: React.FC = () => {
                                             try {
                                                 await deletePartnerAvatar(partner.imageId);
                                             } catch(err) {
+                                                setIsErrorModalOpen(true);
                                                 setError(extractError(err as AxiosError).message);
                                             }
                                         }
@@ -285,7 +288,7 @@ const PartnerView: React.FC = () => {
                     </Section>
                 </div>
             </div>
-            {error && <ErrorModal error={error}/>}
+            <ErrorModal error={error} isOpen={isErrorModalOpen} setIsOpen={(isOpen) => setIsErrorModalOpen(isOpen)} />
         </View>
     );
 };

@@ -5,17 +5,19 @@ import styles from '@/components/Modal/Modal.scss';
 
 export interface IErrorModalProps {
     error: string;
+    isOpen: boolean;
+    setIsOpen: (isOpen: boolean) => void;
 }
 
-const ErrorModal: React.FC<IErrorModalProps> =({error}) => {
-    const [isOpen, setIsOpen] = useState(true);
-
+const ErrorModal: React.FC<IErrorModalProps> =({error, isOpen, setIsOpen}) => {
     return (
         <Modal
             className={styles.error}
             title="Błąd"
             isOpen={isOpen}
-            onClose={() => setIsOpen(false)}
+            onClose={() => {
+                setIsOpen(false);
+            }}
             width="450px"
             footerItems={[
                 <BlackButton key="2" onClick={() => setIsOpen(false)}>Zamknij</BlackButton>
