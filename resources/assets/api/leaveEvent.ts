@@ -1,8 +1,7 @@
-import { getApiUrl } from '@/utils/api';
 import axios from 'axios';
 
 const leaveEvent = async (args: ILeaveEventArgs) => {
-    await axios.delete(getApiUrl('api/v1/announcements/leave'), {
+    await axios.delete('/api/v1/announcements/leave', {
         data: args
     });
 };

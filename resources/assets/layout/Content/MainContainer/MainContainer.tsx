@@ -117,7 +117,7 @@ const MainContainer: React.FC = () => {
                         <Route path="/reset-hasla" element={<PasswordResetRoute/>} />
                         <Route path="/potwierdzenie-maila" element={<VerifyEmailRoute/>}/>
                         <Route path="/konto" element={<UserView />} />
-                        <Route path="/partnerstwo" element={<PartnerView />} />
+                        {/* <Route path="/partnerstwo" element={<PartnerView />} /> */}
                         <Route path="/regulamin" element={<AgreementView />} />
                         {/* <Route path="/obiekty/1" element={<SportFacilityDetails />} /> */}
                         <Route path="/ogloszenia/partner/:alias" element={<EventsView />} />

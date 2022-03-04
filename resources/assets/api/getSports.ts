@@ -1,9 +1,8 @@
-import { getApiUrl } from '@/utils/api';
 import axios from 'axios';
 import chroma from 'chroma-js';
 
 const getSports = async () => {
-    const response = await axios.get(getApiUrl('api/v1/sports'));
+    const response = await axios.get('/api/v1/sports');
 
     const sports: ISport[] = response?.data?.data?.sport.map((entry: any) => {
         const sport: ISport = {

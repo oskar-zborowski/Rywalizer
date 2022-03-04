@@ -3,7 +3,7 @@ import geocode, { IGeocodeResults } from '@/api/geocode';
 import getEvents, { IEvent } from '@/api/getEvents';
 import { IGender } from '@/api/getGenders';
 import { ISport, ISportSkillLevel } from '@/api/getSports';
-import { OrangeButton } from '@/components/Form/Button/Button';
+import { BlackButton, OrangeButton } from '@/components/Form/Button/Button';
 import Input from '@/components/Form/Input/Input';
 import SelectBox, { useSelectBox } from '@/components/Form/SelectBox/SelectBox';
 import Textarea from '@/components/Form/Textarea/Textarea';
@@ -14,12 +14,14 @@ import userStore from '@/store/UserStore';
 import { observer } from 'mobx-react';
 import moment from 'moment';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import View from '../View/View';
 import styles from './CreateEventView.scss';
 import ErrorModal from '@/modals/ErrorModal';
 import extractError from '@/api/extractError';
 import { AxiosError } from 'axios';
+import { runInAction } from 'mobx';
+import deleteTaskPhoto from '@/api/deleteTaskPhoto';
 
 const CreateEventView: React.FC = observer(() => {
     const [error, setError] = useState<string>('');
@@ -34,7 +36,8 @@ const CreateEventView: React.FC = observer(() => {
         opt && minLevelSelect.setOptions(opt.value?.skillLevels.map(level => {
             return {
                 text: level.name,
-                value: level
+                value: level,
+                isSelected: event && level.id == event?.minSkillLevelId
             };
         }));
     });
@@ -46,6 +49,14 @@ const CreateEventView: React.FC = observer(() => {
         { text: 'Tak', value: true, isSelected: true },
         { text: 'Nie', value: false }
     ]);
+
+    const loc = useLocation();
+
+    useEffect(() => {
+        if (loc.pathname.includes('dodaj')) {
+            setEvent(null);
+        }
+    }, [loc]);
 
     const [location, setLocation] = useState<IGeocodeResults>(null);
     const startDateRef = useRef<HTMLInputElement>();
@@ -236,7 +247,7 @@ const CreateEventView: React.FC = observer(() => {
                     street: location.street
                 }
             }, newImageFile, +id);
-    
+
             if (eventId) {
                 navigateTo('/ogloszenia/' + eventId);
             }
@@ -256,22 +267,22 @@ const CreateEventView: React.FC = observer(() => {
                     <SelectBox
                         dark
                         searchBar
-                        label="Sport"
+                        label="* Sport"
                         {...sportSelect}
                     />
                     <Input
                         ref={startDateRef}
                         type="datetime-local"
-                        label="Data rozpoczęcia"
+                        label="* Data rozpoczęcia"
                         min={moment(new Date()).format('YYYY-MM-DDThh:mm')}
                     />
                     <Input
                         ref={endDateRef}
                         type="datetime-local"
-                        label="Data zakończenia"
+                        label="* Data zakończenia"
                         min={moment(new Date()).format('YYYY-MM-DDThh:mm')}
                     />
-                    <Input ref={priceRef} label="Cena" />
+                    <Input ref={priceRef} label="* Cena" />
                     {/* <SelectBox
                         dark
                         label="Wariant gry"
@@ -279,7 +290,7 @@ const CreateEventView: React.FC = observer(() => {
                     /> */}
                     <SelectBox
                         dark
-                        label="Ogłoszenie publiczne"
+                        label="* Ogłoszenie publiczne"
                         {...isPublicSelect}
                     />
                     <SelectBox
@@ -292,7 +303,7 @@ const CreateEventView: React.FC = observer(() => {
                         label="Płeć"
                         {...genderSelect}
                     />
-                    <Input ref={ticketsAvailableRef} label="Ilość miejsc" />
+                    <Input ref={ticketsAvailableRef} label="* Ilość miejsc" />
                     <Input ref={objectNameRef} label="Nazwa obiektu" style={{ gridColumn: 'span 2' }} />
                     <Input
                         ref={addressRef}
@@ -306,7 +317,11 @@ const CreateEventView: React.FC = observer(() => {
                 <div className={styles.restSection}>
                     <div className={styles.eventImageWrapper}>
                         <label className={styles.label}>Zdjęcie wydarzenia</label>
-                        <img src={newImageUrl ?? event?.imageUrl} alt="" className={styles.eventImage} />
+                        <div className={styles.eventImage}>
+                            {(newImageUrl ?? event?.imageUrl) && (
+                                <img src={newImageUrl ?? event?.imageUrl} alt="" />
+                            )}
+                        </div>
                         <input
                             ref={imagefileRef}
                             type="file"
@@ -317,18 +332,43 @@ const CreateEventView: React.FC = observer(() => {
                         <OrangeButton style={{ width: '100%' }} onClick={() => imagefileRef.current.click()}>
                             Zmień zdjęcie
                         </OrangeButton>
+                        <BlackButton style={{ width: '100%', marginTop: '10px' }} onClick={async () => {
+                            if (event?.imageId) {
+                                try {
+                                    await deleteTaskPhoto(event.id, event.imageId);
+
+                                    setNewImageUrl(undefined);
+                                    setNewImageFile(undefined);
+
+                                    setEvent(event => {
+                                        event.imageId = undefined;
+                                        event.imageUrl = undefined;
+
+                                        return { ...event };
+                                    });
+                                } catch (err) {
+                                    setError(extractError(err as AxiosError).message);
+                                }
+                            } else {
+                                setNewImageFile(undefined);
+                                setNewImageUrl(undefined);
+                            }
+                        }}>
+                            Usuń zdjęcie
+                        </BlackButton>
                     </div>
-                    <Textarea ref={descriptionRef} label="Opis" placeholder="Opis" style={{ gridColumn: 'span 3' }} height={180} />
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', flex: '1', alignItems: 'end' }}>
+                        <Textarea ref={descriptionRef} label="Opis" placeholder="Opis" style={{ gridColumn: 'span 3', flex: 'none' }} height={180} />
+                        <OrangeButton
+                            onClick={saveEventInner}
+                            style={{ width: 'min-content' }}
+                        >
+                            {event ? 'Zapisz zmiany' : 'Dodaj ogłoszenie'}
+                        </OrangeButton>
+                    </div>
                 </div>
             </Section>
-            <div style={{ marginTop: '20px', float: 'right' }}>
-                <OrangeButton
-                    onClick={saveEventInner}
-                >
-                    {event ? 'Zapisz zmiany' : 'Dodaj ogłoszenie'}
-                </OrangeButton>
-            </div>
-            {error && <ErrorModal error={error}/>}
+            {error && <ErrorModal error={error} />}
         </View>
     );
 });

@@ -1,4 +1,3 @@
-import { getApiUrl } from '@/utils/api';
 import axios from 'axios';
 
 const savePartner = async (args: ISavePartnerArgs, edit = false, imageFile?: File) => {
@@ -14,13 +13,13 @@ const savePartner = async (args: ISavePartnerArgs, edit = false, imageFile?: Fil
     };
 
     if (edit) {
-        await axios.patch(getApiUrl('api/v1/partners'), body);
+        await axios.patch('/api/v1/partners', body);
 
         if (imageFile) {
             const formData = new FormData();
             formData.append('logo', imageFile);
 
-            const result = await axios.post(getApiUrl('api/v1/partners/logo'), formData, {
+            const result = await axios.post('api/v1/partners/logo', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -32,7 +31,7 @@ const savePartner = async (args: ISavePartnerArgs, edit = false, imageFile?: Fil
             };
         }
     } else {
-        await axios.post(getApiUrl('api/v1/partners'), body);
+        await axios.post('/api/v1/partners', body);
     }
 
     return {};

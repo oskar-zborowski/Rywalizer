@@ -13,7 +13,7 @@ const Topbar = () => {
 
     return (
         <div className={styles.topbar}>
-            <div className={styles.logo}><Link to="/">LOGO</Link></div>
+            <div className={styles.logo}><Link to="/">RYWALIZER</Link></div>
             <nav className={styles.links}>
                 <Dropdown
                     transparent

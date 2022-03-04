@@ -91,8 +91,8 @@ const RegisterModal: React.FC = observer(() => {
                 <Input label="Potwierdź hasło" type="password" value={passwordConfirmation} onChange={(v) => setConfirmPassword(v)} />
                 {error && <div style={{fontWeight: 'bold', color: 'red'}}>{error}</div>}
                 <div style={{ fontSize: '12px', color: '#a1a1a1' }}>
-                    Rejestrując się, akceptujesz&nbsp;<Link fixedColor>regulamin</Link> oraz&nbsp;
-                    <Link fixedColor>politykę prywatyności</Link> serwisu nasza-nazwa.pl.
+                    Rejestrując się, akceptujesz&nbsp;<Link fixedColor href="/regulamin">regulamin oraz&nbsp;
+                    politykę prywatyności</Link> serwisu.
                 </div>
             </Flexbox>
         </Modal>

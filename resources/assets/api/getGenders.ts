@@ -1,8 +1,7 @@
-import { getApiUrl } from '@/utils/api';
 import axios from 'axios';
 
 const getGenders = async () => {
-    const response = await axios.get(getApiUrl('api/v1/genders'));
+    const response = await axios.get('/api/v1/genders');
 
     return response?.data?.data?.gender.map((entry: any) => {
         const gender: IGender = {

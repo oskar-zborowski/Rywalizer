@@ -1,7 +1,6 @@
 import { IGender } from '@/api/getGenders';
 import { IPoint } from '@/types/IPoint';
 import { Permission } from '@/types/Permission';
-import { getApiUrl } from '@/utils/api';
 import axios from 'axios';
 import { makeAutoObservable, runInAction } from 'mobx';
 
@@ -15,7 +14,7 @@ export class UserStore {
 
     public async getUser() {
         try {
-            const response = await axios.get(getApiUrl('api/v1/user'));
+            const response = await axios.get('/api/v1/user');
             const user = this.prepareUserData(response.data.data);
             runInAction(() => this.user = user);
         } catch (err) {
@@ -24,7 +23,7 @@ export class UserStore {
     }
 
     public async login(login: string, password: string) {
-        const response = await axios.post(getApiUrl('api/v1/auth/login'), {
+        const response = await axios.post('/api/v1/auth/login', {
             email: login,
             password: password
         });
@@ -36,13 +35,13 @@ export class UserStore {
     }
 
     public async logout() {
-        await axios.delete(getApiUrl('api/v1/auth/logout'));
+        await axios.delete('/api/v1/auth/logout');
 
         runInAction(() => this.user = null);
     }
 
     public async register(data: IRegisterData) {
-        const response = await axios.post(getApiUrl('api/v1/auth/register'), data);
+        const response = await axios.post('/api/v1/auth/register', data);
         const user = this.prepareUserData(response.data.data);
         runInAction(() => this.user = user);
 
@@ -56,11 +55,11 @@ export class UserStore {
     }
 
     public async remindPassword(email: string) {
-        const response = await axios.post(getApiUrl('api/v1/account/password'), { email });
+        const response = await axios.post('/api/v1/account/password', { email });
     }
 
     public async resetPassword(password: string, passwordConfirmation: string, token: string) {
-        const response = await axios.put(getApiUrl('api/v1/account/password'), {
+        const response = await axios.put('/api/v1/account/password', {
             password,
             passwordConfirmation,
             token

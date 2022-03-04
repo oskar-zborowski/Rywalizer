@@ -1,5 +1,4 @@
 import { IPoint } from '@/types/IPoint';
-import { getApiUrl } from '@/utils/api';
 import axios from 'axios';
 import getAdministrativeAreas, { AdministrativeAreaType } from './getAdministrativeAreas';
 
@@ -26,12 +25,12 @@ const editUser = async (args: IEditUserArgs, imageFile: File): Promise<IEditUser
         body.addressCoordinates = lat.toFixed(7) + ';' + lng.toFixed(7);
     }
 
-    await axios.patch(getApiUrl('/api/v1/user'), body);
+    await axios.patch('/api/v1/user', body);
 
     if (imageFile) {
         const formData = new FormData();
         formData.append('avatar', imageFile);
-        const response = await axios.post(getApiUrl('/api/v1/user/avatar'), formData, {
+        const response = await axios.post('/api/v1/user/avatar', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }

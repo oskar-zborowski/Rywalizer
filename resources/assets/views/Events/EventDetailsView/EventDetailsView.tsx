@@ -23,15 +23,14 @@ import mapViewerStore from '@/store/MapViewerStore';
 import userStore from '@/store/UserStore';
 import View from '@/views/View/View';
 import { AxiosError } from 'axios';
-import faker from 'faker';
 import { observer } from 'mobx-react';
 import React, { Fragment, useEffect, useState } from 'react';
 import { AiOutlineClose } from 'react-icons/ai';
 import { useNavigate, useParams } from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 import styles from './EventDetailsView.scss';
-
-faker.locale = 'pl';
+import BallSvg from '@/static/icons/ball.svg';
+import moment from 'moment';
 
 const EventDetailsView: React.FC = () => {
     const { id } = useParams();
@@ -42,6 +41,10 @@ const EventDetailsView: React.FC = () => {
     const [error, setError] = useState<string>('');
 
     const navigateTo = useNavigate();
+
+    const capitalize = (value: string) => {
+        return value[0].toUpperCase() + value.substring(1);
+    };
 
     useEffect(() => {
         mapViewerStore.reset();
@@ -58,18 +61,13 @@ const EventDetailsView: React.FC = () => {
             if (event.facility?.location) {
                 const { lat, lng } = event.facility?.location;
 
-                mapViewerStore.setBounds({
-                    lat: lat - 0.1,
-                    lng: lng - 0.1
-                }, {
-                    lat: lat + 0.1,
-                    lng: lng + 0.1
-                });
+                mapViewerStore.setPosition({lat, lng}, 16);
             }
         });
     }, []);
 
     const alreadyJoined = !event?.participants?.every(p => p.itsMe == false);
+    let signInLink = false;
 
     const ParticipantsList = () => {
         return (
@@ -108,12 +106,14 @@ const EventDetailsView: React.FC = () => {
                                                             return p.id !== participant.id;
                                                         });
 
+                                                        event.soldTicketsCount--;
+
                                                         return { ...event };
                                                     });
 
+                                                    ReactTooltip.rebuild();
                                                     ReactTooltip.hide();
-
-                                                }catch(err) {
+                                                } catch (err) {
                                                     setError(extractError(err as AxiosError).message);
                                                 }
                                             }}
@@ -123,11 +123,13 @@ const EventDetailsView: React.FC = () => {
                                     )}
                                 </div>;
                             } else {
-                                if (alreadyJoined) {
+                                if (alreadyJoined || signInLink) {
                                     return <div className={styles.participantCell} key={i}>
                                         <span>{i + 1}.&nbsp;Wolne miejsce</span>
                                     </div>;
                                 } else {
+                                    signInLink = true;
+
                                     return (
                                         <div
                                             key={i}
@@ -138,21 +140,24 @@ const EventDetailsView: React.FC = () => {
                                                         announcementId: event.id,
                                                         announcementSeatId: event.seats[0].id
                                                     });
-    
+
                                                     setEvent(event => {
                                                         event.participants.push({
                                                             id: user.id,
                                                             fullName: user.firstName + ' ' + user.lastName,
                                                             avatarUrl: user.avatarUrl,
                                                             itsMe: true,
-                                                            seatId: event.seats[0].id
+                                                            seatId: event.seats[0].id,
                                                         });
-    
+
+                                                        event.soldTicketsCount++;
+
                                                         return { ...event };
                                                     });
-    
-                                                    ReactTooltip.hide();
-                                                } catch(err) {
+
+                                                    ReactTooltip.rebuild();
+                                                    // ReactTooltip.hide();
+                                                } catch (err) {
                                                     setError(extractError(err as AxiosError).message);
                                                 }
                                             }}
@@ -183,7 +188,7 @@ const EventDetailsView: React.FC = () => {
                                     <div className={styles.userDetailsRow}>
                                         <h1>Organizator:</h1>
                                         <Icon svg={UserSvg}>{event.partner.fullName}</Icon>
-                                        <StarRatings rating={event.partner.avarageRating} />
+                                        {/* <StarRatings rating={event.partner.avarageRating} /> */}
                                     </div>
 
                                     <div className={styles.userDetailsRow + ' ' + styles.contact}>
@@ -202,11 +207,26 @@ const EventDetailsView: React.FC = () => {
                                     </div>
                                 </div>
                             </div>
+                            <div className={styles.icons}>
+                                <h3>
+                                    <span style={{ color: '#a1a1a1' }}>Cena:</span> {(event.ticketPrice / 100).toFixed(2)} zł
+                                </h3>
+                                {event.minSkillLevel && (
+                                    <div className={styles.levelIcon}>
+                                        <div className={styles.circle}>
+                                            {event.minSkillLevel}
+                                        </div>
+                                    </div>
+                                )}
+                                <div className={styles.icon} style={{ backgroundColor: event.sport.color.hex() }}>
+                                    <BallSvg />
+                                </div>
+                            </div>
                             {userHasAccess && (
                                 <OrangeButton
                                     style={{
                                         position: 'absolute',
-                                        right: '20px',
+                                        left: '20px',
                                         top: '20px',
                                         zIndex: '999'
                                     }}
@@ -236,13 +256,24 @@ const EventDetailsView: React.FC = () => {
                             <StackPanel padding="20px 0 20px 0" vertical>
                                 <StackPanel>
                                     <Icon svg={LocationSvg}>
-                                        <b>{event.facility?.name}</b>,&nbsp;
-                                        {event.facility?.city.name}&nbsp;{event.facility?.street}
+                                        {event.facility?.name && (
+                                            <Fragment>
+                                                <b>{event.facility?.name}</b>,&nbsp;
+                                            </Fragment>
+                                        )}
+                                        {capitalize(event.facility?.city.name)}&nbsp;ul.&nbsp;{capitalize(event.facility?.street)}
                                     </Icon>
-                                    <Icon svg={CalendarSvg}>28.10.2022, 15:00 - 16:30</Icon>
+                                    <Icon svg={CalendarSvg}>
+                                        {moment(event.startDate).format('DD.MM.YY hh:mm')} - {moment(event.endDate).format('DD.MM.YY hh:mm')}
+                                    </Icon>
                                 </StackPanel>
-                                <ProgressBar progress={event.soldTicketsCount / event.availableTicketsCount * 100} />
                             </StackPanel>
+                            <div style={{ width: '300px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <ProgressBar progress={event.soldTicketsCount / event.availableTicketsCount * 100} />
+                                <div>
+                                    {event.soldTicketsCount}/{event.availableTicketsCount}
+                                </div>
+                            </div>
                             <ParticipantsList />
                         </section>
                         <div className={styles.separator}></div>
@@ -271,10 +302,10 @@ const EventDetailsView: React.FC = () => {
                                                 createdAt: new Date().toLocaleDateString(),
                                                 userAvatarUrl: user.avatarUrl
                                             });
-    
+
                                             return { ...event };
                                         });
-                                    } catch(err) {
+                                    } catch (err) {
                                         setError(extractError(err as AxiosError).message);
                                     }
                                 }}

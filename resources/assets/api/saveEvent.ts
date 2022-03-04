@@ -1,5 +1,4 @@
 import { IPoint } from '@/types/IPoint';
-import { getApiUrl } from '@/utils/api';
 import axios from 'axios';
 import getAdministrativeAreas, { AdministrativeAreaType } from './getAdministrativeAreas';
 import moment from 'moment';
@@ -46,16 +45,16 @@ const saveEvent = async (args: ISaveEventArgs, photoFile?: File, eventId?: numbe
     }
 
     if (eventId) {
-        await axios.patch(getApiUrl(`/api/v1/announcements/${eventId}`), body);
+        await axios.patch(`/api/v1/announcements/${eventId}`, body);
     } else {
-        const response = await axios.post(getApiUrl('/api/v1/announcements'), body);
+        const response = await axios.post('/api/v1/announcements', body);
         eventId = +response?.data?.data?.announcement?.id;
     }
 
     if (eventId && photoFile) {
         const formData = new FormData();
         formData.append('photo', photoFile);
-        const response = await axios.post(getApiUrl(`/api/v1/announcements/${eventId}/photos`), formData, {
+        const response = await axios.post(`/api/v1/announcements/${eventId}/photos`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }

@@ -35,11 +35,11 @@ const AuthButtons: React.FC = observer(() => {
                     handleIsOpenChange={(isOpen) => setDropdownOpen(isOpen)}
                 >
                     <Link to="/konto"><DropdownRow>Konto</DropdownRow></Link>
-                    {user.isPartner ? (
+                    {/* {user.isPartner ? (
                         <Link to="/partnerstwo"><DropdownRow>Partnerstwo</DropdownRow></Link>
                     ) : (
                         <DropdownRow onClick={() => modalsStore.setIsPartnerModalEnabled(true)}>Partnerstwo</DropdownRow>
-                    )}
+                    )} */}
                     <DropdownRow onClick={() => userStore.logout()}>Wyloguj</DropdownRow>
                 </Dropdown>
                 <Dropdown
@@ -68,11 +68,11 @@ const AuthButtons: React.FC = observer(() => {
                     handleIsOpenChange={(isOpen) => setMenuDropdownOpen(isOpen)}
                 >
                     <Link to="/konto"><DropdownRow>Konto</DropdownRow></Link>
-                    {user.isPartner ? (
+                    {/* {user.isPartner ? (
                         <Link to="/partnerstwo"><DropdownRow>Partnerstwo</DropdownRow></Link>
                     ) : (
                         <DropdownRow onClick={() => modalsStore.setIsPartnerModalEnabled(true)}>Partnerstwo</DropdownRow>
-                    )}
+                    )} */}
                     <DropdownRow onClick={() => userStore.logout()}>Wyloguj</DropdownRow>
                     <DropdownSeparator/>
                     <Link to="/"><DropdownRow><span>Lista ogłoszeń</span></DropdownRow></Link>

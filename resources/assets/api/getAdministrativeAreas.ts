@@ -1,8 +1,7 @@
-import { getApiUrl } from '@/utils/api';
 import axios from 'axios';
 
 const getAdministrativeAreas = async (query: string, areaType?: AdministrativeAreaType) => {
-    const response = await axios.get(getApiUrl('api/v1/areas'), {
+    const response = await axios.get('/api/v1/areas', {
         params: {
             in: 'name,' + query,
             like: areaType ? ('area_type_id,' + areaType) : undefined

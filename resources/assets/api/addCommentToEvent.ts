@@ -1,8 +1,7 @@
-import { getApiUrl } from '@/utils/api';
 import axios from 'axios';
 
 const addCommentToEvent = async (args: IAddCommentArgs) => {
-    await axios.post(getApiUrl('/api/v1/announcement/comment'), args);
+    await axios.post('/api/v1/announcement/comment', args);
 };
 
 export default addCommentToEvent;

@@ -1,8 +1,7 @@
-import { getApiUrl } from '@/utils/api';
 import axios from 'axios';
 
 const getPartner = async (): Promise<IPartner> => {
-    const response = await axios.get(getApiUrl('api/v1/partners'));
+    const response = await axios.get('/api/v1/partners');
     const data = response?.data?.data?.partner;
 
     return {

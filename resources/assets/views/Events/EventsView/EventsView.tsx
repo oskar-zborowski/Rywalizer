@@ -26,6 +26,10 @@ const EventsView: React.FC = () => {
 
     useEffect(() => {
         mapViewerStore.reset();
+        mapViewerStore.setPosition({
+            lat: 52.409538, 
+            lng: 16.931992
+        }, 12);
     }, []);
 
     useEffect(() => {

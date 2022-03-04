@@ -41,6 +41,7 @@ export default async function geocode(arg: string | IPoint) {
     const geometry = results.geometry;
     const administrativeAreas: string[] = [null, null, null, null];
     let street: string;
+    let streetNumber: number;
 
     results.address_components.forEach((component: any) => {
         if (component.types.includes('administrative_area_level_1')) {
@@ -63,7 +64,9 @@ export default async function geocode(arg: string | IPoint) {
             // Miasto
             administrativeAreas[3] = (component.long_name as string).toLowerCase();
         } else if (component.types.includes('route')) {
-            street = component.long_name; 
+            street = component.long_name;
+        } else if (component.types.includes('street_number')) {
+            streetNumber = +component.long_name;
         }
     });
 
@@ -73,7 +76,7 @@ export default async function geocode(arg: string | IPoint) {
     }
 
     const geocodeResults: IGeocodeResults = {
-        street,
+        street: street + ' ' + streetNumber,
         administrativeAreas,
         formattedAddress: results.formatted_address,
         location: geometry.location,

@@ -1,7 +1,6 @@
 import { IComment } from '@/components/Comments/Comments';
 import appStore from '@/store/AppStore';
 import { IPoint } from '@/types/IPoint';
-import { getApiUrl } from '@/utils/api';
 import axios from 'axios';
 import { when } from 'mobx';
 import { ISport } from './getSports';
@@ -25,12 +24,12 @@ const getEvents = async (params?: IGetEventsParams) => {
     let entries: any[];
 
     if (!isNaN(id)) {
-        const response = await axios.get(getApiUrl(`api/v1/announcements/${id}`));
+        const response = await axios.get(`/api/v1/announcements/${id}`);
         entries = [response?.data?.data];
     } else {
         const { sportIds, sort, sortDir = 'asc', search, partnerAlias } = filters;
 
-        const response = await axios.get(getApiUrl('api/v1/announcements'), {
+        const response = await axios.get('/api/v1/announcements', {
             params: {
                 in: sportIds && sportIds.length ? `sport_id,${sportIds.join(',')}` : undefined,
                 search,
@@ -53,13 +52,15 @@ const getEvents = async (params?: IGetEventsParams) => {
             startDate: new Date(announcement.startDate),
             endDate: new Date(announcement.endDate),
             ticketPrice: +announcement.ticketPrice,
-            minSkillLevelId: +announcement.minimumSkillLevel,
+            minSkillLevelId: +announcement.minimumSkillLevel?.id,
+            minSkillLevel: announcement.minimumSkillLevel?.name,
             minAge: +announcement.minimalAge,
             maxAge: +announcement.maximumAge,
             description: announcement.description,
             soldTicketsCount: +announcement.participantsCounter,
             availableTicketsCount: +announcement.maximumParticipantsNumber,
             isPublic: !!announcement.isPublic,
+            imageId: announcement.frontImage?.[0]?.id,
             imageUrl: announcement.frontImage?.[0]?.filename,
             backgroundImageUrl: announcement.backgroundImage,
             seats: announcement.announcementSeats?.map(s => {
@@ -132,6 +133,7 @@ export interface IEvent {
     //     id: 77,
     //     name: 'STANDARD'
     // },
+    minSkillLevel: string;
     minSkillLevelId: number,
     // gender: null,
     // ageCategory: null,
@@ -147,6 +149,7 @@ export interface IEvent {
     // },
     // isAutomaticallyApproved: '1',
     isPublic: boolean,
+    imageId: number;
     imageUrl: string,
     backgroundImageUrl: string;
     seats: {

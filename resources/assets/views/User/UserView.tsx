@@ -179,9 +179,9 @@ const UserView: React.FC = () => {
                         </Fragment>
                     ) : (
                         <Fragment>
-                            <BlackButton>Usuń konto</BlackButton>
+                            {/* <BlackButton>Usuń konto</BlackButton> */}
                             <BlackButton onClick={() => setEditMode(true)}>Edytuj konto</BlackButton>
-                            <OrangeButton
+                            {/* <OrangeButton
                                 onClick={() => {
                                     if (user.isPartner) {
                                         navigateTo('/partnerstwo');
@@ -191,7 +191,7 @@ const UserView: React.FC = () => {
                                 }}
                             >
                                 {user.isPartner ? 'Partnerstwo' : 'Zostań partnerem'}
-                            </OrangeButton>
+                            </OrangeButton> */}
                         </Fragment>
                     )}
                 </div>

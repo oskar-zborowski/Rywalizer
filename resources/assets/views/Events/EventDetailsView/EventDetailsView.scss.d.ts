@@ -2,6 +2,7 @@
 // Please do not change this file!
 interface CssExports {
   'backgroundImage': string;
+  'circle': string;
   'contact': string;
   'contactSM': string;
   'deletUserIcon': string;
@@ -11,6 +12,9 @@ interface CssExports {
   'eventDetails': string;
   'gradientOverlay': string;
   'header': string;
+  'icon': string;
+  'icons': string;
+  'levelIcon': string;
   'participantCell': string;
   'participantsList': string;
   'participantsListWrapper': string;
