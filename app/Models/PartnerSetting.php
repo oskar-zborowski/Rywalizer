@@ -307,7 +307,7 @@ class PartnerSetting extends BaseModel
         } else {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Partner does not exist.'
+                'Partner nie istnieje.'
             );
         }
     }

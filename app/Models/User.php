@@ -841,6 +841,21 @@ class User extends Authenticatable implements MustVerifyEmail
             }
 
             $updatedInformation['last_time_name_changed'] = now();
+
+            $encryptedFirstName = $encrypter->encrypt($request->first_name, 30);
+            $encryptedLastName = $encrypter->encrypt($request->last_name, 30);
+
+            $personWithSimilarName = User::where('first_name', $encryptedFirstName)->where('last_name', $encryptedLastName)->get();
+
+            if ($personWithSimilarName) {
+                $countPerson = count($personWithSimilarName);
+            } else {
+                $countPerson = 0;
+            }
+
+            $partner = $this->partners()->first();
+            $partner->alias = $request->first_name . '.' . $request->last_name . '.' . ($countPerson+1);
+            $partner->save();
         }
 
         if ($isEmail) {

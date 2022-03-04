@@ -157,7 +157,7 @@ class PartnerController extends Controller
         } else {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Partner does not exist.'
+                'Partner nie istnieje.'
             );
         }
     }
@@ -182,7 +182,7 @@ class PartnerController extends Controller
         } else {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Partner does not exist.'
+                'Partner nie istnieje.'
             );
         }
     }
@@ -205,7 +205,7 @@ class PartnerController extends Controller
         } else {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Partner does not exist.'
+                'Partner nie istnieje.'
             );
         }
     }
@@ -231,7 +231,7 @@ class PartnerController extends Controller
         } else {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Partner does not exist.'
+                'Partner nie istnieje.'
             );
         }
     }
@@ -253,7 +253,7 @@ class PartnerController extends Controller
         if (!$request->logo) {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Missing logo image.'
+                'Nie dołączono zdjęcia partnera.'
             );
         }
 
@@ -272,7 +272,7 @@ class PartnerController extends Controller
         } else {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Logo does not exist.'
+                'Nie dołączono zdjęcia partnera.'
             );
         }
     }
@@ -302,7 +302,7 @@ class PartnerController extends Controller
         } else {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Logo does not exist.'
+                'Nie dołączono zdjęcia partnera.'
             );
         }
     }
@@ -332,7 +332,7 @@ class PartnerController extends Controller
         } else {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Logo does not exist.'
+                'Nie dołączono zdjęcia partnera.'
             );
         }
     }
