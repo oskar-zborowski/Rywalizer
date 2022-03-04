@@ -13,6 +13,8 @@ use App\Http\Responses\JsonResponse;
 use App\Mail\EmailVerification as MailEmailVerification;
 use App\Models\DefaultType;
 use App\Models\ExternalAuthentication;
+use App\Models\Partner;
+use App\Models\PartnerSetting;
 use App\Models\PersonalAccessToken;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -91,6 +93,39 @@ class AuthController extends Controller
 
         /** @var User $user */
         $user = Auth::user();
+
+        $encryptedFirstName = $encrypter->encrypt($user->first_name, 30);
+        $encryptedLastName = $encrypter->encrypt($user->last_name, 30);
+
+        $personWithSimilarName = User::where('first_name', $encryptedFirstName)->where('last_name', $encryptedLastName)->get();
+
+        if ($personWithSimilarName) {
+            $countPerson = count($personWithSimilarName);
+        } else {
+            $countPerson = 0;
+        }
+
+        $partner = new Partner;
+        $partner->user_id = $user->id;
+        $partner->alias = $user->first_name . '.' . $user->last_name . '.' . ($countPerson+1);
+        $partner->save();
+
+        /** @var PartnerSetting $partnerSetting */
+        $partnerSetting = new PartnerSetting;
+        $partnerSetting->partner_id = $partner->id;
+        $partnerSetting->commission_id = 1;
+        $partnerSetting->partner_type_id = 59;
+        $partnerSetting->visible_name_id = 61;
+        $partnerSetting->visible_image_id = 61;
+        $partnerSetting->visible_email_id = 61;
+        $partnerSetting->visible_telephone_id = 61;
+        $partnerSetting->visible_facebook_id = 61;
+        $partnerSetting->visible_instagram_id = 61;
+        $partnerSetting->visible_website_id = 61;
+        $partnerSetting->creator_id = $user->id;
+        $partnerSetting->editor_id = $user->id;
+        $partnerSetting->save();
+
         $user->saveAcceptedAgreements($request);
         $user->checkDevice($request, 'REGISTRATION_FORM');
         $user->createTokens();
@@ -271,6 +306,39 @@ class AuthController extends Controller
 
         /** @var User $user */
         $user = Auth::user();
+
+        $encryptedFirstName = $encrypter->encrypt($user->first_name, 30);
+        $encryptedLastName = $encrypter->encrypt($user->last_name, 30);
+
+        $personWithSimilarName = User::where('first_name', $encryptedFirstName)->where('last_name', $encryptedLastName)->get();
+
+        if ($personWithSimilarName) {
+            $countPerson = count($personWithSimilarName);
+        } else {
+            $countPerson = 0;
+        }
+
+        $partner = new Partner;
+        $partner->user_id = $user->id;
+        $partner->alias = $user->first_name . '.' . $user->last_name . '.' . ($countPerson+1);
+        $partner->save();
+
+        /** @var PartnerSetting $partnerSetting */
+        $partnerSetting = new PartnerSetting;
+        $partnerSetting->partner_id = $partner->id;
+        $partnerSetting->commission_id = 1;
+        $partnerSetting->partner_type_id = 59;
+        $partnerSetting->visible_name_id = 61;
+        $partnerSetting->visible_image_id = 61;
+        $partnerSetting->visible_email_id = 61;
+        $partnerSetting->visible_telephone_id = 61;
+        $partnerSetting->visible_facebook_id = 61;
+        $partnerSetting->visible_instagram_id = 61;
+        $partnerSetting->visible_website_id = 61;
+        $partnerSetting->creator_id = $user->id;
+        $partnerSetting->editor_id = $user->id;
+        $partnerSetting->save();
+        
         $user->checkDevice(null, $authenticationType);
         $user->checkAccess();
         $user->createTokens();

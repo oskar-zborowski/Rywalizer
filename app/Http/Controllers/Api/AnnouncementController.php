@@ -83,21 +83,21 @@ class AnnouncementController extends Controller
         } else {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Partner does not exist.'
+                'Aby tworzyć ogłoszenia najpierw musisz zostać partnerem.'
             );
         }
 
         if ($request->start_date > $request->start_date) {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'The end date cannot be earlier than the start date.'
+                'Data zakończenia nie może być wcześniejsza niż data rozpoczęcia.'
             );
         }
 
         if ($request->start_date < now()) {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'The start date cannot be in the past.'
+                'Data rozpoczęcia nie może być w przeszłości.'
             );
         }
 
@@ -107,7 +107,7 @@ class AnnouncementController extends Controller
             if (!isset($sP['maximum_seats_number']) || !isset($sP['sports_position_id'])) {
                 throw new ApiException(
                     BaseErrorCode::FAILED_VALIDATION(),
-                    'Missing field of array.'
+                    'Brakujące pole w tablicy z dostępnymi miejscami.'
                 );
             }
             $maximumParticipantsNumber += $sP['maximum_seats_number'];
@@ -175,7 +175,7 @@ class AnnouncementController extends Controller
                     if (count($result) != 1 || !$arrayKeyExists) {
                         throw new ApiException(
                             BaseErrorCode::FAILED_VALIDATION(),
-                            'Wrong game variant.'
+                            'Nieprawidłowy wariant gry.'
                         );
                     }
                 }
@@ -191,7 +191,7 @@ class AnnouncementController extends Controller
                 if ($request->game_variant_id == 78 && $arrayKeyExists) {
                     throw new ApiException(
                         BaseErrorCode::FAILED_VALIDATION(),
-                        'Wrong game variant.'
+                        'Nieprawidłowy wariant gry.'
                     );
                 }
             }
@@ -222,6 +222,14 @@ class AnnouncementController extends Controller
             $announcement->save();
 
             foreach ($result as $sP) {
+
+                if ($sP['maximum_seats_number'] == 0) {
+                    throw new ApiException(
+                        BaseErrorCode::FAILED_VALIDATION(),
+                        'Liczba uczestników musi być większa niż zero.'
+                    );
+                }
+
                 /** @var AnnouncementSeat $announcementSeat */
                 $announcementSeat = new AnnouncementSeat;
                 $announcementSeat->announcement_id = $announcement->id;
@@ -245,7 +253,7 @@ class AnnouncementController extends Controller
         } else {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Partner does not exist.'
+                'Aby tworzyć ogłoszenia najpierw musisz zostać partnerem.'
             );
         }
     }
@@ -315,21 +323,21 @@ class AnnouncementController extends Controller
         } else {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Partner does not exist.'
+                'Aby tworzyć ogłoszenia najpierw musisz zostać partnerem.'
             );
         }
 
         if ($request->start_date > $request->start_date) {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'The end date cannot be earlier than the start date.'
+                'Data zakończenia nie może być wcześniejsza niż data rozpoczęcia.'
             );
         }
 
         if ($request->start_date < now()) {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'The start date cannot be in the past.'
+                'Data rozpoczęcia nie może być w przeszłości.'
             );
         }
 
@@ -366,7 +374,7 @@ class AnnouncementController extends Controller
                 if (!isset($sP['maximum_seats_number']) || !isset($sP['sports_position_id'])) {
                     throw new ApiException(
                         BaseErrorCode::FAILED_VALIDATION(),
-                        'Missing field of array.'
+                        'Brakujące pole w tablicy z dostępnymi miejscami.'
                     );
                 }
                 $maximumParticipantsNumber += $sP['maximum_seats_number'];
@@ -429,7 +437,7 @@ class AnnouncementController extends Controller
                 if (isset($sportPositions[$sP['sports_position_id']]) && $sportPositions[$sP['sports_position_id']] > $sP['maximum_seats_number']) {
                     throw new ApiException(
                         BaseErrorCode::FAILED_VALIDATION(),
-                        'The number of players cannot be reduced as the sports positions are already taken.'
+                        'Liczba uczestników nie może być mniejsza niż liczba osób, które zapisały się w ogłoszeniu.'
                     );
                 }
             }
@@ -444,7 +452,7 @@ class AnnouncementController extends Controller
                 if (!$arrayKeyExists) {
                     throw new ApiException(
                         BaseErrorCode::FAILED_VALIDATION(),
-                        'The number of players cannot be reduced as the sports positions are already taken.'
+                        'Liczba uczestników nie może być mniejsza niż liczba osób, które zapisały się w ogłoszeniu.'
                     );
                 }
             }
@@ -463,7 +471,7 @@ class AnnouncementController extends Controller
                     if (count($result) != 1 || !$arrayKeyExists) {
                         throw new ApiException(
                             BaseErrorCode::FAILED_VALIDATION(),
-                            'Wrong game variant.'
+                            'Nieprawidłowy wariant gry.'
                         );
                     }
                 }
@@ -479,7 +487,7 @@ class AnnouncementController extends Controller
                 if ($request->game_variant_id == 78 && $arrayKeyExists) {
                     throw new ApiException(
                         BaseErrorCode::FAILED_VALIDATION(),
-                        'Wrong game variant.'
+                        'Nieprawidłowy wariant gry.'
                     );
                 }
             }
@@ -501,6 +509,13 @@ class AnnouncementController extends Controller
             }
 
             foreach ($result as $sP) {
+
+                if ($sP['maximum_seats_number'] == 0) {
+                    throw new ApiException(
+                        BaseErrorCode::FAILED_VALIDATION(),
+                        'Liczba uczestników musi być większa niż zero.'
+                    );
+                }
 
                 /** @var AnnouncementSeat $announcementSeat */
                 $announcementSeat = $announcement->announcementSeats()->where('sports_position_id', $sP['sports_position_id'])->first();
@@ -526,7 +541,7 @@ class AnnouncementController extends Controller
         } else {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Permission denied.'
+                'Brak dostępu'
             );
         }
     }
@@ -546,7 +561,7 @@ class AnnouncementController extends Controller
         } else {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Announcement does not exist.'
+                'Ogłoszenie nie istnieje.'
             );
         }
     }
@@ -568,7 +583,7 @@ class AnnouncementController extends Controller
         if (!$request->photo) {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Missing photo.'
+                'Zdjęcie nie zostało wgrane.'
             );
         }
 
@@ -588,13 +603,13 @@ class AnnouncementController extends Controller
             if ($announcement->announcement_partner_id != $partnerSetting->id) {
                 throw new ApiException(
                     BaseErrorCode::FAILED_VALIDATION(),
-                    'Partner does not exist.'
+                    'Partner nie istnieje.'
                 );
             }
         } else {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Partner does not exist.'
+                'Partner nie istnieje.'
             );
         }
         
@@ -632,13 +647,13 @@ class AnnouncementController extends Controller
             } else {
                 throw new ApiException(
                     BaseErrorCode::FAILED_VALIDATION(),
-                    'Photo does not exist.'
+                    'Zdjęcie nie istnieje.'
                 );
             }
         } else {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Photo does not exist.'
+                'Zdjęcie nie istnieje.'
             );
         }
     }
@@ -708,14 +723,14 @@ class AnnouncementController extends Controller
         if (!$announcement) {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Announcement does not exist.'
+                'Ogłoszenie nie istnieje.'
             );
         }
 
         if ($announcement->start_date <= now()) {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Announcement has already begun.'
+                'Ogłoszenie już się rozpoczęło'
             );
         }
 
@@ -725,14 +740,14 @@ class AnnouncementController extends Controller
         if (!$announcementSeat) {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Announcement does not exist.'
+                'Ogłoszenie nie istnieje.'
             );
         }
 
         if ($announcementSeat->occupied_seats_counter >= $announcementSeat->maximum_seats_number) {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Place limit exceeded.'
+                'Limit miejsc został osiągnięty.'
             );
         }
 
@@ -741,7 +756,7 @@ class AnnouncementController extends Controller
         if ($userExists) {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'You have already signed up.'
+                'Już się zapisałeś.'
             );
         }
 
@@ -789,14 +804,14 @@ class AnnouncementController extends Controller
         if (!$announcement) {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Announcement does not exist.'
+                'Ogłoszenie nie istnieje.'
             );
         }
 
         if ($announcement->start_date <= now()) {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Announcement has already begun.'
+                'Ogłoszenie już się rozpoczęło.'
             );
         }
 
@@ -816,7 +831,7 @@ class AnnouncementController extends Controller
         if (!$announcementSeat) {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Announcement does not exist.'
+                'Ogłoszenie nie istnieje.'
             );
         }
 
@@ -826,7 +841,7 @@ class AnnouncementController extends Controller
         if (!$userExists) {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Announcement does not exist.'
+                'Ogłoszenie nie istnieje.'
             );
         }
 
@@ -849,7 +864,7 @@ class AnnouncementController extends Controller
         } else {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Announcement does not exist.'
+                'Ogłoszenie nie istnieje.'
             );
         }
     }
@@ -879,7 +894,7 @@ class AnnouncementController extends Controller
         if (!$announcement) {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Announcement does not exist.'
+                'Ogłoszenie nie istnieje.'
             );
         }
 
@@ -953,7 +968,7 @@ class AnnouncementController extends Controller
         if (!$rating) {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Rating does not exist.'
+                'Komentarz nie istnieje.'
             );
         }
 

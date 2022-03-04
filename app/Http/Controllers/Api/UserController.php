@@ -83,7 +83,7 @@ class UserController extends Controller
         if (!$request->avatar) {
             throw new ApiException(
                 BaseErrorCode::FAILED_VALIDATION(),
-                'Missing avatar image.'
+                'Nie dołączono zdjęcia profilowego.'
             );
         }
 
@@ -166,7 +166,7 @@ class UserController extends Controller
             if (!$user->hasVerifiedEmail()) {
                 throw new ApiException(
                     BaseErrorCode::PERMISSION_DENIED(),
-                    'Your email address is not verified.'
+                    'Email nie został zweryfikowany'
                 );
             }
         }
